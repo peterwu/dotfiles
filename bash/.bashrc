@@ -16,7 +16,7 @@ set keymap vi
 source /usr/share/fzf/key-bindings.bash
 source /usr/share/fzf/completion.bash
 source <(kitty + complete setup bash)
-
+source <(kubectl completion bash)
 
 ### This Changes The PS1 ### 
 PROMPT_COMMAND=__prompt_command # Func to gen PS1 after CMDs
@@ -61,7 +61,7 @@ function __prompt_command {
   function arrow {
     # ↬ : U+21AC
     # → : U+2192
-    local arrow="↬ "
+    local arrow="→ "
     if [ $EXIT != 0 ]; then
       arrow="${RED}${arrow}${RESET}"      # Add red if exit code non 0
     else
@@ -78,6 +78,6 @@ function __prompt_command {
     echo $prompt
   }
 
-PS1="$(titlebar)$(arrow)${BLUE}\w $(git_branch)${RESET}\n$(prompt)"
+  PS1="$(titlebar)$(arrow)${BLUE}\w $(git_branch)${RESET}\n$(prompt)"
 }
 

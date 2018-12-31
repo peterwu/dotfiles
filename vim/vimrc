@@ -12,7 +12,6 @@ if has('win32') "Windows
   set viminfo=%,<800,'10,/50,:100,h,f0,n~/vimfiles/cache/.viminfo
 else
   set guifont=Fira\ Code\ Retina\ 12
-  " set guifont=Inconsolata\ 16
   set viminfo=%,<800,'10,/50,:100,h,f0,n~/.vim/.viminfo
 endif
 
@@ -21,17 +20,11 @@ set termguicolors
 set background=dark
 
 colorscheme dracula
+
 let g:airline_theme='dracula'
-
-" let g:airline_powerline_fonts = 1
-let g:airline#extensions#tabline#enabled = 1
+let g:airline_powerline_fonts = 1
+let g:airline_extensions = ['branch', 'tabline', 'ale']
 let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
-let g:airline#extensions#ale#enabled = 1
-
-let g:ctrlp_custom_ignore = {
-      \ 'dir':  '\.git$\|node_modules\|log\|tmp$',
-      \ 'file': '\.so$\|\.dat$|\.DS_Store$'
-      \ }
 
 let g:prettier#config#bracket_spacing = 'true'
 let g:prettier#config#single_quote = 'false'
@@ -43,14 +36,9 @@ autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.gra
 
 " key mappings
 nnoremap Y y$
-nnoremap <leader>cd :cd %:p:h<CR>:pwd<CR>
-nnoremap <F3> :FZF<CR>
-
-" augroup AutoSaveFolds
-"   autocmd!
-"   autocmd BufWinLeave * mkview
-"   autocmd BufWinEnter * silent! loadview
-" augroup END
+nnoremap <leader>cd :cd %:p:h<cr>:pwd<cr>
+nnoremap <leader>ev :e $MYVIMRC<cr>
+nnoremap <leader>sv :source $MYVIMRC<cr>
 
 " minpac 
 if exists('*minpac#init')
@@ -63,6 +51,7 @@ if exists('*minpac#init')
   call minpac#add('machakann/vim-highlightedyank')
   call minpac#add('tpope/vim-repeat')
   call minpac#add('tpope/vim-commentary')
+  call minpac#add('tpope/vim-fugitive')
   call minpac#add('junegunn/fzf.vim', {'name': 'vim-fzf'})
   call minpac#add('dracula/vim', {'name': 'vim-dracula'})
   call minpac#add('vim-airline/vim-airline')
