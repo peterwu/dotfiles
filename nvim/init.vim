@@ -7,44 +7,34 @@ set autoindent smartindent smarttab expandtab tabstop=2 shiftwidth=2 softtabstop
 set smartcase incsearch hlsearch ignorecase shortmess+=I
 set mouse=a
 
-if has('win32') "Windows
-  set viminfo=%,<800,'10,/50,:100,h,f0,n~/vimfiles/cache/.viminfo
-else
-  set viminfo=%,<800,'10,/50,:100,h,f0,n~/.vim/.viminfo
-endif
-
 syntax enable
 set termguicolors
 set background=dark
 
 colorscheme dracula
-
 let g:airline_theme='dracula'
-" let g:airline_powerline_fonts = 1
-let g:airline_extensions = ['branch', 'tabline', 'ale']
+
+let g:airline_powerline_fonts = 1
+let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
+let g:airline#extensions#ale#enabled = 1
 
 let g:prettier#config#bracket_spacing = 'true'
 let g:prettier#config#single_quote = 'false'
 let g:prettier#config#jsx_bracket_same_line = 'false'
 let g:prettier#config#trailing_comma = 'none'
+
 let g:prettier#config#parser = 'babylon'
 let g:prettier#autoformat = 0
-
-augroup vim-prettier
-  autocmd!
-  autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.md,*.vue,*.yaml,*.html PrettierAsync
-augroup END
+autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.md,*.vue,*.yaml,*.html PrettierAsync
 
 " key mappings
 nnoremap Y y$
-nnoremap <leader>cd :cd %:p:h<cr>:pwd<cr>
-nnoremap <leader>ev :e $MYVIMRC<cr>
-nnoremap <leader>sv :source $MYVIMRC<cr>
+nnoremap <leader>cd :cd %:p:h<CR>:pwd<CR>
 
 " minpac 
 if exists('*minpac#init')
-  call minpac#init()
+  call minpac#init({'dir': $HOME.'/.local/share/nvim/site'})
   call minpac#add('k-takata/minpac', {'type': 'opt'})
 
   call minpac#add('jiangmiao/auto-pairs', {'name': 'vim-auto-pairs'})
@@ -53,7 +43,6 @@ if exists('*minpac#init')
   call minpac#add('machakann/vim-highlightedyank')
   call minpac#add('tpope/vim-repeat')
   call minpac#add('tpope/vim-commentary')
-  call minpac#add('tpope/vim-fugitive')
   call minpac#add('junegunn/fzf.vim', {'name': 'vim-fzf'})
   call minpac#add('dracula/vim', {'name': 'vim-dracula'})
   call minpac#add('vim-airline/vim-airline')
