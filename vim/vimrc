@@ -8,10 +8,8 @@ set smartcase incsearch hlsearch ignorecase shortmess+=I
 set mouse=a
 
 if has('win32') "Windows
-  set guifont=Fira\ Code\ Retina:h12:cANSI
   set viminfo=%,<800,'10,/50,:100,h,f0,n~/vimfiles/cache/.viminfo
 else
-  set guifont=Fira\ Code\ Retina\ 12
   set viminfo=%,<800,'10,/50,:100,h,f0,n~/.vim/.viminfo
 endif
 
