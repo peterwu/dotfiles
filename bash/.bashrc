@@ -10,8 +10,7 @@ alias ll="ls -al"
 alias ping='ping -c 5'
 alias gi='gvim'
 
-set editing-mode vi
-set keymap vi
+set -o vi
 
 source /usr/share/fzf/key-bindings.bash
 source /usr/share/fzf/completion.bash
