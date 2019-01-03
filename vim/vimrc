@@ -24,6 +24,8 @@ let g:airline_theme='dracula'
 let g:airline_extensions = ['branch', 'tabline', 'ale']
 let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
 
+let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
+
 let g:prettier#config#bracket_spacing = 'true'
 let g:prettier#config#single_quote = 'false'
 let g:prettier#config#jsx_bracket_same_line = 'false'
@@ -50,10 +52,11 @@ if exists('*minpac#init')
   call minpac#add('jiangmiao/auto-pairs', {'name': 'vim-auto-pairs'})
   call minpac#add('tpope/vim-surround')
   call minpac#add('tpope/vim-unimpaired')
-  call minpac#add('machakann/vim-highlightedyank')
+  call minpac#add('machakann/vim-highlightedyank', {'name': 'vim-highlighted-yank'})
   call minpac#add('tpope/vim-repeat')
   call minpac#add('tpope/vim-commentary')
   call minpac#add('tpope/vim-fugitive')
+  call minpac#add('unblevable/quick-scope', {'name': 'vim-quick-scope'})
   call minpac#add('junegunn/fzf.vim', {'name': 'vim-fzf'})
   call minpac#add('dracula/vim', {'name': 'vim-dracula'})
   call minpac#add('vim-airline/vim-airline')

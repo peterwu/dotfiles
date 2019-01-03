@@ -1,7 +1,5 @@
 if has('win32') "Windows
   set guifont=Fira\ Code\ Retina:h12:cANSI
-  set renderoptions=type:directx
-  set encoding=utf-8
 else
   set guifont=Fira\ Code\ Retina\ 12
 endif
