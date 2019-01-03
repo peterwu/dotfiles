@@ -14,7 +14,7 @@
  '(global-display-line-numbers-mode t)
  '(package-selected-packages
    (quote
-    (evil-quickscope evil-matchit evil-commentary evil-surround evil nov dracula-theme)))
+    (vue-mode evil-magit magit fzf evil-collection evil-quickscope evil-matchit evil-commentary evil-surround evil nov dracula-theme)))
  '(scroll-bar-mode nil)
  '(show-paren-mode t)
  '(size-indication-mode t)

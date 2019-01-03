@@ -9,6 +9,7 @@ alias ls='ls --color=auto'
 alias ll="ls -al"
 alias ping='ping -c 5'
 alias gi='gvim'
+alias emacs='emacs -nw'
 
 set -o vi
 
