@@ -24,5 +24,5 @@
 (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
 (add-to-list 'evil-emacs-state-modes 'nov-mode)
 (add-hook 'nov-mode-hook (lambda ()
-  (face-remap-add-relative 'default :height 1.5)
+  (face-remap-add-relative 'default :height 1.2)
   (display-line-numbers-mode -1)))
