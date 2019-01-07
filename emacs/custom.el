@@ -12,9 +12,10 @@
  '(display-line-numbers-type (quote relative))
  '(display-time-mode t)
  '(global-display-line-numbers-mode t)
+ '(menu-bar-mode nil)
  '(package-selected-packages
    (quote
-    (powerline use-package helm vue-mode evil-magit magit evil-collection evil-quickscope evil-matchit evil-commentary evil-surround evil nov dracula-theme)))
+    (yaml-mode powerline use-package vue-mode evil-magit magit evil-collection evil-quickscope evil-matchit evil-commentary evil-surround evil nov dracula-theme)))
  '(scroll-bar-mode nil)
  '(show-paren-mode t)
  '(size-indication-mode t)

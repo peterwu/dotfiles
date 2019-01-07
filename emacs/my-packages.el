@@ -20,6 +20,10 @@
   :config
   (load-theme 'dracula t))
 
+(use-package powerline
+  :config
+  (powerline-default-theme))
+
 (use-package evil
   :init
   (setq evil-want-integration t)
@@ -49,23 +53,30 @@
   :config
   (global-evil-quickscope-mode t))
 
-(use-package nov
+(use-package yaml-mode)
+
+(use-package nov 
   :mode ("\\.epub\\'" . nov-mode)
   :config
-  (add-to-list 'evil-emacs-state-modes 'nov-mode)
   (add-hook 'nov-mode-hook (lambda ()
 			     (face-remap-add-relative 'default :height 1.2)
 			     (display-line-numbers-mode -1))))
 
-(use-package magit)
-
-(use-package evil-magit)
-
-(use-package vue-mode)
-
-(use-package helm)
-
-(use-package powerline
+(use-package magit
   :config
-  (powerline-default-theme))
+  (global-set-key (kbd "C-x g") 'magit-status))
 
+(use-package ido
+  :config
+  (setq ido-enable-flex-matching t)
+  (setq ido-everywhere t)
+  (ido-mode t))
+
+(use-package vue-mode
+  :mode "\\.vue\\'")
+
+(use-package org
+  :config
+  (global-set-key (kbd "C-c l") 'org-store-link)
+  (global-set-key (kbd "C-c a") 'org-agenda)
+  (global-set-key (kbd "C-c c") 'org-capture))

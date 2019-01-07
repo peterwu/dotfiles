@@ -7,6 +7,6 @@
 (load custom-file)
 
 (let ((my-settings "~/.emacs.d/my-settings.el"))
- (when (file-exists-p my-settings)
-   (load-file my-settings))
-)
+  (when (file-exists-p my-settings)
+    (load-file my-settings))
+  )
