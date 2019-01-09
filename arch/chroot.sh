@@ -37,7 +37,7 @@ echo $ROOT_PASSWORD | passwd
 pacman -S --noconfirm grub efibootmgr
 UUID=$(blkid $DISK"2" | awk '{print $2}' | sed -e 's/"//g')
 sed -i.bak \
-    -e "/^GRUB_CMDLINE_LINUX_DEFAULT=/c GRUB_CMDLINE_LINUX_DEFAULT=\"cryptdevice=$UUID:vg splash quiet\"" \
+    -e "/^GRUB_CMDLINE_LINUX_DEFAULT=/c GRUB_CMDLINE_LINUX_DEFAULT=\"cryptdevice=$UUID:vg root=/dev/mapper/vg-lv_root quiet rw\"" \
     /etc/default/grub
 grub-mkfont -s 32 -o /boot/grub/fonts/font.pf2 /usr/share/fonts/misc/ter-x32n.pcf.gz
 
@@ -64,10 +64,10 @@ pacman -S --noconfirm lightdm lightdm-gtk-greeter
 pacman -S --noconfirm tlp
 
 # enable systemd daemons
-systemctl enable lightdm.service
-systemctl enable NetworkManager.service
-systemctl enable fstrim.timer
-systemctl enable tlp tlp-sleep
+# systemctl enable lightdm.service
+# systemctl enable NetworkManager.service
+# systemctl enable fstrim.timer
+# systemctl enable tlp tlp-sleep
 
 # exit chroot
 exit
