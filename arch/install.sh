@@ -73,6 +73,9 @@ genfstab -U /mnt > /mnt/etc/fstab
 # chroot
 arch-chroot /mnt /bin/bash
 localectl set-locale LANG=en_CA.UTF-8
+sed -i.bak \
+    -e '/^#en_CA/s/^#//' \
+    /etc/locale.gen
 locale-gen
 locale > /etc/locale.conf
 ln -sf /usr/share/zoneinfo/America/Toronto /etc/localtime
