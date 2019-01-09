@@ -1,18 +1,28 @@
 #!/bin/bash
 
+# shortened url
+# https://bit.ly/2TD7QzE
+# curl -L https://bit.ly/2TD7QzE -o install.sh
+# chmod +x install.sh
+# ./install.sh
+
+
 # prep the wifi connection
 WIFI_AP_NAME=ssid
 WIFI_PASSWORD=password
-nmcli device wifi connect $WIFI_AP_NAME password $WIFI_PASSWORD
+# nmcli device wifi connect $WIFI_AP_NAME password $WIFI_PASSWORD
 
 ### run lsblk to find out the disk ###
 DISK=/dev/sda
 LUKS_PASSPHRASE=passphrase
-CLOSEST_MIRROR=https://mirror.csclub.uwaterloo.ca/archlinux/$repo/os/$arch
+CLOSEST_MIRROR='https://mirror.csclub.uwaterloo.ca/archlinux/$repo/os/$arch'
 HOST_NAME=arch
 ROOT_PASSWORD=root_password
 USER_NAME=peter
 USER_PASSWORD=user_password
+
+# installation begins
+echo 'installation begins'
 
 # set the ntp
 timedatectl set-ntp true
