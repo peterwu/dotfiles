@@ -1,3 +1,5 @@
+#!/bin/bash
+
 DISK=/dev/sda
 HOST_NAME=arch
 ROOT_PASSWORD=root_password
@@ -31,7 +33,8 @@ pacman -S --noconfirm terminus-font
 echo $ROOT_PASSWORD | passwd
 
 pacman -S --noconfirm grub efibootmgr
-grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=grub 
+grub-install --target=i386-pc $DISK
+# grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=grub 
 grub-mkfont -s 32 -o /boot/grub/fonts/font.pf2 /usr/share/fonts/misc/ter-x32n.pcf.gz
 
 # grub

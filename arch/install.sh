@@ -3,6 +3,8 @@
 # shortened url
 # https://bit.ly/2TD7QzE
 # curl -L https://bit.ly/2TD7QzE -o install.sh
+# curl -L https://bit.ly/2SMSits -o chroot.sh
+
 # chmod +x install.sh
 # ./install.sh
 
