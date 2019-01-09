@@ -68,6 +68,11 @@ pacstrap /mnt base base-devel
 # fstab
 genfstab -U /mnt > /mnt/etc/fstab
 
+## a hack to work around a grub-mkconfig bug with lvm2
+# https://bbs.archlinux.org/viewtopic.php?id=242594
+mkdir /mnt/hostlvm
+mount --bind /run/lvm /mnt/hostlvm
+
 # chroot
 cp chroot.sh /mnt
 arch-chroot /mnt /bin/bash chroot.sh

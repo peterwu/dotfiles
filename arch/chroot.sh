@@ -10,7 +10,8 @@ sed -i.bak \
     -e '/^#en_CA/s/^#//' \
     /etc/locale.gen
 locale-gen
-locale > /etc/locale.conf
+# locale > /etc/locale.conf
+echo 'LANG="en_CA.UTF-8"' > /etc/locale.conf
 ln -sf /usr/share/zoneinfo/America/Toronto /etc/localtime
 hwclock -wu
 
@@ -32,19 +33,24 @@ pacman -S --noconfirm terminus-font
 # change root password
 echo $ROOT_PASSWORD | passwd
 
-pacman -S --noconfirm grub efibootmgr
-grub-install --target=i386-pc $DISK
-# grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=grub 
-grub-mkfont -s 32 -o /boot/grub/fonts/font.pf2 /usr/share/fonts/misc/ter-x32n.pcf.gz
-
 # grub
+pacman -S --noconfirm grub efibootmgr
 UUID=$(blkid $DISK"2" | awk '{print $2}' | sed -e 's/"//g')
 sed -i.bak \
-    -e '/^GRUB_CMDLINE_LINUX_DEFAULT=/c GRUB_CMDLINE_LINUX_DEFAULT=cryptdevice=$UUID:vg splash quiet' \
+    -e "/^GRUB_CMDLINE_LINUX_DEFAULT=/c GRUB_CMDLINE_LINUX_DEFAULT=\"cryptdevice=$UUID:vg splash quiet\"" \
     /etc/default/grub
+grub-mkfont -s 32 -o /boot/grub/fonts/font.pf2 /usr/share/fonts/misc/ter-x32n.pcf.gz
+
 echo "GRUB_FONT=/boot/grub/fonts/font.pf2" >> /etc/default/grub
 echo "KEYMAP=us" > /etc/vconsole.conf
-echo "FONT=ter-x32n" >> /etc/vconsole.conf
+echo "FONT=ter-m32n" >> /etc/vconsole.conf
+
+grub-install --force --target=i386-pc $DISK
+# grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=grub 
+
+# a hack to work around a grub-mkconfig bug with lvm2
+# https://bbs.archlinux.org/viewtopic.php?id=242594
+ln -s /hostlvm /run/lvm
 grub-mkconfig -o /boot/grub/grub.cfg
 
 # add user
