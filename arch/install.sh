@@ -65,7 +65,7 @@ mount /dev/sda1 /mnt/boot
 
 # install the base system
 echo $CLOSEST_MIRROR > /etc/pacman.d/mirrorlist
-pacstrap -i /mnt base base-devel
+pacstrap /mnt base base-devel
 
 # fstab
 genfstab -U /mnt > /mnt/etc/fstab
