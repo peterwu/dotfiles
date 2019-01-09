@@ -1,19 +1,20 @@
 #!/bin/bash
 
-# variables
+# prep the wifi connection
 WIFI_AP_NAME=ssid
 WIFI_PASSWORD=password
+nmcli device wifi connect $WIFI_AP_NAME password $WIFI_PASSWORD
+
 ### run lsblk to find out the disk ###
 DISK=/dev/sda
 LUKS_PASSPHRASE=passphrase
 CLOSEST_MIRROR=https://mirror.csclub.uwaterloo.ca/archlinux/$repo/os/$arch
-HOST_NAME=boysenberry
+HOST_NAME=arch
 ROOT_PASSWORD=root_password
 USER_NAME=peter
 USER_PASSWORD=user_password
 
-# prep the wifi connection
-nmcli device wifi connect $WIFI_AP_NAME password $WIFI_PASSWORD
+# set the ntp
 timedatectl set-ntp true
 
 # disk partition
@@ -90,10 +91,9 @@ grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=grub
 grub-mkfont -s 32 -o /boot/grub/fonts/font.pf2 /usr/share/fonts/misc/ter-x32n.pcf.gz
 
 # grub
-### TODO: read ! blkid /dev/sda2 ###
-UUID=$(cut -d " " -f 2 | cut -d "=" -f 2 | cut -d '"' -f 2)
+UUID=$(blkid $DISK"2" | awk '{print $2}' | sed -e 's/"//g')
 sed -i.bak \
-    -e '/^GRUB_CMDLINE_LINUX_DEFAULT=/c GRUB_CMDLINE_LINUX_DEFAULT=cryptdevice=UUID=$UUID:vg splash quiet' \
+    -e '/^GRUB_CMDLINE_LINUX_DEFAULT=/c GRUB_CMDLINE_LINUX_DEFAULT=cryptdevice=$UUID:vg splash quiet' \
     /etc/default/grub
 echo "GRUB_FONT=/boot/grub/fonts/font.pf2" >> /etc/default/grub
 echo "KEYMAP=us" > /etc/vconsole.conf
