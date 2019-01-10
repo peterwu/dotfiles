@@ -134,7 +134,7 @@ assign [class="^kitty$"] → $ws1
 assign [class="^Google-chrome$"] → $ws2
 assign [class="^Thunderbird$"] → $ws3
 assign [class="^Code - Insiders$"] → $ws4
-assign [class="^vlc$"] → $ws5
+assign [class="^MPlayer$"] → $ws5
 assign [class="^VirtualBox Manager$"] → $ws6
 
 # resize window (you can also use the mouse for that)
@@ -165,14 +165,16 @@ mode "resize" {
 bindsym $mod+r mode "resize"
 
 # audio soft keys
-bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume 0 +5%
-bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume 0 -5%
-bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute 0 toggle
-bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute 1 toggle
+bindsym XF86AudioRaiseVolume  exec --no-startup-id pactl set-sink-volume  0 +5%
+bindsym --release XF86AudioRaiseVolume  exec --no-startup-id pkill -SIGRTMIN+10 i3blocks
+bindsym XF86AudioLowerVolume  exec --no-startup-id pactl set-sink-volume  0 -5%
+bindsym --release XF86AudioLowerVolume  exec --no-startup-id pkill -SIGRTMIN+10 i3blocks
+bindsym XF86AudioMute         exec --no-startup-id pactl set-sink-mute    0 toggle
+bindsym XF86AudioMicMute      exec --no-startup-id pactl set-source-mute  1 toggle
 
 # Sreen brightness controls
-bindsym XF86MonBrightnessUp exec --no-startup-id xbacklight -inc 20 # increase screen brightness
-bindsym XF86MonBrightnessDown exec --no-startup-id xbacklight -dec 20 # decrease screen brightness
+bindsym XF86MonBrightnessUp   exec --no-startup-id light -A 5 # increase screen brightness by %
+bindsym XF86MonBrightnessDown exec --no-startup-id light -U 5 # decrease screen brightness by %
 
 # Media player controls
 bindsym XF86AudioPlay   exec --no-startup-id playerctl play-pause
@@ -180,7 +182,8 @@ bindsym XF86AudioPause  exec --no-startup-id playerctl play-pause
 bindsym XF86AudioNext   exec --no-startup-id playerctl next
 bindsym XF86AudioPrev   exec --no-startup-id playerctl previous
 
-exec --no-startup-id ibus-daemon -drx
+# exec --no-startup-id xrdb ~/.Xresources
+# exec --no-startup-id ibus-daemon -drx
 exec --no-startup-id /usr/bin/feh --bg-scale ~/Pictures/Wallpapers/AutumnNeuschwanstein_EN-CA10604288553_1920x1080.jpg
 exec --no-startup-id /usr/bin/compton -b -c -f
 
@@ -234,5 +237,5 @@ bar {
   }
 
   position top
-    status_command i3status
+    status_command i3blocks
 }

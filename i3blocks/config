@@ -1,0 +1,22 @@
+[weather]
+command=curl -Ss 'https://wttr.in?0&T&Q' | cut -c 16- | head -2 | xargs echo
+interval=3600
+color=#A4C2F4
+
+[volume]
+command=pamixer --get-volume
+interval=once
+signal=10
+
+[wifi]
+command=nmcli d|sed -n 2p|awk '{print $4}'
+interval=30
+
+[battery]
+command=acpi -b|sed -n 2p|awk '{print $4 $5}'
+interval=60
+
+# Update time every 5 seconds
+[time]
+command=date +%R
+interval=30
