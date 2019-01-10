@@ -25,16 +25,14 @@ sed -i.bak \
 
 # install terminus font
 pacman -S --noconfirm terminus-font
-echo "FONT=ter-m32n" >> /etc/vconsole.conf
 echo "KEYMAP=us" > /etc/vconsole.conf
+echo "FONT=ter-m32n" >> /etc/vconsole.conf
 
 # ready the kernel
 mkinitcpio -p linux
 pacman -S --noconfirm intel-ucode
 
-
 # change root password
-# echo $ROOT_PASSWORD | passwd
 echo root:$ROOT_PASSWORD | chpasswd
 
 # grub
@@ -58,15 +56,12 @@ useradd -m -G wheel -s /bin/bash $USER_NAME
 echo $USER_NAME:$USER_PASSWORD | chpasswd
 
 # install more software
-pacman -S --noconfirm tlp networkmanager
-# pacman -S --noconfirm xorg-server i3-gaps i3blocks i3lock rofi
-# pacman -S --noconfirm lightdm lightdm-gtk-greeter
+pacman -S --noconfirm git vim emacs tlp networkmanager
 
 # enable systemd daemons
-systemctl enable NetworkManager.service
+systemctl enable NetworkManager
 systemctl enable tlp tlp-sleep
-# systemctl enable fstrim.timer
-# systemctl enable lightdm.service
+systemctl enable fstrim.timer
 
 # exit chroot
 exit

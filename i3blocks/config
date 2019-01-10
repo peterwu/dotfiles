@@ -1,22 +1,41 @@
+# full_text=>>
+# align=center
+# color=#666666
+# separator=true
+# separator_block_width=7
+
+# [weather]
+# command=curl -Ss 'https://wttr.in?0&T&Q' | cut -c 16- | head -2 | xargs echo
+# interval=3600
+# color=#A4C2F4
+
+# [volume]
+# command=pamixer --get-volume
+# interval=once
+# signal=10
+
+# [wifi]
+# command=nmcli d|sed -n 2p|awk '{print $4}'
+# interval=30
+[daytime]
+command=date "+%a %R %Z"
+interval=5
+min_width=1366
+align=center
+
 [weather]
-command=curl -Ss 'https://wttr.in?0&T&Q' | cut -c 16- | head -2 | xargs echo
-interval=3600
-color=#A4C2F4
+command=~/.config/i3blocks/scripts/weather.sh
+interval=900
+
+[network]
+command=~/.config/i3blocks/scripts/network.sh
+interval=10
 
 [volume]
-command=pamixer --get-volume
-interval=once
-signal=10
-
-[wifi]
-command=nmcli d|sed -n 2p|awk '{print $4}'
-interval=30
+command=~/.config/i3blocks/scripts/volume.sh
+#signal=10
+interval=10
 
 [battery]
-command=acpi -b|sed -n 2p|awk '{print $4 $5}'
+command=~/.config/i3blocks/scripts/battery.sh
 interval=60
-
-# Update time every 5 seconds
-[time]
-command=date +%R
-interval=30
