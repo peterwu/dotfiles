@@ -41,15 +41,15 @@ arr=(
   [50n]=f773
 )
 
-ip_address=$(curl -s https://ifconfig.me)
-geoloc=$(curl -s https://ipinfo.io/$ip_address | jq -r '.loc')
+geoloc=$(curl -s https://ipinfo.io | jq -r '.loc,.city' | paste -sd, -)
 lat=$(echo $geoloc | cut -d ',' -f 1)
 lon=$(echo $geoloc | cut -d ',' -f 2)
+city=$(echo $geoloc | cut -d ',' -f 3)
 weather=$(curl -s "$openweathermapUrl?lat=$lat&lon=$lon&units=metric&appid=$key")
 icon=$(echo $weather | jq -r '.weather[0].icon')
 icon="\u"${arr[$icon]}
 temp=$(echo $weather | jq -r '.main.temp')
 
-echo -e "$icon $temp\u2103"
+echo -e "$city $icon $temp\u2103"
 
 exit 0
