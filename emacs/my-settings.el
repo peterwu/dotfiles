@@ -1,3 +1,4 @@
+;; variables
 (setq inhibit-startup-screen t
       inhibit-startup-echo-area-message t)
 (setq backup-inhibited t
@@ -10,9 +11,13 @@
       auto-window-vscroll nil)
 (setq vc-follow-symlinks nil)
 (setq delete-by-moving-to-trash t)
-(fset 'yes-or-no-p 'y-or-n-p)
 (setq default-input-method "chinese-py")
+(setq display-line-numbers-type 'relative)
 
+;; functions
+(fset 'yes-or-no-p 'y-or-n-p)
+
+;; modes
 (column-number-mode t)
 (global-hl-line-mode t)
 (electric-pair-mode t)
@@ -21,7 +26,6 @@
 (show-paren-mode t)
 (size-indication-mode t)
 (global-display-line-numbers-mode t)
-(setq display-line-numbers-type 'relative)
 (menu-bar-mode -1)
 (scroll-bar-mode -1)
 (tool-bar-mode -1)

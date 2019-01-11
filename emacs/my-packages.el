@@ -45,6 +45,12 @@
   :config  
   (global-evil-surround-mode t))
 
+(use-package evil-goggles
+  :config  
+  (setq evil-goggles-pulse t)
+  (setq evil-goggles-duration 1.000)
+  (evil-goggles-mode))
+
 (use-package evil-matchit
   :config  
   (global-evil-matchit-mode t))
