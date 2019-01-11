@@ -1,40 +1,24 @@
-# full_text=.
-align=center
-# color=#666666
-separator=true
-separator_block_width=7
-
 [weather]
-command=~/.config/i3blocks/scripts/weather.sh
+command=~/.config/i3blocks/blocklets/weather.sh
 interval=900
 
-[separator]
-
 [network]
-command=~/.config/i3blocks/scripts/network.sh
+command=~/.config/i3blocks/blocklets/network.sh
 interval=10
 
-[separator]
-
 [microphone]
-command=~/.config/i3blocks/scripts/microphone.sh
+command=~/.config/i3blocks/blocklets/microphone.sh
 signal=11
 interval=once
 
-[separator]
-
 [volume]
-command=~/.config/i3blocks/scripts/volume.sh
+command=~/.config/i3blocks/blocklets/volume.sh
 signal=10
 interval=once
 
-[separator]
-
 [battery]
-command=~/.config/i3blocks/scripts/battery.sh
+command=~/.config/i3blocks/blocklets/battery.sh
 interval=5
-
-[separator]
 
 [daytime]
 command=date "+%a %R %Z"
