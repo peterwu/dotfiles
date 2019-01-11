@@ -5,7 +5,6 @@
 # api.openweathermap.org/data/2.5/weather?lat=35&lon=139
 key=94f7172e9d0fd1e0c9756a48fa9c9477
 openweathermapUrl=https://api.openweathermap.org/data/2.5/weather
-openweathermapIconUrl=http://openweathermap.org/img/w/
 
 # {"coord":{"lon":139,"lat":35},
 # "sys":{"country":"JP","sunrise":1369769524,"sunset":1369821049},
@@ -46,13 +45,11 @@ ip_address=$(curl -s https://ifconfig.me)
 geoloc=$(curl -s https://ipinfo.io/$ip_address | jq -r '.loc')
 lat=$(echo $geoloc | cut -d ',' -f 1)
 lon=$(echo $geoloc | cut -d ',' -f 2)
-weather=$(curl -s $openweathermapUrl?lat=$lat&lon=$lon&units=metric&appid=$key)
+weather=$(curl -s "$openweathermapUrl?lat=$lat&lon=$lon&units=metric&appid=$key")
 icon=$(echo $weather | jq -r '.weather[0].icon')
-icon=${arr[$icon]}
+icon="\u"${arr[$icon]}
 temp=$(echo $weather | jq -r '.main.temp')
 
 echo -e "$icon $temp\u2103"
 
 exit 0
-
-

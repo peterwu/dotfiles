@@ -166,11 +166,14 @@ bindsym $mod+r mode "resize"
 
 # audio soft keys
 bindsym XF86AudioRaiseVolume  exec --no-startup-id pactl set-sink-volume  0 +5%
-bindsym --release XF86AudioRaiseVolume  exec --no-startup-id pkill -SIGRTMIN+10 i3blocks
 bindsym XF86AudioLowerVolume  exec --no-startup-id pactl set-sink-volume  0 -5%
-bindsym --release XF86AudioLowerVolume  exec --no-startup-id pkill -SIGRTMIN+10 i3blocks
 bindsym XF86AudioMute         exec --no-startup-id pactl set-sink-mute    0 toggle
 bindsym XF86AudioMicMute      exec --no-startup-id pactl set-source-mute  1 toggle
+
+bindsym --release XF86AudioRaiseVolume  exec --no-startup-id pkill -SIGRTMIN+10 i3blocks
+bindsym --release XF86AudioLowerVolume  exec --no-startup-id pkill -SIGRTMIN+10 i3blocks
+bindsym --release XF86AudioMute         exec --no-startup-id pkill -SIGRTMIN+10 i3blocks
+bindsym --release XF86AudioMicMute      exec --no-startup-id pkill -SIGRTMIN+11 i3blocks
 
 # Sreen brightness controls
 bindsym XF86MonBrightnessUp   exec --no-startup-id light -A 5 # increase screen brightness by %
@@ -184,7 +187,7 @@ bindsym XF86AudioPrev   exec --no-startup-id playerctl previous
 
 # exec --no-startup-id xrdb ~/.Xresources
 # exec --no-startup-id ibus-daemon -drx
-exec --no-startup-id /usr/bin/feh --bg-scale ~/Pictures/Wallpapers/AutumnNeuschwanstein_EN-CA10604288553_1920x1080.jpg
+exec --no-startup-id /usr/bin/feh --bg-scale ~/Pictures/Wallpapers/wallpaper
 exec --no-startup-id /usr/bin/compton -b -c -f
 
 exec --no-startup-id /usr/bin/kitty
@@ -225,6 +228,8 @@ client.placeholder          $bg     $bg         $bg     $bg
 # finds out, if available)
 bar {
   font pango:Roboto, Awesome 10
+  # separator_symbol "|"
+
   colors {
     statusline          $fg
     background          $bg

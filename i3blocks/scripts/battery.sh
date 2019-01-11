@@ -2,13 +2,7 @@
 
 threshold=5
 
-# loop all the batteries installed in the system
-for battery in /sys/class/power_supply/BAT?; do
-    present=$(cat $battery/present)
-    if [[ $present -eq 1 ]]; then
-        capacity=$(cat $battery/capacity)
-    fi
-done
+capacity=$(cat /sys/class/power_supply/BAT0/capacity)
 
 if [[ $capacity -gt 75 ]]; then
     icon="\uf240"
@@ -22,7 +16,13 @@ else
     icon="\uf244"
 fi
 
-echo -e "$icon $capacity"
+status=$(cat /sys/class/power_supply/BAT0/status)
+if [[ $status == "Charging" ]]; then
+  icon="\uf1e6"
+fi
+
+echo -e "$icon"
+# echo -e "$icon $capacity"
 
 
 if [[ $capacity -ge $threshold ]]; then

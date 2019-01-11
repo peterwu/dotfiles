@@ -1,41 +1,42 @@
-# full_text=>>
-# align=center
-# color=#666666
-# separator=true
-# separator_block_width=7
-
-# [weather]
-# command=curl -Ss 'https://wttr.in?0&T&Q' | cut -c 16- | head -2 | xargs echo
-# interval=3600
-# color=#A4C2F4
-
-# [volume]
-# command=pamixer --get-volume
-# interval=once
-# signal=10
-
-# [wifi]
-# command=nmcli d|sed -n 2p|awk '{print $4}'
-# interval=30
-[daytime]
-command=date "+%a %R %Z"
-interval=5
-min_width=1366
+# full_text=.
 align=center
+# color=#666666
+separator=true
+separator_block_width=7
 
 [weather]
 command=~/.config/i3blocks/scripts/weather.sh
 interval=900
 
+[separator]
+
 [network]
 command=~/.config/i3blocks/scripts/network.sh
 interval=10
 
+[separator]
+
+[microphone]
+command=~/.config/i3blocks/scripts/microphone.sh
+signal=11
+interval=once
+
+[separator]
+
 [volume]
 command=~/.config/i3blocks/scripts/volume.sh
-#signal=10
-interval=10
+signal=10
+interval=once
+
+[separator]
 
 [battery]
 command=~/.config/i3blocks/scripts/battery.sh
-interval=60
+interval=5
+
+[separator]
+
+[daytime]
+command=date "+%a %R %Z"
+# command=date "+%a %R %Z"; [[ -z "${BLOCK_BUTTON}" ]] || firefox
+interval=5
