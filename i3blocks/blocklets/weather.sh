@@ -49,6 +49,7 @@ weather=$(curl -s "$openweathermapUrl?lat=$lat&lon=$lon&units=metric&appid=$key"
 icon=$(echo $weather | jq -r '.weather[0].icon')
 icon="\u"${arr[$icon]}
 temp=$(echo $weather | jq -r '.main.temp')
+temp=${temp%.*}
 
 echo -e "$city $icon $temp\u2103"
 

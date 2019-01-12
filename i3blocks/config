@@ -1,6 +1,16 @@
+full_text=.
+
+[daytime]
+command=~/.config/i3blocks/blocklets/daytime.sh
+interval=5
+align=center
+format=json
+
 [weather]
 command=~/.config/i3blocks/blocklets/weather.sh
 interval=900
+
+[separator]
 
 [network]
 command=~/.config/i3blocks/blocklets/network.sh
@@ -20,7 +30,20 @@ interval=once
 command=~/.config/i3blocks/blocklets/battery.sh
 interval=5
 
-[daytime]
-command=date "+%a %R %Z"
-# command=date "+%a %R %Z"; [[ -z "${BLOCK_BUTTON}" ]] || firefox
-interval=5
+[separator]
+
+[lock]
+command=echo -e "\uf023"; [[ -z "${BLOCK_BUTTON}" ]] || i3lock
+interval=once
+
+[logout]
+command=echo -e "\uf2f5"; [[ -z "${BLOCK_BUTTON}" ]] || i3-msg exit
+interval=once
+
+[reboot]
+command=echo -e "\uf01e"; [[ -z "${BLOCK_BUTTON}" ]] || systemctl reboot
+interval=once
+
+[shutdown]
+command=echo -e "\uf011"; [[ -z "${BLOCK_BUTTON}" ]] || systemctl poweroff
+interval=once
