@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 networks=$(nmcli -t d | awk -F: '{if ($3=="connected" && ($2=="ethernet" || $2=="wifi")) print $2}')
 

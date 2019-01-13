@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 threshold=5
 
@@ -21,8 +21,8 @@ if [[ $status == "Charging" ]]; then
   icon="\uf1e6"
 fi
 
-echo -e "$icon"
-# echo -e "$icon $capacity"
+# echo -e "$icon"
+echo -e "$icon $capacity"
 
 
 if [[ $capacity -ge $threshold ]]; then

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 mute=$(pamixer --source 1 --get-mute)
 

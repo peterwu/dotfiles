@@ -1,11 +1,4 @@
-full_text=.
-
-[daytime]
-command=~/.config/i3blocks/blocklets/daytime.sh
-interval=5
-align=center
-format=json
-
+# full_text=.
 [weather]
 command=~/.config/i3blocks/blocklets/weather.sh
 interval=900
@@ -33,7 +26,7 @@ interval=5
 [separator]
 
 [lock]
-command=echo -e "\uf023"; [[ -z "${BLOCK_BUTTON}" ]] || i3lock
+command=echo -e "\uf023"; [[ -z "${BLOCK_BUTTON}" ]] || /usr/local/bin/lockscreen.sh
 interval=once
 
 [logout]
@@ -47,3 +40,7 @@ interval=once
 [shutdown]
 command=echo -e "\uf011"; [[ -z "${BLOCK_BUTTON}" ]] || systemctl poweroff
 interval=once
+
+[daytime]
+command=date "+%a %R %Z"
+interval=5

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 volume=$(pamixer --sink 0 --get-volume)
 mute=$(pamixer --sink 0 --get-mute)

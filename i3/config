@@ -88,8 +88,8 @@ bindsym $mod+a focus parent
 # We use variables to avoid repeating the names in multiple places.
 set $ws1 "1:&#xf120;"
 set $ws2 "2:&#xf268;"
-set $ws3 "3:&#xf0e0;"
-set $ws4 "4:&#xf044;"
+set $ws3 "3:&#xf044;"
+set $ws4 "4:&#xf0e0;"
 set $ws5 "5:&#xf121;"
 set $ws6 "6:&#xf26c;"
 set $ws7 "7:&#xf7b6;"
@@ -129,13 +129,13 @@ bindsym $mod+Shift+r restart
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
 bindsym $mod+Shift+x exec i3-msg exit
 # lock screen
-bindsym $mod+Shift+l exec i3lock
+bindsym $mod+Shift+l exec /usr/local/bin/lockscreen.sh
 
 # open some apps on specified workspaces
 assign [class="^kitty$"] → $ws1
 assign [class="^Google-chrome$"] → $ws2
-assign [class="^Thunderbird$"] → $ws3
-assign [class="^Emacs$"] → $ws4
+assign [class="^Emacs$"] → $ws3
+assign [class="^Thunderbird$"] → $ws4
 assign [class="^Code - Insiders$"] → $ws5
 assign [class="^VirtualBox Manager$"] → $ws6
 assign [class="^vlc$"] → $ws7
@@ -192,18 +192,19 @@ bindsym XF86AudioPrev   exec --no-startup-id playerctl previous
 # exec --no-startup-id ibus-daemon -drx
 exec --no-startup-id /usr/bin/feh --bg-scale ~/Pictures/Wallpapers/wallpaper
 exec --no-startup-id /usr/bin/compton -b -c -f
+exec --no-startup-id /usr/bin/xautolock -detectsleep \
+  -time 5 -locker "/usr/local/bin/lockscreen.sh" \
+  -notify 30 \
+  -notifier "notify-send -u critical -t 10000 -- 'LOCKING screen in 30 seconds'"
 
 exec --no-startup-id /usr/bin/kitty
 # exec --no-startup-id /usr/bin/google-chrome-stable
 # exec --no-startup-id /usr/bin/thunderbird
 
-
+# no borders!
 default_border none
-smart_borders on
-# gaps inner 1
-# gaps outer 1
 
-
+# Dracula color definitions
 set $bgb            #282a36
 set $bg             #282a36AA
 set $fg             #f8f8f2
@@ -235,10 +236,11 @@ bar {
   position top
   # separator_symbol "|"
   workspace_buttons yes
-  strip_workspace_numbers yes
+  # strip_workspace_numbers yes
   binding_mode_indicator yes
   tray_output none
   tray_padding 0
+  height 36
 
   colors {
     statusline          $fg
