@@ -8,7 +8,7 @@
     ("55a278ec879fc4f06c04cc4fffe2e3c6b8f7c1ceb3178b17988655359bbbc18e" default)))
  '(package-selected-packages
    (quote
-    (evil-goggles yaml-mode powerline use-package vue-mode evil-magit magit evil-collection evil-quickscope evil-matchit evil-commentary evil-surround evil nov dracula-theme))))
+    (treemacs-projectile treemacs-icons-dired treemacs-evil treemacs evil-goggles yaml-mode powerline use-package vue-mode evil-magit magit evil-collection evil-quickscope evil-matchit evil-commentary evil-surround evil nov dracula-theme))))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

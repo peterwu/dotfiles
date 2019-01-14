@@ -7,7 +7,7 @@
       auto-save-list-file-prefix nil)
 (setq scroll-step 1
       scroll-margin 2
-      scroll-conservatively 9999
+      scroll-conservatively 10000
       auto-window-vscroll nil)
 (setq vc-follow-symlinks nil)
 (setq delete-by-moving-to-trash t)
@@ -18,6 +18,7 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 
 ;; modes
+(global-visual-line-mode t)
 (column-number-mode t)
 (global-hl-line-mode t)
 (electric-pair-mode t)
@@ -38,6 +39,9 @@
 		    :weight 'normal
 		    :height 120
 		    :width 'normal)
+
+;; (set-face-background 'line-number (color-darken-name (face-attribute 'default :background) 2))
+(set-face-foreground 'line-number-current-line "#F1FA8C")
 
 ;; key bindings
 (global-set-key [f1] 'eshell)
