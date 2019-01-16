@@ -88,12 +88,16 @@
   :mode "\\.vue\\'")
 
 (use-package org
+  :init
+  (setq org-support-shift-select t)
   :config
   (global-set-key (kbd "C-c l") 'org-store-link)
   (global-set-key (kbd "C-c a") 'org-agenda)
   (global-set-key (kbd "C-c c") 'org-capture))
 
-(use-package org-evil)
+(use-package org-bullets
+  :config
+  (add-hook 'org-mode-hook 'org-bullets-mode))
 
 (use-package projectile
   :init
@@ -171,3 +175,18 @@
 (use-package treemacs-icons-dired
   :after treemacs dired
   :config (treemacs-icons-dired-mode))
+
+(use-package gnus
+  :defer t
+  :init
+  (setq read-mail-command 'gnus)
+  (setq user-mail-address "peterwu@hotmail.com"
+	user-full-name "Peter Wu")
+  (setq mm-text-html-render 'gnus-w3m)
+  (setq gnus-select-method
+	'(nnimap "hotmail"
+		 (nnimap-address "imap-mail.outlook.com")
+		 (nnimap-server-port 993)
+		 (nnimap-stream ssl)))
+  (setq smtpmail-smtp-server "smtp-mail.outlook.com"
+	smtpmail-smtp-service 587))

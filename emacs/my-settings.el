@@ -32,7 +32,7 @@
 (tool-bar-mode -1)
 
 ;; set default font
-(set-face-attribute 'default t
+(set-face-attribute 'default nil
 		    :family "Fira Code Retina"
 		    :foundry "outline"
 		    :slant 'normal
@@ -40,8 +40,11 @@
 		    :height 120
 		    :width 'normal)
 
-;; (set-face-background 'line-number (color-darken-name (face-attribute 'default :background) 2))
-(set-face-foreground 'line-number-current-line "#F1FA8C")
+;; highlight the current line number
+(set-face-attribute 'line-number-current-line nil
+		    :foreground "#F1FA8C"
+		    :weight 'bold
+		    :box t)
 
 ;; key bindings
 (global-set-key [f1] 'eshell)
