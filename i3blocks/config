@@ -1,4 +1,6 @@
 # full_text=.
+align=center
+
 [weather]
 command=~/.config/i3blocks/blocklets/weather.sh
 interval=900
@@ -8,39 +10,48 @@ interval=900
 [network]
 command=~/.config/i3blocks/blocklets/network.sh
 interval=10
+min_width=32
 
 [microphone]
 command=~/.config/i3blocks/blocklets/microphone.sh
 signal=11
 interval=once
+min_width=32
 
 [volume]
 command=~/.config/i3blocks/blocklets/volume.sh
 signal=10
 interval=once
+min_width=32
 
 [battery]
 command=~/.config/i3blocks/blocklets/battery.sh
 interval=5
+min_width=76
 
 [separator]
 
 [lock]
-command=echo -e "\uf023"; [[ -z "${BLOCK_BUTTON}" ]] || /usr/local/bin/lockscreen.sh
+command=echo -e "\uf023"; [[ -z ${BLOCK_BUTTON} ]] || ~/.config/i3blocks/blocklets/system.sh "lock"
 interval=once
+min_width=0
 
 [logout]
-command=echo -e "\uf2f5"; [[ -z "${BLOCK_BUTTON}" ]] || i3-msg exit
+command=echo -e "\uf2f5"; [[ -z ${BLOCK_BUTTON} ]] || ~/.config/i3blocks/blocklets/system.sh "logout"
 interval=once
+min_width=0
 
 [reboot]
-command=echo -e "\uf01e"; [[ -z "${BLOCK_BUTTON}" ]] || systemctl reboot
+command=echo -e "\uf01e"; [[ -z ${BLOCK_BUTTON} ]] || ~/.config/i3blocks/blocklets/system.sh "reboot"
 interval=once
+min_width=0
 
 [shutdown]
-command=echo -e "\uf011"; [[ -z "${BLOCK_BUTTON}" ]] || systemctl poweroff
+command=echo -e "\uf011"; [[ -z ${BLOCK_BUTTON} ]] || ~/.config/i3blocks/blocklets/system.sh "shutdown"
 interval=once
+min_width=0
 
-[daytime]
-command=date "+%a %R %Z"
+[date]
+command=~/.config/i3blocks/blocklets/date.sh
 interval=5
+min_width=0

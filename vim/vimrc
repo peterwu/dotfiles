@@ -2,7 +2,6 @@ set nocompatible encoding=utf-8 fileencoding=utf-8 nrformats-=octal
 filetype plugin indent on 
 
 set number relativenumber cursorline showcmd wildmenu lazyredraw showmatch ruler hidden
-set guioptions-=T guioptions-=m guioptions-=L guioptions-=r 
 set autoindent smartindent smarttab expandtab tabstop=2 shiftwidth=2 softtabstop=2
 set smartcase incsearch hlsearch ignorecase shortmess+=I
 set mouse=a
@@ -20,7 +19,7 @@ set background=dark
 colorscheme dracula
 
 let g:airline_theme='dracula'
-" let g:airline_powerline_fonts = 1
+let g:airline_powerline_fonts = 1
 let g:airline_extensions = ['branch', 'tabline', 'ale']
 let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
 

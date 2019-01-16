@@ -5,6 +5,10 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
+export HISTTIMEFORMAT="%Y/%m/%d %T "
+export HISTSIZE=10000
+export HISTFILESIZE=10000
+
 alias ls='ls --color=auto'
 alias ll="ls -al"
 alias emacs='emacsclient -t -a emacs'

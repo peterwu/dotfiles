@@ -3,3 +3,5 @@ if has('win32') "Windows
 else
   set guifont=Fira\ Code\ Retina\ 12
 endif
+
+set guioptions-=T guioptions-=m guioptions-=L guioptions-=r guioptions-=e
