@@ -53,6 +53,8 @@ My Emacs Init Settings
   :config
   (powerline-default-theme))
 #+END_SRC
+** popup-kill-ring
+** hungry-delete
 ** Evil and its related packages
 Simulate a Vim modal editing experience
 #+BEGIN_SRC emacs-lisp
@@ -89,31 +91,46 @@ Simulate a Vim modal editing experience
     :config
     (global-evil-quickscope-mode t))
 #+END_SRC
+** ranger
+#+BEGIN_SRC emacs-lisp
+(use-package ranger)
+#+END_SRC
 ** Magit for Git
 #+BEGIN_SRC emacs-lisp
 (use-package magit
   :config
   (global-set-key (kbd "C-x g") 'magit-status))
 #+END_SRC
-** Ido
+** diminish
 #+BEGIN_SRC emacs-lisp
-(use-package ido
-  :init
-  (setq ido-save-directory-list-file (expand-file-name "cache/ido.last" user-emacs-directory))
-  :bind ("C-x C-b" . ibuffer)
-  :config
-  (setq ido-enable-flex-matching t
-	ido-create-new-buffer t
-	ido-everywhere t)
-  (ido-mode t))
+  (use-package diminish)
 #+END_SRC
-*** Ido-vertical
+** Ivy
 #+BEGIN_SRC emacs-lisp
-  (use-package ido-vertical-mode
-    :after ido
+  (use-package ivy
+    :bind (("C-c C-r" . ivy-resume)
+	   ("<f6>" . ivy-resume))
+    :diminish ivy-mode
     :config
-    (ido-vertical-mode 1)
-    (setq ido-vertical-define-keys 'C-n-C-p-up-down-left-right))
+    (ivy-mode 1)
+    (setq ivy-use-virtual-buffers t)
+    (setq enable-recursive-minibuffers t))
+#+END_SRC
+** swiper
+   #+BEGIN_SRC emacs-lisp
+     (use-package swiper
+       :bind ("C-s" . swiper))
+   #+END_SRC
+** counsel
+#+BEGIN_SRC emacs-lisp
+  (use-package counsel
+    :bind
+    (("M-x" . counsel-M-x)
+     ("C-x C-f" . counsel-find-file)
+     ("C-h f" . counsel-describe-function)
+     ("C-h v" . counsel-describe-variable)
+     ("C-h l" . counsel-find-library)
+     )) 
 #+END_SRC
 ** Smex
 #+BEGIN_SRC emacs-lisp
@@ -126,11 +143,6 @@ Simulate a Vim modal editing experience
     ("M-X" . smex-major-mode-commands)
     ("C-c C-c M-x" . execute-extended-command)))
 #+END_SRC
-** Avy
-#+BEGIN_SRC emacs-lisp
-  (use-package avy
-    :bind ("M-s" . avy-goto-char))
-#+END_SRC
 ** sudo-edit
 #+BEGIN_SRC emacs-lisp
   (use-package sudo-edit
@@ -139,8 +151,8 @@ Simulate a Vim modal editing experience
 ** raindow
 #+BEGIN_SRC emacs-lisp
   (use-package rainbow-mode
-      :config
-      (rainbow-mode 1))
+    :diminish rainbow-mode
+    :hook prog-mode)
 #+END_SRC
 #+BEGIN_SRC emacs-lisp
   (use-package rainbow-delimiters
@@ -154,7 +166,7 @@ Simulate a Vim modal editing experience
      (setq recentf-save-file (expand-file-name "cache/recentf" user-emacs-directory))
      :config
      (dashboard-setup-startup-hook)
-     (setq dashboard-items '((recents . 3)
+     (setq dashboard-items '((recents . 8)
 			     (projects . 3)
 			     (agenda . 3)
 			     (bookmarks . 3)
@@ -166,9 +178,9 @@ Simulate a Vim modal editing experience
 =======
 ** Read PDF files 
 #+BEGIN_SRC emacs-lisp
-(use-package pdf-tools
-  :config
-  (pdf-tools-install))
+  (use-package pdf-tools
+    :config
+    (pdf-tools-install))
 #+END_SRC
 ** Edit YAML files
 #+BEGIN_SRC emacs-lisp
@@ -318,28 +330,38 @@ Simulate a Vim modal editing experience
 #+END_SRC
 ** Company for auto completion
 #+BEGIN_SRC emacs-lisp
-(use-package company
-  :config
-  (global-company-mode t))
+  (use-package company
+    :diminish company-mode
+    :config
+    (setq company-idle-delay 0
+	  company-minimum-prefix-length 3)
+    (global-company-mode t))
 #+END_SRC
+** yasnippets
+ #+BEGIN_SRC emacs-lisp
+      (use-package yasnippet
+	:config
+	(use-package yasnippet-snippets)
+	(yas-global-mode 1))
+ #+END_SRC
 * Personal Settings
 ** Variables  
 #+BEGIN_SRC emacs-lisp
-(setq inhibit-startup-screen t
-inhibit-startup-echo-area-message t)
-(setq backup-inhibited t
-    make-backup-files nil
-    auto-save-default nil
-    auto-save-list-file-prefix nil)
-(setq scroll-step 1
-    scroll-margin 2
-    scroll-conservatively 10000
-    auto-window-vscroll nil)
-(setq vc-follow-symlinks nil)
-(setq delete-by-moving-to-trash t)
-(setq default-input-method "chinese-py")
-(setq display-line-numbers-type 'relative)
-(setq display-time-24hr-format t)
+  (setq inhibit-startup-screen t
+	inhibit-startup-echo-area-message t)
+  (setq backup-inhibited t
+	make-backup-files nil
+	auto-save-default nil
+	auto-save-list-file-prefix nil)
+  (setq scroll-step 1
+	scroll-margin 2
+	scroll-conservatively 10000
+	auto-window-vscroll nil)
+  (setq vc-follow-symlinks nil)
+  (setq delete-by-moving-to-trash t)
+  (setq default-input-method "chinese-py")
+  (setq display-line-numbers-type 'relative)
+  (setq display-time-24hr-format t)
 #+END_SRC
 ** Functions 
 #+BEGIN_SRC emacs-lisp
@@ -382,4 +404,5 @@ inhibit-startup-echo-area-message t)
 ** Key bindings
 #+BEGIN_SRC emacs-lisp
 (global-set-key [f1] 'eshell)
+(global-set-key (kbd "C-x C-b") 'ibuffer)
 #+END_SRC
