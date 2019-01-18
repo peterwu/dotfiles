@@ -4,33 +4,29 @@ My Emacs Init Settings
 
 * System Customization
 Keep customizations made through the M-x customize function into its own file.
-
 #+BEGIN_SRC emacs-lisp
   (setq custom-file (locate-user-emacs-file "custom.el"))
   (load custom-file)
 #+END_SRC
-
 * Package Management 
   This section documents what packages that have been installed and configured.
 
-** add melpa to the package archives list
+** add melpa repo
 #+BEGIN_SRC emacs-lisp
-(require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(package-initialize)
+  (require 'package)
+  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+  (package-initialize)
 #+END_SRC
-
-** use-package
-*** Make sure *use-package* package has been installed. If not, install it.
+** install *use-package* if not
 #+BEGIN_SRC emacs-lisp
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-(eval-when-compile
-  (require 'use-package))
-(setq use-package-always-ensure t)
+  (unless (package-installed-p 'use-package)
+    (package-refresh-contents)
+    (package-install 'use-package))
+  (eval-when-compile
+    (require 'use-package))
+  (setq use-package-always-ensure t)
 #+END_SRC
-*** Keep installed packages up to date automatically
+** Keep installed packages up to date automatically
 #+BEGIN_SRC emacs-lisp
 (use-package auto-package-update
   :init
@@ -40,84 +36,147 @@ Keep customizations made through the M-x customize function into its own file.
   (setq auto-package-update-hide-results t)
   (auto-package-update-maybe))
 #+END_SRC 
-*** Set the theme to Dracula
+** Install which-key
 #+BEGIN_SRC emacs-lisp
-(use-package dracula-theme
-  :config
-  (load-theme 'dracula t))
+  (use-package which-key
+    :init
+    (which-key-mode))
 #+END_SRC
-
-*** Powerline theme 
+** Dracula theme 
+#+BEGIN_SRC emacs-lisp
+  (use-package dracula-theme
+    :config
+    (load-theme 'dracula t))
+#+END_SRC
+** Powerline theme 
 #+BEGIN_SRC emacs-lisp
 (use-package powerline
   :config
   (powerline-default-theme))
 #+END_SRC
 
-*** Evil and its related packages
+** Evil and its related packages
 Simulate a Vim modal editing experience
 #+BEGIN_SRC emacs-lisp
-(use-package evil
-  :init
-  (setq evil-want-integration t)
-  (setq evil-want-keybinding nil)
-  :config
-  (evil-mode t))
+  (use-package evil
+    :init
+    (setq evil-want-integration t)
+    (setq evil-want-keybinding nil)
+    :config
+    (evil-mode t))
 
-(use-package evil-collection
-  :after evil
-  :config
-  (evil-collection-init))
+  (use-package evil-collection
+    :after evil
+    :config
+    (evil-collection-init))
 
-(use-package evil-commentary
-  :config
-  (evil-commentary-mode t))
+  (use-package evil-commentary
+    :config
+    (evil-commentary-mode t))
 
-(use-package evil-surround
-  :config  
-  (global-evil-surround-mode t))
+  (use-package evil-surround
+    :config  
+    (global-evil-surround-mode t))
 
-(use-package evil-goggles
-  :config  
-  (setq evil-goggles-pulse t)
-  (setq evil-goggles-duration 1.000)
-  (evil-goggles-mode))
+  (use-package evil-goggles
+    :config  
+    (setq evil-goggles-pulse t)
+    (evil-goggles-mode))
 
-(use-package evil-matchit
-  :config  
-  (global-evil-matchit-mode t))
+  (use-package evil-matchit
+    :config  
+    (global-evil-matchit-mode t))
 
-(use-package evil-quickscope
-  :config
-  (global-evil-quickscope-mode t))
+  (use-package evil-quickscope
+    :config
+    (global-evil-quickscope-mode t))
 #+END_SRC
-*** Magit for Git
+** Magit for Git
 #+BEGIN_SRC emacs-lisp
 (use-package magit
   :config
   (global-set-key (kbd "C-x g") 'magit-status))
 #+END_SRC
-*** Ido
+** Ido
 #+BEGIN_SRC emacs-lisp
 (use-package ido
   :init
   (setq ido-save-directory-list-file (expand-file-name "cache/ido.last" user-emacs-directory))
+  :bind ("C-x C-b" . ibuffer)
   :config
-  (setq ido-enable-flex-matching t)
-  (setq ido-everywhere t)
+  (setq ido-enable-flex-matching t
+	ido-create-new-buffer t
+	ido-everywhere t)
   (ido-mode t))
 #+END_SRC
-*** Read PDF files 
+
+*** Ido-vertical
+#+BEGIN_SRC emacs-lisp
+  (use-package ido-vertical-mode
+    :after ido
+    :config
+    (ido-vertical-mode 1)
+    (setq ido-vertical-define-keys 'C-n-C-p-up-down-left-right))
+#+END_SRC
+** Smex
+#+BEGIN_SRC emacs-lisp
+  (use-package smex
+    :init
+    (smex-initialize)
+    (setq smex-save-file (expand-file-name "cache/smex-items" user-emacs-directory))
+    :bind
+    (("M-x" . smex)
+    ("M-X" . smex-major-mode-commands)
+    ("C-c C-c M-x" . execute-extended-command)))
+#+END_SRC
+** Avy
+#+BEGIN_SRC emacs-lisp
+  (use-package avy
+    :bind ("M-s" . avy-goto-char))
+#+END_SRC
+** sudo-edit
+#+BEGIN_SRC emacs-lisp
+  (use-package sudo-edit
+  :bind ("s-e" . sudo-edit))
+#+END_SRC
+** raindow
+#+BEGIN_SRC emacs-lisp
+  (use-package rainbow-mode
+      :config
+      (rainbow-mode 1))
+#+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package rainbow-delimiters
+    :config
+    (rainbow-delimiters-mode 1))
+#+END_SRC
+** dashboard
+#+BEGIN_SRC emacs-lisp
+   (use-package dashboard
+     :init
+     (setq recentf-save-file (expand-file-name "cache/recentf" user-emacs-directory))
+     :config
+     (dashboard-setup-startup-hook)
+     (setq dashboard-items '((recents . 3)
+			     (projects . 3)
+			     (agenda . 3)
+			     (bookmarks . 3)
+			     (registers . 3)))
+     (add-hook 'dashboard-mode-hook (lambda ()
+			     (display-line-numbers-mode -1)))
+     (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*"))))
+#+END_SRC
+** Read PDF files 
 #+BEGIN_SRC emacs-lisp
 (use-package pdf-tools
   :config
   (pdf-tools-install))
 #+END_SRC
-*** Edit YAML files
+** Edit YAML files
 #+BEGIN_SRC emacs-lisp
 (use-package yaml-mode)
 #+END_SRC
-*** Read ePub files
+** Read ePub files
 #+BEGIN_SRC emacs-lisp
 (use-package nov 
   :mode ("\\.epub\\'" . nov-mode)
@@ -128,30 +187,35 @@ Simulate a Vim modal editing experience
 			     (face-remap-add-relative 'default :height 1.2)
 			     (display-line-numbers-mode -1))))
 #+END_SRC
-*** Edit Vuejs files
+** Edit Vuejs files
 #+BEGIN_SRC emacs-lisp
 (use-package vue-mode
   :mode "\\.vue\\'")
 #+END_SRC
-*** Org mode
+** Org mode
 #+BEGIN_SRC emacs-lisp
-(use-package org
-  :init
-  (setq org-support-shift-select t)
-  :config
-  (global-set-key (kbd "C-c l") 'org-store-link)
-  (global-set-key (kbd "C-c a") 'org-agenda)
-  (global-set-key (kbd "C-c c") 'org-capture)
-  (global-set-key (kbd "C-c b") 'org-switchb)
-  (setq org-agenda-files (list "~/Documents/Org/agenda")))
+  (use-package org
+    :init
+    (setq org-support-shift-select t)
+    :config
+    (global-set-key (kbd "C-c l") 'org-store-link)
+    (global-set-key (kbd "C-c a") 'org-agenda)
+    (global-set-key (kbd "C-c c") 'org-capture)
+    (global-set-key (kbd "C-c b") 'org-switchb)
+    (setq org-agenda-files (list "~/Documents/agendas")))
 #+END_SRC
-**** Org-bullets
+*** Org-bullets
 #+BEGIN_SRC emacs-lisp
 (use-package org-bullets
   :config
   (add-hook 'org-mode-hook 'org-bullets-mode))
 #+END_SRC
-*** Project Management
+*** org-templates
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'org-structure-template-alist
+	       '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))
+#+END_SRC
+** Project Management
 #+BEGIN_SRC emacs-lisp
 (use-package projectile
   :init
@@ -164,7 +228,7 @@ Simulate a Vim modal editing experience
   (add-to-list 'projectile-globally-ignored-directories "node_modules")
   (setq projectile-completion-system 'ido))
 #+END_SRC
-*** Treemacs
+** Treemacs
 #+BEGIN_SRC emacs-lisp
 (use-package treemacs
   :defer t
@@ -225,18 +289,18 @@ Simulate a Vim modal editing experience
 	("C-x t C-t" . treemacs-find-file)
 	("C-x t M-t" . treemacs-find-tag)))
 #+END_SRC
-**** Projectile integration
+*** Projectile integration
 #+BEGIN_SRC emacs-lisp
 (use-package treemacs-projectile
   :after treemacs projectile)
 #+END_SRC
-**** Use pretty icons
+*** Use pretty icons
 #+BEGIN_SRC emacs-lisp
 (use-package treemacs-icons-dired
   :after treemacs dired
   :config (treemacs-icons-dired-mode))
 #+END_SRC
-*** Gnus for Emails
+** Gnus for Emails
 #+BEGIN_SRC emacs-lisp
 (use-package gnus
   :defer t
@@ -253,7 +317,7 @@ Simulate a Vim modal editing experience
   (setq smtpmail-smtp-server "smtp-mail.outlook.com"
 	smtpmail-smtp-service 587))
 #+END_SRC
-*** Company for auto completion
+** Company for auto completion
 #+BEGIN_SRC emacs-lisp
 (use-package company
   :config
@@ -276,6 +340,7 @@ inhibit-startup-echo-area-message t)
 (setq delete-by-moving-to-trash t)
 (setq default-input-method "chinese-py")
 (setq display-line-numbers-type 'relative)
+(setq display-time-24hr-format t)
 #+END_SRC
 ** Functions 
 #+BEGIN_SRC emacs-lisp
