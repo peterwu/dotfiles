@@ -3,14 +3,13 @@
 My Emacs Init Settings
 
 * System Customization
-Keep customizations made through the M-x customize function into its own file.
+** Keep customizations made through the M-x customize function into its own file.
 #+BEGIN_SRC emacs-lisp
   (setq custom-file (locate-user-emacs-file "custom.el"))
   (load custom-file)
 #+END_SRC
 * Package Management 
   This section documents what packages that have been installed and configured.
-
 ** add melpa repo
 #+BEGIN_SRC emacs-lisp
   (require 'package)
@@ -54,7 +53,6 @@ Keep customizations made through the M-x customize function into its own file.
   :config
   (powerline-default-theme))
 #+END_SRC
-
 ** Evil and its related packages
 Simulate a Vim modal editing experience
 #+BEGIN_SRC emacs-lisp
@@ -109,7 +107,6 @@ Simulate a Vim modal editing experience
 	ido-everywhere t)
   (ido-mode t))
 #+END_SRC
-
 *** Ido-vertical
 #+BEGIN_SRC emacs-lisp
   (use-package ido-vertical-mode
@@ -166,6 +163,7 @@ Simulate a Vim modal editing experience
 			     (display-line-numbers-mode -1)))
      (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*"))))
 #+END_SRC
+=======
 ** Read PDF files 
 #+BEGIN_SRC emacs-lisp
 (use-package pdf-tools
@@ -194,15 +192,15 @@ Simulate a Vim modal editing experience
 #+END_SRC
 ** Org mode
 #+BEGIN_SRC emacs-lisp
-  (use-package org
-    :init
-    (setq org-support-shift-select t)
-    :config
-    (global-set-key (kbd "C-c l") 'org-store-link)
-    (global-set-key (kbd "C-c a") 'org-agenda)
-    (global-set-key (kbd "C-c c") 'org-capture)
-    (global-set-key (kbd "C-c b") 'org-switchb)
-    (setq org-agenda-files (list "~/Documents/agendas")))
+(use-package org
+  :init
+  (setq org-support-shift-select t)
+  (setq org-agenda-files (list "~/Documents/agendas"))
+  :config
+  (global-set-key (kbd "C-c l") 'org-store-link)
+  (global-set-key (kbd "C-c a") 'org-agenda)
+  (global-set-key (kbd "C-c c") 'org-capture)
+  (global-set-key (kbd "C-c b") 'org-switchb))
 #+END_SRC
 *** Org-bullets
 #+BEGIN_SRC emacs-lisp
@@ -215,6 +213,7 @@ Simulate a Vim modal editing experience
   (add-to-list 'org-structure-template-alist
 	       '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))
 #+END_SRC
+=======
 ** Project Management
 #+BEGIN_SRC emacs-lisp
 (use-package projectile
@@ -302,20 +301,20 @@ Simulate a Vim modal editing experience
 #+END_SRC
 ** Gnus for Emails
 #+BEGIN_SRC emacs-lisp
-(use-package gnus
-  :defer t
-  :init
-  (setq read-mail-command 'gnus)
-  (setq user-mail-address "peterwu@hotmail.com"
-	user-full-name "Peter Wu")
-  (setq mm-text-html-render 'gnus-w3m)
-  (setq gnus-select-method
-	'(nnimap "hotmail"
-		 (nnimap-address "imap-mail.outlook.com")
-		 (nnimap-server-port 993)
-		 (nnimap-stream ssl)))
-  (setq smtpmail-smtp-server "smtp-mail.outlook.com"
-	smtpmail-smtp-service 587))
+  (use-package gnus
+    :defer t
+    :init
+    (setq read-mail-command 'gnus)
+    (setq user-mail-address "peterwu@hotmail.com"
+	  user-full-name "Peter Wu")
+    ;; (setq mm-text-html-render 'gnus-w3m)
+    (setq gnus-select-method
+	  '(nnimap "hotmail"
+		   (nnimap-address "imap-mail.outlook.com")
+		   (nnimap-server-port 993)
+		   (nnimap-stream ssl)))
+    (setq smtpmail-smtp-server "smtp-mail.outlook.com"
+	  smtpmail-smtp-service 587))
 #+END_SRC
 ** Company for auto completion
 #+BEGIN_SRC emacs-lisp
