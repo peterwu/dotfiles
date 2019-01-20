@@ -10,13 +10,13 @@ My Emacs Init Settings
 #+END_SRC
 * Package Management 
   This section documents what packages that have been installed and configured.
-** add melpa repo
+** Add melpa repo
 #+BEGIN_SRC emacs-lisp
   (require 'package)
   (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
   (package-initialize)
 #+END_SRC
-** install *use-package* if not
+** Install *use-package* if not
 #+BEGIN_SRC emacs-lisp
   (unless (package-installed-p 'use-package)
     (package-refresh-contents)
@@ -41,14 +41,15 @@ My Emacs Init Settings
     :init
     (which-key-mode))
 #+END_SRC
-** doom line theme 
+** Minions
 #+BEGIN_SRC emacs-lisp
-  (use-package all-the-icons)
-  (use-package doom-modeline
-    :hook (after-init . doom-modeline-mode)
+  (use-package minions
     :config
-    (setq doom-modeline-major-mode-color-icon t)
-    (load-theme 'whiteboard t))
+    (minions-mode 1))
+#+END_SRC
+** Theme 
+#+BEGIN_SRC emacs-lisp
+    (load-theme 'tango t)
 #+END_SRC
 ** Evil and its related packages
 Simulate a Vim modal editing experience
@@ -107,12 +108,12 @@ Simulate a Vim modal editing experience
     (setq ivy-use-virtual-buffers t)
     (setq enable-recursive-minibuffers t))
 #+END_SRC
-** swiper
+** Swiper
    #+BEGIN_SRC emacs-lisp
      (use-package swiper
        :bind ("C-s" . swiper))
    #+END_SRC
-** counsel
+** Counsel
 #+BEGIN_SRC emacs-lisp
   (use-package counsel
     :bind
@@ -134,12 +135,12 @@ Simulate a Vim modal editing experience
     ("M-X" . smex-major-mode-commands)
     ("C-c C-c M-x" . execute-extended-command)))
 #+END_SRC
-** sudo-edit
+** Sudo-edit
 #+BEGIN_SRC emacs-lisp
   (use-package sudo-edit
     :bind ("s-e" . sudo-edit))
 #+END_SRC
-** raindow
+** Raindow
 #+BEGIN_SRC emacs-lisp
   (use-package rainbow-mode
     :hook prog-mode)
@@ -149,7 +150,7 @@ Simulate a Vim modal editing experience
     :config
     (rainbow-delimiters-mode 1))
 #+END_SRC
-** dashboard
+** Dashboard
 #+BEGIN_SRC emacs-lisp
   (use-package dashboard
     :init
@@ -298,26 +299,8 @@ Simulate a Vim modal editing experience
 *** Use pretty icons
 #+BEGIN_SRC emacs-lisp
   (use-package treemacs-icons-dired
-    :disabled 
     :after treemacs dired
     :config (treemacs-icons-dired-mode))
-#+END_SRC
-** Gnus for Emails
-#+BEGIN_SRC emacs-lisp
-  (use-package gnus
-    :defer t
-    :init
-    (setq read-mail-command 'gnus)
-    (setq user-mail-address "peterwu@hotmail.com"
-	  user-full-name "Peter Wu")
-    ;; (setq mm-text-html-render 'gnus-w3m)
-    (setq gnus-select-method
-	  '(nnimap "hotmail"
-		   (nnimap-address "imap-mail.outlook.com")
-		   (nnimap-server-port 993)
-		   (nnimap-stream ssl)))
-    (setq smtpmail-smtp-server "smtp-mail.outlook.com"
-	  smtpmail-smtp-service 587))
 #+END_SRC
 ** Company for auto completion
 #+BEGIN_SRC emacs-lisp
@@ -327,7 +310,7 @@ Simulate a Vim modal editing experience
 	  company-minimum-prefix-length 3)
     (global-company-mode t))
 #+END_SRC
-** yasnippets
+** Yasnippets
  #+BEGIN_SRC emacs-lisp
    (use-package yasnippet
      :config
@@ -368,6 +351,8 @@ Simulate a Vim modal editing experience
   (show-paren-mode t)
   (size-indication-mode t)
   (global-display-line-numbers-mode t)
+  (display-battery-mode t)
+  (display-time-mode t)
   (menu-bar-mode -1)
   (scroll-bar-mode -1)
   (tool-bar-mode -1)
@@ -384,10 +369,13 @@ Simulate a Vim modal editing experience
 		      :width 'normal)
 
   ;; highlight the current line number
-  ;; (add-hook 'text-mode-hook (lambda ()
-  ;; 	  (set-face-attribute 'line-number-current-line nil
-  ;; 			      :foreground (face-attribute 'cursor :background)
-  ;; 			      :weight 'bold)))
+  (defun highlight-current-line-number ()
+    "This function highlights the current line number with the cursor colour"
+    (set-face-attribute 'line-number-current-line nil
+				:foreground (face-attribute 'cursor :background)
+				:weight 'bold))
+  (add-hook 'text-mode-hook 'highlight-current-line-number)
+  (add-hook 'prog-mode-hook 'highlight-current-line-number)
 #+END_SRC
 ** Key bindings
 #+BEGIN_SRC emacs-lisp

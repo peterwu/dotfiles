@@ -15,9 +15,6 @@ alias emacs='emacsclient -t -a emacs'
 
 set -o vi
 
-source /usr/share/fzf/key-bindings.bash
-source /usr/share/fzf/completion.bash
-source <(kitty + complete setup bash)
 source <(kubectl completion bash)
 
 ### This Changes The PS1 ### 
@@ -82,4 +79,3 @@ function __prompt_command {
 
   PS1="$(titlebar)$(arrow)${BLUE}\w $(git_branch)${RESET}\n$(prompt)"
 }
-
