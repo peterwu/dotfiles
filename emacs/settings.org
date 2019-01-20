@@ -41,20 +41,15 @@ My Emacs Init Settings
     :init
     (which-key-mode))
 #+END_SRC
-** Dracula theme 
+** doom line theme 
 #+BEGIN_SRC emacs-lisp
-  (use-package dracula-theme
+  (use-package all-the-icons)
+  (use-package doom-modeline
+    :hook (after-init . doom-modeline-mode)
     :config
-    (load-theme 'dracula t))
+    (setq doom-modeline-major-mode-color-icon t)
+    (load-theme 'whiteboard t))
 #+END_SRC
-** Powerline theme 
-#+BEGIN_SRC emacs-lisp
-(use-package powerline
-  :config
-  (powerline-default-theme))
-#+END_SRC
-** popup-kill-ring
-** hungry-delete
 ** Evil and its related packages
 Simulate a Vim modal editing experience
 #+BEGIN_SRC emacs-lisp
@@ -91,28 +86,24 @@ Simulate a Vim modal editing experience
     :config
     (global-evil-quickscope-mode t))
 #+END_SRC
-** ranger
-#+BEGIN_SRC emacs-lisp
-(use-package ranger)
-#+END_SRC
 ** Magit for Git
 #+BEGIN_SRC emacs-lisp
 (use-package magit
   :config
   (global-set-key (kbd "C-x g") 'magit-status))
 #+END_SRC
-** diminish
-#+BEGIN_SRC emacs-lisp
-  (use-package diminish)
-#+END_SRC
+** Avy
+   #+BEGIN_SRC emacs-lisp
+     (use-package avy
+       :bind ("M-s" . avy-goto-char))
+   #+END_SRC
 ** Ivy
 #+BEGIN_SRC emacs-lisp
   (use-package ivy
+    :init (ivy-mode 1)
     :bind (("C-c C-r" . ivy-resume)
 	   ("<f6>" . ivy-resume))
-    :diminish ivy-mode
     :config
-    (ivy-mode 1)
     (setq ivy-use-virtual-buffers t)
     (setq enable-recursive-minibuffers t))
 #+END_SRC
@@ -146,12 +137,11 @@ Simulate a Vim modal editing experience
 ** sudo-edit
 #+BEGIN_SRC emacs-lisp
   (use-package sudo-edit
-  :bind ("s-e" . sudo-edit))
+    :bind ("s-e" . sudo-edit))
 #+END_SRC
 ** raindow
 #+BEGIN_SRC emacs-lisp
   (use-package rainbow-mode
-    :diminish rainbow-mode
     :hook prog-mode)
 #+END_SRC
 #+BEGIN_SRC emacs-lisp
@@ -161,19 +151,19 @@ Simulate a Vim modal editing experience
 #+END_SRC
 ** dashboard
 #+BEGIN_SRC emacs-lisp
-   (use-package dashboard
-     :init
-     (setq recentf-save-file (expand-file-name "cache/recentf" user-emacs-directory))
-     :config
-     (dashboard-setup-startup-hook)
-     (setq dashboard-items '((recents . 8)
-			     (projects . 3)
-			     (agenda . 3)
-			     (bookmarks . 3)
-			     (registers . 3)))
-     (add-hook 'dashboard-mode-hook (lambda ()
-			     (display-line-numbers-mode -1)))
-     (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*"))))
+  (use-package dashboard
+    :init
+    (setq recentf-save-file (expand-file-name "cache/recentf" user-emacs-directory))
+    :config
+    (dashboard-setup-startup-hook)
+    (setq dashboard-items '((recents . 8)
+			    (projects . 3)
+			    (agenda . 3)
+			    (bookmarks . 3)
+			    (registers . 3)))
+    (add-hook 'dashboard-mode-hook (lambda ()
+			    (display-line-numbers-mode -1)))
+    (setq initial-buffer-choice (lambda () (get-buffer-create dashboard-buffer-name))))
 #+END_SRC
 =======
 ** Read PDF files 
@@ -204,15 +194,15 @@ Simulate a Vim modal editing experience
 #+END_SRC
 ** Org mode
 #+BEGIN_SRC emacs-lisp
-(use-package org
-  :init
-  (setq org-support-shift-select t)
-  (setq org-agenda-files (list "~/Documents/agendas"))
-  :config
-  (global-set-key (kbd "C-c l") 'org-store-link)
-  (global-set-key (kbd "C-c a") 'org-agenda)
-  (global-set-key (kbd "C-c c") 'org-capture)
-  (global-set-key (kbd "C-c b") 'org-switchb))
+  (use-package org
+    :init
+    (setq org-support-shift-select t)
+    (setq org-agenda-files (list "~/Documents/agendas"))
+    :config
+    (global-set-key (kbd "C-c l") 'org-store-link)
+    (global-set-key (kbd "C-c a") 'org-agenda)
+    (global-set-key (kbd "C-c c") 'org-capture)
+    (global-set-key (kbd "C-c b") 'org-switchb))
 #+END_SRC
 *** Org-bullets
 #+BEGIN_SRC emacs-lisp
@@ -228,77 +218,77 @@ Simulate a Vim modal editing experience
 =======
 ** Project Management
 #+BEGIN_SRC emacs-lisp
-(use-package projectile
-  :init
-  (setq projectile-cache-file (expand-file-name "cache/projectile.cache" user-emacs-directory)
-	projectile-known-projects-file (expand-file-name "cache/projectile-bookmarks.eld" user-emacs-directory))
-  :config
-  (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
-  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-  (projectile-mode t)
-  (add-to-list 'projectile-globally-ignored-directories "node_modules")
-  (setq projectile-completion-system 'ido))
+  (use-package projectile
+    :init
+    (setq projectile-cache-file (expand-file-name "cache/projectile.cache" user-emacs-directory)
+	  projectile-known-projects-file (expand-file-name "cache/projectile-bookmarks.eld" user-emacs-directory))
+    :config
+    (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+    (projectile-mode t)
+    (add-to-list 'projectile-globally-ignored-directories "node_modules")
+    (setq projectile-completion-system 'ido))
 #+END_SRC
 ** Treemacs
 #+BEGIN_SRC emacs-lisp
-(use-package treemacs
-  :defer t
-  :init
-  (with-eval-after-load 'winum
-    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
-  :config
-  (progn
-    (setq treemacs-collapse-dirs              (if (executable-find "python") 3 0)
-	  treemacs-deferred-git-apply-delay   0.5
-	  treemacs-display-in-side-window     t
-	  treemacs-file-event-delay           5000
-	  treemacs-file-follow-delay          0.2
-	  treemacs-follow-after-init          t
-	  treemacs-follow-recenter-distance   0.1
-	  treemacs-git-command-pipe           ""
-	  treemacs-goto-tag-strategy          'refetch-index
-	  treemacs-indentation                2
-	  treemacs-indentation-string         " "
-	  treemacs-is-never-other-window      nil
-	  treemacs-max-git-entries            5000
-	  treemacs-no-png-images              nil
-	  treemacs-no-delete-other-windows    t
-	  treemacs-project-follow-cleanup     nil
-	  treemacs-persist-file               (expand-file-name "cache/treemacs-persist" user-emacs-directory)
-	  treemacs-recenter-after-file-follow nil
-	  treemacs-recenter-after-tag-follow  nil
-	  treemacs-show-cursor                nil
-	  treemacs-show-hidden-files          t
-	  treemacs-silent-filewatch           nil
-	  treemacs-silent-refresh             nil
-	  treemacs-sorting                    'alphabetic-desc
-	  treemacs-space-between-root-nodes   t
-	  treemacs-tag-follow-cleanup         t
-	  treemacs-tag-follow-delay           1.5
-	  treemacs-width                      35)
+  (use-package treemacs
+    :defer t
+    :init
+    (with-eval-after-load 'winum
+      (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
+    :config
+    (progn
+      (setq treemacs-collapse-dirs              (if (executable-find "python") 3 0)
+	    treemacs-deferred-git-apply-delay   0.5
+	    treemacs-display-in-side-window     t
+	    treemacs-file-event-delay           5000
+	    treemacs-file-follow-delay          0.2
+	    treemacs-follow-after-init          t
+	    treemacs-follow-recenter-distance   0.1
+	    treemacs-git-command-pipe           ""
+	    treemacs-goto-tag-strategy          'refetch-index
+	    treemacs-indentation                2
+	    treemacs-indentation-string         " "
+	    treemacs-is-never-other-window      nil
+	    treemacs-max-git-entries            5000
+	    treemacs-no-png-images              nil
+	    treemacs-no-delete-other-windows    t
+	    treemacs-project-follow-cleanup     nil
+	    treemacs-persist-file               (expand-file-name "cache/treemacs-persist" user-emacs-directory)
+	    treemacs-recenter-after-file-follow nil
+	    treemacs-recenter-after-tag-follow  nil
+	    treemacs-show-cursor                nil
+	    treemacs-show-hidden-files          t
+	    treemacs-silent-filewatch           nil
+	    treemacs-silent-refresh             nil
+	    treemacs-sorting                    'alphabetic-desc
+	    treemacs-space-between-root-nodes   t
+	    treemacs-tag-follow-cleanup         t
+	    treemacs-tag-follow-delay           1.5
+	    treemacs-width                      35)
 
-    ;; The default width and height of the icons is 22 pixels. If you are
-    ;; using a Hi-DPI display, uncomment this to double the icon size.
-    ;;(treemacs-resize-icons 44)
+      ;; The default width and height of the icons is 22 pixels. If you are
+      ;; using a Hi-DPI display, uncomment this to double the icon size.
+      ;; (treemacs-resize-icons 44)
 
-    (treemacs-follow-mode t)
-    (treemacs-filewatch-mode t)
-    (treemacs-fringe-indicator-mode t)
-    (pcase (cons (not (null (executable-find "git")))
-		 (not (null (executable-find "python3"))))
-      (`(t . t)
-       (treemacs-git-mode 'deferred))
-      (`(t . _)
-       (treemacs-git-mode 'simple))))
-  :bind
-  (:map global-map
-	("M-0"       . treemacs-select-window)
-	("C-x t 1"   . treemacs-delete-other-windows)
-	("C-x t t"   . treemacs)
-	([f8]        . treemacs)
-	("C-x t B"   . treemacs-bookmark)
-	("C-x t C-t" . treemacs-find-file)
-	("C-x t M-t" . treemacs-find-tag)))
+      (treemacs-follow-mode t)
+      (treemacs-filewatch-mode t)
+      (treemacs-fringe-indicator-mode t)
+      (pcase (cons (not (null (executable-find "git")))
+		   (not (null (executable-find "python3"))))
+	(`(t . t)
+	 (treemacs-git-mode 'deferred))
+	(`(t . _)
+	 (treemacs-git-mode 'simple))))
+    :bind
+    (:map global-map
+	  ("M-0"       . treemacs-select-window)
+	  ("C-x t 1"   . treemacs-delete-other-windows)
+	  ("C-x t t"   . treemacs)
+	  ([f8]        . treemacs)
+	  ("C-x t B"   . treemacs-bookmark)
+	  ("C-x t C-t" . treemacs-find-file)
+	  ("C-x t M-t" . treemacs-find-tag)))
 #+END_SRC
 *** Projectile integration
 #+BEGIN_SRC emacs-lisp
@@ -307,9 +297,10 @@ Simulate a Vim modal editing experience
 #+END_SRC
 *** Use pretty icons
 #+BEGIN_SRC emacs-lisp
-(use-package treemacs-icons-dired
-  :after treemacs dired
-  :config (treemacs-icons-dired-mode))
+  (use-package treemacs-icons-dired
+    :disabled 
+    :after treemacs dired
+    :config (treemacs-icons-dired-mode))
 #+END_SRC
 ** Gnus for Emails
 #+BEGIN_SRC emacs-lisp
@@ -331,7 +322,6 @@ Simulate a Vim modal editing experience
 ** Company for auto completion
 #+BEGIN_SRC emacs-lisp
   (use-package company
-    :diminish company-mode
     :config
     (setq company-idle-delay 0
 	  company-minimum-prefix-length 3)
@@ -339,10 +329,10 @@ Simulate a Vim modal editing experience
 #+END_SRC
 ** yasnippets
  #+BEGIN_SRC emacs-lisp
-      (use-package yasnippet
-	:config
-	(use-package yasnippet-snippets)
-	(yas-global-mode 1))
+   (use-package yasnippet
+     :config
+     (use-package yasnippet-snippets)
+     (yas-global-mode 1))
  #+END_SRC
 * Personal Settings
 ** Variables  
@@ -362,6 +352,8 @@ Simulate a Vim modal editing experience
   (setq default-input-method "chinese-py")
   (setq display-line-numbers-type 'relative)
   (setq display-time-24hr-format t)
+  (setq tramp-persistency-file-name (expand-file-name
+				     "cache/tramp" user-emacs-directory))
 #+END_SRC
 ** Functions 
 #+BEGIN_SRC emacs-lisp
@@ -369,37 +361,33 @@ Simulate a Vim modal editing experience
 #+END_SRC
 ** Modes
 #+BEGIN_SRC emacs-lisp
-(global-visual-line-mode t)
-(column-number-mode t)
-(global-hl-line-mode t)
-(electric-pair-mode t)
-(display-battery-mode t)
-(display-time-mode t)
-(show-paren-mode t)
-(size-indication-mode t)
-(global-display-line-numbers-mode t)
-(menu-bar-mode -1)
-(scroll-bar-mode -1)
-(tool-bar-mode -1)
+  (global-visual-line-mode t)
+  (column-number-mode t)
+  (global-hl-line-mode t)
+  (electric-pair-mode t)
+  (show-paren-mode t)
+  (size-indication-mode t)
+  (global-display-line-numbers-mode t)
+  (menu-bar-mode -1)
+  (scroll-bar-mode -1)
+  (tool-bar-mode -1)
 #+END_SRC
 ** Faces
 #+BEGIN_SRC emacs-lisp
-;; default face
-(set-face-attribute 'default nil
-		    :family "Fira Code Retina"
-		    :foundry "outline"
-		    :slant 'normal
-		    :weight 'normal
-		    :height 120
-		    :width 'normal)
+  ;; default face
+  (set-face-attribute 'default nil
+		      :family "Fira Code Retina"
+		      :foundry "outline"
+		      :slant 'normal
+		      :weight 'normal
+		      :height 120
+		      :width 'normal)
 
-;; highlight the current line number
-(set-face-attribute 'line-number-current-line nil
-		    :foreground "#F1FA8C"
-		    :weight 'bold
-		    :underline t)
-
-
+  ;; highlight the current line number
+  ;; (add-hook 'text-mode-hook (lambda ()
+  ;; 	  (set-face-attribute 'line-number-current-line nil
+  ;; 			      :foreground (face-attribute 'cursor :background)
+  ;; 			      :weight 'bold)))
 #+END_SRC
 ** Key bindings
 #+BEGIN_SRC emacs-lisp

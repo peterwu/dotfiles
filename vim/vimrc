@@ -14,7 +14,7 @@ endif
 
 syntax enable
 set termguicolors
-set background=dark
+set background=light
 
 colorscheme dracula
 

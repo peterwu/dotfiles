@@ -165,7 +165,7 @@ bindsym XF86AudioPrev   exec --no-startup-id playerctl previous
 # exec --no-startup-id ibus-daemon -drx
 exec --no-startup-id /usr/bin/feh --bg-scale ~/Pictures/Wallpapers/wallpaper
 exec --no-startup-id /usr/bin/compton -b -c -f
-exec --no-startup-id /usr/bin/xautolock -secure -detectsleep \
+exec --no-startup-id /usr/bin/xautolock -detectsleep \
      -time 5 -locker "/usr/local/bin/lockScreen.sh" \
      -notify 10 \
      -notifier "dunstify -a 'lockScreen' -u critical -t 10000 -i dialog-warning  'LOCKING screen in 10 seconds'" 
