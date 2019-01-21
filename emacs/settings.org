@@ -167,12 +167,6 @@ Simulate a Vim modal editing experience
     (setq initial-buffer-choice (lambda () (get-buffer-create dashboard-buffer-name))))
 #+END_SRC
 =======
-** Read PDF files 
-#+BEGIN_SRC emacs-lisp
-  (use-package pdf-tools
-    :config
-    (pdf-tools-install))
-#+END_SRC
 ** Edit YAML files
 #+BEGIN_SRC emacs-lisp
 (use-package yaml-mode)
@@ -317,19 +311,43 @@ Simulate a Vim modal editing experience
      (use-package yasnippet-snippets)
      (yas-global-mode 1))
  #+END_SRC
-** Chinese input
+** C/C++ Programming Environment
 #+BEGIN_SRC emacs-lisp
-  (use-package pyim
-    :demand t
+  (use-package flycheck
     :config
-    (use-package posframe)
-    (use-package pyim-basedict
-      :config (pyim-basedict-enable))
+    (global-flycheck-mode))
 
-    (setq default-input-method "pyim")
-    (pyim-isearch-mode 1)
-    (setq pyim-page-tooltip 'posframe)
-    (setq pyim-page-length 5))
+  (use-package irony
+    :hook (c-mode c++-mode)
+    :config
+    (unless (irony--find-server-executable) (call-interactively #'irony-install-server))
+    (setq-default irony-cdb-compilation-databases '(irony-cdb-libclang
+						    irony-cdb-clang-complete))
+    (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
+
+  (use-package rtags
+    :config
+    (setq rtags-completions-enabled t)
+    (setq rtags-autostart-diagnostics t)
+    (rtags-enable-standard-keybindings))
+
+  (use-package company-rtags
+    :config
+    (add-to-list 'company-backends 'company-rtags))
+
+  (use-package company-irony
+    :after company irony
+    :config
+    (add-to-list 'company-backends 'company-irony))
+
+  (use-package flycheck-irony
+    :after flycheck irony
+    :config
+    (add-hook 'flycheck-mode-hook #'flycheck-irony-setup))
+
+  (use-package irony-eldoc
+    :after eldoc irony
+    :hook irony-mode)
 #+END_SRC
 * Personal Settings
 ** Variables  
