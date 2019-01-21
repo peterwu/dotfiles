@@ -150,23 +150,6 @@ Simulate a Vim modal editing experience
     :config
     (rainbow-delimiters-mode 1))
 #+END_SRC
-** Dashboard
-#+BEGIN_SRC emacs-lisp
-  (use-package dashboard
-    :init
-    (setq recentf-save-file (expand-file-name "cache/recentf" user-emacs-directory))
-    :config
-    (dashboard-setup-startup-hook)
-    (setq dashboard-items '((recents . 8)
-			    (projects . 3)
-			    (agenda . 3)
-			    (bookmarks . 3)
-			    (registers . 3)))
-    (add-hook 'dashboard-mode-hook (lambda ()
-			    (display-line-numbers-mode -1)))
-    (setq initial-buffer-choice (lambda () (get-buffer-create dashboard-buffer-name))))
-#+END_SRC
-=======
 ** Edit YAML files
 #+BEGIN_SRC emacs-lisp
 (use-package yaml-mode)
@@ -318,12 +301,9 @@ Simulate a Vim modal editing experience
     (global-flycheck-mode))
 
   (use-package irony
-    :hook (c-mode c++-mode)
-    :config
-    (unless (irony--find-server-executable) (call-interactively #'irony-install-server))
-    (setq-default irony-cdb-compilation-databases '(irony-cdb-libclang
-						    irony-cdb-clang-complete))
-    (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
+    :hook
+    (((c-mode c++-mode objc-mode) . irony-mode)
+    (irony-mode . irony-cdb-autosetup-compile-options)))
 
   (use-package rtags
     :config
