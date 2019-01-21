@@ -17,7 +17,7 @@ WIFI_PASSWORD=password
 ### run lsblk to find out the disk ###
 DISK=/dev/sda
 LUKS_PASSPHRASE=passphrase
-CLOSEST_MIRROR='Server = https://mirror.csclub.uwaterloo.ca/archlinux/$repo/os/$arch'
+CLOSEST_MIRROR='Server = http://archlinux.mirror.rafal.ca/$repo/os/$arch'
 
 # installation begins
 echo 'installation begins'
