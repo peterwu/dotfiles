@@ -13,29 +13,10 @@ else
 endif
 
 syntax enable
-set termguicolors
-set background=light
-
-colorscheme dracula
-
-let g:airline_theme='dracula'
-let g:airline_powerline_fonts = 1
-let g:airline_extensions = ['branch', 'tabline', 'ale']
-let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
+" set termguicolors
+" set background=light
 
 let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
-
-let g:prettier#config#bracket_spacing = 'true'
-let g:prettier#config#single_quote = 'false'
-let g:prettier#config#jsx_bracket_same_line = 'false'
-let g:prettier#config#trailing_comma = 'none'
-let g:prettier#config#parser = 'babylon'
-let g:prettier#autoformat = 0
-
-augroup vim-prettier
-  autocmd!
-  autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.md,*.vue,*.yaml,*.html PrettierAsync
-augroup END
 
 " key mappings
 nnoremap Y y$
@@ -56,11 +37,6 @@ if exists('*minpac#init')
   call minpac#add('tpope/vim-commentary')
   call minpac#add('tpope/vim-fugitive')
   call minpac#add('unblevable/quick-scope', {'name': 'vim-quick-scope'})
-  call minpac#add('junegunn/fzf.vim', {'name': 'vim-fzf'})
-  call minpac#add('dracula/vim', {'name': 'vim-dracula'})
-  call minpac#add('vim-airline/vim-airline')
-  call minpac#add('w0rp/ale', {'name': 'vim-ale'})
-  call minpac#add('prettier/vim-prettier', {'do': {-> system('npm install')}})
 endif
 
 " Define user commands for updating/cleaning the plugins.
