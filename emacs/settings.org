@@ -279,6 +279,12 @@ Simulate a Vim modal editing experience
     :after treemacs dired
     :config (treemacs-icons-dired-mode))
 #+END_SRC
+** Flycheck
+#+BEGIN_SRC emacs-lisp
+  (use-package flycheck
+    :config
+    (global-flycheck-mode))
+#+END_SRC
 ** Company for auto completion
 #+BEGIN_SRC emacs-lisp
   (use-package company
@@ -294,41 +300,6 @@ Simulate a Vim modal editing experience
      (use-package yasnippet-snippets)
      (yas-global-mode 1))
  #+END_SRC
-** C/C++ Programming Environment
-#+BEGIN_SRC emacs-lisp
-  (use-package flycheck
-    :config
-    (global-flycheck-mode))
-
-  (use-package irony
-    :hook
-    (((c-mode c++-mode objc-mode) . irony-mode)
-    (irony-mode . irony-cdb-autosetup-compile-options)))
-
-  (use-package rtags
-    :config
-    (setq rtags-completions-enabled t)
-    (setq rtags-autostart-diagnostics t)
-    (rtags-enable-standard-keybindings))
-
-  (use-package company-rtags
-    :config
-    (add-to-list 'company-backends 'company-rtags))
-
-  (use-package company-irony
-    :after company irony
-    :config
-    (add-to-list 'company-backends 'company-irony))
-
-  (use-package flycheck-irony
-    :after flycheck irony
-    :config
-    (add-hook 'flycheck-mode-hook #'flycheck-irony-setup))
-
-  (use-package irony-eldoc
-    :after eldoc irony
-    :hook irony-mode)
-#+END_SRC
 * Personal Settings
 ** Variables  
 #+BEGIN_SRC emacs-lisp
@@ -381,13 +352,13 @@ Simulate a Vim modal editing experience
 		      :width 'normal)
 
   ;; highlight the current line number
-  (defun highlight-current-line-number ()
+  (defun ixl/highlight-current-line-number ()
     "This function highlights the current line number with the cursor colour"
     (set-face-attribute 'line-number-current-line nil
 				:foreground (face-attribute 'cursor :background)
 				:weight 'bold))
-  (add-hook 'text-mode-hook 'highlight-current-line-number)
-  (add-hook 'prog-mode-hook 'highlight-current-line-number)
+  (add-hook 'text-mode-hook 'ixl/highlight-current-line-number)
+  (add-hook 'prog-mode-hook 'ixl/highlight-current-line-number)
 #+END_SRC
 ** Key bindings
 #+BEGIN_SRC emacs-lisp

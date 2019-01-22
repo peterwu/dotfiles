@@ -5,7 +5,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (company-rtags rtags irony-eldoc flycheck-irony company-irony irony flycheck pdf-tools minions ivy yasnippet-snippets yasnippet counsel swiper rainbow-delimiters rainbow-mode sudo-edit smex which-key company org-bullets htmlize treemacs-projectile treemacs-icons-dired treemacs-evil evil-goggles yaml-mode use-package vue-mode evil-magit magit evil-collection evil-quickscope evil-matchit evil-commentary evil-surround evil nov))))
+    (treemacs projectile avy flycheck minions ivy yasnippet-snippets yasnippet counsel swiper rainbow-delimiters rainbow-mode sudo-edit smex which-key company org-bullets htmlize treemacs-projectile treemacs-icons-dired treemacs-evil evil-goggles yaml-mode use-package vue-mode evil-magit magit evil-collection evil-quickscope evil-matchit evil-commentary evil-surround evil nov))))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
