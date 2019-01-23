@@ -54,8 +54,9 @@ My Emacs Init Settings
 ** Ace-window
 #+BEGIN_SRC emacs-lisp
   (use-package ace-window
+    :bind
+    ([remap other-window] . ace-window)
     :config
-    (global-set-key [remap other-window] 'ace-window)
     (set-face-attribute 'aw-leading-char-face nil
 			:height 3.0
 			:box t))
@@ -170,7 +171,9 @@ Simulate a Vim modal editing experience
 #+BEGIN_SRC emacs-lisp
   (use-package treemacs
     :defer t
-    :bind ([f8] . treemacs)
+    :bind
+    (([f8] . treemacs)
+     ("M-0" . treemacs-select-window))
     :config
     (setq treemacs-persist-file
 	  (expand-file-name "cache/treemacs-persist" user-emacs-directory)))
