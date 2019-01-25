@@ -30,13 +30,13 @@ if exists('*minpac#init')
   call minpac#add('k-takata/minpac', {'type': 'opt'})
 
   call minpac#add('jiangmiao/auto-pairs', {'name': 'vim-auto-pairs'})
-  call minpac#add('tpope/vim-surround')
-  call minpac#add('tpope/vim-unimpaired')
-  call minpac#add('machakann/vim-highlightedyank', {'name': 'vim-highlighted-yank'})
-  call minpac#add('tpope/vim-repeat')
   call minpac#add('tpope/vim-commentary')
   call minpac#add('tpope/vim-fugitive')
+  call minpac#add('machakann/vim-highlightedyank', {'name': 'vim-highlighted-yank'})
   call minpac#add('unblevable/quick-scope', {'name': 'vim-quick-scope'})
+  call minpac#add('tpope/vim-repeat')
+  call minpac#add('tpope/vim-surround')
+  call minpac#add('tpope/vim-unimpaired')
 endif
 
 " Define user commands for updating/cleaning the plugins.

@@ -16,6 +16,10 @@ My Emacs Init Settings
   (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
   (package-initialize)
 #+END_SRC
+** Personal scripts
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'load-path (expand-file-name "scripts" user-emacs-directory))
+#+END_SRC
 ** Install *use-package* if not
 #+BEGIN_SRC emacs-lisp
   (unless (package-installed-p 'use-package)
@@ -41,12 +45,6 @@ My Emacs Init Settings
     :init
     (which-key-mode))
 #+END_SRC
-** Minions
-#+BEGIN_SRC emacs-lisp
-  (use-package minions
-    :config
-    (minions-mode 1))
-#+END_SRC
 ** Theme 
 #+BEGIN_SRC emacs-lisp
     (load-theme 'tango t)
@@ -69,7 +67,8 @@ Simulate a Vim modal editing experience
     (setq evil-want-integration t)
     (setq evil-want-keybinding nil)
     :config
-    (evil-mode t))
+    (evil-mode t)
+    (setq evil-mode-line-format '(after . mode-line-front-space)))
 
   (use-package evil-collection
     :after evil
@@ -105,6 +104,9 @@ Simulate a Vim modal editing experience
     :config
     (define-key evil-normal-state-map (kbd "C-c +") 'evil-numbers/inc-at-pt)
     (define-key evil-normal-state-map (kbd "C-c -") 'evil-numbers/dec-at-pt))
+
+  (require 'evil-unimpaired)
+  (evil-unimpaired-mode)
 #+END_SRC
 ** Magit for Git
 #+BEGIN_SRC emacs-lisp
@@ -194,12 +196,6 @@ Simulate a Vim modal editing experience
     :after treemacs dired
     :config (treemacs-icons-dired-mode))
 #+END_SRC
-** Flycheck
-#+BEGIN_SRC emacs-lisp
-  (use-package flycheck
-    :config
-    (global-flycheck-mode))
-#+END_SRC
 ** Company for auto completion
 #+BEGIN_SRC emacs-lisp
   (use-package company
@@ -276,9 +272,14 @@ Simulate a Vim modal editing experience
    (use-package markdown-mode
      :init (setq markdown-command "multimarkdown"))
  #+END_SRC
+*** Vimrc
+#+BEGIN_SRC emacs-lisp
+  (use-package vimrc-mode)
+#+END_SRC
 * Personal Settings
 ** Variables  
 #+BEGIN_SRC emacs-lisp
+  (set-language-environment "UTF-8")
   (setq inhibit-startup-screen t
 	inhibit-startup-echo-area-message t)
   (setq backup-inhibited t
@@ -293,7 +294,12 @@ Simulate a Vim modal editing experience
   (setq delete-by-moving-to-trash t)
   (setq display-line-numbers-type 'relative)
   (setq display-time-24hr-format t)
+  (setq display-time-default-load-average nil)
   (setq visible-bell t)
+  (when (eq system-type 'windows-nt)
+    (setq inhibit-compacting-font-caches t)) 
+  (setq recentf-save-file (expand-file-name "cache/recentf" user-emacs-directory))
+  (setq bookmark-default-file (expand-file-name "cache/bookmarks" user-emacs-directory))
   (setq tramp-persistency-file-name (expand-file-name
 				     "cache/tramp" user-emacs-directory))
 #+END_SRC
@@ -341,3 +347,94 @@ Simulate a Vim modal editing experience
 (global-set-key [f12] 'eshell)
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 #+END_SRC
+** Mode line
+#+BEGIN_SRC emacs-lisp
+  (defun my-get-and-parse-json (url)
+    (let ((buffer (url-retrieve-synchronously url))
+	  (json-object-type 'plist))
+      (set-buffer buffer)
+      (goto-char (point-min))
+      (re-search-forward "^$") 
+      (json-read-from-string
+       (buffer-substring-no-properties (point) (point-max)))))
+
+  ;; http://ip-api.com/json/
+  (defun my-get-coordinate ()
+    (let ((url "http://ip-api.com/json/"))
+      (let ((data (my-get-and-parse-json url)))
+	(list :lat (plist-get data :lat)
+	      :lon (plist-get data :lon)))))
+
+  ;; (defun my-get-coordinate ()
+  ;;   (let* ((token "44cf10c96aeed5")
+  ;; 	     (url (concat "https://ipinfo.io/json"
+  ;; 			  "?"
+  ;; 			  (url-build-query-string (list
+  ;; 						   (list "token" token))))))
+  ;; 	(let ((plist (my-get-and-parse-json url)))
+  ;; 	  (let ((loc (plist-get plist :loc)))
+  ;; 	    (-interleave '(:lat :lon) (split-string loc ","))))))
+
+  (defun my-get-weather-info (coord)
+    (let* ((openweathermapUrl "https://api.openweathermap.org/data/2.5/weather")
+	   (appid "94f7172e9d0fd1e0c9756a48fa9c9477")
+	   (lat (plist-get coord :lat))
+	   (lon (plist-get coord :lon))
+	   (url (concat openweathermapUrl
+			"?"
+			(url-build-query-string (list
+						 (list "lat" lat)
+						 (list "lon" lon)
+						 (list "appid" appid)
+						 (list "units" "metric"))))))
+      (let ((data (my-get-and-parse-json url)))
+	(list
+	 :main (plist-get (aref (plist-get data :weather) 0) :main)
+	 :temp (round (plist-get (plist-get data :main) :temp))))))
+
+  (defvar my-weather-info-string nil)
+
+  (defun my-display-weather-info ()
+    (setq my-weather-info-string "")
+    (or global-mode-string (setq global-mode-string '("")))
+    (or (memq 'my-weather-info-string global-mode-string)
+	(setq global-mode-string
+	      (append global-mode-string '(my-weather-info-string))))
+    (run-with-timer 0 (* 60 10)
+		    (lambda ()
+		      (let ((weather (my-get-weather-info (my-get-coordinate))))
+			(setq my-weather-info-string (concat "[" 
+							     (plist-get weather :main)
+							     " "
+							     (number-to-string (plist-get weather :temp))
+							     "℃]"))
+			(force-mode-line-update)))))
+
+  (setq-default mode-line-format (-replace 'mode-line-modes " (%m) " mode-line-format))
+
+  ;; (setq-default mode-line-format
+  ;; 	'("%e"
+  ;; 	  mode-line-front-space
+  ;; 	  mode-line-mule-info
+  ;; 	  mode-line-client
+  ;; 	  mode-line-modified
+  ;; 	  mode-line-remote
+  ;; 	  mode-line-frame-identification
+  ;; 	  mode-line-buffer-identification
+  ;; 	  "   "
+  ;; 	  mode-line-position
+  ;; 	  (vc-mode vc-mode)
+  ;; 	  "  "
+  ;; 	  "(%m)"
+  ;; 	  mode-line-misc-info
+  ;; 	  "  "
+  ;; 	  "[" my-mode-line-weather-info "]"
+  ;; 	  mode-line-end-spaces))
+
+  (my-display-weather-info)
+
+#+END_SRC
+
+#+RESULTS:
+: [nil 23627 28384 919043 600 (lambda nil (let ((weather (my-get-weather-info (my-get-coordinate)))) (setq my-weather-info-string (concat "[" (plist-get weather :main) " " (number-to-string (plist-get weather :temp)) "℃]")) (force-mode-line-update))) nil nil 0]
+
