@@ -31,13 +31,13 @@ My Emacs Init Settings
 #+END_SRC
 ** Keep installed packages up to date automatically
 #+BEGIN_SRC emacs-lisp
-(use-package auto-package-update
-  :init
-  (setq auto-package-update-last-update-day-filename (expand-file-name "cache/last-package-update-day" user-emacs-directory))
-  :config
-  (setq auto-package-update-delete-old-versions t)
-  (setq auto-package-update-hide-results t)
-  (auto-package-update-maybe))
+  (use-package auto-package-update
+    :init
+    (setq auto-package-update-last-update-day-filename (expand-file-name "cache/last-package-update-day" user-emacs-directory))
+    :config
+    (setq auto-package-update-delete-old-versions t)
+    (setq auto-package-update-hide-results t)
+    (auto-package-update-maybe))
 #+END_SRC 
 ** Install which-key
 #+BEGIN_SRC emacs-lisp
@@ -47,7 +47,7 @@ My Emacs Init Settings
 #+END_SRC
 ** Theme 
 #+BEGIN_SRC emacs-lisp
-    (load-theme 'tango t)
+  (load-theme 'tango t)
 #+END_SRC
 ** Ace-window
 #+BEGIN_SRC emacs-lisp
@@ -68,10 +68,53 @@ Simulate a Vim modal editing experience
     (setq evil-want-keybinding nil)
     :config
     (evil-mode t)
-    (setq evil-mode-line-format '(after . mode-line-front-space)))
+    (setq evil-mode-line-format '(after . mode-line-front-space))
+    (let ((evil-state-foreground-color "#eeeeec")
+	  (evil-emacs-state-background-color "#3465a4")
+	  (evil-motion-state-background-color "#729fcf")
+	  (evil-insert-state-background-color "#346604")
+	  (evil-visual-state-background-color "#75507b")
+	  (evil-operator-state-background-color "#b35000")
+	  (evil-replace-state-background-color "#cc0000"))
+      (require 's)
+      (setq evil-normal-state-tag
+	    (s-center 5 (propertize (s-trim evil-normal-state-tag)
+				    'font-lock-face (list :weight 'bold))))
+      (setq evil-insert-state-tag
+	    (s-center 5 (propertize (s-trim evil-insert-state-tag)
+				    'font-lock-face (list :weight 'bold
+							  :foreground evil-state-foreground-color
+							  :background evil-insert-state-background-color))))
+      (setq evil-visual-state-tag
+	    (s-center 5 (propertize (s-trim evil-visual-state-tag)
+				    'font-lock-face (list :weight 'bold
+							  :foreground evil-state-foreground-color
+							  :background evil-visual-state-background-color))))
+      (setq evil-operator-state-tag
+	    (s-center 5 (propertize (s-trim evil-operator-state-tag)
+				    'font-lock-face (list :weight 'bold
+							  :foreground evil-state-foreground-color
+							  :background evil-operator-state-background-color))))
+      (setq evil-replace-state-tag
+	    (s-center 5 (propertize (s-trim evil-replace-state-tag)
+				    'font-lock-face (list :weight 'bold
+							  :foreground evil-state-foreground-color
+							  :background evil-replace-state-background-color))))
+      (setq evil-emacs-state-tag
+	    (s-center 5 (propertize (s-trim evil-emacs-state-tag)
+				    'font-lock-face (list :weight 'bold
+							  :foreground evil-state-foreground-color
+							  :background evil-emacs-state-background-color))))
+      (setq evil-motion-state-tag
+	    (s-center 5 (propertize (s-trim evil-motion-state-tag)
+				    'font-lock-face (list :weight 'bold
+							  :foreground evil-state-foreground-color
+							  :background evil-motion-state-background-color)))))) 
 
   (use-package evil-collection
     :after evil
+    :custom
+    (evil-collection-setup-minibuffer t)
     :config
     (evil-collection-init))
 
@@ -105,21 +148,35 @@ Simulate a Vim modal editing experience
     (define-key evil-normal-state-map (kbd "C-c +") 'evil-numbers/inc-at-pt)
     (define-key evil-normal-state-map (kbd "C-c -") 'evil-numbers/dec-at-pt))
 
+  (use-package evil-args
+    :config
+    ;; bind evil-args text objects
+    (define-key evil-inner-text-objects-map "a" 'evil-inner-arg)
+    (define-key evil-outer-text-objects-map "a" 'evil-outer-arg)
+
+    ;; bind evil-forward/backward-args
+    (define-key evil-normal-state-map "L" 'evil-forward-arg)
+    (define-key evil-normal-state-map "H" 'evil-backward-arg)
+    (define-key evil-motion-state-map "L" 'evil-forward-arg)
+    (define-key evil-motion-state-map "H" 'evil-backward-arg)
+    ;; bind evil-jump-out-args
+    (define-key evil-normal-state-map "K" 'evil-jump-out-args))
+
   (require 'evil-unimpaired)
   (evil-unimpaired-mode)
 #+END_SRC
 ** Magit for Git
 #+BEGIN_SRC emacs-lisp
-(use-package magit
-  :config
-  (global-set-key (kbd "C-x g") 'magit-status))
+  (use-package magit
+    :config
+    (global-set-key (kbd "C-x g") 'magit-status))
 #+END_SRC
 ** Sudo-edit
 #+BEGIN_SRC emacs-lisp
   (use-package sudo-edit
     :bind ("s-e" . sudo-edit))
 #+END_SRC
-** Raindow
+** Rainbow
 #+BEGIN_SRC emacs-lisp
   (use-package rainbow-mode
     :hook prog-mode)
@@ -241,23 +298,23 @@ Simulate a Vim modal editing experience
 ** Various file types
 *** YAML files
  #+BEGIN_SRC emacs-lisp
- (use-package yaml-mode)
+   (use-package yaml-mode)
  #+END_SRC
 *** Read ePub files
  #+BEGIN_SRC emacs-lisp
- (use-package nov 
-   :mode ("\\.epub\\'" . nov-mode)
-   :init
-   (setq nov-save-place-file (expand-file-name "cache/nov-places" user-emacs-directory))
-   :config
-   (add-hook 'nov-mode-hook (lambda ()
-			      (face-remap-add-relative 'default :height 1.2)
-			      (display-line-numbers-mode -1))))
+   (use-package nov 
+     :mode ("\\.epub\\'" . nov-mode)
+     :init
+     (setq nov-save-place-file (expand-file-name "cache/nov-places" user-emacs-directory))
+     :config
+     (add-hook 'nov-mode-hook (lambda ()
+				(face-remap-add-relative 'default :height 1.2)
+				(display-line-numbers-mode -1))))
  #+END_SRC
 *** Edit Vuejs files
  #+BEGIN_SRC emacs-lisp
- (use-package vue-mode
-   :mode "\\.vue\\'")
+   (use-package vue-mode
+     :mode "\\.vue\\'")
  #+END_SRC
 *** gRPC/Proto
  #+BEGIN_SRC emacs-lisp
@@ -287,14 +344,14 @@ Simulate a Vim modal editing experience
 	auto-save-default nil
 	auto-save-list-file-prefix nil)
   (setq scroll-step 1
-	scroll-margin 2
+	scroll-margin 1
 	scroll-conservatively 10000
 	auto-window-vscroll nil)
   (setq vc-follow-symlinks nil)
   (setq delete-by-moving-to-trash t)
   (setq display-line-numbers-type 'relative)
-  (setq display-time-24hr-format t)
-  (setq display-time-default-load-average nil)
+  (setq display-time-24hr-format t
+	display-time-default-load-average nil)
   (setq visible-bell t)
   (when (eq system-type 'windows-nt)
     (setq inhibit-compacting-font-caches t)) 
@@ -305,7 +362,7 @@ Simulate a Vim modal editing experience
 #+END_SRC
 ** Functions 
 #+BEGIN_SRC emacs-lisp
-(fset 'yes-or-no-p 'y-or-n-p)
+  (fset 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
 ** Modes
 #+BEGIN_SRC emacs-lisp
@@ -326,11 +383,11 @@ Simulate a Vim modal editing experience
 #+BEGIN_SRC emacs-lisp
   ;; default face
   (set-face-attribute 'default nil
-		      :family "Fira Code Retina"
+		      :family "Inconsolata"
 		      :foundry "outline"
 		      :slant 'normal
 		      :weight 'normal
-		      :height 120
+		      :height 140
 		      :width 'normal)
 
   ;; highlight the current line number
@@ -344,12 +401,12 @@ Simulate a Vim modal editing experience
 #+END_SRC
 ** Key bindings
 #+BEGIN_SRC emacs-lisp
-(global-set-key [f12] 'eshell)
-(global-set-key (kbd "C-x C-b") 'ibuffer)
+  (global-set-key [f12] 'eshell)
+  (global-set-key (kbd "C-x C-b") 'ibuffer)
 #+END_SRC
 ** Mode line
 #+BEGIN_SRC emacs-lisp
-  (defun my-get-and-parse-json (url)
+  (defun my/get-and-parse-json (url)
     (let ((buffer (url-retrieve-synchronously url))
 	  (json-object-type 'plist))
       (set-buffer buffer)
@@ -359,23 +416,24 @@ Simulate a Vim modal editing experience
        (buffer-substring-no-properties (point) (point-max)))))
 
   ;; http://ip-api.com/json/
-  (defun my-get-coordinate ()
-    (let ((url "http://ip-api.com/json/"))
-      (let ((data (my-get-and-parse-json url)))
-	(list :lat (plist-get data :lat)
-	      :lon (plist-get data :lon)))))
+  ;; (defun my/get-coordinate ()
+  ;;   (let ((url "http://ip-api.com/json/"))
+  ;;     (let ((data (my/get-and-parse-json url)))
+  ;;       (list :lat (plist-get data :lat)
+  ;; 	    :lon (plist-get data :lon)))))
 
-  ;; (defun my-get-coordinate ()
-  ;;   (let* ((token "44cf10c96aeed5")
-  ;; 	     (url (concat "https://ipinfo.io/json"
-  ;; 			  "?"
-  ;; 			  (url-build-query-string (list
-  ;; 						   (list "token" token))))))
-  ;; 	(let ((plist (my-get-and-parse-json url)))
-  ;; 	  (let ((loc (plist-get plist :loc)))
-  ;; 	    (-interleave '(:lat :lon) (split-string loc ","))))))
+  ;; https://ipinfo.io/json
+  (defun my/get-coordinate ()
+    (let* ((token "44cf10c96aeed5")
+	       (url (concat "https://ipinfo.io/json"
+			    "?"
+			    (url-build-query-string (list
+						     (list "token" token))))))
+	  (let ((data (my/get-and-parse-json url)))
+	    (let ((loc (plist-get data :loc)))
+	      (-interleave '(:lat :lon) (split-string loc ","))))))
 
-  (defun my-get-weather-info (coord)
+  (defun my/get-weather-info (coord)
     (let* ((openweathermapUrl "https://api.openweathermap.org/data/2.5/weather")
 	   (appid "94f7172e9d0fd1e0c9756a48fa9c9477")
 	   (lat (plist-get coord :lat))
@@ -387,27 +445,27 @@ Simulate a Vim modal editing experience
 						 (list "lon" lon)
 						 (list "appid" appid)
 						 (list "units" "metric"))))))
-      (let ((data (my-get-and-parse-json url)))
+      (let ((data (my/get-and-parse-json url)))
 	(list
 	 :main (plist-get (aref (plist-get data :weather) 0) :main)
 	 :temp (round (plist-get (plist-get data :main) :temp))))))
 
-  (defvar my-weather-info-string nil)
+  (defvar my/weather-info-string nil)
 
-  (defun my-display-weather-info ()
-    (setq my-weather-info-string "")
+  (defun my/display-weather-info ()
+    ;; (setq my/weather-info-string "")
     (or global-mode-string (setq global-mode-string '("")))
-    (or (memq 'my-weather-info-string global-mode-string)
+    (or (memq 'my/weather-info-string global-mode-string)
 	(setq global-mode-string
-	      (append global-mode-string '(my-weather-info-string))))
+	      (append global-mode-string '(my/weather-info-string))))
     (run-with-timer 0 (* 60 10)
 		    (lambda ()
-		      (let ((weather (my-get-weather-info (my-get-coordinate))))
-			(setq my-weather-info-string (concat "[" 
+		      (let ((weather (my/get-weather-info (my/get-coordinate))))
+			(setq my/weather-info-string (concat "[" 
 							     (plist-get weather :main)
 							     " "
 							     (number-to-string (plist-get weather :temp))
-							     "℃]"))
+							     "°C]"))
 			(force-mode-line-update)))))
 
   (setq-default mode-line-format (-replace 'mode-line-modes " (%m) " mode-line-format))
@@ -431,10 +489,6 @@ Simulate a Vim modal editing experience
   ;; 	  "[" my-mode-line-weather-info "]"
   ;; 	  mode-line-end-spaces))
 
-  (my-display-weather-info)
+  (my/display-weather-info)
 
 #+END_SRC
-
-#+RESULTS:
-: [nil 23627 28384 919043 600 (lambda nil (let ((weather (my-get-weather-info (my-get-coordinate)))) (setq my-weather-info-string (concat "[" (plist-get weather :main) " " (number-to-string (plist-get weather :temp)) "℃]")) (force-mode-line-update))) nil nil 0]
-

@@ -15,6 +15,9 @@ alias emacs='emacsclient -t -a emacs'
 
 set -o vi
 
+# no scroll lock by accidentally pressing Ctrl+s
+stty -ixon
+
 source <(kubectl completion bash)
 
 ### This Changes The PS1 ### 

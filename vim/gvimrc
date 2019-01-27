@@ -1,7 +1,7 @@
 if has('win32') "Windows
-  set guifont=Fira\ Code\ Retina:h12:cANSI
+  set guifont=Inconsolata:h12:cANSI
 else
-  set guifont=Fira\ Code\ Retina\ 12
+  set guifont=Inconsolata\ 14
 endif
 
 set guioptions-=T guioptions-=m guioptions-=L guioptions-=r guioptions-=e
