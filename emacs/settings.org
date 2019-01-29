@@ -69,13 +69,22 @@ Simulate a Vim modal editing experience
     :config
     (evil-mode t)
     (setq evil-mode-line-format '(after . mode-line-front-space))
-    (let ((evil-state-foreground-color "#eeeeec")
-	  (evil-emacs-state-background-color "#3465a4")
-	  (evil-motion-state-background-color "#729fcf")
-	  (evil-insert-state-background-color "#346604")
-	  (evil-visual-state-background-color "#75507b")
-	  (evil-operator-state-background-color "#b35000")
-	  (evil-replace-state-background-color "#cc0000"))
+    (let* ((color-black "#2E3436")
+	   (color-red "#CC0000")
+	   (color-green "#4E9A06")
+	   (color-yellow "#C4A000")
+	   (color-blue "#3465A4")
+	   (color-magenta "#75507B")
+	   (color-cyan "#06989A")
+	   (color-white "#D3D7CF")
+
+	   (evil-state-foreground-color color-white)
+	   (evil-emacs-state-background-color color-blue)
+	   (evil-motion-state-background-color color-cyan)
+	   (evil-insert-state-background-color color-green)
+	   (evil-visual-state-background-color color-magenta)
+	   (evil-operator-state-background-color color-yellow)
+	   (evil-replace-state-background-color color-red))
       (require 's)
       (setq evil-normal-state-tag
 	    (s-center 5 (propertize (s-trim evil-normal-state-tag)
@@ -381,23 +390,22 @@ Simulate a Vim modal editing experience
 #+END_SRC
 ** Faces
 #+BEGIN_SRC emacs-lisp
-  ;; default face
-  (set-face-attribute 'default nil
-		      :family "Inconsolata"
-		      :foundry "outline"
-		      :slant 'normal
-		      :weight 'normal
-		      :height 140
-		      :width 'normal)
+    ;; default face
+    (set-face-attribute 'default nil
+			:family "Inconsolata"
+			:foundry "outline"
+			:slant 'normal
+			:weight 'normal
+			:height 140
+			:width 'normal)
 
-  ;; highlight the current line number
-  (defun ixl/highlight-current-line-number ()
-    "This function highlights the current line number with the cursor colour"
-    (set-face-attribute 'line-number-current-line nil
-				:foreground (face-attribute 'cursor :background)
-				:weight 'bold))
-  (add-hook 'text-mode-hook 'ixl/highlight-current-line-number)
-  (add-hook 'prog-mode-hook 'ixl/highlight-current-line-number)
+    ;; highlight the current line number
+    (defun ixl/highlight-current-line-number ()
+      "This function highlights the current line number with the cursor colour"
+      (set-face-attribute 'line-number-current-line nil
+				  :foreground (face-attribute 'cursor :background)
+				  :weight 'bold))
+    (add-hook 'display-line-numbers-mode-hook 'ixl/highlight-current-line-number)
 #+END_SRC
 ** Key bindings
 #+BEGIN_SRC emacs-lisp
@@ -491,4 +499,29 @@ Simulate a Vim modal editing experience
 
   (my/display-weather-info)
 
+#+END_SRC
+** EShell prompt
+#+BEGIN_SRC emacs-lisp
+  (defun my/eshell-prompt ()
+    (let ((color-black "#2E3436")
+	  (color-red "#CC0000")
+	  (color-green "#4E9A06")
+	  (color-yellow "#C4A000")
+	  (color-blue "#3465A4")
+	  (color-magenta "#75507B")
+	  (color-cyan "#06989A")
+	  (color-white "#D3D7CF"))
+      (concat
+       (propertize "→ " 'face
+		   (if (= eshell-last-command-status 1)
+		       `(:foreground ,color-red)
+		       `(:foreground ,color-green)))
+       (propertize (eshell/pwd) 'face `(:foreground ,color-blue))
+       "\n" 
+       (if (= (user-uid) 0)
+	   (propertize "#" 'face `(:foreground ,color-red))
+	 "$")
+       " ")))
+  (setq eshell-prompt-function 'my/eshell-prompt)
+  (setq eshell-highlight-prompt nil)
 #+END_SRC

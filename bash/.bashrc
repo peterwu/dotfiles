@@ -15,9 +15,6 @@ alias emacs='emacsclient -t -a emacs'
 
 set -o vi
 
-# no scroll lock by accidentally pressing Ctrl+s
-stty -ixon
-
 source <(kubectl completion bash)
 
 ### This Changes The PS1 ### 
@@ -26,13 +23,13 @@ PROMPT_COMMAND=__prompt_command # Func to gen PS1 after CMDs
 function __prompt_command {
   local EXIT="$?"
 
-  # Dracula Colors
+  # Colors of the Selected Theme
   local BLACK="\[$(tput setaf 0)\]"
   local RED="\[$(tput setaf 1)\]"
   local GREEN="\[$(tput setaf 2)\]"
   local YELLOW="\[$(tput setaf 3)\]"
   local BLUE="\[$(tput setaf 4)\]"
-  local PURPLE="\[$(tput setaf 5)\]"
+  local MAGENTA="\[$(tput setaf 5)\]"
   local CYAN="\[$(tput setaf 6)\]"
   local WHITE="\[$(tput setaf 7)\]"
 
