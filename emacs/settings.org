@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #+STARTUP: overview
 
 My Emacs Init Settings
@@ -345,29 +346,29 @@ Simulate a Vim modal editing experience
 * Personal Settings
 ** Variables  
 #+BEGIN_SRC emacs-lisp
-  (set-language-environment "UTF-8")
-  (setq inhibit-startup-screen t
-	inhibit-startup-echo-area-message t)
-  (setq backup-inhibited t
-	make-backup-files nil
-	auto-save-default nil
-	auto-save-list-file-prefix nil)
-  (setq scroll-step 1
-	scroll-margin 1
-	scroll-conservatively 10000
-	auto-window-vscroll nil)
-  (setq vc-follow-symlinks nil)
-  (setq delete-by-moving-to-trash t)
-  (setq display-line-numbers-type 'relative)
-  (setq display-time-24hr-format t
-	display-time-default-load-average nil)
-  (setq visible-bell t)
-  (when (eq system-type 'windows-nt)
-    (setq inhibit-compacting-font-caches t)) 
-  (setq recentf-save-file (expand-file-name "cache/recentf" user-emacs-directory))
-  (setq bookmark-default-file (expand-file-name "cache/bookmarks" user-emacs-directory))
-  (setq tramp-persistency-file-name (expand-file-name
-				     "cache/tramp" user-emacs-directory))
+    (set-language-environment "utf-8")
+    (setq inhibit-startup-screen t
+	  inhibit-startup-echo-area-message t)
+    (setq backup-inhibited t
+	  make-backup-files nil
+	  auto-save-default nil
+	  auto-save-list-file-prefix nil)
+    (setq scroll-step 1
+	  scroll-margin 1
+	  scroll-conservatively 10000
+	  auto-window-vscroll nil)
+    (setq vc-follow-symlinks nil)
+    (setq delete-by-moving-to-trash t)
+    (setq display-line-numbers-type 'relative)
+    (setq display-time-24hr-format t
+	  display-time-default-load-average nil)
+    (setq visible-bell t)
+    (when (eq system-type 'windows-nt)
+      (setq inhibit-compacting-font-caches t)) 
+    (setq recentf-save-file (expand-file-name "cache/recentf" user-emacs-directory))
+    (setq bookmark-default-file (expand-file-name "cache/bookmarks" user-emacs-directory))
+    (setq tramp-persistency-file-name (expand-file-name
+				       "cache/tramp" user-emacs-directory))
 #+END_SRC
 ** Functions 
 #+BEGIN_SRC emacs-lisp
@@ -390,14 +391,14 @@ Simulate a Vim modal editing experience
 #+END_SRC
 ** Faces
 #+BEGIN_SRC emacs-lisp
-    ;; default face
-    (set-face-attribute 'default nil
-			:family "Inconsolata"
-			:foundry "outline"
-			:slant 'normal
-			:weight 'normal
-			:height 140
-			:width 'normal)
+  ;; default face
+  (set-face-attribute 'default nil
+		      :family "DejaVu Sans Mono"
+		      :foundry "outline"
+		      :slant 'normal
+		      :weight 'normal
+		      :height 120
+		      :width 'normal)
 
     ;; highlight the current line number
     (defun ixl/highlight-current-line-number ()
@@ -414,7 +415,7 @@ Simulate a Vim modal editing experience
 #+END_SRC
 ** Mode line
 #+BEGIN_SRC emacs-lisp
-  (defun my/get-and-parse-json (url)
+  (defun ixl/get-and-parse-json (url)
     (let ((buffer (url-retrieve-synchronously url))
 	  (json-object-type 'plist))
       (set-buffer buffer)
@@ -424,24 +425,24 @@ Simulate a Vim modal editing experience
        (buffer-substring-no-properties (point) (point-max)))))
 
   ;; http://ip-api.com/json/
-  ;; (defun my/get-coordinate ()
+  ;; (defun ixl/get-coordinate ()
   ;;   (let ((url "http://ip-api.com/json/"))
-  ;;     (let ((data (my/get-and-parse-json url)))
+  ;;     (let ((data (ixl/get-and-parse-json url)))
   ;;       (list :lat (plist-get data :lat)
   ;; 	    :lon (plist-get data :lon)))))
 
   ;; https://ipinfo.io/json
-  (defun my/get-coordinate ()
+  (defun ixl/get-coordinate ()
     (let* ((token "44cf10c96aeed5")
 	       (url (concat "https://ipinfo.io/json"
 			    "?"
 			    (url-build-query-string (list
 						     (list "token" token))))))
-	  (let ((data (my/get-and-parse-json url)))
+	  (let ((data (ixl/get-and-parse-json url)))
 	    (let ((loc (plist-get data :loc)))
 	      (-interleave '(:lat :lon) (split-string loc ","))))))
 
-  (defun my/get-weather-info (coord)
+  (defun ixl/get-weather-info (coord)
     (let* ((openweathermapUrl "https://api.openweathermap.org/data/2.5/weather")
 	   (appid "94f7172e9d0fd1e0c9756a48fa9c9477")
 	   (lat (plist-get coord :lat))
@@ -453,23 +454,22 @@ Simulate a Vim modal editing experience
 						 (list "lon" lon)
 						 (list "appid" appid)
 						 (list "units" "metric"))))))
-      (let ((data (my/get-and-parse-json url)))
+      (let ((data (ixl/get-and-parse-json url)))
 	(list
 	 :main (plist-get (aref (plist-get data :weather) 0) :main)
 	 :temp (round (plist-get (plist-get data :main) :temp))))))
 
-  (defvar my/weather-info-string nil)
+  (defvar ixl/weather-info-string nil)
 
-  (defun my/display-weather-info ()
-    ;; (setq my/weather-info-string "")
+  (defun ixl/display-weather-info ()
     (or global-mode-string (setq global-mode-string '("")))
-    (or (memq 'my/weather-info-string global-mode-string)
+    (or (memq 'ixl/weather-info-string global-mode-string)
 	(setq global-mode-string
-	      (append global-mode-string '(my/weather-info-string))))
+	      (append global-mode-string '(ixl/weather-info-string))))
     (run-with-timer 0 (* 60 10)
 		    (lambda ()
-		      (let ((weather (my/get-weather-info (my/get-coordinate))))
-			(setq my/weather-info-string (concat "[" 
+		      (let ((weather (ixl/get-weather-info (ixl/get-coordinate))))
+			(setq ixl/weather-info-string (concat "[" 
 							     (plist-get weather :main)
 							     " "
 							     (number-to-string (plist-get weather :temp))
@@ -478,31 +478,38 @@ Simulate a Vim modal editing experience
 
   (setq-default mode-line-format (-replace 'mode-line-modes " (%m) " mode-line-format))
 
-  ;; (setq-default mode-line-format
-  ;; 	'("%e"
-  ;; 	  mode-line-front-space
-  ;; 	  mode-line-mule-info
-  ;; 	  mode-line-client
-  ;; 	  mode-line-modified
-  ;; 	  mode-line-remote
-  ;; 	  mode-line-frame-identification
-  ;; 	  mode-line-buffer-identification
-  ;; 	  "   "
-  ;; 	  mode-line-position
-  ;; 	  (vc-mode vc-mode)
-  ;; 	  "  "
-  ;; 	  "(%m)"
-  ;; 	  mode-line-misc-info
-  ;; 	  "  "
-  ;; 	  "[" my-mode-line-weather-info "]"
-  ;; 	  mode-line-end-spaces))
-
-  (my/display-weather-info)
+  (ixl/display-weather-info)
 
 #+END_SRC
 ** EShell prompt
 #+BEGIN_SRC emacs-lisp
-  (defun my/eshell-prompt ()
+  (defun ixl/pwd-shorten-dirs (pwd)
+    "Shorten all directory names in PWD except the last two."
+    (let ((p-lst (split-string pwd "/")))
+      (if (> (length p-lst) 2)
+	  (concat
+	   (mapconcat (lambda (elm) (if (zerop (length elm)) ""
+				      (substring elm 0 1)))
+		      (butlast p-lst 2)
+		      "/")
+	   "/"
+	   (mapconcat (lambda (elm) elm)
+		      (last p-lst 2)
+		      "/"))
+	pwd)))  ;; Otherwise, we just return the PWD
+
+  (defun ixl/pwd-replace-home (pwd)
+    "Replace home in PWD with tilde (~) character."
+    (interactive)
+    (let* ((home (expand-file-name (getenv "HOME")))
+	   (home-len (length home)))
+      (if (and
+	   (>= (length pwd) home-len)
+	   (equal home (substring pwd 0 home-len)))
+	  (concat "~" (substring pwd home-len))
+	pwd)))
+
+  (defun ixl/eshell-prompt ()
     (let ((color-black "#2E3436")
 	  (color-red "#CC0000")
 	  (color-green "#4E9A06")
@@ -515,13 +522,21 @@ Simulate a Vim modal editing experience
        (propertize "→ " 'face
 		   (if (= eshell-last-command-status 1)
 		       `(:foreground ,color-red)
-		       `(:foreground ,color-green)))
-       (propertize (eshell/pwd) 'face `(:foreground ,color-blue))
+		     `(:foreground ,color-green)))
+       (propertize (ixl/pwd-shorten-dirs
+		    (ixl/pwd-replace-home (eshell/pwd))) 'face `(:foreground ,color-blue))
+       (when (locate-dominating-file (eshell/pwd) ".git")
+	 (let* ((git-status (shell-command-to-string "git status --porcelain"))
+		(git-branch (shell-command-to-string "git rev-parse --abbrev-ref HEAD")))
+	   (concat " " (propertize git-branch 'face (list :foreground
+							  (if (string-empty-p git-status)
+							      (concat color-green)
+							    (concat color-red)))))))
        "\n" 
        (if (= (user-uid) 0)
-	   (propertize "#" 'face `(:foreground ,color-red))
-	 "$")
+	   (propertize "Λ" 'face `(:foreground ,color-red))
+	 "λ")
        " ")))
-  (setq eshell-prompt-function 'my/eshell-prompt)
+  (setq eshell-prompt-function 'ixl/eshell-prompt)
   (setq eshell-highlight-prompt nil)
 #+END_SRC
