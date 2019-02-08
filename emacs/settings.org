@@ -49,6 +49,20 @@ My Emacs Init Settings
 ** Theme 
 #+BEGIN_SRC emacs-lisp
   (load-theme 'tango t)
+
+  (defconst theme-color-black "#2E3436")
+  (defconst theme-color-red "#CC0000")
+  (defconst theme-color-green "#4E9A06")
+  (defconst theme-color-yellow "#C4A000")
+  (defconst theme-color-blue "#3465A4")
+  (defconst theme-color-magenta "#75507B")
+  (defconst theme-color-cyan "#06989A")
+  (defconst theme-color-white "#D3D7CF")
+#+END_SRC
+** Minions
+#+BEGIN_SRC emacs-lisp
+  (use-package minions
+    :config (minions-mode 1))
 #+END_SRC
 ** Ace-window
 #+BEGIN_SRC emacs-lisp
@@ -70,22 +84,13 @@ Simulate a Vim modal editing experience
     :config
     (evil-mode t)
     (setq evil-mode-line-format '(after . mode-line-front-space))
-    (let* ((color-black "#2E3436")
-	   (color-red "#CC0000")
-	   (color-green "#4E9A06")
-	   (color-yellow "#C4A000")
-	   (color-blue "#3465A4")
-	   (color-magenta "#75507B")
-	   (color-cyan "#06989A")
-	   (color-white "#D3D7CF")
-
-	   (evil-state-foreground-color color-white)
-	   (evil-emacs-state-background-color color-blue)
-	   (evil-motion-state-background-color color-cyan)
-	   (evil-insert-state-background-color color-green)
-	   (evil-visual-state-background-color color-magenta)
-	   (evil-operator-state-background-color color-yellow)
-	   (evil-replace-state-background-color color-red))
+    (let* ((evil-state-foreground-color theme-color-white)
+	   (evil-emacs-state-background-color theme-color-blue)
+	   (evil-motion-state-background-color theme-color-cyan)
+	   (evil-insert-state-background-color theme-color-green)
+	   (evil-visual-state-background-color theme-color-magenta)
+	   (evil-operator-state-background-color theme-color-yellow)
+	   (evil-replace-state-background-color theme-color-red))
       (require 's)
       (setq evil-normal-state-tag
 	    (s-center 5 (propertize (s-trim evil-normal-state-tag)
@@ -236,33 +241,6 @@ Simulate a Vim modal editing experience
     :config
     (counsel-projectile-mode))
 #+END_SRC
-** Treemacs
-#+BEGIN_SRC emacs-lisp
-  (use-package treemacs
-    :defer t
-    :bind
-    (([f8] . treemacs)
-     ("M-0" . treemacs-select-window))
-    :config
-    (setq treemacs-persist-file
-	  (expand-file-name "cache/treemacs-persist" user-emacs-directory)))
-#+END_SRC
-*** Evil support
-#+BEGIN_SRC emacs-lisp
-(use-package treemacs-evil
-  :after treemacs evil)
-#+END_SRC
-*** Projectile integration
-#+BEGIN_SRC emacs-lisp
-(use-package treemacs-projectile
-  :after treemacs projectile)
-#+END_SRC
-*** Use pretty icons
-#+BEGIN_SRC emacs-lisp
-  (use-package treemacs-icons-dired
-    :after treemacs dired
-    :config (treemacs-icons-dired-mode))
-#+END_SRC
 ** Company for auto completion
 #+BEGIN_SRC emacs-lisp
   (use-package company
@@ -305,6 +283,34 @@ Simulate a Vim modal editing experience
      :bind
      ("<f1> u" . counsel-unicode-char))
  #+END_SRC
+** Treemacs
+#+BEGIN_SRC emacs-lisp
+  (use-package treemacs
+    :defer t
+    :bind
+    (([f8] . treemacs)
+     ("M-0" . treemacs-select-window))
+    :config
+    (setq treemacs-persist-file
+	  (expand-file-name "cache/treemacs-persist" user-emacs-directory)))
+#+END_SRC
+*** Evil support
+#+BEGIN_SRC emacs-lisp
+(use-package treemacs-evil
+  :after treemacs evil)
+#+END_SRC
+*** Projectile integration
+#+BEGIN_SRC emacs-lisp
+(use-package treemacs-projectile
+  :after treemacs projectile)
+#+END_SRC
+*** Use pretty icons
+#+BEGIN_SRC emacs-lisp
+  (use-package treemacs-icons-dired
+    :disabled
+    :after treemacs dired
+    :config (treemacs-icons-dired-mode))
+#+END_SRC
 ** Various file types
 *** YAML files
  #+BEGIN_SRC emacs-lisp
@@ -393,11 +399,11 @@ Simulate a Vim modal editing experience
 #+BEGIN_SRC emacs-lisp
   ;; default face
   (set-face-attribute 'default nil
-		      :family "DejaVu Sans Mono"
+		      :family "Inconsolata"
 		      :foundry "outline"
 		      :slant 'normal
 		      :weight 'normal
-		      :height 120
+		      :height 140
 		      :width 'normal)
 
     ;; highlight the current line number
@@ -476,7 +482,7 @@ Simulate a Vim modal editing experience
 							     "°C]"))
 			(force-mode-line-update)))))
 
-  (setq-default mode-line-format (-replace 'mode-line-modes " (%m) " mode-line-format))
+  ;; (setq-default mode-line-format (-replace 'mode-line-modes " (%m) " mode-line-format))
 
   (ixl/display-weather-info)
 
@@ -510,33 +516,26 @@ Simulate a Vim modal editing experience
 	pwd)))
 
   (defun ixl/eshell-prompt ()
-    (let ((color-black "#2E3436")
-	  (color-red "#CC0000")
-	  (color-green "#4E9A06")
-	  (color-yellow "#C4A000")
-	  (color-blue "#3465A4")
-	  (color-magenta "#75507B")
-	  (color-cyan "#06989A")
-	  (color-white "#D3D7CF"))
-      (concat
-       (propertize "→ " 'face
-		   (if (= eshell-last-command-status 1)
-		       `(:foreground ,color-red)
-		     `(:foreground ,color-green)))
-       (propertize (ixl/pwd-shorten-dirs
-		    (ixl/pwd-replace-home (eshell/pwd))) 'face `(:foreground ,color-blue))
-       (when (locate-dominating-file (eshell/pwd) ".git")
-	 (let* ((git-status (shell-command-to-string "git status --porcelain"))
-		(git-branch (shell-command-to-string "git rev-parse --abbrev-ref HEAD")))
-	   (concat " " (propertize git-branch 'face (list :foreground
-							  (if (string-empty-p git-status)
-							      (concat color-green)
-							    (concat color-red)))))))
-       "\n" 
-       (if (= (user-uid) 0)
-	   (propertize "Λ" 'face `(:foreground ,color-red))
-	 "λ")
-       " ")))
+    (require 's)
+    (concat
+     (propertize "→ " 'face
+		 (if (= eshell-last-command-status 1)
+		     `(:foreground ,theme-color-red)
+		   `(:foreground ,theme-color-green)))
+     (propertize (ixl/pwd-shorten-dirs
+		  (ixl/pwd-replace-home (eshell/pwd))) 'face `(:foreground ,theme-color-blue))
+     (when (locate-dominating-file (eshell/pwd) ".git")
+       (let* ((git-status (shell-command-to-string "git status --porcelain"))
+	      (git-branch (s-chomp (shell-command-to-string "git rev-parse --abbrev-ref HEAD"))))
+	 (concat " " (propertize git-branch 'face (list :foreground
+							(if (string-empty-p git-status)
+							    (concat theme-color-green)
+							  (concat theme-color-red)))))))
+     "\n" 
+     (if (= (user-uid) 0)
+	 (propertize "#" 'face `(:foreground ,theme-color-red))
+       "$")
+     " "))
   (setq eshell-prompt-function 'ixl/eshell-prompt)
   (setq eshell-highlight-prompt nil)
 #+END_SRC
