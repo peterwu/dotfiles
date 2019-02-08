@@ -249,13 +249,6 @@ Simulate a Vim modal editing experience
 	  company-minimum-prefix-length 3)
     (global-company-mode t))
 #+END_SRC
-** Yasnippets
- #+BEGIN_SRC emacs-lisp
-   (use-package yasnippet
-     :config
-     (use-package yasnippet-snippets)
-     (yas-global-mode 1))
- #+END_SRC
 ** Search
 *** Avy
     #+BEGIN_SRC emacs-lisp
@@ -311,6 +304,13 @@ Simulate a Vim modal editing experience
     :after treemacs dired
     :config (treemacs-icons-dired-mode))
 #+END_SRC
+** Yasnippets
+ #+BEGIN_SRC emacs-lisp
+   (use-package yasnippet
+     :config
+     (use-package yasnippet-snippets)
+     (yas-global-mode 1))
+ #+END_SRC
 ** Various file types
 *** YAML files
  #+BEGIN_SRC emacs-lisp
@@ -421,71 +421,80 @@ Simulate a Vim modal editing experience
 #+END_SRC
 ** Mode line
 #+BEGIN_SRC emacs-lisp
-  (defun ixl/get-and-parse-json (url)
-    (let ((buffer (url-retrieve-synchronously url))
-	  (json-object-type 'plist))
-      (set-buffer buffer)
-      (goto-char (point-min))
-      (re-search-forward "^$") 
-      (json-read-from-string
-       (buffer-substring-no-properties (point) (point-max)))))
+    (defun ixl/get-and-parse-json (url)
+      (let ((buffer (url-retrieve-synchronously url))
+	    (json-object-type 'plist))
+	(set-buffer buffer)
+	(goto-char (point-min))
+	(re-search-forward "^$") 
+	(json-read-from-string
+	 (buffer-substring-no-properties (point) (point-max)))))
 
-  ;; http://ip-api.com/json/
-  ;; (defun ixl/get-coordinate ()
-  ;;   (let ((url "http://ip-api.com/json/"))
-  ;;     (let ((data (ixl/get-and-parse-json url)))
-  ;;       (list :lat (plist-get data :lat)
-  ;; 	    :lon (plist-get data :lon)))))
+    ;; http://ip-api.com/json/
+    ;; (defun ixl/get-coordinate ()
+    ;;   (let ((url "http://ip-api.com/json/"))
+    ;;     (let ((data (ixl/get-and-parse-json url)))
+    ;;       (list :lat (plist-get data :lat)
+    ;; 	    :lon (plist-get data :lon)))))
 
-  ;; https://ipinfo.io/json
-  (defun ixl/get-coordinate ()
-    (let* ((token "44cf10c96aeed5")
-	       (url (concat "https://ipinfo.io/json"
-			    "?"
-			    (url-build-query-string (list
-						     (list "token" token))))))
-	  (let ((data (ixl/get-and-parse-json url)))
-	    (let ((loc (plist-get data :loc)))
-	      (-interleave '(:lat :lon) (split-string loc ","))))))
+    ;; https://ipinfo.io/json
+    (defun ixl/get-coordinate ()
+      (let* ((token "44cf10c96aeed5")
+		 (url (concat "https://ipinfo.io/json"
+			      "?"
+			      (url-build-query-string (list
+						       (list "token" token))))))
+	    (let ((data (ixl/get-and-parse-json url)))
+	      (let ((loc (plist-get data :loc)))
+		(-interleave '(:lat :lon) (split-string loc ","))))))
 
-  (defun ixl/get-weather-info (coord)
-    (let* ((openweathermapUrl "https://api.openweathermap.org/data/2.5/weather")
-	   (appid "94f7172e9d0fd1e0c9756a48fa9c9477")
-	   (lat (plist-get coord :lat))
-	   (lon (plist-get coord :lon))
-	   (url (concat openweathermapUrl
-			"?"
-			(url-build-query-string (list
-						 (list "lat" lat)
-						 (list "lon" lon)
-						 (list "appid" appid)
-						 (list "units" "metric"))))))
-      (let ((data (ixl/get-and-parse-json url)))
-	(list
-	 :main (plist-get (aref (plist-get data :weather) 0) :main)
-	 :temp (round (plist-get (plist-get data :main) :temp))))))
+    (defun ixl/get-weather-info (coord)
+      (let* ((openweathermapUrl "https://api.openweathermap.org/data/2.5/weather")
+	     (appid "94f7172e9d0fd1e0c9756a48fa9c9477")
+	     (lat (plist-get coord :lat))
+	     (lon (plist-get coord :lon))
+	     (url (concat openweathermapUrl
+			  "?"
+			  (url-build-query-string (list
+						   (list "lat" lat)
+						   (list "lon" lon)
+						   (list "appid" appid)
+						   (list "units" "metric"))))))
+	(let ((data (ixl/get-and-parse-json url)))
+	  (list
+	   :main (plist-get (aref (plist-get data :weather) 0) :main)
+	   :temp (number-to-string (round (plist-get (plist-get data :main) :temp)))
+	   :humidity (number-to-string (plist-get (plist-get data :main) :humidity))
+	   :pressure (number-to-string (plist-get (plist-get data :main) :pressure))
+	   :wind (number-to-string (* 3.6 (plist-get (plist-get data :wind) :speed))) ;; convert m/s to km/h
+	   :cloudiness (number-to-string (plist-get (plist-get data :clouds) :all))))))
 
-  (defvar ixl/weather-info-string nil)
+  (defvar ixl/weather-mode-line-string nil)
+  (put 'ixl/weather-mode-line-string 'risky-local-variable t)
 
   (defun ixl/display-weather-info ()
     (or global-mode-string (setq global-mode-string '("")))
-    (or (memq 'ixl/weather-info-string global-mode-string)
+    (or (memq 'ixl/weather-mode-line-string global-mode-string)
 	(setq global-mode-string
-	      (append global-mode-string '(ixl/weather-info-string))))
+	      (append global-mode-string '(ixl/weather-mode-line-string))))
     (run-with-timer 0 (* 60 10)
 		    (lambda ()
-		      (let ((weather (ixl/get-weather-info (ixl/get-coordinate))))
-			(setq ixl/weather-info-string (concat "[" 
-							     (plist-get weather :main)
-							     " "
-							     (number-to-string (plist-get weather :temp))
-							     "°C]"))
+		      (let* ((weather (ixl/get-weather-info (ixl/get-coordinate)))
+			     (weather-brief-info (concat "[" 
+							  (plist-get weather :main)
+							  " "
+							  (plist-get weather :temp)
+							  "°C]"))
+			     (weather-detailed-info (concat
+						     "Humidity\t" (plist-get weather :humidity) " %\n"
+						     "Pressure\t" (plist-get weather :pressure) " hPa\n"
+						     "Wind Speed\t" (plist-get weather :wind) " km/h\n"
+						     "Cloudiness\t" (plist-get weather :cloudiness) "%")))
+			(setq ixl/weather-mode-line-string
+			      (propertize weather-brief-info
+					  'help-echo weather-detailed-info))
 			(force-mode-line-update)))))
-
-  ;; (setq-default mode-line-format (-replace 'mode-line-modes " (%m) " mode-line-format))
-
   (ixl/display-weather-info)
-
 #+END_SRC
 ** EShell prompt
 #+BEGIN_SRC emacs-lisp
