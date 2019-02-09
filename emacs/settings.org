@@ -19,7 +19,7 @@ My Emacs Init Settings
 #+END_SRC
 ** Personal scripts
 #+BEGIN_SRC emacs-lisp
-  (add-to-list 'load-path (expand-file-name "scripts" user-emacs-directory))
+  (add-to-list 'load-path (expand-file-name "elisp" user-emacs-directory))
 #+END_SRC
 ** Install *use-package* if not
 #+BEGIN_SRC emacs-lisp
@@ -40,6 +40,14 @@ My Emacs Init Settings
     (setq auto-package-update-hide-results t)
     (auto-package-update-maybe))
 #+END_SRC 
+** EXWM
+#+BEGIN_SRC emacs-lisp
+  (use-package exwm
+    :disabled
+    :config
+    (require 'exwm-config)
+    (exwm-config-default))
+#+END_SRC
 ** Install which-key
 #+BEGIN_SRC emacs-lisp
   (use-package which-key
@@ -48,7 +56,17 @@ My Emacs Init Settings
 #+END_SRC
 ** Theme 
 #+BEGIN_SRC emacs-lisp
-  (load-theme 'tango t)
+  (use-package leuven-theme
+    :config
+    (setq leuven-scale-outline-headlines nil)
+    (setq leuven-scale-org-agenda-structure nil)
+    (load-theme 'leuven t))
+#+END_SRC
+** Modeline
+#+BEGIN_SRC emacs-lisp
+  (use-package minions
+    :config
+    (minions-mode 1))
 #+END_SRC
 ** Ace-window
 #+BEGIN_SRC emacs-lisp
@@ -200,6 +218,7 @@ Simulate a Vim modal editing experience
 #+BEGIN_SRC emacs-lisp
   (use-package org
     :init
+    (setq org-fontify-whole-heading-line t)
     (setq org-support-shift-select t)
     (setq org-agenda-files (list "~/Documents/agendas"))
     :config
@@ -244,18 +263,19 @@ Simulate a Vim modal editing experience
     (([f8] . treemacs)
      ("M-0" . treemacs-select-window))
     :config
+    (treemacs-resize-icons 44)
     (setq treemacs-persist-file
 	  (expand-file-name "cache/treemacs-persist" user-emacs-directory)))
 #+END_SRC
 *** Evil support
 #+BEGIN_SRC emacs-lisp
-(use-package treemacs-evil
-  :after treemacs evil)
+  (use-package treemacs-evil
+    :after treemacs evil)
 #+END_SRC
 *** Projectile integration
 #+BEGIN_SRC emacs-lisp
-(use-package treemacs-projectile
-  :after treemacs projectile)
+  (use-package treemacs-projectile
+    :after treemacs projectile)
 #+END_SRC
 *** Use pretty icons
 #+BEGIN_SRC emacs-lisp
@@ -303,7 +323,8 @@ Simulate a Vim modal editing experience
  #+BEGIN_SRC emacs-lisp
    (use-package counsel
      :bind
-     ("<f1> u" . counsel-unicode-char))
+     (("C-x C-f" . counsel-find-file)
+      ("<f1> u" . counsel-unicode-char)))
  #+END_SRC
 ** Various file types
 *** YAML files
@@ -393,11 +414,11 @@ Simulate a Vim modal editing experience
 #+BEGIN_SRC emacs-lisp
   ;; default face
   (set-face-attribute 'default nil
-		      :family "DejaVu Sans Mono"
+		      :family "Inconsolata"
 		      :foundry "outline"
 		      :slant 'normal
 		      :weight 'normal
-		      :height 120
+		      :height 140
 		      :width 'normal)
 
     ;; highlight the current line number
@@ -412,6 +433,7 @@ Simulate a Vim modal editing experience
 #+BEGIN_SRC emacs-lisp
   (global-set-key [f12] 'eshell)
   (global-set-key (kbd "C-x C-b") 'ibuffer)
+  (global-set-key [mouse-3] 'mouse-popup-menubar-stuff)
 #+END_SRC
 ** Mode line
 #+BEGIN_SRC emacs-lisp
@@ -476,7 +498,7 @@ Simulate a Vim modal editing experience
 							     "°C]"))
 			(force-mode-line-update)))))
 
-  (setq-default mode-line-format (-replace 'mode-line-modes " (%m) " mode-line-format))
+  ;; (setq-default mode-line-format (-replace 'mode-line-modes " (%m) " mode-line-format))
 
   (ixl/display-weather-info)
 
