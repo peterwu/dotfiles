@@ -185,6 +185,10 @@ Simulate a Vim modal editing experience
   (use-package magit
     :config
     (global-set-key (kbd "C-x g") 'magit-status))
+
+  (use-package evil-magit
+    :config
+    (setq evil-magit-state 'normal))
 #+END_SRC
 ** Sudo-edit
 #+BEGIN_SRC emacs-lisp
