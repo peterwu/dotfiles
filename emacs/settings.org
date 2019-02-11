@@ -406,11 +406,11 @@ Simulate a Vim modal editing experience
 #+BEGIN_SRC emacs-lisp
   ;; default face
   (set-face-attribute 'default nil
-		      :family "Inconsolata"
+		      :family "Iosevka"
 		      :foundry "outline"
 		      :slant 'normal
 		      :weight 'normal
-		      :height 140
+		      :height 120
 		      :width 'normal)
 
     ;; highlight the current line number
@@ -418,8 +418,8 @@ Simulate a Vim modal editing experience
       "This function highlights the current line number with the cursor colour"
       (set-face-attribute 'line-number-current-line nil
 				  :foreground (face-attribute 'cursor :background)
-				  :underline t
-				  :weight 'normal))
+				  :weight 'bold
+				  :underline t))
     (add-hook 'display-line-numbers-mode-hook 'ixl/highlight-current-line-number)
 #+END_SRC
 ** Key bindings
