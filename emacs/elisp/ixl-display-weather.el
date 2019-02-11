@@ -1,3 +1,59 @@
+(require 's)
+(require 'url)
+
+(setq max-mini-window-height 10)
+
+(defun ixl--wind-degree-to-direction (degree)
+  (when  (numberp degree)
+    (cond ((or  (>= degree 348.75)
+		(< degree 11.25))
+	   "N")
+	  ((and (>= degree 11.25)
+		(< degree 33.75))
+	   "NNE")
+	  ((and (>= degree 33.75)
+		(< degree 56.25))
+	   "NE")
+	  ((and (>= degree 56.25)
+		(< degree 78.75))
+	   "ENE")
+	  ((and (>= degree 78.75)
+		(< degree 101.25))
+	   "E")
+	  ((and (>= degree 101.25)
+		(< degree 123.75))
+	   "ESE")
+	  ((and (>= degree 123.75)
+		(< degree 146.25))
+	   "SE")
+	  ((and (>= degree 146.25)
+		(< degree 168.75))
+	   "SSE")
+	  ((and (>= degree 168.75)
+		(< degree 191.25))
+	   "S")
+	  ((and (>= degree 191.25)
+		(< degree 213.75))
+	   "SSW")
+	  ((and (>= degree 213.75)
+		(< degree 236.25))
+	   "SW")
+	  ((and (>= degree 236.25)
+		(< degree 258.75))
+	   "WSW")
+	  ((and (>= degree 258.75)
+		(< degree 281.25))
+	   "W")
+	  ((and (>= degree 281.25)
+		(< degree 303.75))
+	   "WNW")
+	  ((and (>= degree 303.75)
+		(< degree 326.25))
+	   "NW")
+	  ((and (>= degree 326.25)
+		(< degree 348.75))
+	   "NNW"))))
+
 (defun ixl--get-and-parse-json (url)
   (let ((buffer (url-retrieve-synchronously url))
 	(json-object-type 'plist))
@@ -39,15 +95,19 @@
 					       (list "units" "metric"))))))
     (let ((data (ixl--get-and-parse-json url)))
       (list
+       :city (plist-get data :name)
        :main (plist-get (aref (plist-get data :weather) 0) :main)
-       :temp (number-to-string (round (plist-get (plist-get data :main) :temp)))
-       :minTemp (number-to-string (round (plist-get (plist-get data :main) :temp_min)))
-       :maxTemp (number-to-string (round (plist-get (plist-get data :main) :temp_max)))
-       :humidity (number-to-string (plist-get (plist-get data :main) :humidity))
-       :pressure (number-to-string (plist-get (plist-get data :main) :pressure))
-       :wind (number-to-string (round (* 3.6 (plist-get (plist-get data :wind) :speed)))) ;; convert m/s to km/h
-       :sunrise (format-time-string "%R %Z" (seconds-to-time(plist-get (plist-get data :sys) :sunrise)))
-       :sunset (format-time-string "%R %Z" (seconds-to-time(plist-get (plist-get data :sys) :sunset)))))))
+       :description (plist-get (aref (plist-get data :weather) 0) :description)
+       :temp (round (plist-get (plist-get data :main) :temp))
+       :minTemp (round (plist-get (plist-get data :main) :temp_min))
+       :maxTemp (round (plist-get (plist-get data :main) :temp_max))
+       :cloudiness (round (plist-get (plist-get data :clouds) :all))
+       :humidity (plist-get (plist-get data :main) :humidity)
+       :pressure (plist-get (plist-get data :main) :pressure)
+       :windSpeed (round (* 3.6 (plist-get (plist-get data :wind) :speed))) ;; convert m/s to km/h
+       :windDir (plist-get (plist-get data :wind) :deg)
+       :sunrise (format-time-string "%R %Z" (seconds-to-time (plist-get (plist-get data :sys) :sunrise)))
+       :sunset (format-time-string "%R %Z" (seconds-to-time (plist-get (plist-get data :sys) :sunset)))))))
 
 (defvar ixl--weather-info nil)
 
@@ -55,24 +115,26 @@
 (put 'ixl-weather-mode-line-string 'risky-local-variable t)
 
 (defun ixl--weather-details ()
-    (concat
-     "Min Temp\t" (plist-get ixl--weather-info :minTemp) " °C\n"
-     "Max Temp\t" (plist-get ixl--weather-info :maxTemp) " °C\n"
-     "Humidity\t" (plist-get ixl--weather-info :humidity) " %\n"
-     "Pressure\t" (plist-get ixl--weather-info :pressure) " hPa\n"
-     "Wind\t" (plist-get ixl--weather-info :wind) " km/h\n"
-     "Sunrise\t" (plist-get ixl--weather-info :sunrise) "\n"
-     "Sunset\t" (plist-get ixl--weather-info :sunset) ""))
+  (concat
+   (format "%12s: %s" "Location" (plist-get ixl--weather-info :city)) "\n"
+   (format "%12s: %s { %s }" "Weather" (plist-get ixl--weather-info :main) (plist-get ixl--weather-info :description)) "\n"
+   (format "%12s: %d°C / %d°C" "Temperature" (plist-get ixl--weather-info :minTemp) (plist-get ixl--weather-info :maxTemp)) "\n"
+   (format "%12s: %d%%" "Cloudiness" (plist-get ixl--weather-info :cloudiness)) "\n"
+   (format "%12s: %d%%" "Humidity" (plist-get ixl--weather-info :humidity)) "\n"
+   (format "%12s: %d hPa" "Pressure" (plist-get ixl--weather-info :pressure)) "\n"
+   (format "%12s: %d km/h %s" "Wind" (plist-get ixl--weather-info :windSpeed) (ixl--wind-degree-to-direction (plist-get ixl--weather-info :windDir))) "\n"
+   (format "%12s: %s" "Sunrise" (plist-get ixl--weather-info :sunrise)) "\n"
+   (format "%12s: %s" "Sunset" (plist-get ixl--weather-info :sunset) "")))
 
-(defun ixl--show-weather-details ()
+(defun ixl-show-weather-details ()
   (interactive)
-  ;; (tooltip-show (ixl--weather-details))
-  )
+  ;; (window-resize (minibuffer-window) 10)
+  (message "%s" (ixl--weather-details)))
+(global-set-key (kbd "C-c w") 'ixl-show-weather-details)
 
 (defvar ixl--display-weather-keymap
   (let ((map (make-sparse-keymap)))
     (define-key map [mode-line down-mouse-1]  'ixl--show-weather-details)
-    ;; (define-key map [mode-line down-mouse-1]  'minions-minor-modes-menu)
     map))
 
 (defun ixl-display-weather-info ()
@@ -84,15 +146,12 @@
 		  (lambda ()
 		    (setq ixl--weather-info (ixl--get-weather-info (ixl--get-coordinate)))
 		    (let* ((weather ixl--weather-info)
-			   (weather-brief-info (concat "[" 
-						       (plist-get weather :main)
-						       " "
-						       (plist-get weather :temp)
-						       "°C]")))
+			   (weather-brief-info
+			    (format "[%s %d°C]" (plist-get weather :main)  (plist-get weather :temp))))
 		      (setq ixl-weather-mode-line-string
 			    (propertize weather-brief-info
-					'help-echo "Click for more details" 
-					'local-map ixl--display-weather-keymap))
+					;; 'local-map ixl-display-weather-keymap
+					'help-echo (plist-get weather :city)))
 		      (force-mode-line-update)))))
 
 (provide 'ixl-display-weather)
