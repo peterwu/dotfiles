@@ -128,7 +128,6 @@
 
 (defun ixl-show-weather-details ()
   (interactive)
-  ;; (window-resize (minibuffer-window) 10)
   (message "%s" (ixl--weather-details)))
 (global-set-key (kbd "C-c w") 'ixl-show-weather-details)
 
@@ -150,7 +149,6 @@
 			    (format "[%s %d°C]" (plist-get weather :main)  (plist-get weather :temp))))
 		      (setq ixl-weather-mode-line-string
 			    (propertize weather-brief-info
-					;; 'local-map ixl-display-weather-keymap
 					'help-echo (plist-get weather :city)))
 		      (force-mode-line-update)))))
 

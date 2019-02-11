@@ -187,6 +187,7 @@ Simulate a Vim modal editing experience
     (global-set-key (kbd "C-x g") 'magit-status))
 
   (use-package evil-magit
+    :after evil magit
     :config
     (setq evil-magit-state 'normal))
 #+END_SRC
@@ -417,7 +418,8 @@ Simulate a Vim modal editing experience
       "This function highlights the current line number with the cursor colour"
       (set-face-attribute 'line-number-current-line nil
 				  :foreground (face-attribute 'cursor :background)
-				  :weight 'bold))
+				  :underline t
+				  :weight 'normal))
     (add-hook 'display-line-numbers-mode-hook 'ixl/highlight-current-line-number)
 #+END_SRC
 ** Key bindings
