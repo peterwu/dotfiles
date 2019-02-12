@@ -23,6 +23,8 @@ nnoremap Y y$
 nnoremap <leader>cd :cd %:p:h<cr>:pwd<cr>
 nnoremap <leader>ev :e $MYVIMRC<cr>
 nnoremap <leader>sv :source $MYVIMRC<cr>
+nnoremap <leader>egv :e $MYGVIMRC<cr>
+nnoremap <leader>sgv :source $MYGVIMRC<cr>
 
 " minpac 
 if exists('*minpac#init')

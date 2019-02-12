@@ -374,6 +374,7 @@ Simulate a Vim modal editing experience
   (setq delete-by-moving-to-trash t)
   (setq display-line-numbers-type 'relative)
   (setq display-time-24hr-format t
+	display-time-format "[%R]"
 	display-time-default-load-average nil)
   (setq visible-bell t)
   (when (eq system-type 'windows-nt)
