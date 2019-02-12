@@ -221,9 +221,9 @@ Simulate a Vim modal editing experience
 #+END_SRC
 *** Org-bullets
 #+BEGIN_SRC emacs-lisp
-(use-package org-bullets
-  :config
-  (add-hook 'org-mode-hook 'org-bullets-mode))
+  (use-package org-bullets
+    :config
+    (add-hook 'org-mode-hook 'org-bullets-mode))
 #+END_SRC
 *** org-templates
 #+BEGIN_SRC emacs-lisp
@@ -296,13 +296,13 @@ Simulate a Vim modal editing experience
 #+END_SRC
 *** Evil support
 #+BEGIN_SRC emacs-lisp
-(use-package treemacs-evil
-  :after treemacs evil)
+  (use-package treemacs-evil
+    :after treemacs evil)
 #+END_SRC
 *** Projectile integration
 #+BEGIN_SRC emacs-lisp
-(use-package treemacs-projectile
-  :after treemacs projectile)
+  (use-package treemacs-projectile
+    :after treemacs projectile)
 #+END_SRC
 *** Use pretty icons
 #+BEGIN_SRC emacs-lisp
@@ -465,7 +465,7 @@ Simulate a Vim modal editing experience
   (defun ixl/eshell-prompt ()
     (require 's)
     (concat
-     (propertize "→ " 'face
+     (propertize "↪ " 'face
 		 (if (= eshell-last-command-status 1)
 		     `(:foreground ,theme-color-red)
 		   `(:foreground ,theme-color-green)))
@@ -480,8 +480,8 @@ Simulate a Vim modal editing experience
 							  (concat theme-color-red)))))))
      "\n" 
      (if (= (user-uid) 0)
-	 (propertize "#" 'face `(:foreground ,theme-color-red))
-       "$")
+	 (propertize "Λ" 'face `(:foreground ,theme-color-red))
+       "λ")
      " "))
   (setq eshell-prompt-function 'ixl/eshell-prompt)
   (setq eshell-highlight-prompt nil)

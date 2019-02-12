@@ -61,7 +61,7 @@ function __prompt_command {
   function arrow {
     # ↬ : U+21AC
     # → : U+2192
-    local arrow="→ "
+    local arrow="↪ "
     if [ $EXIT != 0 ]; then
       arrow="${RED}${arrow}${RESET}"      # Add red if exit code non 0
     else
