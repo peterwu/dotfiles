@@ -21,7 +21,7 @@ My Emacs Init Settings
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'load-path (expand-file-name "elisp" user-emacs-directory))
 #+END_SRC
-** Install *use-package* if not
+** Install =use-package= if not
 #+BEGIN_SRC emacs-lisp
   (unless (package-installed-p 'use-package)
     (package-refresh-contents)
@@ -46,18 +46,37 @@ My Emacs Init Settings
     :init
     (which-key-mode))
 #+END_SRC
-** Theme 
+** Theme
 #+BEGIN_SRC emacs-lisp
-  (load-theme 'tango t)
+  (use-package solarized-theme
+    :init
+    (setq solarized-distinct-fringe-background t)
+    (setq solarized-use-variable-pitch nil)
+    (setq solarized-high-contrast-mode-line t)
+    (setq solarized-use-less-bold t)
+    (setq solarized-use-more-italic t)
+    (setq solarized-emphasize-indicators nil)
+    (setq solarized-scale-org-headlines nil)
 
-  (defconst theme-color-black "#2E3436")
-  (defconst theme-color-red "#CC0000")
-  (defconst theme-color-green "#4E9A06")
-  (defconst theme-color-yellow "#C4A000")
-  (defconst theme-color-blue "#3465A4")
-  (defconst theme-color-magenta "#75507B")
-  (defconst theme-color-cyan "#06989A")
-  (defconst theme-color-white "#D3D7CF")
+    ;; Avoid all font-size changes
+    (setq solarized-height-minus-1 1.0)
+    (setq solarized-height-plus-1 1.0)
+    (setq solarized-height-plus-2 1.0)
+    (setq solarized-height-plus-3 1.0)
+    (setq solarized-height-plus-4 1.0)
+    :config
+    (load-theme 'solarized-dark t)
+
+    (defconst theme-color-black "#073642")
+    (defconst theme-color-red "#dc322f")
+    (defconst theme-color-green "#859900")
+    (defconst theme-color-yellow "#b58900")
+    (defconst theme-color-orange "#cb4b16")
+    (defconst theme-color-blue "#268bd2")
+    (defconst theme-color-violet "#6c71c4")
+    (defconst theme-color-magenta "#d33682")
+    (defconst theme-color-cyan "#2aa198")
+    (defconst theme-color-white "#eee8d5"))
 #+END_SRC
 ** Minions
 #+BEGIN_SRC emacs-lisp
@@ -83,48 +102,7 @@ Simulate a Vim modal editing experience
     (setq evil-want-keybinding nil)
     :config
     (evil-mode t)
-    (setq evil-mode-line-format '(after . mode-line-front-space))
-    (let* ((evil-state-foreground-color theme-color-white)
-	   (evil-emacs-state-background-color theme-color-blue)
-	   (evil-motion-state-background-color theme-color-cyan)
-	   (evil-insert-state-background-color theme-color-green)
-	   (evil-visual-state-background-color theme-color-magenta)
-	   (evil-operator-state-background-color theme-color-yellow)
-	   (evil-replace-state-background-color theme-color-red))
-      (require 's)
-      (setq evil-normal-state-tag
-	    (s-center 5 (propertize (s-trim evil-normal-state-tag)
-				    'font-lock-face (list :weight 'bold))))
-      (setq evil-insert-state-tag
-	    (s-center 5 (propertize (s-trim evil-insert-state-tag)
-				    'font-lock-face (list :weight 'bold
-							  :foreground evil-state-foreground-color
-							  :background evil-insert-state-background-color))))
-      (setq evil-visual-state-tag
-	    (s-center 5 (propertize (s-trim evil-visual-state-tag)
-				    'font-lock-face (list :weight 'bold
-							  :foreground evil-state-foreground-color
-							  :background evil-visual-state-background-color))))
-      (setq evil-operator-state-tag
-	    (s-center 5 (propertize (s-trim evil-operator-state-tag)
-				    'font-lock-face (list :weight 'bold
-							  :foreground evil-state-foreground-color
-							  :background evil-operator-state-background-color))))
-      (setq evil-replace-state-tag
-	    (s-center 5 (propertize (s-trim evil-replace-state-tag)
-				    'font-lock-face (list :weight 'bold
-							  :foreground evil-state-foreground-color
-							  :background evil-replace-state-background-color))))
-      (setq evil-emacs-state-tag
-	    (s-center 5 (propertize (s-trim evil-emacs-state-tag)
-				    'font-lock-face (list :weight 'bold
-							  :foreground evil-state-foreground-color
-							  :background evil-emacs-state-background-color))))
-      (setq evil-motion-state-tag
-	    (s-center 5 (propertize (s-trim evil-motion-state-tag)
-				    'font-lock-face (list :weight 'bold
-							  :foreground evil-state-foreground-color
-							  :background evil-motion-state-background-color)))))) 
+    (setq evil-mode-line-format '(after . mode-line-front-space)))
 
   (use-package evil-collection
     :after evil
@@ -208,16 +186,25 @@ Simulate a Vim modal editing experience
 #+END_SRC
 ** Org mode
 #+BEGIN_SRC emacs-lisp
-  (use-package org
-    :init
-    (setq org-fontify-whole-heading-line t)
-    (setq org-support-shift-select t)
-    (setq org-agenda-files (list "~/Documents/agendas"))
-    :config
-    (global-set-key (kbd "C-c l") 'org-store-link)
-    (global-set-key (kbd "C-c a") 'org-agenda)
-    (global-set-key (kbd "C-c c") 'org-capture)
-    (global-set-key (kbd "C-c b") 'org-switchb))
+    (use-package org
+      :init
+      (setq org-fontify-whole-heading-line t)
+      (setq org-support-shift-select t)
+      (setq org-odt-convert-process 'unoconv)
+      (setq org-odt-preferred-output-format "docx")
+      (setq org-agenda-files (list "~/Documents/agendas"))
+      (setq org-capture-templates
+	    '(("t" "Todo" entry (file+headline "~/Documents/Org/gtd.org" "Tasks")
+	       "* TODO %?\n  %i\n  %a")
+	      ("n" "Notes" entry (file+headline "~/Documents/Org/notes.org" "Notes")
+	       "* Notes %?\n  %i\n  %a")
+	      ("j" "Journal" entry (file+olp+datetree "~/Documents/Org/journal.org")
+	       "* %?\nEntered on %U\n  %i\n  %a")))
+      :config
+      (global-set-key (kbd "C-c l") 'org-store-link)
+      (global-set-key (kbd "C-c a") 'org-agenda)
+      (global-set-key (kbd "C-c c") 'org-capture)
+      (global-set-key (kbd "C-c b") 'org-switchb))
 #+END_SRC
 *** Org-bullets
 #+BEGIN_SRC emacs-lisp
@@ -357,7 +344,7 @@ Simulate a Vim modal editing experience
   (use-package vimrc-mode)
 #+END_SRC
 * Personal Settings
-** Variables  
+** Variables
 #+BEGIN_SRC emacs-lisp
   (set-language-environment "utf-8")
   (setq inhibit-startup-screen t
@@ -384,7 +371,7 @@ Simulate a Vim modal editing experience
   (setq tramp-persistency-file-name (expand-file-name
 				     "cache/tramp" user-emacs-directory))
 #+END_SRC
-** Functions 
+** Functions
 #+BEGIN_SRC emacs-lisp
   (fset 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
@@ -399,9 +386,15 @@ Simulate a Vim modal editing experience
   (global-display-line-numbers-mode t)
   (display-battery-mode t)
   (display-time-mode t)
+
   (menu-bar-mode -1)
   (scroll-bar-mode -1)
   (tool-bar-mode -1)
+
+  (dolist (hook '(text-mode-hook))
+    (add-hook hook (lambda () (flyspell-mode 1))))
+  (dolist (hook '(change-log-mode-hook log-edit-mode-hook))
+    (add-hook hook (lambda () (flyspell-mode -1))))
 #+END_SRC
 ** Faces
 #+BEGIN_SRC emacs-lisp

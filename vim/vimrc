@@ -13,8 +13,9 @@ else
 endif
 
 syntax enable
-" set termguicolors
-" set background=light
+set termguicolors
+set background=dark
+colorscheme solarized8_high
 
 let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
 
@@ -41,6 +42,7 @@ if exists('*minpac#init')
   call minpac#add('tpope/vim-repeat')
   call minpac#add('tpope/vim-surround')
   call minpac#add('tpope/vim-unimpaired')
+  call minpac#add('lifepillar/vim-solarized8')
 endif
 
 " Define user commands for updating/cleaning the plugins.
