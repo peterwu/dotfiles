@@ -416,6 +416,10 @@ Simulate a Vim modal editing experience
 				  :underline t))
     (add-hook 'display-line-numbers-mode-hook 'ixl/highlight-current-line-number)
 #+END_SRC
+** UI settings
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'default-frame-alist '(undecorated  . t))
+#+END_SRC
 ** Key bindings
 #+BEGIN_SRC emacs-lisp
   (global-set-key [f12] 'eshell)

@@ -109,6 +109,8 @@
        :sunrise (format-time-string "%R %Z" (seconds-to-time (plist-get (plist-get data :sys) :sunrise)))
        :sunset (format-time-string "%R %Z" (seconds-to-time (plist-get (plist-get data :sys) :sunset)))))))
 
+(defconst ixl--weather-buffer-name "*weather*")
+
 (defvar ixl--weather-info nil)
 
 (defvar ixl-weather-mode-line-string nil)
@@ -128,7 +130,14 @@
 
 (defun ixl-show-weather-details ()
   (interactive)
-  (message "%s" (ixl--weather-details)))
+  (let ((win (split-window-vertically -10))
+	(buff (get-buffer-create ixl--weather-buffer-name)))
+    (set-buffer buff)
+    (with-current-buffer buff
+      (setq mode-line-format nil)
+      (erase-buffer)
+      (insert (ixl--weather-details)))
+    (set-window-buffer win buff)))
 (global-set-key (kbd "C-c w") 'ixl-show-weather-details)
 
 (defvar ixl--display-weather-keymap
