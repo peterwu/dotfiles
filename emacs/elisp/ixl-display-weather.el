@@ -109,7 +109,11 @@
        :sunrise (format-time-string "%R %Z" (seconds-to-time (plist-get (plist-get data :sys) :sunrise)))
        :sunset (format-time-string "%R %Z" (seconds-to-time (plist-get (plist-get data :sys) :sunset)))))))
 
-(defconst ixl--weather-buffer-name "*weather*")
+(defcustom ixl-weather-visible-lines 10
+  "Display how many lines in the *Weather* buffer"
+  :type 'number)
+
+(defconst ixl--weather-buffer-name "*Weather*")
 
 (defvar ixl--weather-info nil)
 
@@ -130,14 +134,15 @@
 
 (defun ixl-show-weather-details ()
   (interactive)
-  (let ((win (split-window-vertically -10))
-	(buff (get-buffer-create ixl--weather-buffer-name)))
-    (set-buffer buff)
-    (with-current-buffer buff
-      (setq mode-line-format nil)
-      (erase-buffer)
-      (insert (ixl--weather-details)))
-    (set-window-buffer win buff)))
+  (when (and (not (window-dedicated-p))
+	     (window-full-height-p))
+    (let ((win (split-window-below (- ixl-weather-visible-lines)))
+	  (buff (get-buffer-create ixl--weather-buffer-name)))
+      (with-current-buffer buff
+	(setq mode-line-format nil)
+	(erase-buffer)
+	(insert (ixl--weather-details)))
+      (set-window-buffer win buff))))
 (global-set-key (kbd "C-c w") 'ixl-show-weather-details)
 
 (defvar ixl--display-weather-keymap

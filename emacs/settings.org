@@ -305,6 +305,25 @@ Simulate a Vim modal editing experience
      (use-package yasnippet-snippets)
      (yas-global-mode 1))
  #+END_SRC
+** Gnus
+#+BEGIN_SRC emacs-lisp
+  (use-package gnus
+    :defer t
+    :init
+    (setq read-mail-command 'gnus)
+    (setq user-mail-address "peterwu@hotmail.com"
+	  user-full-name "Peter Wu")
+    ;; (setq mm-text-html-renderer 'gnus-w3m)
+    ;; Use webkit when it's mature enough
+    ;; https://gist.github.com/orgcandman/1e53ca99dd3899b07e5743718a1db300
+    (setq gnus-select-method
+	  '(nnimap "hotmail"
+		   (nnimap-address "imap-mail.outlook.com")
+		   (nnimap-server-port 993)
+		   (nnimap-stream ssl)))
+    (setq smtpmail-smtp-server "smtp-mail.outlook.com"
+	  smtpmail-smtp-service 587))
+#+END_SRC
 ** Various file types
 *** YAML files
  #+BEGIN_SRC emacs-lisp
@@ -418,7 +437,8 @@ Simulate a Vim modal editing experience
 #+END_SRC
 ** UI settings
 #+BEGIN_SRC emacs-lisp
-  (add-to-list 'default-frame-alist '(undecorated  . t))
+  (unless (eq system-type 'windows-nt)
+    (add-to-list 'default-frame-alist '(undecorated  . t)))
 #+END_SRC
 ** Key bindings
 #+BEGIN_SRC emacs-lisp
