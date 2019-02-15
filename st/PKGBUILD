@@ -1,6 +1,3 @@
-# Contributor: Patrick Jackson <PatrickSJackson gmail com>
-# Maintainer: Christoph Vigano <mail@cvigano.de>
-
 pkgname=st
 pkgver=0.8.2
 pkgrel=1
@@ -9,6 +6,8 @@ arch=('i686' 'x86_64')
 license=('MIT')
 depends=('libxft' 'libxext' 'xorg-fonts-misc')
 makedepends=('ncurses')
+provides=($pkgname)
+conflicts=($pkgname)
 url="http://st.suckless.org"
 source=(http://dl.suckless.org/st/$pkgname-$pkgver.tar.gz
         config.h
