@@ -13,9 +13,10 @@ else
 endif
 
 syntax enable
-set termguicolors
+set term=xterm-256color
 set background=dark
 colorscheme solarized8_high
+set termguicolors                    " Enable GUI colors for the terminal to get truecolor
 
 let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
 

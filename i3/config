@@ -156,8 +156,8 @@ bindsym XF86MonBrightnessUp   exec --no-startup-id light -A 5 # increase screen 
 bindsym XF86MonBrightnessDown exec --no-startup-id light -U 5 # decrease screen brightness by %
 
 # Media player controls
-bindsym XF86AudioPlay   exec --no-startup-id playerctl play-pause
-bindsym XF86AudioPause  exec --no-startup-id playerctl play-pause
+bindsym XF86AudioPlay   exec --no-startup-id playerctl play
+bindsym XF86AudioPause  exec --no-startup-id playerctl pause
 bindsym XF86AudioNext   exec --no-startup-id playerctl next
 bindsym XF86AudioPrev   exec --no-startup-id playerctl previous
 

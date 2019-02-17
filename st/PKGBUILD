@@ -1,6 +1,6 @@
 pkgname=st
 pkgver=0.8.2
-pkgrel=1
+pkgrel=999
 pkgdesc='A simple virtual terminal emulator for X.'
 arch=('i686' 'x86_64')
 license=('MIT')
@@ -11,8 +11,14 @@ conflicts=($pkgname)
 url="http://st.suckless.org"
 source=(http://dl.suckless.org/st/$pkgname-$pkgver.tar.gz
         config.h
+        config.mk
+        st.h
+        st.c
         x.c)
 sha256sums=('SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
             'SKIP'
             'SKIP')
 
@@ -21,6 +27,9 @@ prepare() {
   # skip terminfo which conflicts with nsurses
   sed -i '/tic /d' Makefile
   cp $srcdir/config.h config.h
+  cp $srcdir/config.mk config.mk
+  cp $srcdir/st.h st.h
+  cp $srcdir/st.c st.c
   cp $srcdir/x.c x.c
 }
 

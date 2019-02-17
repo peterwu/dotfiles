@@ -1,6 +1,6 @@
 pkgname=dmenu
 pkgver=4.9
-pkgrel=1
+pkgrel=999
 pkgdesc="A generic menu for X"
 url="http://tools.suckless.org/dmenu/"
 arch=('i686' 'x86_64')
@@ -10,14 +10,17 @@ provides=($pkgname)
 conflicts=($pkgname)
 source=(https://dl.suckless.org/tools/$pkgname-$pkgver.tar.gz
         config.h
+        config.mk
         dmenu.c)
 sha256sums=('SKIP'
+            'SKIP'
             'SKIP'
             'SKIP')
 
 prepare() {
   cd $srcdir/$pkgname-$pkgver
   cp $srcdir/config.h config.h
+  cp $srcdir/config.mk config.mk
   cp $srcdir/dmenu.c dmenu.c
 }
 
