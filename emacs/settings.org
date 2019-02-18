@@ -66,10 +66,8 @@ My Emacs Init Settings
     (setq solarized-height-plus-4 1.0)
     :config
     (setq frame-background-mode 'dark)
-    (add-hook 'after-make-frame-functions
-	      (lambda (frame)
-		(when (display-graphic-p frame)
-		  (load-theme 'solarized-dark t))))
+    (when window-system
+      (load-theme 'solarized-dark t))
 
     (defconst theme-color-black "#073642")
     (defconst theme-color-red "#dc322f")
@@ -402,7 +400,9 @@ Simulate a Vim modal editing experience
 #+BEGIN_SRC emacs-lisp
   (global-visual-line-mode t)
   (column-number-mode t)
-  (global-hl-line-mode t)
+  (if window-system
+      (global-hl-line-mode 1)
+    (global-hl-line-mode -1))
   (electric-pair-mode t)
   (show-paren-mode t)
   (size-indication-mode t)
@@ -414,10 +414,10 @@ Simulate a Vim modal editing experience
   (scroll-bar-mode -1)
   (tool-bar-mode -1)
 
-  (dolist (hook '(text-mode-hook))
-    (add-hook hook (lambda () (flyspell-mode 1))))
-  (dolist (hook '(change-log-mode-hook log-edit-mode-hook))
-    (add-hook hook (lambda () (flyspell-mode -1))))
+  ;; (dolist (hook '(text-mode-hook))
+  ;;   (add-hook hook (lambda () (flyspell-mode 1))))
+  ;; (dolist (hook '(change-log-mode-hook log-edit-mode-hook))
+  ;;   (add-hook hook (lambda () (flyspell-mode -1))))
 #+END_SRC
 ** Faces
 #+BEGIN_SRC emacs-lisp
@@ -430,17 +430,14 @@ Simulate a Vim modal editing experience
 		      :height 120
 		      :width 'normal)
 
-  ;; highlight the current line number
-  (defun ixl/highlight-current-line-number ()
-    "This function highlights the current line number with the cursor colour"
-    (set-face-attribute 'line-number nil
-			:weight 'semi-light)
-
-    (set-face-attribute 'line-number-current-line nil
-			:foreground (face-attribute 'cursor :background)
-			:weight 'bold
-			:underline t))
-  (add-hook 'display-line-numbers-mode-hook 'ixl/highlight-current-line-number)
+  (add-hook 'display-line-numbers-mode-hook
+	    (lambda ()
+	      (set-face-attribute 'line-number nil
+				  :weight 'normal)
+	      (set-face-attribute 'line-number-current-line nil
+				  :foreground (face-attribute 'cursor :background)
+				  :weight 'bold
+				  :underline t)))
 #+END_SRC
 ** UI settings
 #+BEGIN_SRC emacs-lisp

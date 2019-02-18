@@ -1,5 +1,5 @@
 pkgname=slstatus-git
-pkgver=r551.93daf4f
+pkgver=r552.b14e039
 pkgrel=1
 pkgdesc='A status monitor for window managers'
 arch=('i686' 'x86_64')
