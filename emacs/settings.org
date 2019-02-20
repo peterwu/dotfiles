@@ -66,7 +66,8 @@ My Emacs Init Settings
     (setq solarized-height-plus-4 1.0)
     :config
     (setq frame-background-mode 'dark)
-    (when window-system
+    (when (or window-system
+	      (eq system-type 'windows-nt))
       (load-theme 'solarized-dark t))
 
     (defconst theme-color-black "#073642")
