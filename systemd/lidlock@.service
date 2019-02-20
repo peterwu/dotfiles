@@ -1,0 +1,11 @@
+[Unit]
+Description=Lock the screen when lid is closed
+
+[Service]
+User=%I
+Type=forking
+Environment=DISPLAY=:0
+ExecStart=/usr/bin/slock
+
+[Install]
+WantedBy=sleep.target

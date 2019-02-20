@@ -4,8 +4,5 @@ export QT_AUTO_SCREEN_SCALE_FACTOR=1
 
 /usr/bin/feh --bg-scale ~/Pictures/Wallpapers/wallpaper &
 /usr/bin/compton -b -c -f &
-/usr/bin/xautolock -detectsleep \
-     -time 5 -locker "/usr/bin/slock" \
-     -notify 12 \
-     -notifier "dunstify -a 'lockScreen' -u critical -t 10000 -i dialog-warning  'LOCKING screen in 10 seconds'" &
+/usr/bin/xautolock -detectsleep -time 5 -locker "/usr/bin/slock" &
 /usr/bin/slstatus &

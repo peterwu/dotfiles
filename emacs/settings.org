@@ -439,11 +439,6 @@ Simulate a Vim modal editing experience
 				  :weight 'bold
 				  :underline t)))
 #+END_SRC
-** UI settings
-#+BEGIN_SRC emacs-lisp
-  ;; (unless (eq system-type 'windows-nt)
-  ;;   (add-to-list 'default-frame-alist '(fullscreen  . t)))
-#+END_SRC
 ** Key bindings
 #+BEGIN_SRC emacs-lisp
   (global-set-key [f12] 'eshell)

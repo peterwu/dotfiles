@@ -7,8 +7,8 @@ static const unsigned int borderpx  = 1;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const char *fonts[]          = { "Roboto:size=10",  "Material Design Icons:size=12", "Noto:size=10",};
-static const char dmenufont[]       = "Roboto:size=10";
+static const char *fonts[]          = { "Roboto:pixelsize=26", "Font Awesome 5 Free:pixelsize=26", "Noto:pixelsize=26",};
+static const char dmenufont[]       = "Roboto:pixelsize=24";
 static const char col_gray1[]       = "#002b36";
 static const char col_gray2[]       = "#073642";
 static const char col_gray3[]       = "#fdf6e3";
@@ -23,7 +23,7 @@ static const char *colors[][3]      = {
 };
 
 /* tagging */
-static const char *tags[] = { "1.$ _", "2.www", "3.M-x", "4." /* u@h */, "5...." };
+static const char *tags[] = { "", "", "", "", "" };
 
 static const Rule rules[] = {
 	/* xprop(1):
@@ -33,13 +33,10 @@ static const Rule rules[] = {
 	/* class                instance    title       tags mask     isfloating   monitor */
 	{ "st-256color",        NULL,       NULL,       1,            0,           -1 },
 	{ "Firefox",            NULL,       NULL,       1<<1,         0,           -1 },
+	{ "Chromium",           NULL,       NULL,       1<<1,         0,           -1 },
 	{ "Google-chrome",      NULL,       NULL,       1<<1,         0,           -1 },
 	{ "Emacs",              NULL,       NULL,       1<<2,         0,           -1 },
 	{ "Thunderbird",        NULL,       NULL,       1<<3,         0,           -1 },
-	{ "libreoffice-writer", NULL,       NULL,       1<<4,         0,           -1 },
-	{ "libreoffice",        NULL,       NULL,       1<<4,         0,           -1 },
-	{ "vlc",                NULL,       NULL,       1<<4,         0,           -1 },
-	{ "Virt-manager",       NULL,       NULL,       1<<4,         0,           -1 },
 };
 
 /* layout(s) */
@@ -67,7 +64,7 @@ static const Layout layouts[] = {
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[]       = { "j4-dmenu-desktop", "--dmenu=dmenu -i -l 8 -nb '#002b36' -nf '#657b83' -sb '#073642' -sf '#cb4b16'", NULL};
+static const char *dmenucmd[]       = { "rofi", "-show", "combi", NULL};
 static const char *termcmd[]        = { "st", NULL };
 static const char *prevcmd[]        = { "playerctl", "previous", NULL };
 static const char *nextcmd[]        = { "playerctl", "next", NULL };
@@ -80,16 +77,19 @@ static const char *emacscmd[]       = { "emacs", "-mm", NULL };
 static const char *mailcmd[]        = { "thunderbird", NULL };
 static const char *vlccmd[]         = { "vlc", NULL };
 static const char *slockcmd[]       = { "slock", NULL };
+static const char *prtsccmd[]    = { "scrot", "%Y-%m-%d_$wx$h-scrot.png", "-e", "mv $f ~/Pictures/", NULL };
 static const char *brightupcmd[]    = { "light", "-A", "5", NULL };
 static const char *brightdowncmd[]  = { "light", "-U", "5", NULL };
 static const char *volupcmd[]       = { "pactl", "set-sink-volume", "0", "+5%", NULL };
 static const char *voldowncmd[]     = { "pactl", "set-sink-volume", "0", "-5%", NULL };
 static const char *volmutecmd[]     = { "pactl", "set-sink-mute", "0", "toggle", NULL };
 static const char *micmutecmd[]     = { "pactl", "set-source-mute", "1", "toggle", NULL };
+static const char *restartcmd[]     = { "systemctl", "reboot", NULL };
+static const char *shutdowncmd[]    = { "systemctl", "poweroff", NULL };
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
-	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
+	{ MODKEY,                       XK_r,      spawn,          {.v = dmenucmd } },
 	{ MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
 	{ MODKEY|ShiftMask,             XK_f,      spawn,          {.v = firefoxcmd } },
 	{ MODKEY|ShiftMask,             XK_g,      spawn,          {.v = chromecmd } },
@@ -118,8 +118,9 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
 	/* custom key binds */
-	{ MODKEY|ShiftMask,             XK_l,      spawn,          {.v = slockcmd } },
+	{ MODKEY|ShiftMask,                  XK_l, spawn,          {.v = slockcmd } },
 	{ 0,                          XF86XK_Mail, spawn,          {.v = mailcmd } },
+	{ 0,                             XK_Print, spawn,          {.v = prtsccmd } },
 	{ 0,               XF86XK_MonBrightnessUp, spawn,          {.v = brightupcmd } },
 	{ 0,             XF86XK_MonBrightnessDown, spawn,          {.v = brightdowncmd } },
 	{ 0,              XF86XK_AudioLowerVolume, spawn,          {.v = voldowncmd } },
@@ -142,6 +143,8 @@ static Key keys[] = {
 	TAGKEYS(                        XK_9,                      8)
 	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
 	{ MODKEY|ControlMask|ShiftMask, XK_q,      quit,           {1} }, 
+	{ MODKEY|ControlMask|ShiftMask, XK_r,      spawn,          {.v = restartcmd } }, 
+	{ MODKEY|ControlMask|ShiftMask, XK_x,      spawn,          {.v = shutdowncmd } }, 
 };
 
 /* button definitions */
