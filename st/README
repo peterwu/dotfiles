@@ -1,0 +1,6 @@
+1. yay -S st and don't proceed after PKGBUILD is downloaded
+2. cd ~/.cache/yay/st
+3. cp ~/Projects/dotfiles/st/* .
+4. git commit 
+5. yay -S st
+

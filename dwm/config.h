@@ -7,8 +7,8 @@ static const unsigned int borderpx  = 1;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const char *fonts[]          = { "Roboto:pixelsize=26", "Font Awesome 5 Free:pixelsize=26", "Noto:pixelsize=26",};
-static const char dmenufont[]       = "Roboto:pixelsize=24";
+static const char *fonts[]          = { "Roboto:pixelsize=14", "Font Awesome 5 Free:pixelsize=14", "Noto:pixelsize=14",};
+static const char dmenufont[]       = "Roboto:pixelsize=14";
 static const char col_gray1[]       = "#002b36";
 static const char col_gray2[]       = "#073642";
 static const char col_gray3[]       = "#fdf6e3";

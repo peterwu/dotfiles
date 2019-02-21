@@ -1,0 +1,4 @@
+1. mkdir ~/Projects/dmenu
+2. cd ~/Projects/dmenu
+3. ln -sf {all files} 
+4. makepkg -sfi

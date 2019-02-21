@@ -1,0 +1,6 @@
+1. yay -S emacs-git and don't proceed after PKGBUILD is downloaded
+2. cd ~/.cache/yay/emacs-git
+3. cp ~/Projects/dotfiles/emacs-git/* .
+4. git commit 
+5. yay -S emacs-git
+

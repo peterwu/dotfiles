@@ -1,0 +1,6 @@
+1. yay -S dwm and don't proceed after PKGBUILD is downloaded
+2. cd ~/.cache/yay/dwm
+3. cp ~/Projects/dotfiles/dwm/* .
+4. git commit 
+5. yay -S dwm
+

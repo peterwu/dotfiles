@@ -365,6 +365,11 @@ Simulate a Vim modal editing experience
 #+BEGIN_SRC emacs-lisp
   (use-package vimrc-mode)
 #+END_SRC
+*** PKGBUILD
+#+BEGIN_SRC emacs-lisp
+  (use-package pkgbuild-mode
+    :mode "/PKGBUILD$")
+#+END_SRC
 * Personal Settings
 ** Variables
 #+BEGIN_SRC emacs-lisp
