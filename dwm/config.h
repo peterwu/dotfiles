@@ -7,23 +7,36 @@ static const unsigned int borderpx  = 1;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const char *fonts[]          = { "Roboto:pixelsize=14", "Font Awesome 5 Free:pixelsize=14", "Noto:pixelsize=14",};
-static const char dmenufont[]       = "Roboto:pixelsize=14";
-static const char col_gray1[]       = "#002b36";
-static const char col_gray2[]       = "#073642";
-static const char col_gray3[]       = "#fdf6e3";
-static const char col_gray4[]       = "#fdf6e3";
-static const char col_cyan[]        = "#073642";
+static const char *fonts[]          = { "Roboto:pixelsize=28", "Font Awesome 5 Free:pixelsize=28", "Noto:pixelsize=28",};
+static const char dmenufont[]       = "Roboto:pixelsize=28";
+
+/* solarized color palette */
+static const char col_base03[]      = "#002b36";
+static const char col_base02[]      = "#073642";
+static const char col_base01[]      = "#586e75";
+static const char col_base00[]      = "#657b83";
+static const char col_base0[]       = "#839496";
+static const char col_base1[]       = "#93a1a1";
+static const char col_base2[]       = "#eee8d5";
+static const char col_base3[]       = "#fdf6e3";
+static const char col_yellow[]      = "#b58900";
+static const char col_orange[]      = "#cb4616";
+static const char col_red[]         = "#dc322f";
+static const char col_magenta[]     = "#d33682";
+static const char col_violet[]      = "#6c71c4";
+static const char col_blue[]        = "#268bd2";
+static const char col_cyan[]        = "#2aa198";
+static const char col_green[]       = "#859900";
 
 static const char *colors[][3]      = {
-	/*                 fg         bg         border   */
-	[SchemeNorm]   = { col_gray3, col_gray1, col_gray2 },
-	[SchemeSel]    = { col_gray4, col_cyan,  col_cyan  },
-	[SchemeTitle]  = { col_gray4, col_gray1, col_gray2 },
+	/*                 fg           bg           border    */
+	[SchemeNorm]   = { col_base3,   col_base03,  col_base02 },
+	[SchemeSel]    = { col_magenta, col_base03,  col_base02 },
+	[SchemeTitle]  = { col_base3,   col_base03,  col_base02 },
 };
 
 /* tagging */
-static const char *tags[] = { "", "", "", "", "" };
+static const char *tags[] = { "", "", "", "", "" };
 
 static const Rule rules[] = {
 	/* xprop(1):
