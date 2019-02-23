@@ -36,7 +36,7 @@ static const char *colors[][3]      = {
 };
 
 /* tagging */
-static const char *tags[] = { "\ufa09", "\uf239", "\uf90b", "\uf6ed", "\uf67f" };
+static const char *tags[] = { "\uf7b6", "\ufba6", "\uf90b", "\uf1f0", "\uf67f" };
 
 static const Rule rules[] = {
 	/* xprop(1):

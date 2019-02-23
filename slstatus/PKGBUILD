@@ -1,5 +1,5 @@
 pkgname=slstatus-git
-pkgver=r552.b14e039
+pkgver=r554.f44b9ad
 pkgrel=1
 pkgdesc='A status monitor for window managers'
 arch=('i686' 'x86_64')
@@ -7,33 +7,12 @@ url='http://tools.suckless.org/slstatus'
 depends=('libx11')
 makedepends=('git')
 license=('custom:ISC')
-source=("git+https://github.com/peterwu/${pkgname%-git}"
-        "slstatus.h"
-        "config.mk"
-        "config.h"
-        "wifi.c"
-        "volume.c"
-        "battery.c")
-md5sums=('SKIP'
-         'fe3ea306a9161960ad08ba998943f645'
-         'a614354b3685afc71fe0ad8de755bea1'
-         '9de3a440d63b1d00005747bd74a8d648'
-         '3865f44df9742b5396eac8cc53d511e7'
-         '872be3e9e74df35987dab78198db0ce6'
-         '4812a3778be9dc9e519e16f2932f18b7')
+source=("git+https://github.com/peterwu/${pkgname%-git}#branch=dwb")
+md5sums=('SKIP')
 
 pkgver() {
     cd "${pkgname%-git}"
     printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
-}
-
-prepare() {
-    cp config.h "${pkgname%-git}/config.h"
-    cp config.mk "${pkgname%-git}/config.mk"
-    cp slstatus.h "${pkgname%-git}/slstatus.h"
-    cp battery.c "${pkgname%-git}/components/battery.c"
-    cp wifi.c "${pkgname%-git}/components/wifi.c"
-    cp volume.c "${pkgname%-git}/components/volume.c"
 }
 
 build() {
