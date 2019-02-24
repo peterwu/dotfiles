@@ -11,8 +11,8 @@ export HISTFILESIZE=10000
 
 alias ls='ls --color=auto'
 alias ll="ls -al"
-# alias emacs='emacsclient -t -a emacs -nw'
-alias emacs='emacs -nw'
+# alias emacs='emacsclient -t -a vim'
+# alias emacs='emacs -nw'
 alias yay='yay --editmenu --devel --removemake --timeupdate --rebuild --noredownload --editor vim'
 
 set -o vi

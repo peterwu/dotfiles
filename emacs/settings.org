@@ -65,10 +65,7 @@ My Emacs Init Settings
     (setq solarized-height-plus-3 1.0)
     (setq solarized-height-plus-4 1.0)
     :config
-    (setq frame-background-mode 'dark)
-    (when (or window-system
-	      (eq system-type 'windows-nt))
-      (load-theme 'solarized-dark t))
+    (load-theme 'solarized-dark t)
 
     (defconst theme-color-black "#073642")
     (defconst theme-color-red "#dc322f")
@@ -392,6 +389,9 @@ Simulate a Vim modal editing experience
   (setq visible-bell t)
   (when (eq system-type 'windows-nt)
     (setq inhibit-compacting-font-caches t)) 
+  (setq frame-title-format
+          '(buffer-file-name "%f"
+            (dired-directory dired-directory "%b")))
   (setq recentf-save-file (expand-file-name "cache/recentf" user-emacs-directory))
   (setq bookmark-default-file (expand-file-name "cache/bookmarks" user-emacs-directory))
   (setq tramp-persistency-file-name (expand-file-name

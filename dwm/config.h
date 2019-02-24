@@ -7,7 +7,7 @@ static const unsigned int borderpx  = 1;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const char *fonts[]          = { "Roboto:pixelsize=28", "Material Design Icons:size=14" };
+static const char *fonts[]          = { "Roboto:pixelsize=28", "Material Design Icons:size=12" };
 static const char dmenufont[]       = "Roboto:pixelsize=28";
 
 /* solarized color palette */
@@ -36,7 +36,7 @@ static const char *colors[][3]      = {
 };
 
 /* tagging */
-static const char *tags[] = { "\uf7b6", "\ufba6", "\uf90b", "\uf1f0", "\uf67f" };
+static const char *tags[] = { "\uf7b6", "\uf239", "\uf8d4", "\uf1f0", "\uf67f" };
 
 static const Rule rules[] = {
 	/* xprop(1):
@@ -86,11 +86,11 @@ static const char *pausecmd[]       = { "playerctl", "pause", NULL };
 static const char *stopcmd[]        = { "playerctl", "stop", NULL };
 static const char *firefoxcmd[]     = { "firefox", NULL };
 static const char *chromecmd[]      = { "google-chrome-stable", NULL };
-static const char *emacscmd[]       = { "emacs", "-mm", NULL };
+static const char *emacscmd[]       = { "emacsclient", "-nc", "-a", "emacs -mm", NULL };
 static const char *mailcmd[]        = { "thunderbird", NULL };
 static const char *vlccmd[]         = { "vlc", NULL };
 static const char *slockcmd[]       = { "slock", NULL };
-static const char *prtsccmd[]    = { "scrot", "%Y-%m-%d_$wx$h-scrot.png", "-e", "mv $f ~/Pictures/", NULL };
+static const char *prtsccmd[]       = { "scrot", "%Y-%m-%d_$wx$h-scrot.png", "-e", "mv $f ~/Pictures/", NULL };
 static const char *brightupcmd[]    = { "light", "-A", "5", NULL };
 static const char *brightdowncmd[]  = { "light", "-U", "5", NULL };
 static const char *volupcmd[]       = { "pactl", "set-sink-volume", "0", "+5%", NULL };
