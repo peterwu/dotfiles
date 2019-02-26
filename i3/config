@@ -12,7 +12,7 @@ font pango:Roboto 10
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Return exec kitty #i3-sensible-terminal
+bindsym $mod+Return exec urxvt #i3-sensible-terminal
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -60,16 +60,16 @@ bindsym $mod+a focus parent
 
 # Define names for default workspaces for which we configure key bindings later on.
 # We use variables to avoid repeating the names in multiple places.
-set $ws1 "1:&#xf120;" 	
-set $ws2 "2:&#xf268;"  
-set $ws3 "3:&#xf044;" 
-set $ws4 "4:&#xf0e0;"
-set $ws5 "5:&#xf121;"
-set $ws6 "6:&#xf655;"
-set $ws7 "7:&#xf7b6;"
-set $ws8 "8:&#xf128;"
-set $ws9 "9:&#xf128;"
-set $ws10 "10:&#xf6ad;"
+set $ws1 "1" 	
+set $ws2 "2"  
+set $ws3 "3" 
+set $ws4 "4"
+set $ws5 "5"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
+set $ws10 "10"
 
 # switch to workspace
 bindsym $mod+1 workspace $ws1
@@ -106,15 +106,11 @@ bindsym $mod+Shift+e exec i3-msg exit
 bindsym $mod+Shift+l exec /usr/local/bin/lockScreen.sh
 
 # open some apps on specified workspaces
-assign [class="^kitty$"] → $ws1
+assign [class="^URxvt$"] → $ws1
 assign [class="^Google-chrome$"] → $ws2
-# assign [class="^Firefox$"] → $ws2
+assign [class="^Firefox$"] → $ws2
 assign [class="^Emacs$"] → $ws3
 assign [class="^Thunderbird$"] → $ws4
-assign [class="^Code - Insiders$"] → $ws5
-assign [class="^VirtualBox Manager$"] → $ws6
-assign [class="^Virt-manager$"] → $ws6
-assign [class="^vlc$"] → $ws7
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
@@ -138,17 +134,10 @@ mode "resize" {
 bindsym $mod+r mode "resize"
 
 # audio soft keys
-bindsym XF86AudioRaiseVolume  exec --no-startup-id pactl set-sink-volume  0 +5%;\
-			      exec --no-startup-id pkill -SIGRTMIN+10 i3blocks;\
-			      exec /usr/local/bin/changeVolume.sh
-bindsym XF86AudioLowerVolume  exec --no-startup-id pactl set-sink-volume  0 -5%;\
-			      exec --no-startup-id pkill -SIGRTMIN+10 i3blocks;\
-			      exec /usr/local/bin/changeVolume.sh
-bindsym XF86AudioMute         exec --no-startup-id pactl set-sink-mute    0 toggle;\
-			      exec --no-startup-id pkill -SIGRTMIN+10 i3blocks;\
-			      exec /usr/local/bin/changeVolume.sh
-bindsym XF86AudioMicMute      exec --no-startup-id pactl set-source-mute  1 toggle;\
-			      exec --no-startup-id pkill -SIGRTMIN+11 i3blocks
+bindsym XF86AudioRaiseVolume  exec --no-startup-id pactl set-sink-volume  0 +5%
+bindsym XF86AudioLowerVolume  exec --no-startup-id pactl set-sink-volume  0 -5%
+bindsym XF86AudioMute         exec --no-startup-id pactl set-sink-mute    0 toggle
+bindsym XF86AudioMicMute      exec --no-startup-id pactl set-source-mute  1 toggle
 
 
 # Sreen brightness controls
@@ -161,67 +150,36 @@ bindsym XF86AudioPause  exec --no-startup-id playerctl pause
 bindsym XF86AudioNext   exec --no-startup-id playerctl next
 bindsym XF86AudioPrev   exec --no-startup-id playerctl previous
 
-# exec --no-startup-id xrdb ~/.Xresources
+exec --no-startup-id xrdb ~/.Xresources
 # exec --no-startup-id ibus-daemon -drx
 exec --no-startup-id /usr/bin/feh --bg-scale ~/Pictures/Wallpapers/wallpaper
 exec --no-startup-id /usr/bin/compton -b -c -f
-exec --no-startup-id /usr/bin/xautolock -detectsleep \
-     -time 5 -locker "/usr/local/bin/lockScreen.sh" \
-     -notify 10 \
-     -notifier "dunstify -a 'lockScreen' -u critical -t 10000 -i dialog-warning  'LOCKING screen in 10 seconds'" 
+exec --no-startup-id /usr/bin/xautolock -detectsleep -time 5 -locker i3lock
 
 # autostart some programs
-exec --no-startup-id /usr/bin/kitty
+exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 
 # no borders!
 default_border none
 
-# Dracula color definitions
-set $bgb            #282a36
-set $bg             #282a36AA
-set $fg             #f8f8f2
-set $tf             #f8f8f2AA
-set $hi             #f1fa7c
-set $tx             #040404
-set $pk             #ff79c6
-# yellow
-set $yw             #f1fa7c
-# green
-set $gn             #50fa7b
-# red
-set $rd             #ff5555
-set $id             #ff79c6
+# gaps
+gaps inner 2
+gaps outer 0
+smart_gaps on
+smart_borders on
 
-# set some nice colors      border  background  text  indicator
-client.focused              $id     $pk         $tx     $id
-client.unfocused            $bg     $bg         $tf     $id
-client.focused_inactive     $bg     $bg         $pk     $id
-client.urgent               $yw     $yw         $tx     $id
-#border & indicator are ignored
-client.placeholder          $bg     $bg         $bg     $bg
+# COLORS
+# set colors from Xresources, fall back to #000000 in case Xresources is missing
+set_from_resource $darkred     color1  			#000000
+set_from_resource $white       foreground 		#000000
+set_from_resource $black       background 		#000000
+set_from_resource $alt_black   background-even	 	#000000
+set_from_resource $br_black    color8 			#000000
+set_from_resource $alt_white   color1			#000000
 
-# Start i3bar to display a workspace bar (plus the system information i3status
-# finds out, if available)
-bar {
-  font pango:Roboto, Awesome 10
-  status_command i3blocks
-  position top
-  # separator_symbol "|"
-  workspace_buttons yes
-  # strip_workspace_numbers yes
-  binding_mode_indicator yes
-  tray_output none
-  tray_padding 0
-  height 36
-
-  colors {
-    statusline          $fg
-    background          $bg
-    separator           $bg
-    focused_workspace   $bg        $bg        $pk
-    active_workspace    $bg        $bg        $tf
-    inactive_workspace  $bg        $bg        $tf
-    urgent_workspace    $yw        $bg        $yw
-    binding_mode        $rd        $bg        $rd
-  }
-}
+# set border colors     BORDER      BACKGROUND  TEXT        INDICATOR   CHILD_BORDER
+client.focused          $black      $black      $white      $black  	$alt_black
+client.unfocused        $alt_black  $alt_black  $br_black   $black  	$black
+client.focused_inactive $black      $black      $black      $black 	$black
+client.urgent           $darkred    $darkred    $black      $darkred    $darkred
+client.background       $black
