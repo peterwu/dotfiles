@@ -1,4 +1,4 @@
-1. mkdir ~/Projects/slock
-2. cd ~/Projects/slock
-3. ln -sf {all files} 
-4. makepkg -sfi
+Applied patches:
+- capscolor
+- dpms
+- quickcancel
