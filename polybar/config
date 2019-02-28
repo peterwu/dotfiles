@@ -15,17 +15,18 @@ foreground = ${xrdb:foreground}
 # red = dc322f
 
 
-[bar/mybar]
-font-0 = "Roboto:size=11;0"
-font-1 = "Material Design Icons:size=14;0"
-font-2 = "Weather Icons:size=12;1"
+[bar/main]
+font-0 = "Roboto:size=22;4"
+font-1 = "Material Design Icons:size=26;4"
+font-2 = "Weather Icons:size=24;4"
+font-3 = "Source Han Sans CN:size=20;4"
 
 fixed-center = true
-
+height = 42
 module-margin = 1
 modules-left = i3
 modules-center = title
-modules-right = weather battery date
+modules-right = wireless-network pulseaudio battery date
 
 background = ${colors.background}
 foreground = ${colors.foreground}
@@ -37,7 +38,8 @@ ws-icon-0 = 1;
 ws-icon-1 = 2;
 ws-icon-2 = 3;
 ws-icon-3 = 4;
-ws-icon-4 = 5;
+ws-icon-4 = 5;
+ws-icon-5 = 6;
 ws-icon-default = 
 
 format = <label-state> <label-mode>
@@ -58,12 +60,34 @@ label-separator-padding = 2
 [module/title]
 type = internal/xwindow
 
-
 [module/weather]
 type = custom/script
 exec = $HOME/.config/polybar/weather.sh
 interval = 600
 label-font = 3
+
+[module/pulseaudio]
+type = internal/pulseaudio
+
+format-volume = <ramp-volume>
+label-muted = 
+
+ramp-volume-0 = 
+ramp-volume-1 = 
+ramp-volume-2 = 
+
+[module/wireless-network]
+type = internal/network
+interface = wlp4s0
+
+format-connected = <ramp-signal>
+label-disconnected = 
+
+ramp-signal-0 = 冷
+ramp-signal-1 = 爛
+ramp-signal-2 = 嵐
+ramp-signal-3 = 襤
+ramp-signal-4 = 蠟
 
 [module/battery]
 type = internal/battery
@@ -110,5 +134,4 @@ date = %R
 date-alt = %a %F %R %Z
 
 format =  <label>
-
 ; vim:ft=dosini
