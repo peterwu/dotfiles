@@ -324,6 +324,10 @@ Simulate a Vim modal editing experience
     (setq smtpmail-smtp-server "smtp-mail.outlook.com"
 	  smtpmail-smtp-service 587))
 #+END_SRC
+** Request.el
+#+BEGIN_SRC emacs-lisp
+  (use-package request)
+#+END_SRC
 ** Various file types
 *** YAML files
  #+BEGIN_SRC emacs-lisp
