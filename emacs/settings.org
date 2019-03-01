@@ -65,8 +65,7 @@ My Emacs Init Settings
     (setq solarized-height-plus-3 1.0)
     (setq solarized-height-plus-4 1.0)
     :config
-    (setq frame-background-mode 'dark)
-    (load-theme 'solarized-dark t)
+    (load-theme 'solarized-light t)
 
     (defconst theme-color-black "#073642")
     (defconst theme-color-red "#dc322f")
@@ -410,9 +409,7 @@ Simulate a Vim modal editing experience
 #+BEGIN_SRC emacs-lisp
   (global-visual-line-mode t)
   (column-number-mode t)
-  (if window-system
-      (global-hl-line-mode 1)
-    (global-hl-line-mode -1))
+  (global-hl-line-mode t)
   (electric-pair-mode t)
   (show-paren-mode t)
   (size-indication-mode t)

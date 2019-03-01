@@ -13,7 +13,7 @@ else
 endif
 
 syntax enable
-set background=dark
+set t_Co=16
 silent! colorscheme solarized8_high
 
 let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']

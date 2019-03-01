@@ -7,4 +7,4 @@ scrot $tmpbg
 convert $tmpbg -scale 10% -scale 1000% $tmpbg
 convert $tmpbg $icon -gravity center -composite -matte $tmpbg
 
-i3lock -n -u -e -f -i $tmpbg
+i3lock -n -u -e -f -c 002b36 -i $tmpbg
