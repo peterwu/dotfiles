@@ -100,18 +100,18 @@ bindsym $mod+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+r restart
 # exit i3 
-bindsym $mod+Shift+x exec ~/.config/scripts/i3_exit_system.sh
+bindsym $mod+Shift+x exec --no-startup-id ~/.config/scripts/i3_exit_system.sh
 # lock screen
-bindsym $mod+Shift+l exec ~/.config/scripts/i3_lock_screen.sh
+bindsym $mod+Shift+l exec --no-startup-id ~/.config/scripts/i3_lock_screen.sh
 
 # open some apps on specified workspaces
-assign [class="^URxvt$"] → $ws1
-assign [class="^Firefox$"] → $ws2
-assign [class="^Google-chrome$"] → $ws2
-assign [class="^Emacs$"] → $ws3
-assign [class="^Thunderbird$"] → $ws4
-assign [class="^Soffice$"] → $ws5
-assign [class="^vlc$"] → $ws6
+assign [class="^URxvt$"]		→ $ws1
+assign [class="^Firefox$"] 		→ $ws2
+assign [class="^Google-chrome$"] 	→ $ws2
+assign [class="^Emacs$"] 		→ $ws3
+assign [class="^Thunderbird$"] 		→ $ws4
+assign [class="^Soffice$"] 		→ $ws5
+assign [class="^vlc$"] 			→ $ws6
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
@@ -135,14 +135,19 @@ mode "resize" {
 bindsym $mod+r mode "resize"
 
 # audio soft keys
-bindsym XF86AudioRaiseVolume  exec --no-startup-id pactl set-sink-volume  0 +5%
-bindsym XF86AudioLowerVolume  exec --no-startup-id pactl set-sink-volume  0 -5%
-bindsym XF86AudioMute         exec --no-startup-id pactl set-sink-mute    0 toggle
+bindsym XF86AudioRaiseVolume  exec --no-startup-id pactl set-sink-volume  0 +5%; \
+			      exec --no-startup-id ~/.config/scripts/dunst_display_volume.sh
+bindsym XF86AudioLowerVolume  exec --no-startup-id pactl set-sink-volume  0 -5%; \
+			      exec --no-startup-id ~/.config/scripts/dunst_display_volume.sh
+bindsym XF86AudioMute         exec --no-startup-id pactl set-sink-mute    0 toggle; \
+			      exec --no-startup-id ~/.config/scripts/dunst_display_volume.sh
 bindsym XF86AudioMicMute      exec --no-startup-id pactl set-source-mute  1 toggle
 
 # Sreen brightness controls
-bindsym XF86MonBrightnessUp   exec --no-startup-id light -A 5 # increase screen brightness by %
-bindsym XF86MonBrightnessDown exec --no-startup-id light -U 5 # decrease screen brightness by %
+bindsym XF86MonBrightnessUp   exec --no-startup-id light -A 5; \
+			      exec --no-startup-id ~/.config/scripts/dunst_display_brightness.sh
+bindsym XF86MonBrightnessDown exec --no-startup-id light -U 5; \
+			      exec --no-startup-id ~/.config/scripts/dunst_display_brightness.sh
 
 # Media player controls
 bindsym XF86AudioPlay   exec --no-startup-id playerctl play

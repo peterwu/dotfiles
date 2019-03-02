@@ -65,7 +65,7 @@ My Emacs Init Settings
     (setq solarized-height-plus-3 1.0)
     (setq solarized-height-plus-4 1.0)
     :config
-    (load-theme 'solarized-light t)
+    (load-theme 'solarized-dark t)
 
     (defconst theme-color-black "#073642")
     (defconst theme-color-red "#dc322f")

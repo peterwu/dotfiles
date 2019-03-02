@@ -47,22 +47,22 @@ Xft.rgba:       rgb
 #define S_green         #859900
 
 !! Solarized Dark
-! *background:              S_base03
-! *foreground:              S_base0
-! *fading:                  40
-! *fadeColor:               S_base03
-! *cursorColor:             S_base1
-! *pointerColorBackground:  S_base01
-! *pointerColorForeground: S_base1
+*background:              S_base03
+*foreground:              S_base0
+*fading:                  40
+*fadeColor:               S_base03
+*cursorColor:             S_base1
+*pointerColorBackground:  S_base01
+*pointerColorForeground: S_base1
 
 !! Solarized Light
-*background:            S_base3
-*foreground:            S_base00
-*fading:                40
-*fadeColor:             S_base3
-*cursorColor:           S_base01
-*pointerColorBackground:S_base1
-*pointerColorForeground:S_base01
+! *background:            S_base3
+! *foreground:            S_base00
+! *fading:                40
+! *fadeColor:             S_base3
+! *cursorColor:           S_base01
+! *pointerColorBackground:S_base1
+! *pointerColorForeground:S_base01
 
 !! black dark/light
 *color0:                S_base02

@@ -1,8 +1,8 @@
 [colors]
-# foreground = ${xrdb:background}
-# background = ${xrdb:foreground}
-foreground = #fdf6e3
-background = #002b36
+background = ${xrdb:background}
+foreground = ${xrdb:foreground}
+# foreground = #fffdf6e3
+# background = #ff002b36
 # primary = #ffb52a
 # secondary = #e60053
 # alert = #bd2c40
@@ -16,16 +16,18 @@ font-3 = "Sarasa Gothic SC:size=20;4"
 
 fixed-center = true
 height = 42
-module-margin = 1
-modules-left = i3
+module-margin-right = 1
+modules-left = bspwm
 modules-center = title
 modules-right = wireless-network pulseaudio battery date system-exit
 
 background = ${colors.background}
 foreground = ${colors.foreground}
 
-[module/i3]
-type = internal/i3
+[module/bspwm]
+type = internal/bspwm
+enable-scroll = false
+reverse-scroll = false
 
 ws-icon-0 = 1;
 ws-icon-1 = 2;
@@ -33,21 +35,19 @@ ws-icon-2 = 3;獵
 ws-icon-3 = 4;
 ws-icon-4 = 5;
 ws-icon-5 = 6;
-ws-icon-default = 
+ws-icon-6 = 7;
+ws-icon-7 = 8;
+ws-icon-8 = 9;
+ws-icon-9 = 0;
 
 format = <label-state> <label-mode>
 
 label-focused = %icon%
-label-focused-padding = 1
-label-unfocused = %icon%
-label-unfocused-padding = 1
-label-visible = %icon%
-label-visible-padding = 1
+label-occupied = %icon%
 label-urgent = %icon%
-label-urgent-padding = 1
+label-empty = 
 
 label-focused-foreground = #d33682
-label-separator-padding = 2
 
 [module/title]
 type = internal/xwindow
@@ -57,16 +57,6 @@ type = custom/script
 exec = ~/.config/scripts/polybar_display_weather.sh
 interval = 600
 label-font = 3
-
-[module/pulseaudio]
-type = internal/pulseaudio
-
-format-volume = <ramp-volume>
-label-muted = 
-
-ramp-volume-0 = 
-ramp-volume-1 = 
-ramp-volume-2 = 
 
 [module/wireless-network]
 type = internal/network
@@ -80,6 +70,16 @@ ramp-signal-1 = 爛
 ramp-signal-2 = 嵐
 ramp-signal-3 = 襤
 ramp-signal-4 = 蠟
+
+[module/pulseaudio]
+type = internal/pulseaudio
+
+format-volume = <ramp-volume>
+label-muted = 
+
+ramp-volume-0 = 
+ramp-volume-1 = 
+ramp-volume-2 = 
 
 [module/battery]
 type = internal/battery
@@ -129,7 +129,7 @@ format =  <label>
 [module/system-exit]
 type = custom/text
 content = 
-click-left = ~/.config/scripts/i3_exit_system.sh
+click-left = ~/.config/scripts/bspwm_exit_system.sh
 
 ;;;;;;;;;;;;;;;;
 ; vim:ft=dosini
