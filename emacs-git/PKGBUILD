@@ -37,8 +37,8 @@ BRANCH=master
 #
 #######################################################################
 CHECK=            # Run tests. May fail, this is developement after all.
-CLANG=            # Use clang.
-LTO="YES"              # Enable link-time optimization. Experimental.
+CLANG="YES"       # Use clang.
+LTO="YES"         # Enable link-time optimization. Experimental.
 CLI=              # CLI only binary.
 NOTKIT=           # Use no toolkit widgets. Like B&W Twm (001d sk00l).
                   #
@@ -58,19 +58,19 @@ M17N=             # Enable m17n international table input support.
 OTF="YES"         # OTF font support. Also a secondary dependency
                   # by pulling m17n-lib. Not needed in that case.
 CAIRO=            # Highly experimental. Maintaner dissapeared.
-XWIDGETS="YES"         # Use GTK+ widgets pulled from webkit2gtk. Usable.
+XWIDGETS="YES"    # Use GTK+ widgets pulled from webkit2gtk. Usable.
 DOCS_HTML=        # Generate and install html documentation.
 DOCS_PDF=         # Generate and install pdf documentation.
-MAGICK="YES"           # Imagemagick 6 libraries support. Imagemagick,
+MAGICK="YES"      # Imagemagick 6 libraries support. Imagemagick,
                   # like flash, is bug ridden and won't die; yet useful.
 NOGZ=             # Don't compress el files.
 #######################################################################
 
 #######################################################################
 if [[ $BRANCH = "emacs-26" ]]; then
-  pkgname=emacs26-git
+  pkgname=emacs26-devel
 else
-  pkgname=emacs-git
+  pkgname=emacs-devel
 fi
 pkgver=27.0.50.135453
 pkgrel=1

@@ -62,7 +62,7 @@ label-font = 3
 type = internal/network
 interface = wlp4s0
 
-format-connected = <ramp-signal>
+format-connected = %{A3:~/.config/scripts/dunst_display_wifi.sh&:}<ramp-signal>%{A}
 label-disconnected = 
 
 ramp-signal-0 = 冷
@@ -74,7 +74,7 @@ ramp-signal-4 = 蠟
 [module/pulseaudio]
 type = internal/pulseaudio
 
-format-volume = <ramp-volume>
+format-volume = %{A3:~/.config/scripts/dunst_display_volume.sh&:}<ramp-volume>%{A}
 label-muted = 
 
 ramp-volume-0 = 
@@ -89,7 +89,7 @@ battery = BAT0
 adapter = AC
 
 format-charging = <animation-charging> <label-charging>
-format-discharging = <ramp-capacity> <label-discharging>
+format-discharging = %{A3:~/.config/scripts/dunst_display_battery.sh&:}<ramp-capacity> <label-discharging>%{A}
 label-charging = %percentage%
 label-discharging = %percentage%
 label-full = %percentage%
@@ -123,8 +123,7 @@ animation-charging-framerate = 750
 [module/date]
 type = internal/date
 date = %R
-date-alt = %a %F %R %Z
-format =  <label>
+format = %{A3:~/.config/scripts/dunst_display_datetime.sh&:} <label>%{A}
 
 [module/system-exit]
 type = custom/text
