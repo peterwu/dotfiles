@@ -1,31 +1,25 @@
 [colors]
 background = ${xrdb:background}
 foreground = ${xrdb:foreground}
-# ;background = ${xrdb:color0:#222}
-# background = ${xrdb:background}
-# background = #002b36
-# background-alt = #073642
-# ;foreground = ${xrdb:color7:#222}
-# foreground = #fdf6e3
-# foreground = #93a1a1
-# foreground-alt = #eee8d5
+# foreground = #fffdf6e3
+# background = #ff002b36
 # primary = #ffb52a
 # secondary = #e60053
 # alert = #bd2c40
 # red = dc322f
 
-
-[bar/mybar]
-font-0 = "Roboto:size=11;0"
-font-1 = "Material Design Icons:size=14;0"
-font-2 = "Weather Icons:size=12;1"
+[bar/main]
+font-0 = "Roboto:size=22;4"
+font-1 = "Material Design Icons:size=28;4"
+font-2 = "Weather Icons:size=24;4"
+font-3 = "Sarasa Gothic SC:size=20;4"
 
 fixed-center = true
-
-module-margin = 1
+height = 42
+module-margin-right = 1
 modules-left = i3
 modules-center = title
-modules-right = weather battery date
+modules-right = wireless-network pulseaudio battery date system-exit
 
 background = ${colors.background}
 foreground = ${colors.foreground}
@@ -35,9 +29,10 @@ type = internal/i3
 
 ws-icon-0 = 1;
 ws-icon-1 = 2;
-ws-icon-2 = 3;
+ws-icon-2 = 3;獵
 ws-icon-3 = 4;
-ws-icon-4 = 5;
+ws-icon-4 = 5;
+ws-icon-5 = 6;
 ws-icon-default = 
 
 format = <label-state> <label-mode>
@@ -52,18 +47,39 @@ label-urgent = %icon%
 label-urgent-padding = 1
 
 label-focused-foreground = #d33682
-label-separator = 
 label-separator-padding = 2
 
 [module/title]
 type = internal/xwindow
 
-
 [module/weather]
 type = custom/script
-exec = $HOME/.config/polybar/weather.sh
+exec = ~/.config/scripts/polybar_display_weather.sh
 interval = 600
 label-font = 3
+
+[module/wireless-network]
+type = internal/network
+interface = wlp4s0
+
+format-connected = <ramp-signal>
+label-disconnected = 
+
+ramp-signal-0 = 冷
+ramp-signal-1 = 爛
+ramp-signal-2 = 嵐
+ramp-signal-3 = 襤
+ramp-signal-4 = 蠟
+
+[module/pulseaudio]
+type = internal/pulseaudio
+
+format-volume = <ramp-volume>
+label-muted = 
+
+ramp-volume-0 = 
+ramp-volume-1 = 
+ramp-volume-2 = 
 
 [module/battery]
 type = internal/battery
@@ -108,7 +124,12 @@ animation-charging-framerate = 750
 type = internal/date
 date = %R
 date-alt = %a %F %R %Z
-
 format =  <label>
 
+[module/system-exit]
+type = custom/text
+content = 
+click-left = ~/.config/scripts/i3_exit_system.sh
+
+;;;;;;;;;;;;;;;;
 ; vim:ft=dosini

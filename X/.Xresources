@@ -1,12 +1,12 @@
 ! general
-!Xft.dpi: 192
-Xft.dpi: 96
-Xft.autohint: 0
+Xft.dpi:        192
+!Xft.dpi: 96
+Xft.autohint:   0
 Xft.lcdfilter:  lcddefault
 Xft.hintstyle:  hintfull
-Xft.hinting: 1
-Xft.antialias: 1
-Xft.rgba: rgb
+Xft.hinting:    1
+Xft.antialias:  1
+Xft.rgba:       rgb
  
 !! drop in Solarized colorscheme for Xresources/Xdefaults
 
@@ -46,13 +46,23 @@ Xft.rgba: rgb
 #define S_cyan          #2aa198
 #define S_green         #859900
 
-*background:            S_base03
-*background-even:      #00323E
-*foreground:            S_base1
-*fadeColor:            S_base03
-*cursorColor:           S_base1
-*pointerColorBackground:S_base01
-*pointerColorForeground:S_base1
+!! Solarized Dark
+*background:              S_base03
+*foreground:              S_base0
+*fading:                  40
+*fadeColor:               S_base03
+*cursorColor:             S_base1
+*pointerColorBackground:  S_base01
+*pointerColorForeground: S_base1
+
+!! Solarized Light
+! *background:            S_base3
+! *foreground:            S_base00
+! *fading:                40
+! *fadeColor:             S_base3
+! *cursorColor:           S_base01
+! *pointerColorBackground:S_base1
+! *pointerColorForeground:S_base01
 
 !! black dark/light
 *color0:                S_base02
@@ -93,13 +103,12 @@ Xcursor.theme:        Bibata_Oil
 ! urxvt
 URxvt*buffered: true
 URxvt*cursorBlink: false
-!URxvt*underlineColor: yellow
 URxvt*font:  xft:iosevka:size=12:antialias=true;hinting=true
 URxvt*depth: 32
 URxvt*borderless: 1
 URxvt*scrollBar: false
 URxvt*loginShell: true
-Urxvt*secondaryScroll:  true    # Enable Shift-PageUp/Down in screen
+URxvt*secondaryScroll:  true    # Enable Shift-PageUp/Down in screen
 URxvt*saveLines: 5000
 URxvt*termName: rxvt-unicode
 URxvt.perl-ext-common: default,matcher
@@ -107,19 +116,23 @@ URxvt.url-launcher: firefox
 URxvt.matcher.button: 1
 
 ! rofi
-rofi.color-enabled: true
-rofi.combi-modi:    window,drun,ssh
-rofi.theme:         solarized
-rofi.font:          iosevka 12
+rofi.combi-modi:    drun,window,ssh
+rofi.font:          iosevka 24
 rofi.modi:          combi
+rofi.lines:	    8
+rofi.width:	    50
+rofi.padding:	    20
+rofi.color-enabled: true
+rofi.eh:	    1
+rofi.bw:	    2
 
 ! ! Property Name     BG       Border   Separator
-! rofi.color-window:  S_base2, S_base2, S_base2
+rofi.color-window:  S_base2, S_base2, S_base2
 
 ! ! Property Name     BG       FG       BG-alt   Head-BG  Head-FG
-! rofi.color-normal:  S_base2, S_base01,S_base2, S_base2, S_orange
-! rofi.color-active:  S_base2, S_blue,  S_base2, S_base2, S_blue
-! rofi.color-urgent:  S_base2, S_red,   S_base2, S_base2, S_red
+rofi.color-normal:  S_base2, S_base01,S_base2, S_base2, S_orange
+rofi.color-active:  S_base2, S_blue,  S_base2, S_base2, S_blue
+rofi.color-urgent:  S_base2, S_red,   S_base2, S_base2, S_red
 
 ! ! Set the desired separator style
-! rofi.separator-style: solid
+rofi.separator-style: solid

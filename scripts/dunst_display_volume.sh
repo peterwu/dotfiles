@@ -21,12 +21,12 @@ fi
 
 if [[ $mute == "true" ]]; then
     # Show the sound muted notification
-    dunstify -a "changeVolume" -u normal -i $icon -r "$msgId" "Volume MUTED" 
+    dunstify -a "Display Volume" -u normal -i $icon -r "$msgId" "Volume MUTED" 
 else
     # Show the volume notification
-    dunstify -a "changeVolume" -u normal -i $icon -r "$msgId" "Volume ${volume}%" 
+    dunstify -a "Display Volume" -u normal -i $icon -r "$msgId" "Volume ${volume}%" 
 fi
 
 # Play the volume changed sound
-canberra-gtk-play -i audio-volume-change -d "changeVolume"
+canberra-gtk-play -i audio-volume-change -d "Display Volume"
 

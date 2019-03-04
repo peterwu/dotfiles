@@ -6,7 +6,7 @@ set $mod Mod4
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
-font pango:Roboto 10
+font pango:Roboto 11
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
@@ -18,7 +18,7 @@ bindsym $mod+Return exec i3-sensible-terminal
 bindsym $mod+Shift+q kill
 
 # start dmenu (a program launcher)
-bindsym $mod+d exec "rofi -combi-modi window,drun,run -show combi -modi combi -lines 10 -width 50 -padding 20"
+bindsym $mod+d exec "rofi -show"
 
 # change focus
 bindsym $mod+Left focus left
@@ -99,18 +99,19 @@ bindsym $mod+Shift+0 move container to workspace $ws10
 bindsym $mod+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+r restart
-# exit i3 (logs you out of your X session)
-# bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
-bindsym $mod+Shift+e exec i3-msg exit
+# exit i3 
+bindsym $mod+Shift+x exec --no-startup-id ~/.config/scripts/i3_exit_system.sh
 # lock screen
-bindsym $mod+Shift+l exec i3lock -i ~/Pictures/Wallpapers/wallpaper.png
+bindsym $mod+Shift+l exec --no-startup-id ~/.config/scripts/i3_lock_screen.sh
 
 # open some apps on specified workspaces
-assign [class="^URxvt$"] → $ws1
-assign [class="^Google-chrome$"] → $ws2
-assign [class="^Firefox$"] → $ws2
-assign [class="^Emacs$"] → $ws3
-assign [class="^Thunderbird$"] → $ws4
+assign [class="^URxvt$"]		→ $ws1
+assign [class="^Firefox$"] 		→ $ws2
+assign [class="^Google-chrome$"] 	→ $ws2
+assign [class="^Emacs$"] 		→ $ws3
+assign [class="^Thunderbird$"] 		→ $ws4
+assign [class="^Soffice$"] 		→ $ws5
+assign [class="^vlc$"] 			→ $ws6
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
@@ -134,15 +135,19 @@ mode "resize" {
 bindsym $mod+r mode "resize"
 
 # audio soft keys
-bindsym XF86AudioRaiseVolume  exec --no-startup-id pactl set-sink-volume  0 +5%
-bindsym XF86AudioLowerVolume  exec --no-startup-id pactl set-sink-volume  0 -5%
-bindsym XF86AudioMute         exec --no-startup-id pactl set-sink-mute    0 toggle
+bindsym XF86AudioRaiseVolume  exec --no-startup-id pactl set-sink-volume  0 +5%; \
+			      exec --no-startup-id ~/.config/scripts/dunst_display_volume.sh
+bindsym XF86AudioLowerVolume  exec --no-startup-id pactl set-sink-volume  0 -5%; \
+			      exec --no-startup-id ~/.config/scripts/dunst_display_volume.sh
+bindsym XF86AudioMute         exec --no-startup-id pactl set-sink-mute    0 toggle; \
+			      exec --no-startup-id ~/.config/scripts/dunst_display_volume.sh
 bindsym XF86AudioMicMute      exec --no-startup-id pactl set-source-mute  1 toggle
 
-
 # Sreen brightness controls
-bindsym XF86MonBrightnessUp   exec --no-startup-id light -A 5 # increase screen brightness by %
-bindsym XF86MonBrightnessDown exec --no-startup-id light -U 5 # decrease screen brightness by %
+bindsym XF86MonBrightnessUp   exec --no-startup-id light -A 5; \
+			      exec --no-startup-id ~/.config/scripts/dunst_display_brightness.sh
+bindsym XF86MonBrightnessDown exec --no-startup-id light -U 5; \
+			      exec --no-startup-id ~/.config/scripts/dunst_display_brightness.sh
 
 # Media player controls
 bindsym XF86AudioPlay   exec --no-startup-id playerctl play
@@ -151,13 +156,12 @@ bindsym XF86AudioNext   exec --no-startup-id playerctl next
 bindsym XF86AudioPrev   exec --no-startup-id playerctl previous
 
 exec --no-startup-id xrdb ~/.Xresources
-# exec --no-startup-id ibus-daemon -drx
 exec --no-startup-id /usr/bin/feh --bg-scale ~/Pictures/Wallpapers/wallpaper.png
 exec --no-startup-id /usr/bin/compton -b -c -f
-exec --no-startup-id /usr/bin/xautolock -detectsleep -time 5 -locker i3lock -i ~/Pictures/Wallpapers/wallpaper.png
+exec --no-startup-id /usr/bin/xautolock -detectsleep -time 5 -locker ~/.config/scripts/i3_lock_screen.sh
 
 # autostart some programs
-exec_always --no-startup-id $HOME/.config/polybar/launch.sh
+exec_always --no-startup-id ~/.config/scripts/i3_launch_polybar.sh
 
 # no borders!
 default_border none
@@ -170,16 +174,17 @@ smart_borders on
 
 # COLORS
 # set colors from Xresources, fall back to #000000 in case Xresources is missing
-set_from_resource $darkred     color1  			#000000
-set_from_resource $white       foreground 		#000000
-set_from_resource $black       background 		#000000
-set_from_resource $alt_black   background-even	 	#000000
-set_from_resource $br_black    color8 			#000000
-set_from_resource $alt_white   color1			#000000
+set_from_resource $darkred     color1  			  
+set_from_resource $white       foreground 		 
+set_from_resource $black       background 		
+set_from_resource $alt_black   background-even	
+set_from_resource $br_black    color8 		
+set_from_resource $alt_white   color1	
 
 # set border colors     BORDER      BACKGROUND  TEXT        INDICATOR   CHILD_BORDER
 client.focused          $black      $black      $white      $black  	$alt_black
-client.unfocused        $alt_black  $alt_black  $br_black   $black  	$black
+client.unfocused        $alt_black  $alt_black  $br_black   $black	$black
 client.focused_inactive $black      $black      $black      $black 	$black
 client.urgent           $darkred    $darkred    $black      $darkred    $darkred
 client.background       $black
+
