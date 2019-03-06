@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+xrdb ~/.Xresources &
+feh --bg-scale ~/Pictures/Wallpapers/wallpaper.png &
+compton -b -c -f &
+urxvtd -q -f -o &
+xautolock -detectsleep -time 5 -locker slock &
+
+# autostart some programs
+~/.config/scripts/bspwm_launch_polybar &

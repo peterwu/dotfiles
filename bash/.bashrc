@@ -17,8 +17,6 @@ alias yay='yay --editmenu --devel --removemake --timeupdate --rebuild --noredown
 
 set -o vi
 
-source <(kubectl completion bash)
-
 ### This Changes The PS1 ### 
 PROMPT_COMMAND=__prompt_command # Func to gen PS1 after CMDs
 

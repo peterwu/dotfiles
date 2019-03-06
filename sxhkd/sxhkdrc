@@ -22,28 +22,28 @@ super + ctrl + l
   
 # exit the system
 super + shift +x
-  ~/.config/scripts/bspwm_exit_system.sh
+  ~/.config/scripts/bspwm_exit_system
 
 # audio soft keys
 XF86AudioRaiseVolume
 	pactl set-sink-volume  0 +5%; \
-	~/.config/scripts/dunst_display_volume.sh
+	~/.config/scripts/dunst_display_volume
 XF86AudioLowerVolume
 	pactl set-sink-volume  0 -5%; \
- 	~/.config/scripts/dunst_display_volume.sh
+ 	~/.config/scripts/dunst_display_volume
 XF86AudioMute
 	pactl set-sink-mute    0 toggle; \
-	~/.config/scripts/dunst_display_volume.sh
+	~/.config/scripts/dunst_display_volume
 XF86AudioMicMute
 	pactl set-source-mute  1 toggle
 
 # screen brightness controls
 XF86MonBrightnessUp
 	light -A 5; \
-	~/.config/scripts/dunst_display_brightness.sh
+	~/.config/scripts/dunst_display_brightness
 XF86MonBrightnessDown
 	light -U 5; \
-	~/.config/scripts/dunst_display_brightness.sh
+	~/.config/scripts/dunst_display_brightness
 
 # media player controls
 XF86AudioPlay

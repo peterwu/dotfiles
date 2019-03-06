@@ -22,4 +22,4 @@ bspc rule -a Soffice desktop='^5' state=tiled
 bspc rule -a vlc desktop='^6' 
 
 
-~/.config/scripts/bspwm_init_session.sh &
+~/.config/scripts/bspwm_init_session &

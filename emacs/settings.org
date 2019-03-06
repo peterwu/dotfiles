@@ -370,6 +370,35 @@ Simulate a Vim modal editing experience
   (use-package pkgbuild-mode
     :mode "/PKGBUILD$")
 #+END_SRC
+** C/C++ IDE
+  [[https://github.com/andreyorst/dotfiles/tree/master/.emacs.d#lsp-mode][C/C++ IDE Setup]] 
+#+BEGIN_SRC emacs-lisp
+  (use-package lsp-mode
+    :commands lsp
+    :config
+    (setq lsp-highlight-symbol-at-point nil))
+  (use-package lsp-ui :commands lsp-ui-mode)
+  (use-package company-lsp :commands company-lsp)
+
+  (defun cquery//enable ()
+    (condition-case nil
+	(lsp)
+      (user-error nil)))
+
+  (use-package cquery
+    :init
+    (add-hook 'c-mode-hook #'cquery//enable)
+    (add-hook 'c++-mode-hook #'cquery//enable)
+    :commands lsp
+    :after lsp-mode
+    :config
+    (setq cquery-executable "/usr/bin/cquery"
+	  cquery-cache-dir "~/.cache/cquery"
+	  cquery-sem-highlight-method 'font-lock
+	  cquery-extra-args '("--log-file=/tmp/cq.log")))
+
+  (use-package clang-format)
+#+END_SRC
 * Personal Settings
 ** Variables
 #+BEGIN_SRC emacs-lisp

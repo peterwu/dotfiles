@@ -54,7 +54,7 @@ type = internal/xwindow
 
 [module/weather]
 type = custom/script
-exec = ~/.config/scripts/polybar_display_weather.sh
+exec = ~/.config/scripts/polybar_display_weather
 interval = 600
 label-font = 3
 
@@ -129,7 +129,7 @@ format =  <label>
 [module/system-exit]
 type = custom/text
 content = 
-click-left = ~/.config/scripts/i3_exit_system.sh
+click-left = ~/.config/scripts/i3_exit_system
 
 ;;;;;;;;;;;;;;;;
 ; vim:ft=dosini
