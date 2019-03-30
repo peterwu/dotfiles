@@ -399,6 +399,19 @@ Simulate a Vim modal editing experience
 
   (use-package clang-format)
 #+END_SRC
+** Chinese Input
+#+BEGIN_SRC emacs-lisp
+  (use-package posframe)
+  (use-package pyim
+    :config
+    (setq pyim-default-scheme 'quanpin)
+    (pyim-isearch-mode 1)
+    (setq pyim-page-tooltip 'posframe)
+    (setq pyim-page-length 5))   
+  (use-package pyim-basedict 
+    :config
+    (pyim-basedict-enable))  
+#+END_SRC
 * Personal Settings
 ** Variables
 #+BEGIN_SRC emacs-lisp
@@ -420,6 +433,7 @@ Simulate a Vim modal editing experience
 	display-time-format "[%R]"
 	display-time-default-load-average nil)
   (setq visible-bell t)
+  (setq default-input-method "pyim")
   (when (eq system-type 'windows-nt)
     (setq inhibit-compacting-font-caches t)) 
   (setq frame-title-format
@@ -479,7 +493,7 @@ Simulate a Vim modal editing experience
 #+BEGIN_SRC emacs-lisp
   (global-set-key [f12] 'eshell)
   (global-set-key (kbd "C-x C-b") 'ibuffer)
-  (global-set-key [mouse-3] 'mouse-popup-menubar-stuff)
+  (global-set-key [mouse-3] (mouse-menu-bar-map))
 #+END_SRC
 ** Mode line
 #+BEGIN_SRC emacs-lisp

@@ -1,21 +1,22 @@
 [colors]
 background = ${xrdb:background}
 foreground = ${xrdb:foreground}
-# foreground = #fffdf6e3
-# background = #ff002b36
-# primary = #ffb52a
-# secondary = #e60053
-# alert = #bd2c40
-# red = dc322f
+; foreground = #93a1a1
+; background = #ff002b36
+; primary = #ffb52a
+; secondary = #e60053
+; alert = #bd2c40
+; red = #dc322f
 
 [bar/main]
 font-0 = "Roboto:size=22;4"
 font-1 = "Material Design Icons:size=28;4"
-font-2 = "Weather Icons:size=24;4"
-font-3 = "Sarasa Gothic SC:size=20;4"
+font-2 = "Sarasa Gothic SC:size=20;4"
+font-3 = "Weather Icons:size=24;4"
 
+border-size = 0
 fixed-center = true
-height = 42
+height = 40
 module-margin-right = 1
 modules-left = bspwm
 modules-center = title
@@ -24,39 +25,43 @@ modules-right = wireless-network pulseaudio battery date system-exit
 background = ${colors.background}
 foreground = ${colors.foreground}
 
+wm-restack = bspwm
+
 [module/bspwm]
 type = internal/bspwm
 enable-scroll = false
 reverse-scroll = false
 
 ws-icon-0 = 1;
-ws-icon-1 = 2;
+ws-icon-1 = 2;
 ws-icon-2 = 3;獵
 ws-icon-3 = 4;
-ws-icon-4 = 5;
-ws-icon-5 = 6;
-ws-icon-6 = 7;
-ws-icon-7 = 8;
+ws-icon-4 = 5;蝹
+ws-icon-5 = 6;
+ws-icon-6 = 7;精
+ws-icon-7 = 8;
 ws-icon-8 = 9;
 ws-icon-9 = 0;
 
-format = <label-state> <label-mode>
+format = <label-state>
 
-label-focused = %icon%
-label-occupied = %icon%
-label-urgent = %icon%
+label-focused = %index%%icon%
+label-occupied = %index%%icon%
+label-urgent = %index%%icon%
 label-empty = 
 
 label-focused-foreground = #d33682
+label-separator = " "
 
 [module/title]
 type = internal/xwindow
+; label = %title:0:60:...%
 
 [module/weather]
 type = custom/script
 exec = ~/.config/scripts/polybar_display_weather
 interval = 600
-label-font = 3
+label-font = 4
 
 [module/wireless-network]
 type = internal/network
@@ -70,6 +75,8 @@ ramp-signal-1 = 爛
 ramp-signal-2 = 嵐
 ramp-signal-3 = 襤
 ramp-signal-4 = 蠟
+
+label-font = 2
 
 [module/pulseaudio]
 type = internal/pulseaudio

@@ -16,10 +16,21 @@ bspc config focus_follows_pointer true
 
 bspc rule -a URxvt desktop='^1'
 bspc rule -a Firefox desktop='^2'
+bspc rule -a Google-chrome desktop='^2'
 bspc rule -a Emacs desktop='^3' state=tiled
 bspc rule -a Thunderbird desktop='^4' 
-bspc rule -a Soffice desktop='^5' state=tiled
-bspc rule -a vlc desktop='^6' 
+bspc rule -a Pcmanfm desktop='^5' 
+
+# documents
+bspc rule -a Soffice desktop='^6' state=tiled
+bspc rule -a Zathura desktop='^6' state=tiled
+
+# vscode
+bspc rule -a code-oss desktop='^7' 
+
+# entertainment (video, games, etc.)
+bspc rule -a mpv desktop='^8' 
+bspc rule -a pyrogenesis desktop='^8' 
 
 
 ~/.config/scripts/bspwm_init_session &

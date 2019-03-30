@@ -12,11 +12,10 @@ with open(battery_uevent, 'r') as f:
         if "POWER_NOW" in line:
             power_now = int(line.split('=')[1])
 
-            
-remaining_time = energy_now / power_now
-h = int(remaining_time)
-m = int((remaining_time - h) * 60)
+if power_now > 0:
+    remaining_time = energy_now / power_now
+    h = int(remaining_time)
+    m = int((remaining_time - h) * 60)
+    msg = "%d:%02d remaining" %(h, m)
 
-msg = "%d:%d remaining" %(h, m)
-
-subprocess.run(["dunstify", "-a", "Display Battery", "-u", "normal", "-r", msgId, battery, msg])
+    subprocess.run(["dunstify", "-a", "Display Battery", "-u", "normal", "-r", msgId, battery, msg])

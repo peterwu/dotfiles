@@ -168,7 +168,8 @@
     max_icon_size = 96
 
     # Paths to default icons.
-    icon_path = /usr/share/icons/Adwaita/256x256/status/:/usr/share/icons/Adwaita/256x256/devices/
+    # icon_path = /usr/share/icons/Adwaita/256x256/status/:/usr/share/icons/Adwaita/256x256/devices/
+    icon_path = /usr/share/icons/Adwaita/256x256/legacy/
 
     ### History ###
 

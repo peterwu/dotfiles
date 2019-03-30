@@ -10,27 +10,24 @@ super + Return
 
 # program launcher
 super + d
-	rofi -show
+      	rofi -show
 
 # make sxhkd reload its configuration files:
 super + Escape
-	pkill -USR1 -x sxhkd
+      	pkill -USR1 -x sxhkd
 
 # lock the screen
 super + ctrl + l
-  slock
+      	xset s activate
   
 # exit the system
 super + shift +x
-  ~/.config/scripts/bspwm_exit_system
+      	~/.config/scripts/bspwm_exit_system
 
 # audio soft keys
-XF86AudioRaiseVolume
-	pactl set-sink-volume  0 +5%; \
+XF86Audio{Raise,Lower}Volume
+	pactl set-sink-volume  0 {+,-}5%; \
 	~/.config/scripts/dunst_display_volume
-XF86AudioLowerVolume
-	pactl set-sink-volume  0 -5%; \
- 	~/.config/scripts/dunst_display_volume
 XF86AudioMute
 	pactl set-sink-mute    0 toggle; \
 	~/.config/scripts/dunst_display_volume
@@ -38,26 +35,17 @@ XF86AudioMicMute
 	pactl set-source-mute  1 toggle
 
 # screen brightness controls
-XF86MonBrightnessUp
-	light -A 5; \
-	~/.config/scripts/dunst_display_brightness
-XF86MonBrightnessDown
-	light -U 5; \
+XF86MonBrightness{Up,Down}
+	light -{A,U} 5; \
 	~/.config/scripts/dunst_display_brightness
 
 # media player controls
-XF86AudioPlay
-	playerctl play
-XF86AudioPause
-	playerctl pause
-XF86AudioNext
-	playerctl next
-XF86AudioPrev
-	playerctl previous
+XF86Audio{Play,Pause,Prev,Next}Play
+	playerctl {play,pause,previous,next}
 
 # print screen
 Print
-  scrot '%Y-%m-%d_$wx$h-scrot.png' -e 'mv $f ~/Pictures/Screenshots/'
+	scrot '%Y-%m-%d_$wx$h-scrot.png' -e 'mv $f ~/Pictures/Screenshots/'
 #
 # bspwm hotkeys
 #
@@ -70,6 +58,9 @@ super + shift + {q,r}
 super + {_,shift + }w
 	bspc node -{c,k}
 
+ctrl + q
+        bspc node -c
+	
 # alternate between the tiled and monocle layout
 super + m
 	bspc desktop -l next

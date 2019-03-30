@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
 
 xrdb ~/.Xresources &
-feh --bg-scale ~/Pictures/Wallpapers/wallpaper.png &
-compton -b -c -f &
+feh --bg-scale ~/Pictures/Wallpapers/wallpaper &
+compton -b &
 urxvtd -q -f -o &
-xautolock -detectsleep -time 5 -locker slock &
+
+xsetroot -cursor_name left_ptr &
+
+xset s 300 5 &
+xss-lock -n /usr/lib/xsecurelock/dimmer -l -- xsecurelock &
 
 # autostart some programs
 ~/.config/scripts/bspwm_launch_polybar &

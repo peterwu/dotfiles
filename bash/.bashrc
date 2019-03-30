@@ -17,6 +17,9 @@ alias yay='yay --editmenu --devel --removemake --timeupdate --rebuild --noredown
 
 set -o vi
 
+#so as not to be disturbed by Ctrl-S ctrl-Q in terminals:
+stty -ixon
+
 ### This Changes The PS1 ### 
 PROMPT_COMMAND=__prompt_command # Func to gen PS1 after CMDs
 
