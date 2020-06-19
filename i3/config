@@ -182,9 +182,9 @@ set_from_resource $br_black    color8
 set_from_resource $alt_white   color1	
 
 # set border colors     BORDER      BACKGROUND  TEXT        INDICATOR   CHILD_BORDER
-client.focused          $black      $black      $white      $black  	$alt_black
-client.unfocused        $alt_black  $alt_black  $br_black   $black	$black
-client.focused_inactive $black      $black      $black      $black 	$black
+client.focused          $black      $black      $white      $black  	  $alt_black
+client.unfocused        $alt_black  $alt_black  $br_black   $black	    $black
+client.focused_inactive $black      $black      $black      $black 	    $black
 client.urgent           $darkred    $darkred    $black      $darkred    $darkred
 client.background       $black
 

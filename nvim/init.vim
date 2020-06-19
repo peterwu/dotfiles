@@ -1,61 +1,109 @@
 set nocompatible encoding=utf-8 fileencoding=utf-8 nrformats-=octal
 filetype plugin indent on 
 
-set number relativenumber cursorline showcmd wildmenu lazyredraw showmatch ruler hidden
-set guioptions-=T guioptions-=m guioptions-=L guioptions-=r 
+set number cursorline relativenumber showcmd wildmenu lazyredraw showmatch ruler hidden
 set autoindent smartindent smarttab expandtab tabstop=2 shiftwidth=2 softtabstop=2
-set smartcase incsearch hlsearch ignorecase shortmess+=I
-set mouse=a
+set smartcase incsearch hlsearch ignorecase shortmess+=I title mouse=a
 
 syntax enable
 set termguicolors
 set background=dark
-
+packadd! vim-dracula
 colorscheme dracula
 
-let g:airline_theme='dracula'
-let g:airline_powerline_fonts = 1
-let g:airline_extensions = ['branch', 'tabline', 'ale']
-let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
+" set leader keys
+let g:mapleader=" "
+let g:maplocalleader=","
 
-let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
+" swap j/k <-> gj/gk
+nnoremap j gj
+nnoremap k gk
+nnoremap gj j
+nnoremap gk k
 
-let g:prettier#config#bracket_spacing = 'true'
-let g:prettier#config#single_quote = 'false'
-let g:prettier#config#jsx_bracket_same_line = 'false'
-let g:prettier#config#trailing_comma = 'none'
-let g:prettier#config#parser = 'babylon'
-let g:prettier#autoformat = 0
+" copy to clipboard
+nnoremap Y y$
+vnoremap <Leader>y  "+y
+nnoremap <Leader>y  "+y
+nnoremap <Leader>Y  "+y$
+nnoremap <Leader>yy  "+yy
 
-augroup vim-prettier
-  autocmd!
-  autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.md,*.vue,*.yaml,*.html PrettierAsync
-augroup END
+" paste from clipboard
+nnoremap <Leader>p "+p
+nnoremap <Leader>P "+P
+vnoremap <Leader>p "+p
+vnoremap <Leader>P "+P
 
 " key mappings
-nnoremap Y y$
-nnoremap <leader>cd :cd %:p:h<cr>:pwd<cr>
-nnoremap <leader>ev :e $MYVIMRC<cr>
-nnoremap <leader>sv :source $MYVIMRC<cr>
+nnoremap <Leader>cd :cd %:p:h<CR>:pwd<CR>
+nnoremap <Leader>ev :e $MYVIMRC<CR>
+nnoremap <Leader>sv :source $MYVIMRC<CR>
+nnoremap <Leader>pu :PackUpdate<CR>
+nnoremap <Leader>pc :PackClean<CR>
+nnoremap <Leader>ps :PackStatus<CR>
 
+" plugin settings
+"""""""""""""""""""""
+" quick scope
+let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
+
+"""""""""""""""""""
+" ctrlp
+nnoremap <Leader>F  :CtrlP<CR>
+nnoremap <Leader>f  :CtrlPMRU<CR>
+nnoremap <Leader>b  :CtrlPBuffer<CR>
+
+let g:ctrlp_show_hidden = 1
+
+"""""""""""""""""""""
+" nerdtree 
+let g:NERDTreeMinimalUI = 1
+let g:NERDTreeHijackNetrw = 0
+let g:NERDTreeWinSize = 31
+let g:NERDTreeChDirMode = 2
+let g:NERDTreeAutoDeleteBuffer = 1
+let g:NERDTreeShowBookmarks = 1
+let g:NERDTreeCascadeOpenSingleChildDir = 1
+
+map <F8> :NERDTreeToggle<CR>
+
+"""""""""""""""""""""
+" functions
+" function s:SetCursorLine()
+"   set cursorline
+"   highlight CursorLine cterm=NONE 
+" endfunction
+
+" augroup set_cursorline
+"   autocmd!
+"   autocmd VimEnter * call s:SetCursorLine()
+" augroup END
+
+"""""""""""""""""""""
 " minpac 
 if exists('*minpac#init')
-  call minpac#init({'dir': split(&packpath, ",")[2]})
+  call minpac#init({'dir': $HOME.'/.local/share/nvim/site'})
   call minpac#add('k-takata/minpac', {'type': 'opt'})
 
   call minpac#add('jiangmiao/auto-pairs', {'name': 'vim-auto-pairs'})
-  call minpac#add('tpope/vim-surround')
-  call minpac#add('tpope/vim-unimpaired')
-  call minpac#add('machakann/vim-highlightedyank', {'name': 'vim-highlighted-yank'})
-  call minpac#add('tpope/vim-repeat')
   call minpac#add('tpope/vim-commentary')
   call minpac#add('tpope/vim-fugitive')
+  call minpac#add('machakann/vim-highlightedyank', {'name': 'vim-highlighted-yank'})
   call minpac#add('unblevable/quick-scope', {'name': 'vim-quick-scope'})
-  call minpac#add('junegunn/fzf.vim', {'name': 'vim-fzf'})
+  call minpac#add('tpope/vim-repeat')
+  call minpac#add('tpope/vim-surround')
+  call minpac#add('tpope/vim-unimpaired')
+  call minpac#add('easymotion/vim-easymotion')
+
+  call minpac#add('preservim/nerdtree', {'name': 'vim-nerdtree'})
+  call minpac#add('mattn/emmet-vim', {'name': 'vim-emmet'})
+  call minpac#add('ctrlpvim/ctrlp.vim', {'name': 'vim-ctrlp'})
+
+  call minpac#add('sheerun/vim-polyglot')
+  call minpac#add('chrisbra/Colorizer', {'name': 'vim-colorizer'})
+  call minpac#add('rakr/vim-one')
   call minpac#add('dracula/vim', {'name': 'vim-dracula'})
-  call minpac#add('vim-airline/vim-airline')
-  call minpac#add('w0rp/ale', {'name': 'vim-ale'})
-  call minpac#add('prettier/vim-prettier', {'do': {-> system('npm install')}})
+  call minpac#add('itchyny/lightline.vim', {'name': 'vim-lightline'})
 endif
 
 " Define user commands for updating/cleaning the plugins.

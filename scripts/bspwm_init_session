@@ -1,14 +1,20 @@
 #!/usr/bin/env bash
 
 xrdb ~/.Xresources &
-feh --bg-scale ~/Pictures/Wallpapers/wallpaper &
-compton -b &
-urxvtd -q -f -o &
+
+# ~/.config/scripts/wal_bing_wallpaper &
+wal -R &
+
+picom --daemon --fading &
 
 xsetroot -cursor_name left_ptr &
 
 xset s 300 5 &
-xss-lock -n /usr/lib/xsecurelock/dimmer -l -- xsecurelock &
+# xss-lock -n /usr/lib/xsecurelock/dimmer -l -- xsecurelock &
 
+# workaround a java bug for jetbrain products
+wmname LG3D &
+ 
 # autostart some programs
+dex -a &
 ~/.config/scripts/bspwm_launch_polybar &

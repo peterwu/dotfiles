@@ -6,16 +6,15 @@ My Emacs Init Settings
 * System Customization
 ** Keep customizations made through the M-x customize function into its own file.
 #+BEGIN_SRC emacs-lisp
-  (setq custom-file (locate-user-emacs-file "custom.el"))
-  (load custom-file)
+(setq custom-file (locate-user-emacs-file "custom.el"))
+(load custom-file)
 #+END_SRC
 * Package Management 
   This section documents what packages that have been installed and configured.
 ** Add melpa repo
 #+BEGIN_SRC emacs-lisp
-  (require 'package)
+  ;; (require 'package)
   (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-  (package-initialize)
 #+END_SRC
 ** Personal scripts
 #+BEGIN_SRC emacs-lisp
@@ -33,8 +32,6 @@ My Emacs Init Settings
 ** Keep installed packages up to date automatically
 #+BEGIN_SRC emacs-lisp
   (use-package auto-package-update
-    :init
-    (setq auto-package-update-last-update-day-filename (expand-file-name "cache/last-package-update-day" user-emacs-directory))
     :config
     (setq auto-package-update-delete-old-versions t)
     (setq auto-package-update-hide-results t)
@@ -48,40 +45,24 @@ My Emacs Init Settings
 #+END_SRC
 ** Theme
 #+BEGIN_SRC emacs-lisp
-  (use-package solarized-theme
+  (use-package dracula-theme
     :init
-    (setq solarized-distinct-fringe-background t)
-    (setq solarized-use-variable-pitch nil)
-    (setq solarized-high-contrast-mode-line t)
-    (setq solarized-use-less-bold t)
-    (setq solarized-use-more-italic t)
-    (setq solarized-emphasize-indicators nil)
-    (setq solarized-scale-org-headlines nil)
-
-    ;; Avoid all font-size changes
-    (setq solarized-height-minus-1 1.0)
-    (setq solarized-height-plus-1 1.0)
-    (setq solarized-height-plus-2 1.0)
-    (setq solarized-height-plus-3 1.0)
-    (setq solarized-height-plus-4 1.0)
+    (setq dracula-enlarge-headings nil)
+    (setq dracula-alternate-mode-line-and-minibuffer t)
     :config
-    (load-theme 'solarized-dark t)
+    (load-theme 'dracula t))
 
-    (defconst theme-color-black "#073642")
-    (defconst theme-color-red "#dc322f")
-    (defconst theme-color-green "#859900")
-    (defconst theme-color-yellow "#b58900")
-    (defconst theme-color-orange "#cb4b16")
-    (defconst theme-color-blue "#268bd2")
-    (defconst theme-color-violet "#6c71c4")
-    (defconst theme-color-magenta "#d33682")
-    (defconst theme-color-cyan "#2aa198")
-    (defconst theme-color-white "#eee8d5"))
+  ;; (use-package one-themes
+  ;;   :init (load-theme 'one-dark t))
+
+  (defconst theme-color-red "#e06c75")
+  (defconst theme-color-green "#98c379")
+  (defconst theme-color-blue "#61afef")
 #+END_SRC
 ** Minions
 #+BEGIN_SRC emacs-lisp
-  (use-package minions
-    :config (minions-mode 1))
+  ;; (use-package minions
+  ;;   :config (minions-mode 1))
 #+END_SRC
 ** Ace-window
 #+BEGIN_SRC emacs-lisp
@@ -101,7 +82,7 @@ Simulate a Vim modal editing experience
     (setq evil-want-integration t)
     (setq evil-want-keybinding nil)
     :config
-    (evil-mode t)
+    (evil-mode 1)
     (setq evil-mode-line-format '(after . mode-line-front-space)))
 
   (use-package evil-collection
@@ -154,15 +135,14 @@ Simulate a Vim modal editing experience
     (define-key evil-motion-state-map "H" 'evil-backward-arg)
     ;; bind evil-jump-out-args
     (define-key evil-normal-state-map "K" 'evil-jump-out-args))
-
-  (require 'evil-unimpaired)
-  (evil-unimpaired-mode)
 #+END_SRC
 ** Magit for Git
 #+BEGIN_SRC emacs-lisp
   (use-package magit
-    :config
-    (global-set-key (kbd "C-x g") 'magit-status))
+    :bind ("C-x g" . magit-status))
+  
+    ;; :config
+    ;; (global-set-key (kbd "C-x g") 'magit-status))
 
   (use-package evil-magit
     :after evil magit
@@ -186,31 +166,37 @@ Simulate a Vim modal editing experience
 #+END_SRC
 ** Org mode
 #+BEGIN_SRC emacs-lisp
-    (use-package org
-      :init
-      (setq org-fontify-whole-heading-line t)
-      (setq org-support-shift-select t)
-      (setq org-odt-convert-process 'unoconv)
-      (setq org-odt-preferred-output-format "docx")
-      (setq org-agenda-files (list "~/Documents/agendas"))
-      (setq org-capture-templates
-	    '(("t" "Todo" entry (file+headline "~/Documents/Org/gtd.org" "Tasks")
-	       "* TODO %?\n  %i\n  %a")
-	      ("n" "Notes" entry (file+headline "~/Documents/Org/notes.org" "Notes")
-	       "* Notes %?\n  %i\n  %a")
-	      ("j" "Journal" entry (file+olp+datetree "~/Documents/Org/journal.org")
-	       "* %?\nEntered on %U\n  %i\n  %a")))
-      :config
-      (global-set-key (kbd "C-c l") 'org-store-link)
-      (global-set-key (kbd "C-c a") 'org-agenda)
-      (global-set-key (kbd "C-c c") 'org-capture)
-      (global-set-key (kbd "C-c b") 'org-switchb))
+  (use-package org
+    :init
+    (setq org-hide-emphasis-markers t)
+    (setq org-fontify-whole-heading-line t)
+    (setq org-support-shift-select t)
+    (setq org-odt-convert-process 'unoconv)
+    (setq org-odt-preferred-output-format "docx")
+    (setq org-agenda-files (list "~/Documents/Org"))
+    (setq org-capture-templates
+	  '(("t" "Todo" entry (file+headline "~/Documents/Org/gtd.org" "Tasks")
+	     "* TODO %?\n  %i\n  %a")
+	    ("n" "Notes" entry (file+headline "~/Documents/Org/notes.org" "Notes")
+	     "* Notes %?\n  %i\n  %a")
+	    ("j" "Journal" entry (file+olp+datetree "~/Documents/Org/journal.org")
+	     "* %?\nEntered on %U\n  %i\n  %a")))
+    :bind (("C-c l" . org-store-link)
+	   ("C-c a" . org-agenda)
+	   ("C-c c" . org-capture)
+	   ("C-c b" . org-switchb)))
+    ;; :config
+    ;; (custom-set-faces
+    ;;  '(org-level-1 ((t (:inherit outline-1 :height 1.0))))
+    ;;  '(org-level-2 ((t (:inherit outline-2 :height 1.0))))
+    ;;  '(org-level-3 ((t (:inherit outline-3 :height 1.0))))
+    ;;  '(org-level-4 ((t (:inherit outline-4 :height 1.0))))
+    ;;  '(org-level-5 ((t (:inherit outline-5 :height 1.0))))))
 #+END_SRC
-*** Org-bullets
+*** org-bullets
 #+BEGIN_SRC emacs-lisp
   (use-package org-bullets
-    :config
-    (add-hook 'org-mode-hook 'org-bullets-mode))
+    :hook (org-mode . org-bullets-mode))
 #+END_SRC
 *** org-templates
 #+BEGIN_SRC emacs-lisp
@@ -221,9 +207,6 @@ Simulate a Vim modal editing experience
 ** Projectile
 #+BEGIN_SRC emacs-lisp
   (use-package projectile
-    :init
-    (setq projectile-cache-file (expand-file-name "cache/projectile.cache" user-emacs-directory)
-	  projectile-known-projects-file (expand-file-name "cache/projectile-bookmarks.eld" user-emacs-directory))
     :config
     (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
     (projectile-mode t)
@@ -276,10 +259,7 @@ Simulate a Vim modal editing experience
     :defer t
     :bind
     (([f8] . treemacs)
-     ("M-0" . treemacs-select-window))
-    :config
-    (setq treemacs-persist-file
-	  (expand-file-name "cache/treemacs-persist" user-emacs-directory)))
+     ("M-0" . treemacs-select-window)))
 #+END_SRC
 *** Evil support
 #+BEGIN_SRC emacs-lisp
@@ -304,120 +284,50 @@ Simulate a Vim modal editing experience
      (use-package yasnippet-snippets)
      (yas-global-mode 1))
  #+END_SRC
-** Gnus
+** LSP
 #+BEGIN_SRC emacs-lisp
-  (use-package gnus
-    :defer t
-    :init
-    (setq read-mail-command 'gnus)
-    (setq user-mail-address "peterwu@hotmail.com"
-	  user-full-name "Peter Wu")
-    ;; (setq mm-text-html-renderer 'gnus-w3m)
-    ;; Use webkit when it's mature enough
-    ;; https://gist.github.com/orgcandman/1e53ca99dd3899b07e5743718a1db300
-    (setq gnus-select-method
-	  '(nnimap "hotmail"
-		   (nnimap-address "imap-mail.outlook.com")
-		   (nnimap-server-port 993)
-		   (nnimap-stream ssl)))
-    (setq smtpmail-smtp-server "smtp-mail.outlook.com"
-	  smtpmail-smtp-service 587))
-#+END_SRC
-** Request.el
-#+BEGIN_SRC emacs-lisp
-  (use-package request)
-#+END_SRC
-** Various file types
-*** YAML files
- #+BEGIN_SRC emacs-lisp
-   (use-package yaml-mode)
- #+END_SRC
-*** Read ePub files
- #+BEGIN_SRC emacs-lisp
-   (use-package nov 
-     :mode ("\\.epub\\'" . nov-mode)
-     :init
-     (setq nov-save-place-file (expand-file-name "cache/nov-places" user-emacs-directory))
-     :config
-     (add-hook 'nov-mode-hook (lambda ()
-				(face-remap-add-relative 'default :height 1.2)
-				(display-line-numbers-mode -1))))
- #+END_SRC
-*** Edit Vuejs files
- #+BEGIN_SRC emacs-lisp
-   (use-package vue-mode
-     :mode "\\.vue\\'")
- #+END_SRC
-*** gRPC/Proto
- #+BEGIN_SRC emacs-lisp
-   (use-package protobuf-mode)
- #+END_SRC
-*** Json
- #+BEGIN_SRC emacs-lisp
-   (use-package json-mode)
- #+END_SRC
-*** Markdown
- #+BEGIN_SRC emacs-lisp
-   (use-package markdown-mode
-     :init (setq markdown-command "multimarkdown"))
- #+END_SRC
-*** Vimrc
-#+BEGIN_SRC emacs-lisp
-  (use-package vimrc-mode)
-#+END_SRC
-*** PKGBUILD
-#+BEGIN_SRC emacs-lisp
-  (use-package pkgbuild-mode
-    :mode "/PKGBUILD$")
-#+END_SRC
-** C/C++ IDE
-  [[https://github.com/andreyorst/dotfiles/tree/master/.emacs.d#lsp-mode][C/C++ IDE Setup]] 
-#+BEGIN_SRC emacs-lisp
-  (use-package lsp-mode
-    :commands lsp
-    :config
-    (setq lsp-highlight-symbol-at-point nil))
-  (use-package lsp-ui :commands lsp-ui-mode)
-  (use-package company-lsp :commands company-lsp)
+  ;; (use-package lsp-mode
+  ;;   :hook ((c-mode c++-mode objc-mode) . lsp)
+  ;;   :commands lsp)
 
-  (defun cquery//enable ()
-    (condition-case nil
-	(lsp)
-      (user-error nil)))
-
-  (use-package cquery
-    :init
-    (add-hook 'c-mode-hook #'cquery//enable)
-    (add-hook 'c++-mode-hook #'cquery//enable)
-    :commands lsp
-    :after lsp-mode
-    :config
-    (setq cquery-executable "/usr/bin/cquery"
-	  cquery-cache-dir "~/.cache/cquery"
-	  cquery-sem-highlight-method 'font-lock
-	  cquery-extra-args '("--log-file=/tmp/cq.log")))
-
-  (use-package clang-format)
+  ;; ;; optionally
+  ;; (use-package lsp-ui :commands lsp-ui-mode)
+  ;; (use-package company-lsp :commands company-lsp)
+  ;; (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
 #+END_SRC
 ** Chinese Input
 #+BEGIN_SRC emacs-lisp
-  (use-package posframe)
-  (use-package pyim
+  ;; (use-package posframe)
+  ;; (use-package pyim
+  ;;   :config
+  ;;   (setq pyim-default-scheme 'quanpin)
+  ;;   (pyim-isearch-mode 1)
+  ;;   (setq pyim-page-tooltip 'posframe)
+  ;;   (setq pyim-page-length 5))   
+  ;; (use-package pyim-basedict 
+  ;;   :config
+  ;;   (pyim-basedict-enable))  
+#+END_SRC
+** Various modes for programming languages and file types
+#+BEGIN_SRC emacs-lisp
+  (use-package cmake-mode)
+  (use-package go-mode)
+  (use-package rust-mode)
+  ;; (use-package pkgbuild-mode)
+#+END_SRC
+** Misc.
+#+BEGIN_SRC emacs-lisp
+  (use-package xclip
     :config
-    (setq pyim-default-scheme 'quanpin)
-    (pyim-isearch-mode 1)
-    (setq pyim-page-tooltip 'posframe)
-    (setq pyim-page-length 5))   
-  (use-package pyim-basedict 
-    :config
-    (pyim-basedict-enable))  
+    (xclip-mode 1))
 #+END_SRC
 * Personal Settings
 ** Variables
 #+BEGIN_SRC emacs-lisp
   (set-language-environment "utf-8")
   (setq inhibit-startup-screen t
-	inhibit-startup-echo-area-message t)
+	inhibit-startup-echo-area-message t
+	initial-scratch-message nil)
   (setq backup-inhibited t
 	make-backup-files nil
 	auto-save-default nil
@@ -430,19 +340,15 @@ Simulate a Vim modal editing experience
   (setq delete-by-moving-to-trash t)
   (setq display-line-numbers-type 'relative)
   (setq display-time-24hr-format t
-	display-time-format "[%R]"
+	display-time-format "%R"
 	display-time-default-load-average nil)
   (setq visible-bell t)
   (setq default-input-method "pyim")
   (when (eq system-type 'windows-nt)
     (setq inhibit-compacting-font-caches t)) 
   (setq frame-title-format
-          '(buffer-file-name "%f"
-            (dired-directory dired-directory "%b")))
-  (setq recentf-save-file (expand-file-name "cache/recentf" user-emacs-directory))
-  (setq bookmark-default-file (expand-file-name "cache/bookmarks" user-emacs-directory))
-  (setq tramp-persistency-file-name (expand-file-name
-				     "cache/tramp" user-emacs-directory))
+	  '(buffer-file-name "%f"
+	    (dired-directory dired-directory "%b")))
 #+END_SRC
 ** Functions
 #+BEGIN_SRC emacs-lisp
@@ -457,28 +363,67 @@ Simulate a Vim modal editing experience
   (show-paren-mode t)
   (size-indication-mode t)
   (global-display-line-numbers-mode t)
-  (display-battery-mode t)
-  (display-time-mode t)
+  (display-battery-mode 0)
+  (display-time-mode 0)
+  (blink-cursor-mode t)
 
-  (menu-bar-mode -1)
-  (scroll-bar-mode -1)
-  (tool-bar-mode -1)
+  ;; enable kde global menu for emacs
+  ;; gsettings set org.appmenu.gtk-module whitelist "['emacs','emacs27','emacs28']"
+  (menu-bar-mode 0)
+  (scroll-bar-mode 0)
+  (tool-bar-mode 0)
 
   ;; (dolist (hook '(text-mode-hook))
   ;;   (add-hook hook (lambda () (flyspell-mode 1))))
   ;; (dolist (hook '(change-log-mode-hook log-edit-mode-hook))
   ;;   (add-hook hook (lambda () (flyspell-mode -1))))
+
+  ;; enable ligature support
+  ;; https://github.com/microsoft/cascadia-code/issues/153
+  ;; https://github.com/robbert-vdh/dotfiles/blob/master/user/emacs/.config/doom/config.org#ligatures
+  (defvar composition-ligature-table (make-char-table nil))
+  (let ((alist '((?! . "\\(?:!\\(?:==\\|[!=]\\)\\)")
+		 (?# . "\\(?:#\\(?:###?\\|_(\\|[!#(:=?[_{]\\)\\)")
+		 (?$ . "\\(?:\\$>\\)")
+		 (?& . "\\(?:&&&?\\)")
+		 (?* . "\\(?:\\*\\(?:\\*\\*\\|[/>]\\)\\)")
+		 (?+ . "\\(?:\\+\\(?:\\+\\+\\|[+>]\\)\\)")
+		 (?- . "\\(?:-\\(?:-[>-]\\|<<\\|>>\\|[<>|~-]\\)\\)")
+		 (?. . "\\(?:\\.\\(?:\\.[.<]\\|[.=?-]\\)\\)")
+		 (?/ . "\\(?:/\\(?:\\*\\*\\|//\\|==\\|[*/=>]\\)\\)")
+		 (?: . "\\(?::\\(?:::\\|\\?>\\|[:<-?]\\)\\)")
+		 (?\; . "\\(?:;;\\)")
+		 (?< . "\\(?:<\\(?:!--\\|\\$>\\|\\*>\\|\\+>\\|-[<>|]\\|/>\\|<[<=-]\\|=\\(?:=>\\|[<=>|]\\)\\||\\(?:||::=\\|[>|]\\)\\|~[>~]\\|[$*+/:<=>|~-]\\)\\)")
+		 (?= . "\\(?:=\\(?:!=\\|/=\\|:=\\|=[=>]\\|>>\\|[=>]\\)\\)")
+		 (?> . "\\(?:>\\(?:=>\\|>[=>-]\\|[]:=-]\\)\\)")
+		 (?? . "\\(?:\\?[.:=?]\\)")
+		 (?\[ . "\\(?:\\[\\(?:||]\\|[<|]\\)\\)")
+		 (?\ . "\\(?:\\\\/?\\)")
+		 (?\] . "\\(?:]#\\)")
+		 (?^ . "\\(?:\\^=\\)")
+		 (?_ . "\\(?:_\\(?:|?_\\)\\)")
+		 (?{ . "\\(?:{|\\)")
+		 (?| . "\\(?:|\\(?:->\\|=>\\||\\(?:|>\\|[=>-]\\)\\|[]=>|}-]\\)\\)")
+		 (?~ . "\\(?:~\\(?:~>\\|[=>@~-]\\)\\)"))))
+    (dolist (char-regexp alist)
+      (set-char-table-range composition-ligature-table (car char-regexp)
+			    `([,(cdr char-regexp) 0 font-shape-gstring]))))
+  (set-char-table-parent composition-ligature-table composition-function-table)
+
+  (add-hook 'prog-mode-hook
+	    (lambda ()
+	      (setq-local composition-function-table composition-ligature-table)))
 #+END_SRC
 ** Faces
 #+BEGIN_SRC emacs-lisp
   ;; default face
   (set-face-attribute 'default nil
-		      :family "Iosevka"
+		      :family "JetBrains Mono"
 		      :foundry "outline"
 		      :slant 'normal
 		      :weight 'normal
 		      :height 120
-		      :width 'normal)
+		      :width 'semi-condensed)
 
   (add-hook 'display-line-numbers-mode-hook
 	    (lambda ()
@@ -487,68 +432,30 @@ Simulate a Vim modal editing experience
 	      (set-face-attribute 'line-number-current-line nil
 				  :foreground (face-attribute 'cursor :background)
 				  :weight 'bold
-				  :underline t)))
+				  :slant 'normal)))
 #+END_SRC
 ** Key bindings
 #+BEGIN_SRC emacs-lisp
-  (global-set-key [f12] 'eshell)
+  ;; (global-set-key [f12] 'eshell)
+  (global-set-key (kbd "C-~") 'eshell)
   (global-set-key (kbd "C-x C-b") 'ibuffer)
   (global-set-key [mouse-3] (mouse-menu-bar-map))
 #+END_SRC
 ** Mode line
 #+BEGIN_SRC emacs-lisp
-  (require 'ixl-display-weather)
-  (ixl-display-weather-info)
+  (use-package telephone-line
+    :init
+    (setq telephone-line-primary-left-separator 'telephone-line-gradient
+	  telephone-line-secondary-left-separator 'telephone-line-nil
+	  telephone-line-primary-right-separator 'telephone-line-gradient
+	  telephone-line-secondary-right-separator 'telephone-line-nil)
+    (setq telephone-line-height 24
+	  telephone-line-evil-use-short-tag nil)
+    :config
+    (telephone-line-mode t))
 #+END_SRC
 ** EShell prompt
 #+BEGIN_SRC emacs-lisp
-  (defun ixl/pwd-shorten-dirs (pwd)
-    "Shorten all directory names in PWD except the last two."
-    (let ((p-lst (split-string pwd "/")))
-      (if (> (length p-lst) 2)
-	  (concat
-	   (mapconcat (lambda (elm) (if (zerop (length elm)) ""
-				      (substring elm 0 1)))
-		      (butlast p-lst 2)
-		      "/")
-	   "/"
-	   (mapconcat (lambda (elm) elm)
-		      (last p-lst 2)
-		      "/"))
-	pwd)))  ;; Otherwise, we just return the PWD
-
-  (defun ixl/pwd-replace-home (pwd)
-    "Replace home in PWD with tilde (~) character."
-    (interactive)
-    (let* ((home (expand-file-name (getenv "HOME")))
-	   (home-len (length home)))
-      (if (and
-	   (>= (length pwd) home-len)
-	   (equal home (substring pwd 0 home-len)))
-	  (concat "~" (substring pwd home-len))
-	pwd)))
-
-  (defun ixl/eshell-prompt ()
-    (require 's)
-    (concat
-     (propertize "↪ " 'face
-		 (if (= eshell-last-command-status 1)
-		     `(:foreground ,theme-color-red)
-		   `(:foreground ,theme-color-green)))
-     (propertize (ixl/pwd-shorten-dirs
-		  (ixl/pwd-replace-home (eshell/pwd))) 'face `(:foreground ,theme-color-blue))
-     (when (locate-dominating-file (eshell/pwd) ".git")
-       (let* ((git-status (shell-command-to-string "git status --porcelain"))
-	      (git-branch (s-chomp (shell-command-to-string "git rev-parse --abbrev-ref HEAD"))))
-	 (concat " " (propertize git-branch 'face (list :foreground
-							(if (string-empty-p git-status)
-							    (concat theme-color-green)
-							  (concat theme-color-red)))))))
-     "\n" 
-     (if (= (user-uid) 0)
-	 (propertize "Λ" 'face `(:foreground ,theme-color-red))
-       "λ")
-     " "))
-  (setq eshell-prompt-function 'ixl/eshell-prompt)
+  ;; (setq eshell-prompt-function 'ixl/eshell-prompt)
   (setq eshell-highlight-prompt nil)
 #+END_SRC
