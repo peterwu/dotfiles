@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+xrdb ~/.Xresources &
+
+[[ -x $HOME/.fehbg ]] && $HOME/.fehbg
+
+picom --daemon --fading --no-fading-openclose
+xsetroot -cursor_name left_ptr &
+xset s 300 5 &
+light-locker &
+# xss-lock -n /usr/lib/xsecurelock/dimmer -l -- xsecurelock &
+
+# workaround a java bug for jetbrain products
+wmname LG3D &
+ 
+# autostart some programs
+~/.config/bspwm/bspwm_launch_polybar &

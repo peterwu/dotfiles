@@ -313,7 +313,6 @@ Simulate a Vim modal editing experience
   (use-package cmake-mode)
   (use-package go-mode)
   (use-package rust-mode)
-  ;; (use-package pkgbuild-mode)
 #+END_SRC
 ** Misc.
 #+BEGIN_SRC emacs-lisp
@@ -410,9 +409,9 @@ Simulate a Vim modal editing experience
 			    `([,(cdr char-regexp) 0 font-shape-gstring]))))
   (set-char-table-parent composition-ligature-table composition-function-table)
 
-  (add-hook 'prog-mode-hook
-	    (lambda ()
-	      (setq-local composition-function-table composition-ligature-table)))
+  ;; (add-hook 'prog-mode-hook
+  ;; 	  (lambda ()
+  ;; 	    (setq-local composition-function-table composition-ligature-table)))
 #+END_SRC
 ** Faces
 #+BEGIN_SRC emacs-lisp
@@ -424,6 +423,15 @@ Simulate a Vim modal editing experience
 		      :weight 'normal
 		      :height 120
 		      :width 'semi-condensed)
+
+  ;; for glyphs
+  (if (daemonp)
+      ;; when using emacs --daemon + emacsclient
+      (add-hook 'after-make-frame-functions
+		(lambda (frame)
+		  (set-fontset-font t '(#XF0000 . #XF14FF) "Material Design Icons" nil 'append)))
+    ;; when using emacs without server/client
+    (set-fontset-font t '(#xF0000 . #xF14FF) "Material Design Icons" nil 'append))
 
   (add-hook 'display-line-numbers-mode-hook
 	    (lambda ()
@@ -451,11 +459,57 @@ Simulate a Vim modal editing experience
 	  telephone-line-secondary-right-separator 'telephone-line-nil)
     (setq telephone-line-height 24
 	  telephone-line-evil-use-short-tag nil)
+
+    (defface telephone-line-evil
+      '((t (:foreground "#000000" :weight bold :inherit mode-line)))
+      "Meta-face used for property inheritance on all telephone-line-evil faces."
+      :group 'telephone-line-evil)
+
+    (defface telephone-line-evil-insert
+      '((t (:background "#5AF78E" :inherit telephone-line-evil)))
+      "Face used in evil color-coded segments when in Insert state."
+      :group 'telephone-line-evil)
+
+    (defface telephone-line-evil-normal
+      '((t (:background "#BFBFBF" :inherit telephone-line-evil)))
+      "Face used in evil color-coded segments when in Normal state."
+      :group 'telephone-line-evil)
+
+    (defface telephone-line-evil-visual
+      '((t (:background "#F1FA8C" :inherit telephone-line-evil)))
+      "Face used in evil color-coded segments when in Visual{,-Block,-Line} state."
+      :group 'telephone-line-evil)
+
+    (defface telephone-line-evil-replace
+      '((t (:background "#FF5555" :inherit telephone-line-evil)))
+      "Face used in evil color-coded segments when in Replace state."
+      :group 'telephone-line-evil)
+
+    (defface telephone-line-evil-motion
+      '((t (:background "#FF79C6" :inherit telephone-line-evil)))
+      "Face used in evil color-coded segments when in Motion state."
+      :group 'telephone-line-evil)
+
+    (defface telephone-line-evil-operator
+      '((t (:background "#CAA9FA" :inherit telephone-line-evil)))
+      "Face used in evil color-coded segments when in Operator state."
+      :group 'telephone-line-evil)
+
+    (defface telephone-line-evil-emacs
+      '((t (:background "#BD93F9" :inherit telephone-line-evil)))
+      "Face used in evil color-coded segments when in Emacs state."
+      :group 'telephone-line-evil)
+
+    (defface telephone-line-evil-god
+      '((t (:background "#8BE9FD" :inherit telephone-line-evil)))
+      "Face used in evil color-coded segments when in God state.
+  God state is provided by the package evil-god-state."
+      :group 'telephone-line-evil)
     :config
     (telephone-line-mode t))
-#+END_SRC
+      #+END_SRC
 ** EShell prompt
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
   ;; (setq eshell-prompt-function 'ixl/eshell-prompt)
   (setq eshell-highlight-prompt nil)
-#+END_SRC
+   #+END_SRC

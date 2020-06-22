@@ -66,8 +66,8 @@
 
     # Defines color of the frame around the notification window.
     
-    # Solarized Dark
-    frame_color = "#93a1a1"
+    # Dracula
+    frame_color = "#BD93F9"
 
     # Define a color for the separator.
     # possible values are:
@@ -88,7 +88,7 @@
 
     ### Text ###
 
-    font = Roboto 10
+    font = IBM Plex Sans 11
 
     # The spacing between lines.  If the height is smaller than the
     # font height, it will get raised to the font height.
@@ -247,18 +247,21 @@
     context = ctrl+shift+period
 
 [urgency_low]
-    background = "#586e75"
-    foreground = "#eee8d5"
-    timeout = 10
+    background = "#282A36"
+    foreground = "#F8F8F2"
+    frame_color= "#F1FA8C"
+    timeout = 3
 
 [urgency_normal]
-    background = "#073642"
-    foreground = "#eee8d5"
-    timeout = 5
+    background = "#282A36"
+    foreground = "#F8F8F2"
+    frame_color= "#50FA7B"
+    timeout = 6
 
 [urgency_critical]
-    background = "#dc322f"
-    foreground = "#eee8d5"
+    background = "#282A36"
+    foreground = "#FF5555"
+    frame_color= "#FF5555"
     timeout = 0
     
 # Every section that isn't one of the above is interpreted as a rules to

@@ -11,6 +11,10 @@ set background=dark
 packadd! vim-dracula
 colorscheme dracula
 
+let g:lightline = {
+      \ 'colorscheme': 'dracula',
+      \ }
+
 " set leader keys
 let g:mapleader=" "
 let g:maplocalleader=","
@@ -101,7 +105,6 @@ if exists('*minpac#init')
 
   call minpac#add('sheerun/vim-polyglot')
   call minpac#add('chrisbra/Colorizer', {'name': 'vim-colorizer'})
-  call minpac#add('rakr/vim-one')
   call minpac#add('dracula/vim', {'name': 'vim-dracula'})
   call minpac#add('itchyny/lightline.vim', {'name': 'vim-lightline'})
 endif
