@@ -52,17 +52,29 @@ My Emacs Init Settings
     :config
     (load-theme 'dracula t))
 
-  ;; (use-package one-themes
-  ;;   :init (load-theme 'one-dark t))
-
-  (defconst theme-color-red "#e06c75")
-  (defconst theme-color-green "#98c379")
-  (defconst theme-color-blue "#61afef")
+  (defconst my-theme-foreground "#f8f8f2")
+  (defconst my-theme-background "#282a36")
+  (defconst my-theme-curent-line "#44475a")
+  (defconst my-theme-comment "#6272a4")
+  (defconst my-theme-cyan "#8be9fd")
+  (defconst my-theme-green "#50fa7b")
+  (defconst my-theme-orange "#ffb86c")
+  (defconst my-theme-pink "#ff79c6")
+  (defconst my-theme-purple "#bd93f9")
+  (defconst my-theme-red "#ff5555")
+  (defconst my-theme-yellow "#f1fa8c")
 #+END_SRC
-** Minions
+** Show me the icons
 #+BEGIN_SRC emacs-lisp
-  ;; (use-package minions
-  ;;   :config (minions-mode 1))
+  (use-package all-the-icons)
+  (use-package all-the-icons-dired
+    :hook (dired-mode . all-the-icons-dired-mode))
+  (use-package all-the-icons-ibuffer
+    :init (all-the-icons-ibuffer-mode 1))
+  (use-package all-the-icons-ivy-rich
+    :init (all-the-icons-ivy-rich-mode 1))
+  (use-package ivy-rich
+    :init (ivy-rich-mode 1))
 #+END_SRC
 ** Ace-window
 #+BEGIN_SRC emacs-lisp
@@ -258,7 +270,7 @@ Simulate a Vim modal editing experience
   (use-package treemacs
     :defer t
     :bind
-    (([f8] . treemacs)
+    (([f9] . treemacs)
      ("M-0" . treemacs-select-window)))
 #+END_SRC
 *** Evil support
@@ -286,27 +298,14 @@ Simulate a Vim modal editing experience
  #+END_SRC
 ** LSP
 #+BEGIN_SRC emacs-lisp
-  ;; (use-package lsp-mode
-  ;;   :hook ((c-mode c++-mode objc-mode) . lsp)
-  ;;   :commands lsp)
+  (use-package lsp-mode
+    :hook ((c-mode c++-mode objc-mode) . lsp)
+    :commands lsp)
 
-  ;; ;; optionally
-  ;; (use-package lsp-ui :commands lsp-ui-mode)
-  ;; (use-package company-lsp :commands company-lsp)
-  ;; (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
-#+END_SRC
-** Chinese Input
-#+BEGIN_SRC emacs-lisp
-  ;; (use-package posframe)
-  ;; (use-package pyim
-  ;;   :config
-  ;;   (setq pyim-default-scheme 'quanpin)
-  ;;   (pyim-isearch-mode 1)
-  ;;   (setq pyim-page-tooltip 'posframe)
-  ;;   (setq pyim-page-length 5))   
-  ;; (use-package pyim-basedict 
-  ;;   :config
-  ;;   (pyim-basedict-enable))  
+  ;; optionally
+  (use-package lsp-ui :commands lsp-ui-mode)
+  (use-package company-lsp :commands company-lsp)
+  (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
 #+END_SRC
 ** Various modes for programming languages and file types
 #+BEGIN_SRC emacs-lisp
@@ -341,7 +340,8 @@ Simulate a Vim modal editing experience
   (setq display-time-24hr-format t
 	display-time-format "%R"
 	display-time-default-load-average nil)
-  (setq visible-bell t)
+  (setq visible-bell t
+	visible-cursor nil)
   (setq default-input-method "pyim")
   (when (eq system-type 'windows-nt)
     (setq inhibit-compacting-font-caches t)) 
@@ -355,6 +355,7 @@ Simulate a Vim modal editing experience
 #+END_SRC
 ** Modes
 #+BEGIN_SRC emacs-lisp
+  ;; enable some modes
   (global-visual-line-mode t)
   (column-number-mode t)
   (global-hl-line-mode t)
@@ -362,12 +363,11 @@ Simulate a Vim modal editing experience
   (show-paren-mode t)
   (size-indication-mode t)
   (global-display-line-numbers-mode t)
-  (display-battery-mode 0)
-  (display-time-mode 0)
   (blink-cursor-mode t)
 
-  ;; enable kde global menu for emacs
-  ;; gsettings set org.appmenu.gtk-module whitelist "['emacs','emacs27','emacs28']"
+  ;; disable some modes
+  (display-battery-mode 0)
+  (display-time-mode 0)
   (menu-bar-mode 0)
   (scroll-bar-mode 0)
   (tool-bar-mode 0)
@@ -444,10 +444,21 @@ Simulate a Vim modal editing experience
 #+END_SRC
 ** Key bindings
 #+BEGIN_SRC emacs-lisp
-  ;; (global-set-key [f12] 'eshell)
   (global-set-key (kbd "C-~") 'eshell)
   (global-set-key (kbd "C-x C-b") 'ibuffer)
-  (global-set-key [mouse-3] (mouse-menu-bar-map))
+
+  ;; (add-hook 'after-change-major-mode-hook
+  ;; 	  (lambda ()
+  ;; 	    (local-set-key [mouse-3] (mouse-menu-bar-map))))
+
+  ;; toggles
+  ;; (defhydra my/hydra-toggles (global-map "C-x t" :hint nil)
+  ;;   "toggle"
+  ;;   ("M" toggle-menu-bar-mode-from-frame "menubar")
+  ;;   ("T" toggle-tool-bar-mode-from-frame "toolbar")
+  ;;   ("n" global-display-line-numbers-mode "line numbers")
+  ;;   ("b" display-battery-mode "battery")
+  ;;   ("t" display-time-mode "time"))
 #+END_SRC
 ** Mode line
 #+BEGIN_SRC emacs-lisp
@@ -460,56 +471,50 @@ Simulate a Vim modal editing experience
     (setq telephone-line-height 24
 	  telephone-line-evil-use-short-tag nil)
 
-    (defface telephone-line-evil
-      '((t (:foreground "#000000" :weight bold :inherit mode-line)))
-      "Meta-face used for property inheritance on all telephone-line-evil faces."
-      :group 'telephone-line-evil)
+    (face-spec-set
+     'telephone-line-evil
+     `((t :foreground ,my-theme-background))
+     'face-override-spec)
 
-    (defface telephone-line-evil-insert
-      '((t (:background "#5AF78E" :inherit telephone-line-evil)))
-      "Face used in evil color-coded segments when in Insert state."
-      :group 'telephone-line-evil)
+    (face-spec-set
+     'telephone-line-evil-insert
+     `((t :background ,my-theme-green))
+     'face-override-spec)
 
-    (defface telephone-line-evil-normal
-      '((t (:background "#BFBFBF" :inherit telephone-line-evil)))
-      "Face used in evil color-coded segments when in Normal state."
-      :group 'telephone-line-evil)
+    (face-spec-set
+     'telephone-line-evil-normal
+     `((t :background ,my-theme-purple))
+     'face-override-spec)
 
-    (defface telephone-line-evil-visual
-      '((t (:background "#F1FA8C" :inherit telephone-line-evil)))
-      "Face used in evil color-coded segments when in Visual{,-Block,-Line} state."
-      :group 'telephone-line-evil)
+    (face-spec-set
+     'telephone-line-evil-visual
+     `((t :background ,my-theme-orange))
+     'face-override-spec)
 
-    (defface telephone-line-evil-replace
-      '((t (:background "#FF5555" :inherit telephone-line-evil)))
-      "Face used in evil color-coded segments when in Replace state."
-      :group 'telephone-line-evil)
+    (face-spec-set
+     'telephone-line-evil-replace
+     `((t :background ,my-theme-red))
+     'face-override-spec)
+  
+    (face-spec-set
+     'telephone-line-evil-motion
+     `((t :background ,my-theme-pink))
+     'face-override-spec)
 
-    (defface telephone-line-evil-motion
-      '((t (:background "#FF79C6" :inherit telephone-line-evil)))
-      "Face used in evil color-coded segments when in Motion state."
-      :group 'telephone-line-evil)
+    (face-spec-set
+     'telephone-line-evil-operator
+     `((t :background ,my-theme-yellow))
+     'face-override-spec)
 
-    (defface telephone-line-evil-operator
-      '((t (:background "#CAA9FA" :inherit telephone-line-evil)))
-      "Face used in evil color-coded segments when in Operator state."
-      :group 'telephone-line-evil)
-
-    (defface telephone-line-evil-emacs
-      '((t (:background "#BD93F9" :inherit telephone-line-evil)))
-      "Face used in evil color-coded segments when in Emacs state."
-      :group 'telephone-line-evil)
-
-    (defface telephone-line-evil-god
-      '((t (:background "#8BE9FD" :inherit telephone-line-evil)))
-      "Face used in evil color-coded segments when in God state.
-  God state is provided by the package evil-god-state."
-      :group 'telephone-line-evil)
+    (face-spec-set
+     'telephone-line-evil-emacs
+     `((t :background ,my-theme-cyan))
+     'face-override-spec)
     :config
     (telephone-line-mode t))
-      #+END_SRC
+#+END_SRC
 ** EShell prompt
-   #+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
   ;; (setq eshell-prompt-function 'ixl/eshell-prompt)
   (setq eshell-highlight-prompt nil)
-   #+END_SRC
+#+END_SRC

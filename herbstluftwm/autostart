@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 
 # this is a simple config for herbstluftwm
 
@@ -21,8 +21,9 @@ Mod=Mod4   # Use the super key as the main modifier
 hc keybind $Mod-Shift-q quit
 hc keybind $Mod-Shift-r reload
 # hc keybind $Mod-Shift-c close
-hc keybind Control-q close
-hc keybind $Mod-Return spawn ${TERMINAL:-xterm} # use your $TERMINAL with xterm as fallback
+hc keybind $Mod-w close
+# hc keybind $Mod-Return spawn ${TERMINAL:-xterm} # use your $TERMINAL with xterm as fallback
+hc keybind $Mod-Return spawn sakura 
 
 # user custom keybindings
 hc keybind $Mod-d spawn rofi -show
@@ -124,32 +125,32 @@ hc keybind $Mod-i jumpto urgent
 # theme
 hc attr theme.tiling.reset 1
 hc attr theme.floating.reset 1
-hc set frame_border_active_color '#222222'
-hc set frame_border_normal_color '#101010'
-hc set frame_bg_normal_color '#565656'
-hc set frame_bg_active_color '#345F0C'
-hc set frame_border_width 1
+hc set frame_border_normal_color '#282A36'
+hc set frame_border_active_color '#CAA9FA'
+hc set frame_bg_normal_color '#282A36'
+hc set frame_bg_active_color '#CAA9FA'
+hc set frame_border_width 0
 hc set always_show_frame 1
 hc set frame_bg_transparent 1
-hc set frame_transparent_width 5
-hc set frame_gap 4
+hc set frame_transparent_width 1
+hc set frame_gap 0
 
-hc attr theme.active.color '#9fbc00'
-hc attr theme.normal.color '#454545'
-hc attr theme.urgent.color orange
-hc attr theme.inner_width 1
-hc attr theme.inner_color black
-hc attr theme.border_width 3
-hc attr theme.floating.border_width 4
+hc attr theme.normal.color '#4D4D4D'
+hc attr theme.active.color '#BD93F9'
+hc attr theme.urgent.color '#FF5555'
+hc attr theme.inner_width 0
+hc attr theme.inner_color  '#000000'
+hc attr theme.border_width 0
+hc attr theme.floating.border_width 2
 hc attr theme.floating.outer_width 1
-hc attr theme.floating.outer_color black
-hc attr theme.active.inner_color '#3E4A00'
-hc attr theme.active.outer_color '#3E4A00'
-hc attr theme.background_color '#141414'
+hc attr theme.floating.outer_color '#000000'
+hc attr theme.active.inner_color '#F1FA8C'
+hc attr theme.active.outer_color '#F4F99D'
+hc attr theme.background_color '#282A36'
 
-hc set window_gap 0
-hc set frame_padding 0
-hc set smart_window_surroundings 0
+hc set window_gap 1
+hc set frame_padding 1
+hc set smart_window_surroundings 1
 hc set smart_frame_surroundings 1
 hc set mouse_recenter_gap 0
 
@@ -169,6 +170,8 @@ hc rule class~'(Soffice|libreoffice|Zathura)' tag=6
 hc rule class=mpv tag=7
 hc rule class=Virt-manager tag=8
 
+hc rule class=Yad manage=off
+
 hc rule windowtype~'_NET_WM_WINDOW_TYPE_(DIALOG|UTILITY|SPLASH)' pseudotile=on
 hc rule windowtype='_NET_WM_WINDOW_TYPE_DIALOG' focus=on
 hc rule windowtype~'_NET_WM_WINDOW_TYPE_(NOTIFICATION|DOCK|DESKTOP)' manage=off
@@ -184,23 +187,5 @@ hc unlock
 # hc detect_monitors
 
 
-# launch a few programs
-xset s 300 5 
-picom --daemon --fading --no-fading-openclose
-light-locker &
-
-if [ -f $HOME/.fehbg ]; then
-  hc spawn $HOME/.fehbg
-fi
-
-# launch polybar
-polybar=~/.config/herbstluftwm/herbstluftwm_launch_polybar
-if [ -x "$polybar" ]; then
-  # padding to accomodate polybar
-  hc pad 0 36 0 0 0
-
-  # launch 
-  $polybar
-fi
-
-
+# initialize the session
+~/.config/herbstluftwm/herbstluftwm_init_session

@@ -1,26 +1,39 @@
 ! General
-Xft.dpi:        132
-Xft.autohint:   0
-Xft.lcdfilter:  lcddefault
-Xft.hintstyle:  hintfull
-Xft.hinting:    1
-Xft.antialias:  1
-Xft.rgba:       rgb
- 
+Xft.dpi:       132
+Xft.autohint:  true
+Xft.lcdfilter: lcddefault
+Xft.hintstyle: hintfull
+Xft.hinting:   true
+Xft.antialias: true
+Xft.rgba:      rgb
+
 ! Cursor
 !Xcursor.theme:  Bibata_Ice
- 
+
 ! XTerm
-XTerm*faceName: JetBrains Mono NL
-XTerm*faceSize: 12
-XTerm*utf8:     1
-XTerm*termName: xterm-256color
-XTerm*colorBDMode: true
-XTerm*scrollBar: false
-XTerm*omitTranslation: popup-menu
-XTerm*translations: #override \n\
-    Ctrl Shift <Key>C: copy-selection(CLIPBOARD) \n\
-    Ctrl Shift <Key>V: insert-selection(CLIPBOARD)
+XTerm*utf8:		 true
+XTerm*termName:		 xterm-256color
+XTerm*colorBDMode:	 true
+XTerm*cursorBlink:	 false
+XTerm*scrollBar:	 false
+XTerm*selectToClipboard: true
+XTerm*omitTranslation: 	 popup-menu
+XTerm*saveLines: 	 4096
+XTerm*translations: 	 #override \
+  Ctrl Shift <Key>C: copy-selection(CLIPBOARD) \n\
+  Ctrl Shift <Key>V: insert-selection(CLIPBOARD) \n\
+  Ctrl <Key> minus:  smaller-vt-font() \n\
+  Ctrl <Key> plus:   larger-vt-font() \n\
+  Ctrl <Key> 0:      set-vt-font(d) 
+
+XTerm*faceName:  JetBrains Mono
+XTerm*faceSize:  12
+XTerm*faceSize1: 6
+XTerm*faceSize2: 8
+XTerm*faceSize3: 10
+XTerm*faceSize4: 14
+XTerm*faceSize5: 20
+XTerm*faceSize6: 24
 
 ! Dracula Xresources palette
 *.foreground: #F8F8F2

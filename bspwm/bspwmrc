@@ -2,8 +2,8 @@
 
 sxhkd &
 
-bspc monitor eDP-1 -d 1 2 3 4 5 6 7 8 
-bspc monitor HDMI-1 -d 9 0
+bspc monitor eDP-1 -d 1 2 3 4 5 6 7 8 9
+bspc monitor HDMI-1 -d 0
 
 # Set the border colors.
 bspc config normal_border_color "#44475a"
@@ -21,10 +21,11 @@ bspc config gapless_monocle      true
 bspc config focus_follows_pointer true
 
 bspc rule -a XTerm desktop='^1'
+bspc rule -a Alacritty desktop='^1'
 
 bspc rule -a Firefox desktop='^2'
 bspc rule -a Google-chrome desktop='^2'
-bspc rule -a Chromium desktop='^2'
+bspc rule -a Chromium-browser desktop='^2'
 
 bspc rule -a Thunderbird desktop='^3'
 
@@ -40,10 +41,6 @@ bspc rule -a jetbrains-clion desktop='^5'
 # documents
 bspc rule -a Soffice desktop='^6'
 bspc rule -a libreoffice desktop='^6'
-# bspc rule -a Wps desktop='^5'
-# bspc rule -a Et desktop='^5'
-# bspc rule -a Wpp desktop='^5'
-# bspc rule -a Wpspdf desktop='^5'
 bspc rule -a Zathura desktop='^6' state=tiled
 
 # entertainment

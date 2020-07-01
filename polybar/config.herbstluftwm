@@ -24,18 +24,16 @@ color14=${xrdb:color14:#222}
 color15=${xrdb:color15:#222}
 
 [bar/main]
-wm-restack = bspwm
-
 font-0 = IBM Plex Mono:size=14:antialias=true;2
 font-1 = Material Design Icons:size=18:antialias=true;2
 
 border-size = 0
 fixed-center = true
 height = 36
-overline-size = 2
+overline-size = 1
 
 module-margin = 1
-modules-left = apps bspwm
+modules-left = apps hlwm
 modules-center = date
 modules-right = pulseaudio wireless-network backlight batteries exit
 background = ${colors.background}
@@ -48,31 +46,29 @@ content = 󰀻
 content-padding= 1
 content-foreground = ${colors.color3}
 
-[module/bspwm]
-type = internal/bspwm
+[module/hlwm]
+type = internal/xworkspaces
 enable-scroll = false
 reverse-scroll = false
 
-ws-icon-0 = 1;󱆃
-ws-icon-1 = 2;󰖟
-ws-icon-2 = 3;󰇰
-ws-icon-3 = 4;󰷉
-ws-icon-4 = 5;󰨞
-ws-icon-5 = 6;󱉟
-ws-icon-6 = 7;󰐋
-ws-icon-7 = 8;󰢹
-ws-icon-8 = 9;󰚀
+; icon-0 = 1;
+; icon-1 = 2;
+; icon-2 = 3;
+; icon-3 = 4;
+; icon-4 = 5;
+; icon-5 = 6;
+; icon-6 = 7;
+; icon-7 = 8;
 
-; ws-icon-0 = 1;
-; ws-icon-1 = 2;
-; ws-icon-2 = 3;
-; ws-icon-3 = 4;
-; ws-icon-4 = 5;
-; ws-icon-5 = 6;
-; ws-icon-6 = 7;
-; ws-icon-7 = 8;
-; ws-icon-7 = 9;
-
+icon-0 = 1;󱆃
+icon-1 = 2;󰖟
+icon-2 = 3;󰇰
+icon-3 = 4;󰷉
+icon-4 = 5;󰨞
+icon-5 = 6;󱉟
+icon-6 = 7;󰐋
+icon-7 = 8;󰢹
+icon-8 = 9;󰚀
 
 format = <label-state>
 label-font = 2
@@ -87,16 +83,16 @@ label-occupied-foreground = ${colors.foreground}
 label-occupied-overline = ${colors.color4}
 label-occupied-padding = 1
 
-label-focused = %icon%
-label-focused-foreground = ${colors.background}
-label-focused-background = ${colors.color4}
-label-focused-padding = 1
+label-active = %icon%
+label-active-foreground = ${colors.background}
+label-active-background = ${colors.color4}
+label-active-padding = 1
 
 [module/date]
 type = internal/date
 date-alt = %c
 date = %a %H:%M %Z
-label = %{A3:~/.config/bspwm/yad_show_calendar:}%date%%time%%{A}
+label = %{A3:~/.config/herbstluftwm/yad_show_calendar:}%date%%time%%{A}
 
 [module/pulseaudio]
 type = internal/pulseaudio
@@ -155,14 +151,14 @@ ramp-2 = 󰃞
 
 [module/batteries]
 type = custom/script
-exec = ~/.config/bspwm/polybar_display_batteries
+exec = ~/.config/herbstluftwm/polybar_display_batteries
 interval = 5
 format-overline = ${colors.color1}
-click-left=~/.config/bspwm/yad_show_batteries
+click-left=~/.config/herbstluftwm/yad_show_batteries
 
 [module/exit]
 type = custom/text
-click-left=~/.config/bspwm/bspwm_exit_system
+click-left=~/.config/herbstluftwm/herbstluftwm_exit_system
 content = 󰐦
 content-padding= 1
 content-foreground = ${colors.color3} 

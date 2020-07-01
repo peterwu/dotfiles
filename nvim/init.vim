@@ -11,10 +11,6 @@ set background=dark
 packadd! vim-dracula
 colorscheme dracula
 
-let g:lightline = {
-      \ 'colorscheme': 'dracula',
-      \ }
-
 " set leader keys
 let g:mapleader=" "
 let g:maplocalleader=","
@@ -27,39 +23,53 @@ nnoremap gk k
 
 " copy to clipboard
 nnoremap Y y$
-vnoremap <Leader>y  "+y
-nnoremap <Leader>y  "+y
-nnoremap <Leader>Y  "+y$
-nnoremap <Leader>yy  "+yy
+vnoremap <leader>y  "+y
+nnoremap <leader>y  "+y
+nnoremap <leader>Y  "+y$
+nnoremap <leader>yy  "+yy
 
 " paste from clipboard
-nnoremap <Leader>p "+p
-nnoremap <Leader>P "+P
-vnoremap <Leader>p "+p
-vnoremap <Leader>P "+P
+nnoremap <leader>p "+p
+nnoremap <leader>P "+P
+vnoremap <leader>p "+p
+vnoremap <leader>P "+P
 
 " key mappings
-nnoremap <Leader>cd :cd %:p:h<CR>:pwd<CR>
-nnoremap <Leader>ev :e $MYVIMRC<CR>
-nnoremap <Leader>sv :source $MYVIMRC<CR>
-nnoremap <Leader>pu :PackUpdate<CR>
-nnoremap <Leader>pc :PackClean<CR>
-nnoremap <Leader>ps :PackStatus<CR>
+nnoremap <leader>cd :cd %:p:h<cr>:pwd<cr>
+nnoremap <leader>ev :e $MYVIMRC<cr>
+nnoremap <leader>sv :source $MYVIMRC<cr>
+nnoremap <leader>pu :PackUpdate<cr>
+nnoremap <leader>pc :PackClean<cr>
+nnoremap <leader>ps :PackStatus<cr>
 
-" plugin settings
-"""""""""""""""""""""
+"""""""""""""""""""
+" plugin settings "
+"""""""""""""""""""
 " quick scope
 let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
 
 """""""""""""""""""
-" ctrlp
-nnoremap <Leader>F  :CtrlP<CR>
-nnoremap <Leader>f  :CtrlPMRU<CR>
-nnoremap <Leader>b  :CtrlPBuffer<CR>
+" dracula for lightline
+let g:lightline = {
+      \ 'colorscheme': 'dracula',
+      \ }
 
+"""""""""""""""""""
+" nnn
+let g:nnn#set_default_mappings = 0
+let g:nnn#layout = { 'window': { 'width': 0.9, 'height': 0.6, 'highlight': 'Debug' } }
+
+nnoremap <leader>n :NnnPicker '%:p:h'<cr>
+
+""""""""""""""""""
+" ctrlp
 let g:ctrlp_show_hidden = 1
 
-"""""""""""""""""""""
+nnoremap <leader>F  :CtrlP<cr>
+nnoremap <leader>f  :CtrlPMRU<cr>
+nnoremap <leader>b  :CtrlPBuffer<cr>
+
+"""""""""""""""""""
 " nerdtree 
 let g:NERDTreeMinimalUI = 1
 let g:NERDTreeHijackNetrw = 0
@@ -69,21 +79,9 @@ let g:NERDTreeAutoDeleteBuffer = 1
 let g:NERDTreeShowBookmarks = 1
 let g:NERDTreeCascadeOpenSingleChildDir = 1
 
-map <F8> :NERDTreeToggle<CR>
+map <f9> :NERDTreeToggle<cr>
 
-"""""""""""""""""""""
-" functions
-" function s:SetCursorLine()
-"   set cursorline
-"   highlight CursorLine cterm=NONE 
-" endfunction
-
-" augroup set_cursorline
-"   autocmd!
-"   autocmd VimEnter * call s:SetCursorLine()
-" augroup END
-
-"""""""""""""""""""""
+"""""""""""""""""""
 " minpac 
 if exists('*minpac#init')
   call minpac#init({'dir': $HOME.'/.local/share/nvim/site'})
@@ -102,6 +100,7 @@ if exists('*minpac#init')
   call minpac#add('preservim/nerdtree', {'name': 'vim-nerdtree'})
   call minpac#add('mattn/emmet-vim', {'name': 'vim-emmet'})
   call minpac#add('ctrlpvim/ctrlp.vim', {'name': 'vim-ctrlp'})
+  call minpac#add('mcchrish/nnn.vim', {'name': 'vim-nnn'})
 
   call minpac#add('sheerun/vim-polyglot')
   call minpac#add('chrisbra/Colorizer', {'name': 'vim-colorizer'})

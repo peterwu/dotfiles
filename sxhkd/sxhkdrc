@@ -6,23 +6,23 @@
 
 # terminal emulator
 super + Return
-	urxvtc
+	alacritty
 
 # program launcher
 super + d
-      	rofi -show
+ 	rofi -show
 
 # make sxhkd reload its configuration files:
 super + Escape
-      	pkill -USR1 -x sxhkd
+ 	pkill -USR1 -x sxhkd
 
 # lock the screen
 super + ctrl + l
-      	xset s activate
+ 	xset s activate
   
 # exit the system
-super + shift +x
-      	~/.config/scripts/bspwm_exit_system
+ctrl + alt + Delete
+  ~/.config/bspwm/bspwm_exit_system
 
 # audio soft keys
 XF86Audio{Raise,Lower}Volume
@@ -45,7 +45,7 @@ XF86Audio{Play,Pause,Prev,Next}Play
 
 # print screen
 Print
-	scrot '%Y-%m-%d_$wx$h-scrot.png' -e 'mv $f ~/Pictures/Screenshots/'
+	maim ~/Pictures/Screenshots/maim-$(date +%F_%H%M%S).png
 #
 # bspwm hotkeys
 #
@@ -58,9 +58,6 @@ super + shift + {q,r}
 super + {_,shift + }w
 	bspc node -{c,k}
 
-ctrl + q
-        bspc node -c
-	
 # alternate between the tiled and monocle layout
 super + m
 	bspc desktop -l next

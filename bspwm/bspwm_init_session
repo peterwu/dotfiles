@@ -4,7 +4,7 @@ xrdb ~/.Xresources &
 
 [[ -x $HOME/.fehbg ]] && $HOME/.fehbg
 
-picom --daemon --fading --no-fading-openclose
+picom --daemon --fading --no-fading-openclose &
 xsetroot -cursor_name left_ptr &
 xset s 300 5 &
 light-locker &
