@@ -22,17 +22,16 @@ hc keybind $Mod-Shift-q quit
 hc keybind $Mod-Shift-r reload
 # hc keybind $Mod-Shift-c close
 hc keybind $Mod-w close
-# hc keybind $Mod-Return spawn ${TERMINAL:-xterm} # use your $TERMINAL with xterm as fallback
-hc keybind $Mod-Return spawn sakura 
+hc keybind $Mod-Return spawn ${TERMINAL:-xterm} # use your $TERMINAL with xterm as fallback
 
 # user custom keybindings
 hc keybind $Mod-d spawn rofi -show
-hc keybind Mod1-Control-Delete spawn ~/.config/herbstluftwm/herbstluftwm_exit_system
+hc keybind Mod1-Control-Delete spawn ~/.config/herbstluftwm/scripts/exit_session
 
-hc keybind XF86AudioRaiseVolume spawn pactl set-sink-volume 0 +5%
-hc keybind XF86AudioLowerVolume spawn pactl set-sink-volume 0 -5%
-hc keybind XF86AudioMute        spawn pactl set-sink-mute   0 toggle
-hc keybind XF86AudioMicMute     spawn pactl set-source-mute 1 toggle
+hc keybind XF86AudioRaiseVolume spawn pactl set-sink-volume @DEFAULT_SINK@	  +5%
+hc keybind XF86AudioLowerVolume spawn pactl set-sink-volume @DEFAULT_SINK@	  -5%
+hc keybind XF86AudioMute        spawn pactl set-sink-mute   @DEFAULT_SINK@	  toggle
+hc keybind XF86AudioMicMute     spawn pactl set-source-mute @DEFAULT_SOURCE@  toggle
 
 hc keybind XF86MonBrightnessUp    spawn light -A 5
 hc keybind XF86MonBrightnessDown  spawn light -U 5
@@ -188,4 +187,4 @@ hc unlock
 
 
 # initialize the session
-~/.config/herbstluftwm/herbstluftwm_init_session
+~/.config/herbstluftwm/scripts/init_session

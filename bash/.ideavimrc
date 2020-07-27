@@ -1,0 +1,18 @@
+set clipboard+=unnamedplus
+set nrformats-=octal
+set matchpairs
+set number
+set relativenumber
+set showmode
+set smartcase
+set hlsearch
+set ignorecase
+set incsearch
+
+set exchange
+set surround
+set commentary
+
+set ideajoin
+
+source ~/.config/nvim/init.vim

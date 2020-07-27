@@ -6,7 +6,7 @@
 
 # terminal emulator
 super + Return
-	alacritty
+	xterm
 
 # program launcher
 super + d
@@ -18,34 +18,33 @@ super + Escape
 
 # lock the screen
 super + ctrl + l
- 	xset s activate
+  light-locker-command --lock
   
 # exit the system
 ctrl + alt + Delete
-  ~/.config/bspwm/bspwm_exit_system
+  ~/.config/bspwm/scripts/exit_session
 
 # audio soft keys
 XF86Audio{Raise,Lower}Volume
-	pactl set-sink-volume  0 {+,-}5%; \
-	~/.config/scripts/dunst_display_volume
+	pactl set-sink-volume  @DEFAULT_SINK@	  {+,-}5%; \
+	pactl set-sink-mute    @DEFAULT_SINK@   0
 XF86AudioMute
-	pactl set-sink-mute    0 toggle; \
-	~/.config/scripts/dunst_display_volume
+	pactl set-sink-mute    @DEFAULT_SINK@	  toggle
 XF86AudioMicMute
-	pactl set-source-mute  1 toggle
+	pactl set-source-mute  @DEFAULT_SOURCE@ toggle
 
 # screen brightness controls
 XF86MonBrightness{Up,Down}
-	light -{A,U} 5; \
-	~/.config/scripts/dunst_display_brightness
+	light -{A,U} 5; 
 
 # media player controls
-XF86Audio{Play,Pause,Prev,Next}Play
+XF86Audio{Play,Pause,Prev,Next}
 	playerctl {play,pause,previous,next}
 
 # print screen
 Print
 	maim ~/Pictures/Screenshots/maim-$(date +%F_%H%M%S).png
+
 #
 # bspwm hotkeys
 #

@@ -45,36 +45,15 @@ My Emacs Init Settings
 #+END_SRC
 ** Theme
 #+BEGIN_SRC emacs-lisp
-  (use-package dracula-theme
-    :init
-    (setq dracula-enlarge-headings nil)
-    (setq dracula-alternate-mode-line-and-minibuffer t)
-    :config
-    (load-theme 'dracula t))
+  ;; (use-package dracula-theme
+  ;;    :init
+  ;;    (setq dracula-enlarge-headings nil)
+  ;;    (setq dracula-alternate-mode-line-and-minibuffer t)
+  ;;    :config
+  ;;    (load-theme 'dracula t))
 
-  (defconst my-theme-foreground "#f8f8f2")
-  (defconst my-theme-background "#282a36")
-  (defconst my-theme-curent-line "#44475a")
-  (defconst my-theme-comment "#6272a4")
-  (defconst my-theme-cyan "#8be9fd")
-  (defconst my-theme-green "#50fa7b")
-  (defconst my-theme-orange "#ffb86c")
-  (defconst my-theme-pink "#ff79c6")
-  (defconst my-theme-purple "#bd93f9")
-  (defconst my-theme-red "#ff5555")
-  (defconst my-theme-yellow "#f1fa8c")
-#+END_SRC
-** Show me the icons
-#+BEGIN_SRC emacs-lisp
-  (use-package all-the-icons)
-  (use-package all-the-icons-dired
-    :hook (dired-mode . all-the-icons-dired-mode))
-  (use-package all-the-icons-ibuffer
-    :init (all-the-icons-ibuffer-mode 1))
-  (use-package all-the-icons-ivy-rich
-    :init (all-the-icons-ivy-rich-mode 1))
-  (use-package ivy-rich
-    :init (ivy-rich-mode 1))
+  (load-theme 'tango t)
+
 #+END_SRC
 ** Ace-window
 #+BEGIN_SRC emacs-lisp
@@ -298,26 +277,22 @@ Simulate a Vim modal editing experience
  #+END_SRC
 ** LSP
 #+BEGIN_SRC emacs-lisp
-  (use-package lsp-mode
-    :hook ((c-mode c++-mode objc-mode) . lsp)
-    :commands lsp)
+  ;; (use-package lsp-mode
+  ;;   :hook ((c-mode c++-mode objc-mode) . lsp)
+  ;;   :commands lsp)
 
-  ;; optionally
-  (use-package lsp-ui :commands lsp-ui-mode)
-  (use-package company-lsp :commands company-lsp)
-  (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+  ;; ;; optionally
+  ;; (use-package lsp-ui :commands lsp-ui-mode)
+  ;; (use-package company-lsp :commands company-lsp)
+  ;; (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
 #+END_SRC
 ** Various modes for programming languages and file types
 #+BEGIN_SRC emacs-lisp
   (use-package cmake-mode)
-  (use-package go-mode)
-  (use-package rust-mode)
 #+END_SRC
 ** Misc.
 #+BEGIN_SRC emacs-lisp
-  (use-package xclip
-    :config
-    (xclip-mode 1))
+  
 #+END_SRC
 * Personal Settings
 ** Variables
@@ -355,83 +330,81 @@ Simulate a Vim modal editing experience
 #+END_SRC
 ** Modes
 #+BEGIN_SRC emacs-lisp
-  ;; enable some modes
-  (global-visual-line-mode t)
-  (column-number-mode t)
-  (global-hl-line-mode t)
-  (electric-pair-mode t)
-  (show-paren-mode t)
-  (size-indication-mode t)
-  (global-display-line-numbers-mode t)
-  (blink-cursor-mode t)
+   ;; enable some modes
+   (global-visual-line-mode t)
+   (column-number-mode t)
+   (global-hl-line-mode t)
+   (electric-pair-mode t)
+   (show-paren-mode t)
+   (size-indication-mode t)
+   (global-display-line-numbers-mode t)
+   (blink-cursor-mode t)
 
-  ;; disable some modes
-  (display-battery-mode 0)
-  (display-time-mode 0)
-  (menu-bar-mode 0)
-  (scroll-bar-mode 0)
-  (tool-bar-mode 0)
+   ;; disable some modes
+   (display-battery-mode 0)
+   (display-time-mode 0)
+   (menu-bar-mode 0)
+   (scroll-bar-mode 0)
+   (tool-bar-mode 0)
 
-  ;; (dolist (hook '(text-mode-hook))
-  ;;   (add-hook hook (lambda () (flyspell-mode 1))))
-  ;; (dolist (hook '(change-log-mode-hook log-edit-mode-hook))
-  ;;   (add-hook hook (lambda () (flyspell-mode -1))))
+   ;; (dolist (hook '(text-mode-hook))
+   ;;   (add-hook hook (lambda () (flyspell-mode 1))))
+   ;; (dolist (hook '(change-log-mode-hook log-edit-mode-hook))
+   ;;   (add-hook hook (lambda () (flyspell-mode -1))))
 
-  ;; enable ligature support
-  ;; https://github.com/microsoft/cascadia-code/issues/153
-  ;; https://github.com/robbert-vdh/dotfiles/blob/master/user/emacs/.config/doom/config.org#ligatures
-  (defvar composition-ligature-table (make-char-table nil))
-  (let ((alist '((?! . "\\(?:!\\(?:==\\|[!=]\\)\\)")
-		 (?# . "\\(?:#\\(?:###?\\|_(\\|[!#(:=?[_{]\\)\\)")
-		 (?$ . "\\(?:\\$>\\)")
-		 (?& . "\\(?:&&&?\\)")
-		 (?* . "\\(?:\\*\\(?:\\*\\*\\|[/>]\\)\\)")
-		 (?+ . "\\(?:\\+\\(?:\\+\\+\\|[+>]\\)\\)")
-		 (?- . "\\(?:-\\(?:-[>-]\\|<<\\|>>\\|[<>|~-]\\)\\)")
-		 (?. . "\\(?:\\.\\(?:\\.[.<]\\|[.=?-]\\)\\)")
-		 (?/ . "\\(?:/\\(?:\\*\\*\\|//\\|==\\|[*/=>]\\)\\)")
-		 (?: . "\\(?::\\(?:::\\|\\?>\\|[:<-?]\\)\\)")
-		 (?\; . "\\(?:;;\\)")
-		 (?< . "\\(?:<\\(?:!--\\|\\$>\\|\\*>\\|\\+>\\|-[<>|]\\|/>\\|<[<=-]\\|=\\(?:=>\\|[<=>|]\\)\\||\\(?:||::=\\|[>|]\\)\\|~[>~]\\|[$*+/:<=>|~-]\\)\\)")
-		 (?= . "\\(?:=\\(?:!=\\|/=\\|:=\\|=[=>]\\|>>\\|[=>]\\)\\)")
-		 (?> . "\\(?:>\\(?:=>\\|>[=>-]\\|[]:=-]\\)\\)")
-		 (?? . "\\(?:\\?[.:=?]\\)")
-		 (?\[ . "\\(?:\\[\\(?:||]\\|[<|]\\)\\)")
-		 (?\ . "\\(?:\\\\/?\\)")
-		 (?\] . "\\(?:]#\\)")
-		 (?^ . "\\(?:\\^=\\)")
-		 (?_ . "\\(?:_\\(?:|?_\\)\\)")
-		 (?{ . "\\(?:{|\\)")
-		 (?| . "\\(?:|\\(?:->\\|=>\\||\\(?:|>\\|[=>-]\\)\\|[]=>|}-]\\)\\)")
-		 (?~ . "\\(?:~\\(?:~>\\|[=>@~-]\\)\\)"))))
-    (dolist (char-regexp alist)
-      (set-char-table-range composition-ligature-table (car char-regexp)
-			    `([,(cdr char-regexp) 0 font-shape-gstring]))))
-  (set-char-table-parent composition-ligature-table composition-function-table)
+   ;; enable ligature support
+   ;; https://github.com/microsoft/cascadia-code/issues/153
+   ;; https://github.com/robbert-vdh/dotfiles/blob/master/user/emacs/.config/doom/config.org#ligatures
+   (defvar composition-ligature-table (make-char-table nil))
+   (let ((alist '((?! . "\\(?:!\\(?:==\\|[!=]\\)\\)")
+		  (?# . "\\(?:#\\(?:###?\\|_(\\|[!#(:=?[_{]\\)\\)")
+		  (?$ . "\\(?:\\$>\\)")
+		  (?& . "\\(?:&&&?\\)")
+		  (?* . "\\(?:\\*\\(?:\\*\\*\\|[/>]\\)\\)")
+		  (?+ . "\\(?:\\+\\(?:\\+\\+\\|[+>]\\)\\)")
+		  (?- . "\\(?:-\\(?:-[>-]\\|<<\\|>>\\|[<>|~-]\\)\\)")
+		  (?. . "\\(?:\\.\\(?:\\.[.<]\\|[.=?-]\\)\\)")
+		  (?/ . "\\(?:/\\(?:\\*\\*\\|//\\|==\\|[*/=>]\\)\\)")
+		  (?: . "\\(?::\\(?:::\\|\\?>\\|[:<-?]\\)\\)")
+		  (?\; . "\\(?:;;\\)")
+		  (?< . "\\(?:<\\(?:!--\\|\\$>\\|\\*>\\|\\+>\\|-[<>|]\\|/>\\|<[<=-]\\|=\\(?:=>\\|[<=>|]\\)\\||\\(?:||::=\\|[>|]\\)\\|~[>~]\\|[$*+/:<=>|~-]\\)\\)")
+		  (?= . "\\(?:=\\(?:!=\\|/=\\|:=\\|=[=>]\\|>>\\|[=>]\\)\\)")
+		  (?> . "\\(?:>\\(?:=>\\|>[=>-]\\|[]:=-]\\)\\)")
+		  (?? . "\\(?:\\?[.:=?]\\)")
+		  (?\[ . "\\(?:\\[\\(?:||]\\|[<|]\\)\\)")
+		  (?\ . "\\(?:\\\\/?\\)")
+		  (?\] . "\\(?:]#\\)")
+		  (?^ . "\\(?:\\^=\\)")
+		  (?_ . "\\(?:_\\(?:|?_\\)\\)")
+		  (?{ . "\\(?:{|\\)")
+		  (?| . "\\(?:|\\(?:->\\|=>\\||\\(?:|>\\|[=>-]\\)\\|[]=>|}-]\\)\\)")
+		  (?~ . "\\(?:~\\(?:~>\\|[=>@~-]\\)\\)"))))
+     (dolist (char-regexp alist)
+       (set-char-table-range composition-ligature-table (car char-regexp)
+			     `([,(cdr char-regexp) 0 font-shape-gstring]))))
+   (set-char-table-parent composition-ligature-table composition-function-table)
 
-  ;; (add-hook 'prog-mode-hook
-  ;; 	  (lambda ()
-  ;; 	    (setq-local composition-function-table composition-ligature-table)))
+   ;; (add-hook 'prog-mode-hook
+   ;; 	  (lambda ()
+   ;; 	    (setq-local composition-function-table composition-ligature-table)))
 #+END_SRC
 ** Faces
 #+BEGIN_SRC emacs-lisp
   ;; default face
   (set-face-attribute 'default nil
-		      :family "JetBrains Mono"
-		      :foundry "outline"
-		      :slant 'normal
-		      :weight 'normal
-		      :height 120
-		      :width 'semi-condensed)
+		      :family "JetBrainsMono NF"
+		      :weight 'semi-light
+		      :width 'semi-condensed
+		      :height 120)
 
-  ;; for glyphs
-  (if (daemonp)
-      ;; when using emacs --daemon + emacsclient
-      (add-hook 'after-make-frame-functions
-		(lambda (frame)
-		  (set-fontset-font t '(#XF0000 . #XF14FF) "Material Design Icons" nil 'append)))
-    ;; when using emacs without server/client
-    (set-fontset-font t '(#xF0000 . #xF14FF) "Material Design Icons" nil 'append))
+  ;; ;; for glyphs
+  ;; (if (daemonp)
+  ;;     ;; when using emacs --daemon + emacsclient
+  ;;     (add-hook 'after-make-frame-functions
+  ;; 	      (lambda (frame)
+  ;; 		(set-fontset-font t '(#XF0000 . #XF14FF) "Material Design Icons" nil 'append)))
+  ;;   ;; when using emacs without server/client
+  ;;   (set-fontset-font t '(#xF0000 . #xF14FF) "Material Design Icons" nil 'append))
 
   (add-hook 'display-line-numbers-mode-hook
 	    (lambda ()
@@ -441,6 +414,7 @@ Simulate a Vim modal editing experience
 				  :foreground (face-attribute 'cursor :background)
 				  :weight 'bold
 				  :slant 'normal)))
+
 #+END_SRC
 ** Key bindings
 #+BEGIN_SRC emacs-lisp
@@ -464,52 +438,28 @@ Simulate a Vim modal editing experience
 #+BEGIN_SRC emacs-lisp
   (use-package telephone-line
     :init
-    (setq telephone-line-primary-left-separator 'telephone-line-gradient
+
+    (setq telephone-line-lhs
+	  '((evil   . (telephone-line-evil-tag-segment))
+	    (accent . (telephone-line-vc-segment
+		       telephone-line-erc-modified-channels-segment
+		       telephone-line-process-segment))
+	    (nil    . (telephone-line-buffer-segment))))
+    (setq telephone-line-rhs
+	  '((nil    . (telephone-line-misc-info-segment))
+	    (accent . (telephone-line-major-mode-segment))
+	    (evil   . (telephone-line-airline-position-segment))))
+
+    (setq telephone-line-primary-left-separator 'telephone-line-nil
 	  telephone-line-secondary-left-separator 'telephone-line-nil
-	  telephone-line-primary-right-separator 'telephone-line-gradient
+	  telephone-line-primary-right-separator 'telephone-line-nil
 	  telephone-line-secondary-right-separator 'telephone-line-nil)
-    (setq telephone-line-height 24
-	  telephone-line-evil-use-short-tag nil)
 
-    (face-spec-set
-     'telephone-line-evil
-     `((t :foreground ,my-theme-background))
-     'face-override-spec)
+    ;; (face-spec-set
+    ;;  'telephone-line-evil-normal
+    ;;  '((t :background "purple"))
+    ;;  'face-override-spec)
 
-    (face-spec-set
-     'telephone-line-evil-insert
-     `((t :background ,my-theme-green))
-     'face-override-spec)
-
-    (face-spec-set
-     'telephone-line-evil-normal
-     `((t :background ,my-theme-purple))
-     'face-override-spec)
-
-    (face-spec-set
-     'telephone-line-evil-visual
-     `((t :background ,my-theme-orange))
-     'face-override-spec)
-
-    (face-spec-set
-     'telephone-line-evil-replace
-     `((t :background ,my-theme-red))
-     'face-override-spec)
-  
-    (face-spec-set
-     'telephone-line-evil-motion
-     `((t :background ,my-theme-pink))
-     'face-override-spec)
-
-    (face-spec-set
-     'telephone-line-evil-operator
-     `((t :background ,my-theme-yellow))
-     'face-override-spec)
-
-    (face-spec-set
-     'telephone-line-evil-emacs
-     `((t :background ,my-theme-cyan))
-     'face-override-spec)
     :config
     (telephone-line-mode t))
 #+END_SRC

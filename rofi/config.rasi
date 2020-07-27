@@ -1,9 +1,9 @@
 configuration {
-	modi: "combi,window,drun,ssh";
+  modi: "drun,window,ssh,combi";
 /*	width: 50;*/
 /*	lines: 15;*/
 /*	columns: 1;*/
-	font: "IBM Plex Sans 18";
+	font: "Liberation Sans 18";
 /*	bw: 1;*/
 /*	location: 0;*/
 /*	padding: 5;*/
@@ -12,8 +12,7 @@ configuration {
 /*	fixed-num-lines: true;*/
 	show-icons: true;
 /*	terminal: "rofi-sensible-terminal";*/
-	terminal: "tilix";
-/*  terminal: "xterm"; */
+	terminal: "xterm";
 /*	ssh-client: "ssh";*/
 /*	ssh-command: "{terminal} -e {ssh-client} {host} [-p {port}]";*/
 /*	run-command: "{cmd}";*/
@@ -32,6 +31,7 @@ configuration {
 /*	case-sensitive: false;*/
 /*	cycle: true;*/
 /*	sidebar-mode: false;*/
+	sidebar-mode: true;
 /*	eh: 1;*/
 /*	auto-select: false;*/
 /*	parse-hosts: false;*/
@@ -55,7 +55,9 @@ configuration {
 /*	window-format: "{w}    {c}   {t}";*/
 /*	click-to-exit: true;*/
 /*	show-match: true;*/
-	theme: "dracula" ;
+	theme: "tango-light" ;
+	/* theme: "tangoesque-light" ; */
+	/* theme: "cloud" ; */
 /*	color-normal: ;*/
 /*	color-urgent: ;*/
 /*	color-active: ;*/

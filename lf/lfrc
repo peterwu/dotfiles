@@ -1,0 +1,15 @@
+cmd fzf_jump ${{
+  res="$(find . | fzf --reverse --header='Jump to location')"
+  if [ -f "$res" ]; then
+    cmd="select"
+  elif [ -d "$res" ]; then
+    cmd="cd"                                                       
+  fi
+  lf -remote "send $id $cmd \"$res\""
+}}
+
+map <c-f> :fzf_jump
+map d     delete
+
+set previewer ~/.config/lf/pv.sh
+

@@ -12,3 +12,4 @@ Terminal=false
 Categories=Utility;TextEditor;X-Red-Hat-Base;
 StartupWMClass=Emacs
 X-Desktop-File-Install-Version=0.24
+NoDisplay=true
