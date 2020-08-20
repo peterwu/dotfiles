@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+chosen=$(echo -e "󰌾\tLock\n󰍃\tLogout\n󰜉\tReboot\n󰐥\tShutdown" | rofi -dmenu -i -p "Leaving $XDG_SESSION_DESKTOP ... ")
+
+if [[ $chosen =~ "Lock" ]]; then
+    light-locker-command --lock
+elif [[ $chosen =~ "Logout" ]]; then
+    case "$XDG_SESSION_DESKTOP" in
+      "bspwm") 
+        bspc quit
+        ;;
+      "herbstluftwm") 
+        herbstclient quit
+        ;;
+    esac
+elif [[ $chosen =~ "Reboot" ]]; then
+    systemctl reboot
+elif [[ $chosen =~ "Shutdown" ]]; then
+    systemctl poweroff
+fi
+

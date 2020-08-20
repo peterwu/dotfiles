@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-width=290
-height=120
+width=200
+height=100
 posx=-1
-posy=36
+posy=32
 
 PATH_AC="/sys/class/power_supply/AC"
 PATH_BATTERY_0="/sys/class/power_supply/BAT0"
@@ -38,15 +38,22 @@ fi
 battery_percent_0=$(("$battery_level_0 * 100 / $battery_max_0"))
 battery_percent_1=$(("$battery_level_1 * 100 / $battery_max_1"))
 
+battery_level=$(("$battery_level_0 + $battery_level_1"))
+battery_max=$(("$battery_max_0 + $battery_max_1"))
 
-if [ "$ac" -eq 1 ]; then
-  charging_status=" +++ "
-else
-  charging_status=" --- "
-fi
+battery_percent=$(("$battery_level * 100"))
+battery_percent=$(("$battery_percent / $battery_max"))
 
-yad --list \
-  --width=$width \
+# # calculate the percentage in 10s
+# battery_percent_level=$(("battery_percent / 10 * 10"))
+# if [ "$ac" -eq 1 ]; then
+#   image="battery-level-$battery_percent_level-charging-symbolic"
+#   [ "$battery_percent" -eq 100 ] && image="battery-level-$battery_percent_level-charged-symbolic"
+# else
+#   image="battery-level-$battery_percent_level-symbolic"
+# fi
+
+yad --width=$width \
   --height=$height \
   --posx=$posx \
   --posy=$posy \
@@ -55,9 +62,9 @@ yad --list \
   --no-click \
   --tail \
   --close-on-unfocus \
-  --column "Battery" \
-  --column "Capacity" \
-  --column "Status" \
-  BAT0 "$battery_percent_0 %" "$charging_status" \
-  BAT1 "$battery_percent_1 %" "$charging_status" 
+  --progress \
+  --bar=" T " "$battery_percent%" \
+  --bar=" 0 " "$battery_percent_0%" \
+  --bar=" 1 " "$battery_percent_1%" 
 
+  # --image="$image" \
