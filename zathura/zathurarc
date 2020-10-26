@@ -1,41 +1,43 @@
 set selection-clipboard clipboard
-set font "JetBrains Mono 12"
+# set font "JetBrains Mono 12"
+set font "Cantarell 12"
 set guioptions ""
+
 
 # https://github.com/HaoZeke/base16-zathura/tree/master/build_schemes
 
-# Base16 Tango
-# Author: @Schnouki, based on the Tango Desktop Project
+# Base16 Dracula
+# Author: Mike Barkmin (http://github.com/mikebarkmin) based on Dracula Theme (http://github.com/dracula)
 
-set default-bg                  "#2e3436"
-set default-fg                  "#8ae234"
+set default-bg                  "#282936"
+set default-fg                  "#3a3c4e"
 
-set statusbar-fg                "#729fcf"
-set statusbar-bg                "#fce94f"
+set statusbar-fg                "#62d6e8"
+set statusbar-bg                "#4d4f68"
 
-set inputbar-bg                 "#2e3436"
-set inputbar-fg                 "#eeeeec"
+set inputbar-bg                 "#282936"
+set inputbar-fg                 "#f7f7fb"
 
-set notification-bg             "#2e3436"
-set notification-fg             "#eeeeec"
+set notification-bg             "#282936"
+set notification-fg             "#f7f7fb"
 
-set notification-error-bg       "#2e3436"
-set notification-error-fg       "#cc0000"
+set notification-error-bg       "#282936"
+set notification-error-fg       "#ea51b2"
 
-set notification-warning-bg     "#2e3436"
-set notification-warning-fg     "#cc0000"
+set notification-warning-bg     "#282936"
+set notification-warning-fg     "#ea51b2"
 
-set highlight-color             "#c4a000"
-set highlight-active-color      "#3465a4"
+set highlight-color             "#00f769"
+set highlight-active-color      "#62d6e8"
 
-set completion-bg               "#8ae234"
-set completion-fg               "#3465a4"
+set completion-bg               "#3a3c4e"
+set completion-fg               "#62d6e8"
 
-set completion-highlight-fg     "#eeeeec"
-set completion-highlight-bg     "#3465a4"
+set completion-highlight-fg     "#f7f7fb"
+set completion-highlight-bg     "#62d6e8"
 
-set recolor-lightcolor          "#2e3436"
-set recolor-darkcolor           "#ad7fa8"
+set recolor-lightcolor          "#282936"
+set recolor-darkcolor           "#f1f2f8"
 
 set recolor                     "false"
 set recolor-keephue             "false"

@@ -1,11 +1,20 @@
 [global/wm]
-border-size   = 0
-fixed-center  = true
-height        = 32
-module-margin = 0
+margin-top = 0
+margin-bottom = 0
 
 [settings]
 pseudo-transparency = false
+
+[icons]
+ws-0 = 1;󱆃
+ws-1 = 2;󰖟
+ws-2 = 3;󰇰
+ws-3 = 4;󰷉
+ws-4 = 5;󰊢
+ws-5 = 6;󱉟
+ws-6 = 7;󰛊
+ws-7 = 8;󰢹
+ws-8 = 9;󰚀
 
 [colors]
 foreground = ${xrdb:foreground:#222}
@@ -35,9 +44,18 @@ color15 = ${xrdb:color15:#222}
 wm-restack = bspwm
 enable-ipc = false
 
+height        = 32
+border-size   = 0
+fixed-center  = true
+module-margin = 0
+
 font-0 = JetBrains Mono:size=2:style=Text:antialias=true;6
 font-1 = Material Design Icons Desktop:size=19:style=Text:antialias=true;6
 font-2 = JetBrains Mono:size=15:style=Text:antialias=true;4
+
+; font-0 = Cascadia Mono:size=2:style=Text:antialias=true;6
+; font-1 = Material Design Icons Desktop:size=19:style=Text:antialias=true;6
+; font-2 = Cascadia Mono:size=15:style=Text:antialias=true;4
 
 modules-left = bspwm
 ; modules-center = date
@@ -46,11 +64,21 @@ background = ${colors.background}
 foreground = ${colors.foreground}
 
 [bar/main-herbstluftwm]
+height        = 32
+border-size   = 0
+fixed-center  = true
+module-margin = 0
+
 font-0 = JetBrains Mono:size=2:style=Text:antialias=true;6
 font-1 = Material Design Icons Desktop:size=19:style=Text:antialias=true;6
 font-2 = JetBrains Mono:size=15:style=Text:antialias=true;4
 
+; font-0 = Cascadia Mono:size=2:style=Text:antialias=true;6
+; font-1 = Material Design Icons Desktop:size=19:style=Text:antialias=true;6
+; font-2 = Cascadia Mono:size=15:style=Text:antialias=true;4
+
 modules-left = hlwm
+; modules-left = hlwm-ws
 ; modules-center = date
 modules-right = pulseaudio wireless-network power-supply date
 background = ${colors.background}
@@ -61,28 +89,38 @@ type = internal/bspwm
 enable-scroll = false
 reverse-scroll = false
 
-ws-icon-0 = 1;󱆃
-ws-icon-1 = 2;󰖟
-ws-icon-2 = 3;󰇰
-ws-icon-3 = 4;󰷉
-ws-icon-4 = 5;󰊢
-ws-icon-5 = 6;󱉟
-ws-icon-6 = 7;󰛊
-ws-icon-7 = 8;󰢹
-ws-icon-8 = 9;󰚀
+ws-icon-0 = ${icons.ws-0}
+ws-icon-1 = ${icons.ws-1}
+ws-icon-2 = ${icons.ws-2}
+ws-icon-3 = ${icons.ws-3}
+ws-icon-4 = ${icons.ws-4}
+ws-icon-5 = ${icons.ws-5}
+ws-icon-6 = ${icons.ws-6}
+ws-icon-7 = ${icons.ws-7}
+ws-icon-8 = ${icons.ws-8}
+
+; ws-icon-0 = 1;󱆃
+; ws-icon-1 = 2;󰖟
+; ws-icon-2 = 3;󰇰
+; ws-icon-3 = 4;󰷉
+; ws-icon-4 = 5;󰊢
+; ws-icon-5 = 6;󱉟
+; ws-icon-6 = 7;󰛊
+; ws-icon-7 = 8;󰢹
+; ws-icon-8 = 9;󰚀
 
 format = <label-state>
 
 label-empty = %icon%
-label-empty-foreground = ${colors.color15}
+label-empty-foreground = ${colors.color8}
 label-empty-padding = 1
 
 label-occupied = %icon% 
-label-occupied-foreground = ${colors.color8}
+label-occupied-foreground = ${colors.color7}
 label-occupied-padding = 1
 
 label-focused = %icon%
-label-focused-foreground = ${colors.color1}
+label-focused-foreground = ${colors.color5}
 label-focused-padding = 1
 
 label-empty-font = 2
@@ -100,28 +138,28 @@ type = internal/xworkspaces
 enable-scroll = false
 reverse-scroll = false
 
-icon-0 = 1;󱆃
-icon-1 = 2;󰖟
-icon-2 = 3;󰇰
-icon-3 = 4;󰷉
-icon-4 = 5;󰨞
-icon-5 = 6;󱉟
-icon-6 = 7;󰐋
-icon-7 = 8;󰢹
-icon-8 = 9;󰚀
+icon-0 = ${icons.ws-0}
+icon-1 = ${icons.ws-1}
+icon-2 = ${icons.ws-2}
+icon-3 = ${icons.ws-3}
+icon-4 = ${icons.ws-4}
+icon-5 = ${icons.ws-5}
+icon-6 = ${icons.ws-6}
+icon-7 = ${icons.ws-7}
+icon-8 = ${icons.ws-8}
 
 format = <label-state>
 
 label-empty = %icon%
-label-empty-foreground = ${colors.color15}
+label-empty-foreground = ${colors.color8}
 label-empty-padding = 1
 
 label-occupied = %icon% 
-label-occupied-foreground = ${colors.color8}
+label-occupied-foreground = ${colors.color7}
 label-occupied-padding = 1
 
 label-active = %icon%
-label-active-foreground = ${colors.color1}
+label-active-foreground = ${colors.color5}
 label-active-padding = 1
 
 label-empty-font = 2

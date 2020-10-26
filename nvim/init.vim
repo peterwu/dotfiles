@@ -1,16 +1,19 @@
-set nocompatible encoding=utf-8 fileencoding=utf-8 nrformats-=octal
-filetype plugin indent on 
-syntax enable
-
-set number cursorline relativenumber showcmd wildmenu lazyredraw showmatch ruler hidden
-set autoindent smartindent smarttab expandtab tabstop=2 shiftwidth=2 softtabstop=2
-set smartcase incsearch hlsearch ignorecase shortmess+=I title mouse=a laststatus=2
-set inccommand=nosplit
-set path+=**
-
+""""""""""""
+" defaults "
+""""""""""""
+set number relativenumber cursorline lazyredraw showmatch hidden
+set smartindent expandtab tabstop=2 shiftwidth=2 softtabstop=2
+set smartcase ignorecase shortmess+=I mouse=a noshowmode
+set list listchars=trail:·,tab:»·
+set inccommand=nosplit path+=**
 set termguicolors
-set background=light
-colorscheme zellner
+set omnifunc=syntaxcomplete#Complete
+
+" colors
+packadd! vim-dracula
+colorscheme dracula
+highlight SpecialKey ctermfg=60 guifg=#ffffa5
+highlight Whitespace ctermfg=60 guifg=#ffffa5
 
 """"""""""""""""
 " key mappings "
@@ -18,43 +21,47 @@ colorscheme zellner
 let g:mapleader      = " "
 let g:maplocalleader = ","
 
-nnoremap <leader>cd  :cd %:p:h<cr>:pwd<cr>
-nnoremap <leader>ev  :e $MYVIMRC<cr>
-nnoremap <leader>sv  :source $MYVIMRC<cr>
-nnoremap <leader>pu  :PackUpdate<cr>
-nnoremap <leader>pc  :PackClean<cr>
-nnoremap <leader>ps  :PackStatus<cr>
+nnoremap <silent> <Leader>cd  :cd %:p:h<CR>:pwd<CR>
+nnoremap <silent> <Leader>ev  :e $MYVIMRC<CR>
+nnoremap <silent> <Leader>sv  :source $MYVIMRC<CR>
+nnoremap <silent> <Leader>pu  :PackUpdate<CR>
+nnoremap <silent> <Leader>pc  :PackClean<CR>
+nnoremap <silent> <Leader>ps  :PackStatus<CR>
 
-" Disable Arrow keys in Normal mode
-map <up>    <nop>
-map <down>  <nop>
-map <left>  <nop>
-map <right> <nop>
+" disable arrow keys in normal mode
+map <Up>    <Nop>
+map <Down>  <Nop>
+map <Left>  <Nop>
+map <Right> <Nop>
 
-" Disable Arrow keys in Insert mode
-imap <up>    <nop>
-imap <down>  <nop>
-imap <left>  <nop>
-imap <right> <nop>
+" disable arrow keys in insert mode
+imap <Up>    <Nop>
+imap <Down>  <Nop>
+imap <Left>  <Nop>
+imap <Right> <Nop>
 
 " swap j/k <-> gj/gk
-nnoremap j  gj
-nnoremap k  gk
-nnoremap gj j
-nnoremap gk k
+" nnoremap j  gj
+" nnoremap k  gk
+" nnoremap gj j
+" nnoremap gk k
 
 " copy to clipboard
 nnoremap Y          y$
-vnoremap <leader>y  "+y
-nnoremap <leader>y  "+y
-nnoremap <leader>Y  "+y$
-nnoremap <leader>yy "+yy
+vnoremap <Leader>y  "+y
+nnoremap <Leader>y  "+y
+nnoremap <Leader>Y  "+y$
+nnoremap <Leader>yy "+yy
 
 " paste from clipboard
-nnoremap <leader>p "+p
-nnoremap <leader>P "+P
-vnoremap <leader>p "+p
-vnoremap <leader>P "+P
+nnoremap <Leader>p "+p
+nnoremap <Leader>P "+P
+vnoremap <Leader>p "+p
+vnoremap <Leader>P "+P
+
+" terminal
+" tnoremap <Esc> <C-\><C-n>
+nnoremap <Leader>o :below 10sp term://$SHELL<CR>i
 
 " restore last known cursor position
 " :help restore-cursor
@@ -73,38 +80,61 @@ let g:netrw_banner       = 0
 let g:netrw_browse_split = 4
 let g:netrw_winsize      = 25
 let g:netrw_list_hide    = '\(^\|\s\s\)\zs\.\S\+'
-let g:netrw_keepdir      = 0
+let g:netrw_keepdir      = 1
 
-map <f9> :Lexplore<cr>
+nmap <silent> <F9> :Lexplore<CR>
 
+" remap cd to be global
+augroup NetrwGroup
+  autocmd!
+  autocmd filetype netrw call NetrwMapping()
+augroup END
+
+function! NetrwMapping()
+  nmap <buffer> <silent> <nowait> <LocalLeader>cd  :execute "cd ".b:netrw_curdir<CR>:pwd<CR>
+endfunction
+
+"""""""""""""""""""
 " quick scope
 let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
 
 """""""""""""""""""
 " lightline
-let g:lightline = { 'colorscheme': 'OldHope' }
+let g:lightline = {
+      \   'colorscheme': 'dracula',
+      \   'active': {
+      \     'left': [ [ 'mode', 'paste' ],
+      \               [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
+      \   },
+      \   'component_function': {
+      \     'gitbranch': 'FugitiveHead'
+      \   },
+      \ }
 
 """""""""""""""""""
 " nnn
+let g:nnn#statusline           = 0
+let g:nnn#replace_netrw        = 0
 let g:nnn#set_default_mappings = 0
 let g:nnn#layout               = { 'window': { 'width': 0.9, 'height': 0.6, 'highlight': 'Debug' } }
 
-nnoremap <leader>n :NnnPicker '%:p:h'<cr>
+nnoremap <Leader>n :NnnPicker '%:p:h'<CR>
 
 """""""""""""""""""
 " fzf
-nnoremap <leader>. :Files .<cr>
-nnoremap <leader>` :Files /<cr>
-nnoremap <leader>~ :Files $HOME<cr>
-nnoremap <leader>% :Files %:p:h<cr>
+nnoremap <Leader>. :Files .<CR>
+nnoremap <Leader>` :Files /<CR>
+nnoremap <Leader>~ :Files $HOME<CR>
+nnoremap <Leader>% :Files %:p:h<CR>
 
-nnoremap <leader>? :History<cr>
-nnoremap <leader>: :History:<cr>
-nnoremap <leader>/ :History/<cr>
+nnoremap <Leader>? :History<CR>
+nnoremap <Leader>: :History:<CR>
+nnoremap <Leader>/ :History/<CR>
 
-nnoremap <leader>b :Buffers<cr>
-nnoremap <leader>h :Helptags<cr>
-nnoremap <leader>m :Maps<cr>
+nnoremap <Leader>b :Buffers<CR>
+nnoremap <Leader>h :Helptags<CR>
+nnoremap <Leader>m :Maps<CR>
+nnoremap <Leader>t :Tags<CR>
 
 """""""""""""""""""
 " lion 
@@ -112,7 +142,7 @@ let g:lion_squeeze_spaces = 1
 
 """""""""""""""""""
 " easymotion
-map <leader> <plug>(easymotion-prefix)
+map <Leader><Leader>. <Plug>(easymotion-repeat)
 
 """""""""""""""""""
 " vinegar
@@ -121,8 +151,8 @@ noremap - k^
 """"""""""""""""""
 " minpac plugins "
 """"""""""""""""""
-if exists('*minpac#init')
-  call minpac#init({'dir': $HOME.'/.local/share/nvim/site'})
+if exists('g:loaded_minpac')
+  call minpac#init({'dir': split(&packpath, ",")[2]}) " -> $HOME.'/.local/share/nvim/site'
   call minpac#add('k-takata/minpac', {'type': 'opt'})
 
   call minpac#add('jiangmiao/auto-pairs',          {'name': 'vim-auto-pairs'})
@@ -139,13 +169,15 @@ if exists('*minpac#init')
   call minpac#add('tpope/vim-fugitive')
   call minpac#add('tpope/vim-eunuch')
   call minpac#add('tpope/vim-vinegar')
-  call minpac#add('mattn/emmet-vim',    {'name': 'vim-emmet'})
-  call minpac#add('junegunn/fzf.vim',   {'name': 'vim-fzf'})
-  call minpac#add('mcchrish/nnn.vim',   {'name': 'vim-nnn'})
+  call minpac#add('mattn/emmet-vim',  {'name': 'vim-emmet'})
+  call minpac#add('junegunn/fzf.vim', {'name': 'vim-fzf'})
 
+  call minpac#add('dracula/vim',           {'name': 'vim-dracula'})
   call minpac#add('sheerun/vim-polyglot')
   call minpac#add('chrisbra/colorizer',    {'name': 'vim-colorizer'})
   call minpac#add('itchyny/lightline.vim', {'name': 'vim-lightline'})
+
+  call minpac#add('ajh17/VimCompletesMe', {'name': 'vim-vcm'})
 endif
 
 " Define user commands for updating/cleaning the plugins.

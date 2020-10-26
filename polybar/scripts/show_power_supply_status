@@ -13,25 +13,11 @@ battery_max_1=0
 battery_L_color="$(xrdb -query | grep color1: | cut -f 2)"
 battery_F_color="$(xrdb -query | grep color2: | cut -f 2)"
 
-if [ -f "$PATH_AC/online" ]; then
-    ac=$(cat "$PATH_AC/online")
-fi
-
-if [ -f "$PATH_BATTERY_0/energy_now" ]; then
-    battery_level_0=$(cat "$PATH_BATTERY_0/energy_now")
-fi
-
-if [ -f "$PATH_BATTERY_0/energy_full" ]; then
-    battery_max_0=$(cat "$PATH_BATTERY_0/energy_full")
-fi
-
-if [ -f "$PATH_BATTERY_1/energy_now" ]; then
-    battery_level_1=$(cat "$PATH_BATTERY_1/energy_now")
-fi
-
-if [ -f "$PATH_BATTERY_1/energy_full" ]; then
-    battery_max_1=$(cat "$PATH_BATTERY_1/energy_full")
-fi
+[ -f "$PATH_AC/online" ]             && ac=$(cat "$PATH_AC/online")
+[ -f "$PATH_BATTERY_0/energy_now" ]  && battery_level_0=$(cat "$PATH_BATTERY_0/energy_now")
+[ -f "$PATH_BATTERY_1/energy_now" ]  && battery_level_1=$(cat "$PATH_BATTERY_1/energy_now")
+[ -f "$PATH_BATTERY_0/energy_full" ] && battery_max_0=$(cat "$PATH_BATTERY_0/energy_full")
+[ -f "$PATH_BATTERY_1/energy_full" ] && battery_max_1=$(cat "$PATH_BATTERY_1/energy_full")
 
 battery_level=$(("$battery_level_0 + $battery_level_1"))
 battery_max=$(("$battery_max_0 + $battery_max_1"))
@@ -39,42 +25,18 @@ battery_max=$(("$battery_max_0 + $battery_max_1"))
 battery_percent=$(("$battery_level * 100"))
 battery_percent=$(("$battery_percent / $battery_max"))
 
-if [ "$ac" -eq 1 ]; then
-    icon="󰂄"
-else
-    if [ "$battery_percent" -gt 96 ]; then
-        icon="󰁹"
-    elif [ "$battery_percent" -gt 90 ]; then
-        icon="󰂂"
-    elif [ "$battery_percent" -gt 80 ]; then
-        icon="󰂁"
-    elif [ "$battery_percent" -gt 70 ]; then
-        icon="󰂀"
-    elif [ "$battery_percent" -gt 60 ]; then
-        icon="󰁿"
-    elif [ "$battery_percent" -gt 50 ]; then
-        icon="󰁾"
-    elif [ "$battery_percent" -gt 40 ]; then
-        icon="󰁽"
-    elif [ "$battery_percent" -gt 30 ]; then
-        icon="󰁼"
-    elif [ "$battery_percent" -gt 20 ]; then
-        icon="󰁻"
-    elif [ "$battery_percent" -gt 10 ]; then
-        icon="󰁺"
-    else
-        icon="󰂎"
-    fi
-fi
+icons=(󰂎 󰁺 󰁻 󰁼 󰁽 󰁾 󰁿 󰂀 󰂁 󰂂 󰁹 󰂄)
 
-# msg="$icon $battery_percent"
+icon="${icons[ (($battery_percent / 10)) ]}"
+[ "$battery_percent" -gt 96 ] && icon="${icons[10]}"
+[ "$ac" -eq 1 ] && icon="${icons[11]}"
+
 msg="$icon"
 
-# msg="%{o$battery_low_color}%{F$battery_low_color}$msg%{F- o-}"
-if [[ "$battery_percent" -ge 99 ]]; then
-    msg="%{F$battery_F_color}$msg%{F-}"
-elif [[ "$battery_percent" -le 8 ]]; then
-    msg="%{F$battery_L_color}$msg%{F-}"
+if [ "$battery_percent" -ge 99 ]; then
+  msg="%{F$battery_F_color}$msg%{F-}"
+elif [ "$battery_percent" -le 8 ]; then
+  msg="%{F$battery_L_color}$msg%{F-}"
 fi
 
 echo "$msg"

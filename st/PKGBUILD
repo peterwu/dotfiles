@@ -1,11 +1,6 @@
-# Contributor: mar77i <mar77i at mar77i dot ch>
-# Contributor: Gaetan Bisson <bisson@archlinux.org>
-# Contributor: Scytrin dai Kinthra <scytrin@gmail.com>
-# Maintainer: Stefan Husmann <stefan-husmann@t-online.de>
-
 pkgname=st
 _pkgname=st
-pkgver=0.8.4.r1135.272a913
+pkgver=0.8.4.r1142.6904056
 pkgrel=1
 pkgdesc='Simple virtual terminal emulator for X'
 url='https://github.com/peterwu/st.git'
@@ -42,5 +37,5 @@ package() {
   cd "${_pkgname}"
   make PREFIX=/usr DESTDIR="${pkgdir}" install
   install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
-  # install -Dm644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md"
+  install -Dm644 README "${pkgdir}/usr/share/doc/${pkgname}/README"
 }

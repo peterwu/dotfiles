@@ -1,0 +1,33 @@
+# fix java reparenting issue
+export _JAVA_AWT_WM_NONREPARENTING=1
+
+# QT HIDPI
+export QT_AUTO_SCREEN_SCALE_FACTOR=1
+export QT_SCALE_FACTOR=1.25
+
+# go
+export GOPATH=$HOME/.local/share/go
+export PATH=$PATH:$GOPATH/bin
+
+# rust
+export CARGO_HOME=$HOME/.local/share/cargo
+export RUSTUP_HOME=$HOME/.local/share/rustup
+
+# nnn
+export NNN_BMS='d:~/Documents;j:~/Downloads;p:~/Projects'
+export NNN_COLORS='4152'
+export NNN_FCOLORS='c1e2272e006033f7c6d6abc4' 
+export NNN_PLUG='f:fzcd;'
+
+# fzf
+export FZF_DEFAULT_COMMAND='find .'
+export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border --multi --color=light
+                         --preview "(highlight -O ansi -l {} || cat {} || tree -C {}) 2>/dev/null | head -100"'
+export FZF_ALT_C_OPTS='--preview "tree -C {} | head -100"'
+
+# ibus
+# export GTK_IM_MODULE=ibus
+# export XMODIFIERS=@im=ibus
+# export QT_IM_MODULE=ibus
+
+# ibus-daemon -drx

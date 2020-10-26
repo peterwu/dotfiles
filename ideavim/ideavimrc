@@ -1,0 +1,59 @@
+" https://ikenox.info/blog/getting-started-ideavim/
+
+let mapleader=" "
+
+"set clipboard+=unnamedplus
+set nrformats-=octal
+set matchpairs
+set number
+set relativenumber
+set showmode
+set smartcase
+set hlsearch
+set ignorecase
+set incsearch
+
+set easymotion
+set exchange
+set surround
+set commentary
+set highlightedyank
+
+set ideajoin
+
+" disable arrow keys in normal mode
+map <Up>    <Nop>
+map <Down>  <Nop>
+map <Left>  <Nop>
+map <Right> <Nop>
+
+" disable arrow keys in insert mode
+imap <Up>    <Nop>
+imap <Down>  <Nop>
+imap <Left>  <Nop>
+imap <Right> <Nop>
+
+" swap j/k <-> gj/gk
+" nnoremap j  gj
+" nnoremap k  gk
+" nnoremap gj j
+" nnoremap gk k
+
+" copy to clipboard
+nnoremap Y          y$
+vnoremap <Leader>y  "+y
+nnoremap <Leader>y  "+y
+nnoremap <Leader>Y  "+y$
+nnoremap <Leader>yy "+yy
+
+" paste from clipboard
+nnoremap <Leader>p "+p
+nnoremap <Leader>P "+P
+vnoremap <Leader>p "+p
+vnoremap <Leader>P "+P
+
+" jetbrains actions
+nnoremap gd :action GotoDeclaration<CR>
+nnoremap gs :action GotoSuperMethod<CR>
+nnoremap gi :action GotoImplementation<CR>
+nnoremap gb :action JumpToLastChange<CR>

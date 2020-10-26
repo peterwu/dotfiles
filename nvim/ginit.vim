@@ -1,6 +1,7 @@
 set guioptions-=T guioptions-=m guioptions-=L guioptions-=r guioptions-=e
 " set guifont=JetBrains\ Mono\ 12
-set guifont=JetBrainsMono\ NF\ 12
+" set guifont=JetBrainsMono\ NF\ 12
+GuiFont JetBrains Mono 10
 
 nnoremap <leader>egv :e $MYGVIMRC<cr>
 nnoremap <leader>sgv :source $MYGVIMRC<cr>
