@@ -1,0 +1,31 @@
+include config.mk
+
+# Build iosevka-fusion
+build: build/private-build-plans.toml
+	cd build/ && \
+	npm run build -- contents::iosevka-fusion
+
+build/private-build-plans.toml: iosevka-fusion.toml
+	cp $< $@
+
+# Set up environment to build iosevka
+setup:
+	wget $(IOSEVKA_URL)
+	tar xzf v$(IOSEVKA_VERSION).tar.gz
+	mv Iosevka-$(IOSEVKA_VERSION) build
+	cd build/ && npm install
+
+# Install patched fonts
+install:
+	mkdir -p ~/.local/share/fonts/iosevka-fusion-fonts/
+	cp -Rf ./build/dist/iosevka-fusion/ttf/*.ttf ~/.local/share/fonts/iosevka-fusion-fonts/
+	fc-cache -vf
+
+clean:
+	rm -f v$(IOSEVKA_VERSION).tar.gz
+	rm -rf build/dist/
+
+nuke: clean
+	rm -rf build/
+
+.PHONY: clean nuke build setup install
