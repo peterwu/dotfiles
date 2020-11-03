@@ -10,7 +10,7 @@ build/private-build-plans.toml: iosevka-fusion.toml
 
 # Set up environment to build iosevka
 setup:
-	wget $(IOSEVKA_URL)
+	curl -L -O $(IOSEVKA_URL)
 	tar xzf v$(IOSEVKA_VERSION).tar.gz
 	mv Iosevka-$(IOSEVKA_VERSION) build
 	cd build/ && npm install
