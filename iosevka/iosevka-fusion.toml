@@ -1,10 +1,14 @@
-[buildPlans.iosevka-fusion]               # <iosevka-custom> is your plan name
-family = "Iosevka Fusion"                 # Font menu family name
-design = ["ss08",
-          "sp-fixed",
-          "v-brace-curly",
-          "v-percent-rings",
-          "no-cv-ss"]
+[buildPlans.iosevka-fusion]
+family = "Iosevka Fusion"
+design = [ "ss20"
+         , "sp-fixed"
+         , "no-cv-ss"
+         , "v-g-doublestorey"
+         , "v-zero-dotted"
+         , "v-six-closed-contour"
+         , "v-nine-closed-contour"
+         , "v-numbersign-slanted"
+         ]
 
 [buildPlans.iosevka-fusion.weights.light]
 shape = 300
@@ -28,7 +32,7 @@ css   = 700
 
 [buildPlans.iosevka-fusion.slopes]
 upright = "normal"
-italic = "italic"
+italic  = "italic"
 
 [buildPlans.iosevka-fusion.widths.normal]
 shape = 576
