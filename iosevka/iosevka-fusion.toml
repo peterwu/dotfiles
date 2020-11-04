@@ -3,6 +3,7 @@ family = "Iosevka Fusion"
 design = [
           "ss08",
           "sp-fixed",
+          "v-f-flat-hook-crossbar-at-x-height",
           "v-zero-long-dotted",
           "v-brace-curly",
           "v-ampersand-closed",
@@ -10,6 +11,8 @@ design = [
           "v-percent-rings",
           "no-cv-ss"
          ]
+italic = ["v-f-flat-hook-round-tailed-crossbar-at-x-height"]
+hintParams = ["-a", "sss"]
 
 [buildPlans.iosevka-fusion.weights.light]
 shape = 300
