@@ -3,7 +3,7 @@ include config.mk
 # Build iosevka-fusion
 build: build/private-build-plans.toml
 	cd build/ && \
-	npm run build -- contents::iosevka-fusion
+	npm run build -- ttf::iosevka-fusion
 
 build/private-build-plans.toml: iosevka-fusion.toml
 	cp $< $@

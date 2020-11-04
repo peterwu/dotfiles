@@ -2,7 +2,6 @@
 family = "Iosevka Fusion"                 # Font menu family name
 design = ["ss08",
           "sp-fixed",
-          "extended",
           "v-brace-curly",
           "v-percent-rings",
           "no-cv-ss"]
