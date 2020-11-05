@@ -4,6 +4,7 @@ design = [
           "ss08",
           "sp-fixed",
           "v-f-flat-hook-crossbar-at-x-height",
+          "v-l-italic",
           "v-zero-long-dotted",
           "v-brace-curly",
           "v-ampersand-closed",
