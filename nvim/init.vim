@@ -21,12 +21,13 @@ highlight Whitespace ctermfg=60 guifg=#ffffa5
 let g:mapleader      = " "
 let g:maplocalleader = ","
 
-nnoremap <silent> <Leader>cd  :cd %:p:h<CR>:pwd<CR>
-nnoremap <silent> <Leader>ev  :e $MYVIMRC<CR>
-nnoremap <silent> <Leader>sv  :source $MYVIMRC<CR>
-nnoremap <silent> <Leader>pu  :PackUpdate<CR>
-nnoremap <silent> <Leader>pc  :PackClean<CR>
-nnoremap <silent> <Leader>ps  :PackStatus<CR>
+nnoremap <silent> <Leader>cd :cd     %:p:h<CR>:pwd<CR>
+nnoremap <silent> <Leader>ev :edit   $MYVIMRC<CR>
+nnoremap <silent> <Leader>sv :source $MYVIMRC<CR>
+
+nnoremap <silent> <Leader>pu :PackUpdate<CR>
+nnoremap <silent> <Leader>pc :PackClean<CR>
+nnoremap <silent> <Leader>ps :PackStatus<CR>
 
 " disable arrow keys in normal mode
 map <Up>    <Nop>
@@ -94,7 +95,7 @@ function! NetrwMapping()
   nmap <buffer> <silent> <nowait> <LocalLeader>cd  :execute "cd ".b:netrw_curdir<CR>:pwd<CR>
 endfunction
 
-"""""""""""""""""""
+""""""""""""""""""
 " quick scope
 let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
 
@@ -118,7 +119,7 @@ let g:nnn#replace_netrw        = 0
 let g:nnn#set_default_mappings = 0
 let g:nnn#layout               = { 'window': { 'width': 0.9, 'height': 0.6, 'highlight': 'Debug' } }
 
-nnoremap <Leader>n :NnnPicker '%:p:h'<CR>
+nnoremap <Leader>n :NnnPicker %:p:h<CR>
 
 """""""""""""""""""
 " fzf
@@ -171,6 +172,7 @@ if exists('g:loaded_minpac')
   call minpac#add('tpope/vim-vinegar')
   call minpac#add('mattn/emmet-vim',  {'name': 'vim-emmet'})
   call minpac#add('junegunn/fzf.vim', {'name': 'vim-fzf'})
+  call minpac#add('mcchrish/nnn.vim', {'name': 'vim-nnn'})
 
   call minpac#add('dracula/vim',           {'name': 'vim-dracula'})
   call minpac#add('sheerun/vim-polyglot')
