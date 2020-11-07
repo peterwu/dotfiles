@@ -1,0 +1,13 @@
+1. sudo dnf install neovim
+2. save /usr/share/pixmaps/neovim.png
+3. sudo dnf remove neovim
+4. copy back to /usr/share/pixmaps/neovim.png
+5. copy nvim.desktop to ~/.local/share/applications
+6. download nvim.appimage
+7. sudo cp nvim.appimage /usr/bin/nvim
+8. sudo chmod a+x /usr/bin/nvim
+9. sudo chcon --reference /usr/bin/vmstat /usr/bin/nvim
+10. sudo ln -sf /usr/bin/nvim /usr/bin/vim
+11. sudo ln -sf /usr/bin/vim /usr/bin/vi
+12. sudo chcon --no-dereference -u system_u /usr/bin/vi
+13. sudo chcon --no-dereference -u system_u /usr/bin/vim

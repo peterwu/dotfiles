@@ -4,7 +4,7 @@
 set number relativenumber cursorline lazyredraw showmatch hidden
 set smartindent expandtab tabstop=2 shiftwidth=2 softtabstop=2
 set smartcase ignorecase shortmess+=I mouse=a noshowmode
-set list listchars=trail:·,tab:»·
+set nolist listchars=trail:·,tab:»·
 set inccommand=nosplit path+=**
 set termguicolors
 set omnifunc=syntaxcomplete#Complete
@@ -42,10 +42,8 @@ imap <Left>  <Nop>
 imap <Right> <Nop>
 
 " swap j/k <-> gj/gk
-" nnoremap j  gj
-" nnoremap k  gk
-" nnoremap gj j
-" nnoremap gk k
+noremap <expr> j (v:count? 'j' : 'gj')
+noremap <expr> k (v:count? 'k' : 'gk')
 
 " copy to clipboard
 nnoremap Y          y$
@@ -71,6 +69,9 @@ autocmd BufReadPost *
       \ |   exe "normal! g`\""
       \ | endif
 
+" set list when in insert mode
+autocmd InsertEnter,InsertLeave * set list!
+
 """""""""""""""""""
 " plugin settings "
 """""""""""""""""""
@@ -86,12 +87,11 @@ let g:netrw_keepdir      = 1
 nmap <silent> <F9> :Lexplore<CR>
 
 " remap cd to be global
-augroup NetrwGroup
-  autocmd!
-  autocmd filetype netrw call NetrwMapping()
+augroup NetrwGroup | autocmd!
+  autocmd filetype netrw call s:NetrwMapping()
 augroup END
 
-function! NetrwMapping()
+function! s:NetrwMapping()
   nmap <buffer> <silent> <nowait> <LocalLeader>cd  :execute "cd ".b:netrw_curdir<CR>:pwd<CR>
 endfunction
 
@@ -138,7 +138,7 @@ nnoremap <Leader>m :Maps<CR>
 nnoremap <Leader>t :Tags<CR>
 
 """""""""""""""""""
-" lion 
+" lion
 let g:lion_squeeze_spaces = 1
 
 """""""""""""""""""
@@ -148,6 +148,33 @@ map <Leader><Leader>. <Plug>(easymotion-repeat)
 """""""""""""""""""
 " vinegar
 noremap - k^
+
+"""""""""""""""""""
+" lspconfig
+lua <<EOF
+  vim.cmd('packadd nvim-lspconfig')
+  local nvim_lsp = require'nvim_lsp'
+  nvim_lsp.clangd.setup{
+        filetypes = { "c", "cpp", "objc", "objcpp" }
+  }
+EOF
+
+" use :setf + ctrl-d to see the list of filetypes
+augroup lspconfig | autocmd!
+  autocmd FileType c,cpp,objc,objcpp call s:lspconfig_mappings()
+augroup END
+
+function! s:lspconfig_mappings()
+  nnoremap <silent> <c-]> <cmd>lua vim.lsp.buf.definition()<CR>
+  nnoremap <silent> K     <cmd>lua vim.lsp.buf.hover()<CR>
+  nnoremap <silent> gD    <cmd>lua vim.lsp.buf.implementation()<CR>
+  nnoremap <silent> <c-k> <cmd>lua vim.lsp.buf.signature_help()<CR>
+  nnoremap <silent> 1gD   <cmd>lua vim.lsp.buf.type_definition()<CR>
+  nnoremap <silent> gr    <cmd>lua vim.lsp.buf.references()<CR>
+  nnoremap <silent> g0    <cmd>lua vim.lsp.buf.document_symbol()<CR>
+  nnoremap <silent> gW    <cmd>lua vim.lsp.buf.workspace_symbol()<CR>
+  nnoremap <silent> gd    <cmd>lua vim.lsp.buf.declaration()<CR>
+endfunction
 
 """"""""""""""""""
 " minpac plugins "
@@ -179,6 +206,7 @@ if exists('g:loaded_minpac')
   call minpac#add('chrisbra/colorizer',    {'name': 'vim-colorizer'})
   call minpac#add('itchyny/lightline.vim', {'name': 'vim-lightline'})
 
+  call minpac#add('neovim/nvim-lspconfig')
   call minpac#add('ajh17/VimCompletesMe', {'name': 'vim-vcm'})
 endif
 
