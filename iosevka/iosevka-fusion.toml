@@ -1,19 +1,43 @@
+# [buildPlans.iosevka-fusion]
+# family = "Iosevka Fusion"
+# design = [
+#           "ss08",
+#           "sp-fixed",
+#           "v-f-flat-hook-crossbar-at-x-height",
+#           "v-l-italic",
+#           "v-zero-long-dotted",
+#           "v-brace-curly",
+#           "v-ampersand-closed",
+#           "v-dollar-through",
+#           "v-percent-rings",
+#           "no-cv-ss"
+#          ]
+# italic = ["v-f-flat-hook-round-tailed-crossbar-at-x-height"]
+# hintParams = ["-a", "sss"]
+
 [buildPlans.iosevka-fusion]
 family = "Iosevka Fusion"
-design = [
-          "ss08",
-          "sp-fixed",
-          "v-f-flat-hook-crossbar-at-x-height",
-          "v-l-italic",
-          "v-zero-long-dotted",
-          "v-brace-curly",
-          "v-ampersand-closed",
-          "v-dollar-through",
-          "v-percent-rings",
-          "no-cv-ss"
-         ]
-italic = ["v-f-flat-hook-round-tailed-crossbar-at-x-height"]
-hintParams = ["-a", "sss"]
+spacing = "fixed"
+serifs = "sans"
+digit-form = "lining"
+
+[buildPlans.iosevka-fusion.variants]
+inherits = "ss08"
+
+[buildPlans.iosevka-fusion.variants.design]
+f = 'flat-hook-crossbar-at-x-height'
+l = 'italic'
+zero = 'long-dotted'
+brace = 'curly'
+ampersand = 'closed'
+dollar = 'through'
+percent = 'rings'
+
+[buildPlans.iosevka-fusion.variants.upright]
+
+
+[buildPlans.iosevka-fusion.variants.italic]
+f = 'flat-hook-round-tailed-crossbar-at-x-height'
 
 [buildPlans.iosevka-fusion.weights.light]
 shape = 300
