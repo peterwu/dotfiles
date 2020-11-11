@@ -1,20 +1,3 @@
-# [buildPlans.iosevka-fusion]
-# family = "Iosevka Fusion"
-# design = [
-#           "ss08",
-#           "sp-fixed",
-#           "v-f-flat-hook-crossbar-at-x-height",
-#           "v-l-italic",
-#           "v-zero-long-dotted",
-#           "v-brace-curly",
-#           "v-ampersand-closed",
-#           "v-dollar-through",
-#           "v-percent-rings",
-#           "no-cv-ss"
-#          ]
-# italic = ["v-f-flat-hook-round-tailed-crossbar-at-x-height"]
-# hintParams = ["-a", "sss"]
-
 [buildPlans.iosevka-fusion]
 family = "Iosevka Fusion"
 spacing = "fixed"
