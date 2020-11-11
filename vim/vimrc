@@ -1,66 +1,87 @@
-""""""""""""
-" defaults "
-""""""""""""
-set nocompatible encoding=utf-8 fileencoding=utf-8 nrformats-=octal
-set number relativenumber showcmd wildmenu lazyredraw showmatch ruler hidden
-set autoindent smartindent smarttab expandtab tabstop=2 shiftwidth=2 softtabstop=2
-set smartcase incsearch hlsearch ignorecase shortmess+=I title mouse=a laststatus=2
+" defaults
+source $VIMRUNTIME/defaults.vim
+
+" options
+set number relativenumber lazyredraw showmatch hidden
+set smartindent expandtab tabstop=2 shiftwidth=2 softtabstop=2
+set smartcase ignorecase shortmess+=I title mouse=a laststatus=2
+set noshowmode listchars=trail:·,tab:»·
 set cursorline termguicolors path+=**
+set viewoptions=folds,cursor
+set sessionoptions=folds
 
-filetype plugin indent on 
-syntax enable
+" colors
+if !has("gui_running")
+  packadd! vim-dracula
+  colorscheme dracula
+  highlight SpecialKey ctermfg=60 guifg=#ffffa5
+  highlight Whitespace ctermfg=60 guifg=#ffffa5
+endif
 
-colorscheme zellner
-highlight CursorLine   term=none cterm=none
-highlight CursorLineNr term=none cterm=none
+" key mappings
 
-""""""""""""""""
-" key mappings "
-""""""""""""""""
+" leaders
 let g:mapleader      = " "
 let g:maplocalleader = ","
 
-nnoremap <leader>cd  :cd %:p:h<cr>:pwd<cr>
-nnoremap <leader>ev  :e $MYVIMRC<cr>
-nnoremap <leader>sv  :source $MYVIMRC<cr>
-nnoremap <leader>pu  :PackUpdate<cr>
-nnoremap <leader>pc  :PackClean<cr>
-nnoremap <leader>ps  :PackStatus<cr>
+" vimrc
+nnoremap <silent> <Leader>cd :cd     %:p:h<CR>:pwd<CR>
+nnoremap <silent> <Leader>ev :edit   $MYVIMRC<CR>
+nnoremap <silent> <Leader>sv :source $MYVIMRC<CR>
 
-" Disable Arrow keys in Normal mode
-map <up>    <nop>
-map <down>  <nop>
-map <left>  <nop>
-map <right> <nop>
+" minpac
+nnoremap <silent> <Leader>pu :PackUpdate<CR>
+nnoremap <silent> <Leader>pc :PackClean<CR>
+nnoremap <silent> <Leader>ps :PackStatus<CR>
 
-" Disable Arrow keys in Insert mode
-imap <up>    <nop>
-imap <down>  <nop>
-imap <left>  <nop>
-imap <right> <nop>
+" disable arrow keys in normal mode
+map <Up>    <Nop>
+map <Down>  <Nop>
+map <Left>  <Nop>
+map <Right> <Nop>
 
-" " swap j/k <-> gj/gk
-" nnoremap j  gj
-" nnoremap k  gk
-" nnoremap gj j
-" nnoremap gk k
+" disable arrow keys in insert mode
+imap <Up>    <Nop>
+imap <Down>  <Nop>
+imap <Left>  <Nop>
+imap <Right> <Nop>
+
+" swap j/k <-> gj/gk
+nnoremap <expr> j (v:count? 'j' : 'gj')
+nnoremap <expr> k (v:count? 'k' : 'gk')
 
 " copy to clipboard
 nnoremap Y          y$
-vnoremap <leader>y  "+y
-nnoremap <leader>y  "+y
-nnoremap <leader>Y  "+y$
-nnoremap <leader>yy "+yy
+vnoremap <Leader>y  "+y
+nnoremap <Leader>y  "+y
+nnoremap <Leader>Y  "+y$
+nnoremap <Leader>yy "+yy
 
 " paste from clipboard
-nnoremap <leader>p "+p
-nnoremap <leader>P "+P
-vnoremap <leader>p "+p
-vnoremap <leader>P "+P
+nnoremap <Leader>p "+p
+nnoremap <Leader>P "+P
+vnoremap <Leader>p "+p
+vnoremap <Leader>P "+P
 
-"""""""""""""""""""
-" plugin settings "
-"""""""""""""""""""
+" use <C-L> to clear the highlighting of :set hlsearch.
+if maparg('<C-L>', 'n') ==# ''
+  nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
+endif
+
+" terminal
+" tnoremap <Esc> <C-\><C-N>
+nnoremap <silent> <Leader>o :below 10sp term://$SHELL<CR>i
+
+" initialization
+" set list when in insert mode
+autocmd InsertEnter,InsertLeave * set list!
+
+augroup AutoSaveFolds | autocmd!
+  autocmd BufWinLeave,BufLeave,BufWritePost ?* nested silent! mkview!
+  autocmd BufWinEnter ?* silent! loadview
+augroup END
+
+" plugin settings
 " netrw
 let g:netrw_dirhistmax   = 0
 let g:netrw_liststyle    = 3
@@ -68,55 +89,116 @@ let g:netrw_banner       = 0
 let g:netrw_browse_split = 4
 let g:netrw_winsize      = 25
 let g:netrw_list_hide    = '\(^\|\s\s\)\zs\.\S\+'
-let g:netrw_keepdir      = 0
+let g:netrw_keepdir      = 1
 
-map <f9> :Lexplore<cr>
+nmap <silent> <F9> :Lexplore<CR>
+
+" remap cd to be global
+augroup NetrwGroup | autocmd!
+  autocmd filetype netrw call s:NetrwMapping()
+augroup END
+
+function! s:NetrwMapping()
+  nmap <buffer> <silent> <nowait> <LocalLeader>cd  :execute "cd ".b:netrw_curdir<CR>:pwd<CR>
+endfunction
 
 " quick scope
 let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
 
-"""""""""""""""""""
 " lightline
-let g:lightline = { 'colorscheme': 'OldHope' }
+let g:lightline = {
+      \   'colorscheme': 'dracula',
+      \   'active': {
+      \     'left': [ [ 'mode', 'paste' ],
+      \               [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
+      \   },
+      \   'component_function': {
+      \     'gitbranch': 'FugitiveHead'
+      \   },
+      \ }
 
-"""""""""""""""""""
 " nnn
+let g:nnn#statusline           = 0
+let g:nnn#replace_netrw        = 0
 let g:nnn#set_default_mappings = 0
 let g:nnn#layout               = { 'window': { 'width': 0.9, 'height': 0.6, 'highlight': 'Debug' } }
 
-nnoremap <leader>n :NnnPicker '%:p:h'<cr>
+nnoremap <Leader>n :NnnPicker %:p:h<CR>
 
-"""""""""""""""""""
 " fzf
-nnoremap <leader>. :Files .<cr>
-nnoremap <leader>` :Files /<cr>
-nnoremap <leader>~ :Files $HOME<cr>
-nnoremap <leader>% :Files %:p:h<cr>
+nnoremap <Leader>. :Files .<CR>
+nnoremap <Leader>` :Files /<CR>
+nnoremap <Leader>~ :Files $HOME<CR>
+nnoremap <Leader>% :Files %:p:h<CR>
 
-nnoremap <leader>? :History<cr>
-nnoremap <leader>: :History:<cr>
-nnoremap <leader>/ :History/<cr>
+nnoremap <Leader>? :History<CR>
+nnoremap <Leader>: :History:<CR>
+nnoremap <Leader>/ :History/<CR>
 
-nnoremap <leader>b :Buffers<cr>
-nnoremap <leader>h :Helptags<cr>
-nnoremap <leader>m :Maps<cr>
+nnoremap <Leader>b :Buffers<CR>
+nnoremap <Leader>h :Helptags<CR>
+nnoremap <Leader>m :Maps<CR>
+nnoremap <Leader>t :Tags<CR>
 
-"""""""""""""""""""
-" lion 
+" lion
 let g:lion_squeeze_spaces = 1
 
-"""""""""""""""""""
 " easymotion
-map <leader> <plug>(easymotion-prefix)
+map <Leader><Leader>. <Plug>(easymotion-repeat)
 
-"""""""""""""""""""
 " vinegar
 noremap - k^
 
-""""""""""""""""""
-" minpac plugins "
-""""""""""""""""""
-if exists('*minpac#init')
+" lsp
+augroup lsp_clangd | autocmd!
+  autocmd User lsp_setup call lsp#register_server({
+                    \ 'name': 'clangd',
+                    \ 'cmd': {server_info->['clangd']},
+                    \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp'],
+                    \ })
+augroup END
+
+function! s:on_lsp_buffer_enabled() abort
+    let b:vcm_tab_complete = "omni"
+    setlocal omnifunc=lsp#complete
+    setlocal signcolumn=yes
+    if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
+
+    call s:lsp_mappings()
+endfunction
+
+augroup lsp_install | autocmd!
+    " call s:on_lsp_buffer_enabled only for languages that has the server registered.
+    autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+augroup END
+
+function! s:lsp_mappings()
+  nmap <buffer> gd <plug>(lsp-definition)
+  nmap <buffer> gr <plug>(lsp-references)
+  nmap <buffer> gi <plug>(lsp-implementation)
+  nmap <buffer> gt <plug>(lsp-type-definition)
+  nmap <buffer> <leader>rn <plug>(lsp-rename)
+  nmap <buffer> [g <plug>(lsp-previous-diagnostic)
+  nmap <buffer> ]g <plug>(lsp-next-diagnostic)
+  nmap <buffer> K <plug>(lsp-hover)
+
+  " refer to doc to add more commands
+endfunction
+
+" ide setup
+" f5            : start debugging / continue
+" ctrl-f5       : run without debugging
+" shift-f5      : stop debugging
+" ctrl-shift-f5 : restart debugging
+" f7            : step into
+" f8            : step over
+" shift-f8      : step out
+
+" termdebug
+let g:termdebug_wide = 1
+
+" minpac plugins
+if exists('g:loaded_minpac')
   call minpac#init()
   call minpac#add('k-takata/minpac', {'type': 'opt'})
 
@@ -134,13 +216,17 @@ if exists('*minpac#init')
   call minpac#add('tpope/vim-fugitive')
   call minpac#add('tpope/vim-eunuch')
   call minpac#add('tpope/vim-vinegar')
-  call minpac#add('mattn/emmet-vim',    {'name': 'vim-emmet'})
-  call minpac#add('junegunn/fzf.vim',   {'name': 'vim-fzf'})
-  call minpac#add('mcchrish/nnn.vim',   {'name': 'vim-nnn'})
+  call minpac#add('mattn/emmet-vim',  {'name': 'vim-emmet'})
+  call minpac#add('junegunn/fzf.vim', {'name': 'vim-fzf'})
+  call minpac#add('mcchrish/nnn.vim', {'name': 'vim-nnn'})
 
+  call minpac#add('dracula/vim',           {'name': 'vim-dracula'})
   call minpac#add('sheerun/vim-polyglot')
   call minpac#add('chrisbra/colorizer',    {'name': 'vim-colorizer'})
   call minpac#add('itchyny/lightline.vim', {'name': 'vim-lightline'})
+
+  call minpac#add('prabirshrestha/vim-lsp')
+  call minpac#add('ajh17/VimCompletesMe', {'name': 'vim-vcm'})
 endif
 
 " Define user commands for updating/cleaning the plugins.
