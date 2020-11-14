@@ -17,6 +17,7 @@ setup:
 
 # Install patched fonts
 install:
+	[ -d  ~/.local/share/fonts/iosevka-fusion-fonts ] && rm -rf ~/.local/share/fonts/iosevka-fusion-fonts
 	mkdir -p ~/.local/share/fonts/iosevka-fusion-fonts/
 	cp -Rf ./build/dist/iosevka-fusion/ttf/*.ttf ~/.local/share/fonts/iosevka-fusion-fonts/
 	fc-cache -vf
