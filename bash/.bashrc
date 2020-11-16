@@ -45,7 +45,7 @@ show_bash_prompt() {
 
   # current time
   prompt+="\001\e[0;93m\002"
-  prompt+="[$(date +%R)]"
+  prompt+="$(date +%R)"
   prompt+=' '
 
   # current working directory
@@ -91,7 +91,7 @@ show_bash_prompt() {
   # change line + reset colors
   prompt+="\001\e[0m\002 "
 
-  echo -e "${prompt}"
+  printf "${prompt}"
 }
 
 PS1='`show_bash_prompt`'
