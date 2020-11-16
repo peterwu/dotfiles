@@ -46,10 +46,10 @@ show_bash_prompt() {
   # indicate the status of last executed command
   if [[ ${last_command_status} -eq 0 ]]; then
     # success -> GREEN
-    prompt="\001\e[1;92m\002*"
+    prompt="\001\e[1;92m\002✓"
   else
     # error -> RED
-    prompt="\001\e[1;91m\002!"
+    prompt="\001\e[1;91m\002✗"
   fi
   prompt+=' '
 
@@ -63,15 +63,15 @@ show_bash_prompt() {
   if [[ -n "${branch}" ]]; then
     if [[ -z $(git status --short) ]]; then
       # clean -> GREEN
-      prompt+="\001\e[4;32m\002${branch}"
+      prompt+="\001\e[1;32m\002⎇  ${branch}"
     else
       # modified -> RED
-      prompt+="\001\e[4;31m\002${branch}"
+      prompt+="\001\e[1;31m\002⎇  ${branch}"
     fi 
   fi
 
   # change line + reset colors
-  prompt+="\n\001\e[0m\002\$ "
+  prompt+="\n\001\e[0m\002λ "
 
   echo -e "${prompt}"
 }
