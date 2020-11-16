@@ -44,11 +44,13 @@ show_bash_prompt() {
   local prompt=''
 
   # current time
-  prompt+="\001\e[0;93m\002[$(date +%R)]"
+  prompt+="\001\e[0;93m\002"
+  prompt+="[$(date +%R)]"
   prompt+=' '
 
   # current working directory
-  prompt+="\001\e[1;34m\002$(dirs +0)"
+  prompt+="\001\e[1;34m\002"
+  prompt+="$(dirs +0)"
   prompt+=' '
 
   # show git branch and its status if in a git tree
@@ -57,11 +59,12 @@ show_bash_prompt() {
   if [[ -n "${branch}" ]]; then
     if [[ -z $(git status --short) ]]; then
       # clean -> GREEN
-      prompt+="\001\e[0;32m\002(${branch})"
+      prompt+="\001\e[0;32m\002"
     else
       # modified -> RED
-      prompt+="\001\e[0;31m\002(${branch})"
+      prompt+="\001\e[0;31m\002"
     fi 
+    prompt+="(${branch})"
   fi
 
   # change line
@@ -70,10 +73,19 @@ show_bash_prompt() {
   # change the prompt to indicate the status of last executed command
   if [[ ${last_command_status} -eq 0 ]]; then
     # success -> GREEN
-    prompt+="\001\e[1;92m\002λ"
+    prompt+="\001\e[1;92m\002"
   else
     # error -> RED
-    prompt+="\001\e[1;91m\002λ"
+    prompt+="\001\e[1;91m\002"
+  fi
+
+  # use appropriate prompt to reflect effective uid
+  if [[ $(id -u) -eq 0 ]]; then
+    # root
+    prompt+="Λ"
+  else
+    # non-root
+    prompt+="λ"
   fi
 
   # change line + reset colors
