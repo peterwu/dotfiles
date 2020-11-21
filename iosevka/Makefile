@@ -13,7 +13,7 @@ setup:
 	curl -L -O $(IOSEVKA_URL)
 	tar xzf v$(IOSEVKA_VERSION).tar.gz
 	mv Iosevka-$(IOSEVKA_VERSION) build
-	cd build/ && npm install --cache /tmp/$(IOSEVKA_VERSION)-npm-cache
+	cd build/ && npm install
 
 # Install patched fonts
 install:
