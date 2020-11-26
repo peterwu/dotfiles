@@ -7,6 +7,8 @@ serifs = "sans"
 inherits = "ss20"
 
 [buildPlans.iosevka-fusion.variants.design]
+capital-g = "toothless-rounded"
+
 f = "flat-hook-crossbar-at-x-height"
 g = "doublestorey"
 i = "hooky"
