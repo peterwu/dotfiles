@@ -1,46 +1,35 @@
 [buildPlans.iosevka-fusion]
-family     = "Iosevka Fusion"
-spacing    = "fixed"
-serifs     = "sans"
+family = "Iosevka Fusion"
+spacing = "fixed"
+serifs = "sans"
 
 [buildPlans.iosevka-fusion.variants]
-inherits = "ss08"
+inherits = "ss20"
 
 [buildPlans.iosevka-fusion.variants.design]
-zero      = 'long-dotted'
-brace     = 'curly'
-ampersand = 'closed'
-dollar    = 'through'
-percent   = 'rings'
+f = "flat-hook-crossbar-at-x-height"
+g = "doublestorey"
+i = "hooky"
+j = "flat-hook-serifed"
+l = "serifed-flat-tailed"
+t = "flat-hook"
 
-[buildPlans.iosevka-fusion.variants.upright]
-f = 'flat-hook-crossbar-at-x-height'
-i = 'hooky'
-j = 'flat-hook-serifed'
-l = 'serifed-flat-tailed'
-t = 'flat-hook'
+zero       = "long-dotted"
+six        = "closed-contour"
+nine       = "closed-contour"
+asterisk   = "low"
+underscore = "low"
 
 [buildPlans.iosevka-fusion.variants.italic]
-f = 'tailed-crossbar-at-x-height'
-i = 'serifed-tailed'
-j = 'serifed'
-l = 'serifed-tailed'
-t = 'standard'
-
-[buildPlans.iosevka-fusion.weights.light]
-shape = 300
-menu  = 300
-css   = 300
+f = "flat-hook-tailed-crossbar-at-x-height"
+i = "serifed-flat-tailed"
+k = "curly"
+y = "curly"
 
 [buildPlans.iosevka-fusion.weights.regular]
 shape = 400
 menu  = 400
 css   = 400
-
-[buildPlans.iosevka-fusion.weights.medium]
-shape = 500
-menu  = 500
-css   = 500
 
 [buildPlans.iosevka-fusion.weights.bold]
 shape = 700
