@@ -3,57 +3,22 @@
 
 My Emacs Init Settings
 
-* System Customization
-** Keep customizations made through the M-x customize function into its own file.
-#+BEGIN_SRC emacs-lisp
-(setq custom-file (locate-user-emacs-file "custom.el"))
-(load custom-file)
-#+END_SRC
 * Package Management 
   This section documents what packages that have been installed and configured.
-** Add melpa repo
-#+BEGIN_SRC emacs-lisp
-  (require 'package)
-  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-#+END_SRC
-** Personal scripts
-#+BEGIN_SRC emacs-lisp
-  (add-to-list 'load-path (expand-file-name "elisp" user-emacs-directory))
-#+END_SRC
-** Install =use-package= if not
-#+BEGIN_SRC emacs-lisp
-   (unless (package-installed-p 'use-package)
-     (package-refresh-contents)
-     (package-install 'use-package))
-   (eval-when-compile
-     (require 'use-package))
-   (setq use-package-always-ensure t)
-#+END_SRC
-** Keep installed packages up to date automatically
-#+BEGIN_SRC emacs-lisp
-  (use-package auto-package-update
-    :config
-    (setq auto-package-update-delete-old-versions t)
-    (setq auto-package-update-hide-results t)
-    (auto-package-update-maybe))
-#+END_SRC 
-** Install which-key
-#+BEGIN_SRC emacs-lisp
+** which-key
+#+BeGIN_SRC emacs-lisp
   (use-package which-key
     :init
     (which-key-mode))
-#+END_SRC
-** Theme
-#+BEGIN_SRC emacs-lisp
-  (use-package dracula-theme
-    :init
-    (setq dracula-enlarge-headings nil)
-    (setq dracula-alternate-mode-line-and-minibuffer t)
+#+EnD_SRC
+** theme
+#+BeGIN_SRC emacs-lisp
+  (use-package modus-operandi-theme
     :config
-    (load-theme 'dracula t))
-#+END_SRC
-** Ace-window
-#+BEGIN_SRC emacs-lisp
+    (load-theme 'modus-operandi t))
+#+EnD_SRC
+** ace-window
+#+BeGIN_SRC emacs-lisp
   (use-package ace-window
     :bind
     ([remap other-window] . ace-window)
@@ -61,16 +26,16 @@ My Emacs Init Settings
     (set-face-attribute 'aw-leading-char-face nil
 			:height 3.0
 			:box t))
-#+END_SRC
-** Evil and related packages
+#+EnD_SRC
+** evil and related packages
 Simulate a Vim modal editing experience
-#+BEGIN_SRC emacs-lisp
+#+BeGIN_SRC emacs-lisp
   (use-package evil
     :init
     (setq evil-want-integration t)
     (setq evil-want-keybinding nil)
     (fset 'evil-visual-update-x-selection 'ignore)
-    (setq x-select-enable-clipboard nil)
+    ;; (setq x-select-enable-clipboard nil)
     :config
     (evil-mode 1)
     (setq evil-mode-line-format '(after . mode-line-front-space)))
@@ -129,9 +94,9 @@ Simulate a Vim modal editing experience
   (use-package evil-lion
     :config
     (evil-lion-mode))
-#+END_SRC
-** Magit for Git
-#+BEGIN_SRC emacs-lisp
+#+EnD_SRC
+** magit for Git
+#+BeGIN_SRC emacs-lisp
   (use-package magit
     :bind ("C-x g" . magit-status))
   
@@ -142,25 +107,25 @@ Simulate a Vim modal editing experience
     :after evil magit
     :config
     (setq evil-magit-state 'normal))
-#+END_SRC
-** Sudo-edit
-#+BEGIN_SRC emacs-lisp
+#+EnD_SRC
+** sudo-edit
+#+BeGIN_SRC emacs-lisp
   (use-package sudo-edit
     :bind ("s-e" . sudo-edit))
-#+END_SRC
-** Rainbow
-#+BEGIN_SRC emacs-lisp
+#+EnD_SRC
+** rainbow
+#+BeGIN_SRC emacs-lisp
   (use-package rainbow-mode
     :hook prog-mode)
-#+END_SRC
-#+BEGIN_SRC emacs-lisp
+#+EnD_SRC
+#+BeGIN_SRC emacs-lisp
   (use-package rainbow-delimiters
     :config
     (rainbow-delimiters-mode 1))
-#+END_SRC
-** Org mode
+#+EnD_SRC
+** org mode
 *** stock org-mode
-#+BEGIN_SRC emacs-lisp
+#+BeGIN_SRC emacs-lisp
   (use-package org
     :init
     (setq org-hide-emphasis-markers t)
@@ -187,9 +152,9 @@ Simulate a Vim modal editing experience
     ;;  '(org-level-3 ((t (:inherit outline-3 :height 1.0))))
     ;;  '(org-level-4 ((t (:inherit outline-4 :height 1.0))))
     ;;  '(org-level-5 ((t (:inherit outline-5 :height 1.0))))))
-#+END_SRC
+#+EnD_SRC
 *** org-superstar
-#+BEGIN_SRC emacs-lisp
+#+BeGIN_SRC emacs-lisp
   (use-package org-superstar
     :hook (org-mode . org-superstar-mode)
     :config
@@ -197,23 +162,23 @@ Simulate a Vim modal editing experience
     ;; (setq org-superstar-headline-bullets-list '("✸" "✿" "✤" "✜" "◆" "▶")
 	  org-superstar-prettify-item-bullets t
 	  org-superstar-leading-bullet ?\s))
-#+END_SRC
-** Company for auto completion
-#+BEGIN_SRC emacs-lisp
+#+EnD_SRC
+** company for auto completion
+#+BeGIN_SRC emacs-lisp
   (use-package company
     :config
     (setq company-idle-delay 0
 	  company-minimum-prefix-length 3)
     (global-company-mode t))
-#+END_SRC
-** Search
+#+EnD_SRC
+** search
 *** Avy
     #+BEGIN_SRC emacs-lisp
       (use-package avy
 	:bind ("M-s" . avy-goto-char))
     #+END_SRC
 *** Ivy
- #+BEGIN_SRC emacs-lisp
+ #+bEGIN_SRC emacs-lisp
    (use-package ivy
      :init (ivy-mode 1)
      :bind (("C-c C-r" . ivy-resume)
@@ -221,47 +186,47 @@ Simulate a Vim modal editing experience
      :config
      (setq ivy-use-virtual-buffers t)
      (setq enable-recursive-minibuffers t))
- #+END_SRC
+ #+eND_SRC
 *** Swiper
     #+BEGIN_SRC emacs-lisp
       (use-package swiper
 	:bind ("C-s" . swiper))
     #+END_SRC
 *** Counsel
- #+BEGIN_SRC emacs-lisp
+ #+bEGIN_SRC emacs-lisp
    (use-package counsel
      :bind
      (("C-x C-f" . counsel-find-file)
       ("<f1> u" . counsel-unicode-char)))
- #+END_SRC
-** Treemacs
-#+BEGIN_SRC emacs-lisp
+ #+eND_SRC
+** treemacs
+#+BeGIN_SRC emacs-lisp
   (use-package treemacs
     :defer t
     :bind
     (([f9] . treemacs)
      ("M-0" . treemacs-select-window)))
-#+END_SRC
+#+EnD_SRC
 *** Evil support
-#+BEGIN_SRC emacs-lisp
+#+BeGIN_SRC emacs-lisp
   (use-package treemacs-evil
     :after treemacs evil)
-#+END_SRC
+#+EnD_SRC
 *** Use pretty icons
-#+BEGIN_SRC emacs-lisp
+#+BeGIN_SRC emacs-lisp
   (use-package treemacs-icons-dired
     :after treemacs dired
     :config (treemacs-icons-dired-mode))
-#+END_SRC
-** Yasnippets
- #+BEGIN_SRC emacs-lisp
+#+EnD_SRC
+** yasnippets
+ #+bEGIN_SRC emacs-lisp
    (use-package yasnippet
      :config
      (use-package yasnippet-snippets)
      (yas-global-mode 1))
- #+END_SRC
-** LSP
-#+BEGIN_SRC emacs-lisp
+ #+eND_SRC
+** lsp
+#+BeGIN_SRC emacs-lisp
   ;; (use-package lsp-mode
   ;;   :hook ((c-mode c++-mode objc-mode go-mode rust-mode) . lsp)
   ;;   :commands lsp)
@@ -270,14 +235,14 @@ Simulate a Vim modal editing experience
   ;; (use-package lsp-ui :commands lsp-ui-mode)
   ;; (use-package company-lsp :commands company-lsp)
   ;; (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
-#+END_SRC
-** Various modes for programming languages and file types
-#+BEGIN_SRC emacs-lisp
+#+EnD_SRC
+** various modes for programming languages and file types
+#+BeGIN_SRC emacs-lisp
   (use-package cmake-mode)
   (use-package go-mode)
   (use-package rust-mode)
-#+END_SRC
-** Misc.
+#+EnD_SRC
+** misc.
 #+BEGIN_SRC emacs-lisp
   
 #+END_SRC
@@ -393,19 +358,8 @@ Simulate a Vim modal editing experience
 #+BEGIN_SRC emacs-lisp
   ;; default face
   (set-face-attribute 'default nil
-		      :family "JetBrains Mono"
-		      ;; :weight 'semi-light
-		      ;; :width 'semi-condensed
+		      :family "Iosevka Fusion"
 		      :height 130)
-
-  ;; for glyphs
-  (if (daemonp)
-      ;; when using emacs --daemon + emacsclient
-      (add-hook 'after-make-frame-functions
-		(lambda (frame)
-		  (set-fontset-font t '(#XF0000 . #XF14FF) "Material Design Icons Desktop" nil 'append)))
-    ;; when using emacs without server/client
-    (set-fontset-font t '(#xF0000 . #xF14FF) "Material Design Icons Desktop" nil 'append))
 
   (add-hook 'display-line-numbers-mode-hook
 	    (lambda ()
@@ -455,20 +409,15 @@ Simulate a Vim modal editing experience
     (setq telephone-line-height 24
 	  telephone-line-evil-use-short-tag nil)
 
-    ;; (setq telephone-line-primary-left-separator 'telephone-line-cubed-left
-    ;; 	telephone-line-secondary-left-separator 'telephone-line-cubed-hollow-left
-    ;; 	telephone-line-primary-right-separator 'telephone-line-cubed-right
-    ;; 	telephone-line-secondary-right-separator 'telephone-line-cubed-hollow-right)
-
-    (setq telephone-line-primary-left-separator 'telephone-line-gradient
+    (setq telephone-line-primary-left-separator 'telephone-line-flat
 	  telephone-line-secondary-left-separator 'telephone-line-nil
-	  telephone-line-primary-right-separator 'telephone-line-gradient
+	  telephone-line-primary-right-separator 'telephone-line-flat
 	  telephone-line-secondary-right-separator 'telephone-line-nil)
 
-    (face-spec-set
-     'telephone-line-evil-normal
-     '((t :background "#3a3a3a"))
-     'face-override-spec)
+    ;; (face-spec-set
+    ;;  'telephone-line-evil-normal
+    ;;  '((t :background "#6E46A4"))
+    ;;  'face-override-spec)
 
     :config
     (telephone-line-mode t))

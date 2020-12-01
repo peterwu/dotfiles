@@ -17,6 +17,9 @@ set -o vi
 alias se='sudoedit'
 alias vi='vim'
 
+alias emacs='emacsclient --tty --quiet'
+alias e='emacs'
+
 alias ls='ls --color' # use colors
 alias la='ls -Flsa'   # list all files
 alias ll='ls -Fls'    # long listing format
@@ -48,8 +51,16 @@ show_bash_prompt() {
   prompt+="$(date +%R)"
   prompt+=' '
 
-  # current working directory
-  prompt+="\001\e[1;34m\002"
+  # user@host:pwd
+  prompt+="\001\e[0;95m\002"
+  prompt+="$(whoami)"
+  prompt+="\001\e[0;90m\002"
+  prompt+="@"
+  prompt+="\001\e[0;96m\002"
+  prompt+="$(hostname)"
+  prompt+="\001\e[0;90m\002"
+  prompt+=':'
+  prompt+="\001\e[1;94m\002"
   prompt+="$(dirs +0)"
   prompt+=' '
 
@@ -64,7 +75,7 @@ show_bash_prompt() {
       # modified -> RED
       prompt+="\001\e[0;31m\002"
     fi 
-    prompt+="(${branch})"
+    prompt+="${branch}"
   fi
 
   # change line

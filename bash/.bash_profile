@@ -27,11 +27,11 @@ export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border --multi --color=
 export FZF_ALT_C_OPTS='--preview "tree -C {} | head -100"'
 
 # go
-export GOPATH=$HOME/.local/share/go
-export PATH=$PATH:$GOPATH/bin
+# export GOPATH=$HOME/.local/share/go
+# export PATH=$PATH:$GOPATH/bin
 
 # rust
-export CARGO_HOME=$HOME/.local/share/cargo
-export RUSTUP_HOME=$HOME/.local/share/rustup
-export PATH=$PATH:$CARGO_HOME/bin
+# export CARGO_HOME=$HOME/.local/share/cargo
+# export RUSTUP_HOME=$HOME/.local/share/rustup
+# export PATH=$PATH:$CARGO_HOME/bin
 

@@ -2,21 +2,17 @@
 source $VIMRUNTIME/defaults.vim
 
 " options
-set number relativenumber lazyredraw showmatch hidden
+set number relativenumber lazyredraw showmatch hidden hlsearch
 set smartindent expandtab tabstop=2 shiftwidth=2 softtabstop=2
 set smartcase ignorecase shortmess+=I title mouse=a laststatus=2
 set noshowmode listchars=trail:·,tab:»·
 set cursorline termguicolors path+=**
 set viewoptions=folds,cursor
 set sessionoptions=folds
+set viminfo+=n~/.vim/cache/viminfo
 
-" colors
-if !has("gui_running")
-  packadd! vim-dracula
-  colorscheme dracula
-  highlight SpecialKey ctermfg=60 guifg=#ffffa5
-  highlight Whitespace ctermfg=60 guifg=#ffffa5
-endif
+highlight CursorLine   cterm=NONE ctermbg=NONE ctermfg=NONE
+highlight CursorLineNr cterm=NONE ctermbg=NONE ctermfg=NONE
 
 " key mappings
 
@@ -107,7 +103,7 @@ let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
 
 " lightline
 let g:lightline = {
-      \   'colorscheme': 'dracula',
+      \   'colorscheme': 'solarized',
       \   'active': {
       \     'left': [ [ 'mode', 'paste' ],
       \               [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
@@ -150,6 +146,8 @@ map <Leader><Leader>. <Plug>(easymotion-repeat)
 noremap - k^
 
 " lsp
+let g:lsp_diagnostics_echo_cursor = 1
+
 augroup lsp_clangd | autocmd!
   autocmd User lsp_setup call lsp#register_server({
                     \ 'name': 'clangd',
@@ -220,7 +218,6 @@ if exists('g:loaded_minpac')
   call minpac#add('junegunn/fzf.vim', {'name': 'vim-fzf'})
   call minpac#add('mcchrish/nnn.vim', {'name': 'vim-nnn'})
 
-  call minpac#add('dracula/vim',           {'name': 'vim-dracula'})
   call minpac#add('sheerun/vim-polyglot')
   call minpac#add('chrisbra/colorizer',    {'name': 'vim-colorizer'})
   call minpac#add('itchyny/lightline.vim', {'name': 'vim-lightline'})
