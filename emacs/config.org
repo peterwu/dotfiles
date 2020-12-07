@@ -1,35 +1,35 @@
 # -*- coding: utf-8 -*-
 #+STARTUP: overview
 
-My Emacs Init Settings
+My Emacs Settings
 
 * Package Management 
   This section documents what packages that have been installed and configured.
 ** which-key
-#+BeGIN_SRC emacs-lisp
-  (use-package which-key
-    :init
-    (which-key-mode))
-#+EnD_SRC
+   #+BEGIN_SRC emacs-lisp
+     (use-package which-key
+       :init
+       (which-key-mode))
+   #+END_SRC
 ** theme
-#+BeGIN_SRC emacs-lisp
-  (use-package modus-operandi-theme
-    :config
-    (load-theme 'modus-operandi t))
-#+EnD_SRC
+   #+BEGIN_SRC emacs-lisp
+     (use-package modus-themes
+       :config
+       (load-theme 'modus-operandi t))
+   #+END_SRC
 ** ace-window
-#+BeGIN_SRC emacs-lisp
-  (use-package ace-window
-    :bind
-    ([remap other-window] . ace-window)
-    :config
-    (set-face-attribute 'aw-leading-char-face nil
-			:height 3.0
-			:box t))
-#+EnD_SRC
+   #+BEGIN_SRC emacs-lisp
+     (use-package ace-window
+       :bind
+       ([remap other-window] . ace-window)
+       :config
+       (set-face-attribute 'aw-leading-char-face nil
+			   :height 3.0
+			   :box t))
+   #+END_SRC
 ** evil and related packages
 Simulate a Vim modal editing experience
-#+BeGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
   (use-package evil
     :init
     (setq evil-want-integration t)
@@ -68,10 +68,6 @@ Simulate a Vim modal editing experience
     :config
     (global-evil-quickscope-mode t))
 
-  (use-package evil-mc
-    :config
-    (global-evil-mc-mode 1))
-
   (use-package evil-numbers
     :config
     (define-key evil-normal-state-map (kbd "C-c +") 'evil-numbers/inc-at-pt)
@@ -88,44 +84,40 @@ Simulate a Vim modal editing experience
     (define-key evil-normal-state-map "H" 'evil-backward-arg)
     (define-key evil-motion-state-map "L" 'evil-forward-arg)
     (define-key evil-motion-state-map "H" 'evil-backward-arg)
+
     ;; bind evil-jump-out-args
     (define-key evil-normal-state-map "K" 'evil-jump-out-args))
 
   (use-package evil-lion
     :config
     (evil-lion-mode))
-#+EnD_SRC
-** magit for Git
-#+BeGIN_SRC emacs-lisp
+
+  (use-package evil-exchange
+    :config
+    (evil-exchange-install))
+#+END_SRC
+** magit
+#+BEGIN_SRC emacs-lisp
   (use-package magit
     :bind ("C-x g" . magit-status))
-  
-    ;; :config
-    ;; (global-set-key (kbd "C-x g") 'magit-status))
-
-  (use-package evil-magit
-    :after evil magit
-    :config
-    (setq evil-magit-state 'normal))
-#+EnD_SRC
+#+END_SRC
 ** sudo-edit
-#+BeGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
   (use-package sudo-edit
     :bind ("s-e" . sudo-edit))
-#+EnD_SRC
+#+END_SRC
 ** rainbow
-#+BeGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
   (use-package rainbow-mode
     :hook prog-mode)
-#+EnD_SRC
-#+BeGIN_SRC emacs-lisp
+
   (use-package rainbow-delimiters
     :config
     (rainbow-delimiters-mode 1))
-#+EnD_SRC
+#+END_SRC
 ** org mode
 *** stock org-mode
-#+BeGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
   (use-package org
     :init
     (setq org-hide-emphasis-markers t)
@@ -145,32 +137,24 @@ Simulate a Vim modal editing experience
 	   ("C-c a" . org-agenda)
 	   ("C-c c" . org-capture)
 	   ("C-c b" . org-switchb)))
-    ;; :config
-    ;; (custom-set-faces
-    ;;  '(org-level-1 ((t (:inherit outline-1 :height 1.0))))
-    ;;  '(org-level-2 ((t (:inherit outline-2 :height 1.0))))
-    ;;  '(org-level-3 ((t (:inherit outline-3 :height 1.0))))
-    ;;  '(org-level-4 ((t (:inherit outline-4 :height 1.0))))
-    ;;  '(org-level-5 ((t (:inherit outline-5 :height 1.0))))))
-#+EnD_SRC
+#+END_SRC
 *** org-superstar
-#+BeGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
   (use-package org-superstar
     :hook (org-mode . org-superstar-mode)
     :config
-    (setq org-superstar-headline-bullets-list '("◉" "○" "✸" "✿" "✤" "✜" "◆" "▶")
-    ;; (setq org-superstar-headline-bullets-list '("✸" "✿" "✤" "✜" "◆" "▶")
+    (setq org-superstar-headline-bullets-list '("◉" "✸" "▷" "◆" "○" "▶")
 	  org-superstar-prettify-item-bullets t
 	  org-superstar-leading-bullet ?\s))
-#+EnD_SRC
-** company for auto completion
-#+BeGIN_SRC emacs-lisp
+#+END_SRC
+** company
+#+BEGIN_SRC emacs-lisp
   (use-package company
     :config
     (setq company-idle-delay 0
 	  company-minimum-prefix-length 3)
     (global-company-mode t))
-#+EnD_SRC
+#+END_SRC
 ** search
 *** Avy
     #+BEGIN_SRC emacs-lisp
@@ -178,70 +162,80 @@ Simulate a Vim modal editing experience
 	:bind ("M-s" . avy-goto-char))
     #+END_SRC
 *** Ivy
- #+bEGIN_SRC emacs-lisp
-   (use-package ivy
-     :init (ivy-mode 1)
-     :bind (("C-c C-r" . ivy-resume)
-	    ("<f6>" . ivy-resume))
-     :config
-     (setq ivy-use-virtual-buffers t)
-     (setq enable-recursive-minibuffers t))
- #+eND_SRC
+    #+BEGIN_SRC emacs-lisp
+      (use-package ivy
+	:init (ivy-mode 1)
+	:bind (("C-c C-r" . ivy-resume)
+	       ("<f6>" . ivy-resume))
+	:config
+	(setq ivy-use-virtual-buffers t)
+	(setq enable-recursive-minibuffers t))
+    #+END_SRC
 *** Swiper
     #+BEGIN_SRC emacs-lisp
       (use-package swiper
 	:bind ("C-s" . swiper))
     #+END_SRC
 *** Counsel
- #+bEGIN_SRC emacs-lisp
-   (use-package counsel
-     :bind
-     (("C-x C-f" . counsel-find-file)
-      ("<f1> u" . counsel-unicode-char)))
- #+eND_SRC
+    #+BEGIN_SRC emacs-lisp
+      (use-package counsel
+	:bind
+	(("C-x C-f" . counsel-find-file)
+	 ("<f1> u" . counsel-unicode-char)))
+    #+END_SRC
 ** treemacs
-#+BeGIN_SRC emacs-lisp
-  (use-package treemacs
-    :defer t
-    :bind
-    (([f9] . treemacs)
-     ("M-0" . treemacs-select-window)))
-#+EnD_SRC
+   #+BEGIN_SRC emacs-lisp
+     (use-package treemacs
+       :defer t
+       :bind
+       (([f9] . treemacs)
+	("M-0" . treemacs-select-window)))
+#+END_SRC
 *** Evil support
-#+BeGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
   (use-package treemacs-evil
     :after treemacs evil)
-#+EnD_SRC
+#+END_SRC
 *** Use pretty icons
-#+BeGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
   (use-package treemacs-icons-dired
     :after treemacs dired
     :config (treemacs-icons-dired-mode))
-#+EnD_SRC
+#+END_SRC
 ** yasnippets
- #+bEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
    (use-package yasnippet
      :config
      (use-package yasnippet-snippets)
      (yas-global-mode 1))
- #+eND_SRC
+#+END_SRC
+** flycheck
+#+BEGIN_SRC emacs-lisp
+  (use-package flycheck
+    :init (global-flycheck-mode))
+#+END_SRC
 ** lsp
-#+BeGIN_SRC emacs-lisp
-  ;; (use-package lsp-mode
-  ;;   :hook ((c-mode c++-mode objc-mode go-mode rust-mode) . lsp)
-  ;;   :commands lsp)
+#+BEGIN_SRC emacs-lisp
+  (use-package lsp-mode
+    :hook ((c-mode . lsp)
+	   (c++-mode . lsp)
+	   (objc-mode . lsp)
+	   (go-mode . lsp)
+	   (rust-mode . lsp)
+	   (lsp-mode . lsp-enable-which-key-integration))
+    :commands lsp)
 
   ;; optionally
-  ;; (use-package lsp-ui :commands lsp-ui-mode)
-  ;; (use-package company-lsp :commands company-lsp)
-  ;; (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
-#+EnD_SRC
+  (use-package lsp-ui :commands lsp-ui-mode)
+  (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+  (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+#+END_SRC
 ** various modes for programming languages and file types
-#+BeGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
   (use-package cmake-mode)
   (use-package go-mode)
   (use-package rust-mode)
-#+EnD_SRC
+#+END_SRC
 ** misc.
 #+BEGIN_SRC emacs-lisp
   
@@ -252,6 +246,7 @@ Simulate a Vim modal editing experience
   (set-language-environment "utf-8")
   (setq inhibit-startup-screen t
 	inhibit-startup-echo-area-message t
+	initial-major-mode 'org-mode
 	initial-scratch-message nil)
   (setq backup-inhibited t
 	make-backup-files nil
@@ -271,6 +266,7 @@ Simulate a Vim modal editing experience
 	visible-cursor nil)
   (setq default-input-method "pyim")
   (when (eq system-type 'windows-nt)
+    (setq w32-get-true-file-attributes nil)
     (setq inhibit-compacting-font-caches t)) 
   (setq frame-title-format
 	  '(buffer-file-name "%f"
@@ -292,84 +288,14 @@ Simulate a Vim modal editing experience
   (global-display-line-numbers-mode t)
   (blink-cursor-mode t)
   (save-place-mode t)
-
-  ;; disable some modes
-  (display-battery-mode 0)
-  (display-time-mode 0)
-  (menu-bar-mode 0)
-  (scroll-bar-mode 0)
-  (tool-bar-mode 0)
-
-  ;; (dolist (hook '(text-mode-hook))
-  ;;   (add-hook hook (lambda () (flyspell-mode 1))))
-  ;; (dolist (hook '(change-log-mode-hook log-edit-mode-hook))
-  ;;   (add-hook hook (lambda () (flyspell-mode -1))))
-
-  ;; enable ligature support
-  ;; https://github.com/microsoft/cascadia-code/issues/153
-  ;; https://github.com/robbert-vdh/dotfiles/blob/master/user/emacs/.config/doom/config.org#ligatures
-  ;; https://github.com/seagle0128/.emacs.d/issues/245
-  (use-package composite
-    :ensure nil
-    :init
-    (defvar composition-ligature-table (make-char-table nil))
-    :hook
-    (((prog-mode conf-mode nxml-mode markdown-mode help-mode)
-      . (lambda () (setq-local composition-function-table composition-ligature-table))))
-    :config
-    ;; support ligatures, some toned down to prevent hang
-    (when (version<= "27.0" emacs-version)
-      (let ((alist
-	     '((33 . ".\\(?:\\(==\\|[!=]\\)[!=]?\\)")
-	       (35 . ".\\(?:\\(###?\\|_(\\|[(:=?[_{]\\)[#(:=?[_{]?\\)")
-	       (36 . ".\\(?:\\(>\\)>?\\)")
-	       (37 . ".\\(?:\\(%\\)%?\\)")
-	       (38 . ".\\(?:\\(&\\)&?\\)")
-	       (42 . ".\\(?:\\(\\*\\*\\|[*>]\\)[*>]?\\)")
-	       ;; (42 . ".\\(?:\\(\\*\\*\\|[*/>]\\).?\\)")
-	       (43 . ".\\(?:\\([>]\\)>?\\)")
-	       ;; (43 . ".\\(?:\\(\\+\\+\\|[+>]\\).?\\)")
-	       (45 . ".\\(?:\\(-[->]\\|<<\\|>>\\|[-<>|~]\\)[-<>|~]?\\)")
-	       ;; (46 . ".\\(?:\\(\\.[.<]\\|[-.=]\\)[-.<=]?\\)")
-	       (46 . ".\\(?:\\(\\.<\\|[-=]\\)[-<=]?\\)")
-	       (47 . ".\\(?:\\(//\\|==\\|[=>]\\)[/=>]?\\)")
-	       ;; (47 . ".\\(?:\\(//\\|==\\|[*/=>]\\).?\\)")
-	       (48 . ".\\(?:\\(x[a-fA-F0-9]\\).?\\)")
-	       (58 . ".\\(?:\\(::\\|[:<=>]\\)[:<=>]?\\)")
-	       (59 . ".\\(?:\\(;\\);?\\)")
-	       (60 . ".\\(?:\\(!--\\|\\$>\\|\\*>\\|\\+>\\|-[-<>|]\\|/>\\|<[-<=]\\|=[<>|]\\|==>?\\||>\\||||?\\|~[>~]\\|[$*+/:<=>|~-]\\)[$*+/:<=>|~-]?\\)")
-	       (61 . ".\\(?:\\(!=\\|/=\\|:=\\|<<\\|=[=>]\\|>>\\|[=>]\\)[=<>]?\\)")
-	       (62 . ".\\(?:\\(->\\|=>\\|>[-=>]\\|[-:=>]\\)[-:=>]?\\)")
-	       (63 . ".\\(?:\\([.:=?]\\)[.:=?]?\\)")
-	       (91 . ".\\(?:\\(|\\)[]|]?\\)")
-	       ;; (92 . ".\\(?:\\([\\n]\\)[\\]?\\)")
-	       (94 . ".\\(?:\\(=\\)=?\\)")
-	       (95 . ".\\(?:\\(|_\\|[_]\\)_?\\)")
-	       (119 . ".\\(?:\\(ww\\)w?\\)")
-	       (123 . ".\\(?:\\(|\\)[|}]?\\)")
-	       (124 . ".\\(?:\\(->\\|=>\\||[-=>]\\||||*>\\|[]=>|}-]\\).?\\)")
-	       (126 . ".\\(?:\\(~>\\|[-=>@~]\\)[-=>@~]?\\)"))))
-	(dolist (char-regexp alist)
-	  (set-char-table-range composition-ligature-table (car char-regexp)
-				`([,(cdr char-regexp) 0 font-shape-gstring]))))
-      (set-char-table-parent composition-ligature-table composition-function-table)))
 #+END_SRC
 ** Faces
 #+BEGIN_SRC emacs-lisp
   ;; default face
   (set-face-attribute 'default nil
 		      :family "Iosevka Fusion"
+		      :foundry "outline"
 		      :height 130)
-
-  (add-hook 'display-line-numbers-mode-hook
-	    (lambda ()
-	      (set-face-attribute 'line-number nil
-				  :weight 'normal)
-	      (set-face-attribute 'line-number-current-line nil
-				  :foreground (face-attribute 'cursor :background)
-				  :weight 'bold
-				  :slant 'normal)))
-
 #+END_SRC
 ** Key bindings
 #+BEGIN_SRC emacs-lisp
@@ -424,6 +350,5 @@ Simulate a Vim modal editing experience
 #+END_SRC
 ** EShell prompt
 #+BEGIN_SRC emacs-lisp
-  ;; (setq eshell-prompt-function 'ixl/eshell-prompt)
   (setq eshell-highlight-prompt nil)
 #+END_SRC
