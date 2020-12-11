@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #+STARTUP: overview
 
-My Emacs Settings
+My Emacs Configuration
 
 * Package Management 
   This section documents what packages that have been installed and configured.
@@ -13,9 +13,7 @@ My Emacs Settings
    #+END_SRC
 ** theme
    #+BEGIN_SRC emacs-lisp
-     (use-package modus-themes
-       :config
-       (load-theme 'modus-operandi t))
+   (load-theme 'modus-operandi t)
    #+END_SRC
 ** ace-window
    #+BEGIN_SRC emacs-lisp
@@ -302,36 +300,17 @@ Simulate a Vim modal editing experience
   (global-set-key (kbd "C-~") 'eshell)
   (global-set-key (kbd "C-x C-b") 'ibuffer)
 
-  ;; (add-hook 'after-change-major-mode-hook
-  ;; 	  (lambda ()
-  ;; 	    (local-set-key [mouse-3] (mouse-menu-bar-map))))
-
-  ;; toggles
-  ;; (defhydra my/hydra-toggles (global-map "C-x t" :hint nil)
-  ;;   "toggle"
-  ;;   ("M" toggle-menu-bar-mode-from-frame "menubar")
-  ;;   ("T" toggle-tool-bar-mode-from-frame "toolbar")
-  ;;   ("n" global-display-line-numbers-mode "line numbers")
-  ;;   ("b" display-battery-mode "battery")
-  ;;   ("t" display-time-mode "time"))
+  ;;;; Mouse scrolling in terminal emacs
+  (unless (display-graphic-p)
+    ;; activate mouse-based scrolling
+    (xterm-mouse-mode 1)
+    (global-set-key (kbd "<mouse-4>") 'scroll-down-line)
+    (global-set-key (kbd "<mouse-5>") 'scroll-up-line))
 #+END_SRC
 ** Mode line
 #+BEGIN_SRC emacs-lisp
   (use-package telephone-line
     :init
-
-    (setq telephone-line-lhs
-	  '((evil   . (telephone-line-evil-tag-segment))
-	    (accent . (telephone-line-vc-segment
-		       telephone-line-erc-modified-channels-segment
-		       telephone-line-process-segment))
-	    (nil    . (telephone-line-buffer-segment))))
-
-    (setq telephone-line-rhs
-	  '((nil    . (telephone-line-misc-info-segment))
-	    (accent . (telephone-line-major-mode-segment))
-	    (evil   . (telephone-line-airline-position-segment))))
-
     (setq telephone-line-height 24
 	  telephone-line-evil-use-short-tag nil)
 
@@ -339,12 +318,6 @@ Simulate a Vim modal editing experience
 	  telephone-line-secondary-left-separator 'telephone-line-nil
 	  telephone-line-primary-right-separator 'telephone-line-flat
 	  telephone-line-secondary-right-separator 'telephone-line-nil)
-
-    ;; (face-spec-set
-    ;;  'telephone-line-evil-normal
-    ;;  '((t :background "#6E46A4"))
-    ;;  'face-override-spec)
-
     :config
     (telephone-line-mode t))
 #+END_SRC

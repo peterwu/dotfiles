@@ -20,8 +20,9 @@
 (display-battery-mode 0)
 (display-time-mode 0)
 (menu-bar-mode 0)
-(scroll-bar-mode 0)
-(tool-bar-mode 0)
+(when (display-graphic-p)
+  (scroll-bar-mode 0)
+  (tool-bar-mode 0))
 
 ;; move state files off to .cache folder
 (setq save-place-file (expand-file-name ".cache/places" user-emacs-directory)
