@@ -1,4 +1,4 @@
-;; init.el --- Initialization file for Emacs
+;;; init.el --- Initialization file for Emacs
 
 (add-hook 'emacs-startup-hook
 	  (lambda ()
@@ -37,3 +37,6 @@
 (require 'org)
 (org-babel-load-file
  (expand-file-name "config.org" user-emacs-directory))
+
+(provide 'init)
+;;; init.el ends here

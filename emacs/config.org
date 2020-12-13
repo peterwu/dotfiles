@@ -13,7 +13,8 @@ My Emacs Configuration
    #+END_SRC
 ** theme
    #+BEGIN_SRC emacs-lisp
-   (load-theme 'modus-operandi t)
+     (load-theme 'modus-operandi t)
+     ;; (load-theme 'modus-vivendi t)
    #+END_SRC
 ** ace-window
    #+BEGIN_SRC emacs-lisp
@@ -28,12 +29,27 @@ My Emacs Configuration
 ** evil and related packages
 Simulate a Vim modal editing experience
 #+BEGIN_SRC emacs-lisp
-  (use-package evil
+  (use-package evil-leader
     :init
-    (setq evil-want-integration t)
     (setq evil-want-keybinding nil)
+    :config
+    (global-evil-leader-mode)
+    (evil-leader/set-leader "<SPC>")
+    (evil-leader/set-key
+      "e" 'find-file
+      "p" (lambda() (interactive) (evil-use-register ?+) (call-interactively 'evil-paste-after))
+      "P" (lambda() (interactive) (evil-use-register ?+) (call-interactively 'evil-paste-before))
+      "y" (lambda() (interactive) (evil-use-register ?+) (call-interactively 'evil-yank))
+      "Y" (lambda() (interactive) (evil-use-register ?+) (call-interactively 'evil-yank-line))))
+
+  (use-package evil
+    :after evil-leader
+    :init
+    (setq evil-want-C-i-jump nil)
+    (setq evil-want-integration t)
+    ;; (setq evil-want-keybinding nil)
     (fset 'evil-visual-update-x-selection 'ignore)
-    ;; (setq x-select-enable-clipboard nil)
+    (setq x-select-enable-clipboard nil)
     :config
     (evil-mode 1)
     (setq evil-mode-line-format '(after . mode-line-front-space)))
@@ -181,25 +197,12 @@ Simulate a Vim modal editing experience
 	(("C-x C-f" . counsel-find-file)
 	 ("<f1> u" . counsel-unicode-char)))
     #+END_SRC
-** treemacs
+** sr-speedbar
    #+BEGIN_SRC emacs-lisp
-     (use-package treemacs
+     (use-package sr-speedbar
        :defer t
-       :bind
-       (([f9] . treemacs)
-	("M-0" . treemacs-select-window)))
-#+END_SRC
-*** Evil support
-#+BEGIN_SRC emacs-lisp
-  (use-package treemacs-evil
-    :after treemacs evil)
-#+END_SRC
-*** Use pretty icons
-#+BEGIN_SRC emacs-lisp
-  (use-package treemacs-icons-dired
-    :after treemacs dired
-    :config (treemacs-icons-dired-mode))
-#+END_SRC
+       :bind ([f9] . sr-speedbar-toggle))
+   #+END_SRC
 ** yasnippets
 #+BEGIN_SRC emacs-lisp
    (use-package yasnippet
@@ -226,7 +229,6 @@ Simulate a Vim modal editing experience
   ;; optionally
   (use-package lsp-ui :commands lsp-ui-mode)
   (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
-  (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
 #+END_SRC
 ** various modes for programming languages and file types
 #+BEGIN_SRC emacs-lisp
