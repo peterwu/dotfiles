@@ -39,6 +39,19 @@ My Emacs Configuration
 	'(buffer-file-name "%f"
 			   (dired-directory dired-directory "%b")))
 #+eND_SRC
+* modes
+#+BEGIN_SRC emacs-lisp
+  ;; enable some modes
+  (global-visual-line-mode t)
+  (column-number-mode t)
+  (global-hl-line-mode t)
+  (electric-pair-mode t)
+  (show-paren-mode t)
+  (size-indication-mode t)
+  (global-display-line-numbers-mode t)
+  (blink-cursor-mode t)
+  (save-place-mode t)
+#+END_SRC
 * theme
   #+BEGIN_SRC emacs-lisp
     (load-theme 'modus-operandi t)
@@ -56,6 +69,39 @@ My Emacs Configuration
 	  telephone-line-secondary-right-separator 'telephone-line-nil)
     :config
     (telephone-line-mode t))
+#+END_SRC
+* which-key
+  #+BEGIN_SRC emacs-lisp
+    (use-package which-key
+      :init
+      (which-key-mode))
+  #+END_SRC
+* key bindings
+#+BEGIN_SRC emacs-lisp
+  (use-package hydra)
+
+  (use-package general
+    :init
+    (defconst my-leader-key "SPC")
+    (defconst my-local-leader-key ",")
+    :config
+    (general-evil-setup))
+
+  (defhydra hydra-zoom (global-map "C-c z")
+    "zoom"
+    ("+" text-scale-increase "in")
+    ("-" text-scale-decrease "out")
+    ("0" (lambda () (interactive) (text-scale-set 0)) "reset"))
+
+  ;; shell
+  (bind-key "C-`" 'shell)
+
+  ;; Mouse scrolling in terminal emacs
+  (unless (display-graphic-p)
+    ;; activate mouse-based scrolling
+    (xterm-mouse-mode 1)
+    (bind-key "<mouse-4>" 'scroll-down-line)
+    (bind-key "<mouse-5>" 'scroll-up-line))
 #+END_SRC
 * ace-window
   #+BEGIN_SRC emacs-lisp
@@ -79,6 +125,12 @@ Simulate a Vim modal editing experience
     (setq evil-want-integration t)
     (setq evil-want-keybinding nil)
     (setq evil-mode-line-format '(after . mode-line-front-space))
+    :general
+    (general-nvmap :prefix my-leader-key
+      "p" (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-paste-after))
+      "P" (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-paste-before))
+      "y" (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank))
+      "Y" (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank-line)))
     :config
     (evil-mode 1))
 
@@ -110,9 +162,28 @@ Simulate a Vim modal editing experience
     :config
     (global-evil-quickscope-mode t))
 
-  (use-package evil-numbers)
+  (use-package evil-numbers
+    :config
+    (defhydra hydra-evil-numbers (global-map "C-c n")
+      "evil-numbers"
+      ("+" evil-numbers/inc-at-pt "increase")
+      ("-" evil-numbers/dec-at-pt "decrease")))
 
-  (use-package evil-args)
+  (use-package evil-args
+    :general
+    (general-nmap
+      "L" 'evil-forward-arg
+      "H" 'evil-backward-arg
+      "K" 'evil-jump-out-args)
+
+    (general-mmap
+      "L" 'evil-forward-arg
+      "H" 'evil-backward-arg)
+
+    (general-itomap
+      "a" 'evil-inner-arg)
+    (general-otomap
+      "a" 'evil-outer-arg))
 
   (use-package evil-lion
     :config
@@ -130,7 +201,8 @@ Simulate a Vim modal editing experience
 #+END_SRC
 * sudo-edit
 #+BEGIN_SRC emacs-lisp
-  (use-package sudo-edit)
+  (use-package sudo-edit
+    :bind ("s-e" . sudo-edit))
 #+END_SRC
 * rainbow
 #+BEGIN_SRC emacs-lisp
@@ -157,6 +229,14 @@ Simulate a Vim modal editing experience
 	   "* Notes %?\n  %i\n  %a")
 	  ("j" "Journal" entry (file+olp+datetree "~/Documents/Org/journal.org")
 	   "* %?\nEntered on %U\n  %i\n  %a")))
+
+  (bind-keys
+   :prefix "C-c"
+   :prefix-map mode-specific-map
+   ("a" . org-agenda)
+   ("b" . org-switchb)
+   ("c" . org-capture)
+   ("l" . org-store-link))
 #+END_SRC
 ** org-superstar
 #+BEGIN_SRC emacs-lisp
@@ -179,12 +259,18 @@ Simulate a Vim modal editing experience
 * search
 ** Avy
     #+BEGIN_SRC emacs-lisp
-      (use-package avy)
+      (use-package avy
+	:general
+	(general-nmap :prefix my-leader-key
+	  "f" 'avy-goto-char))
     #+END_SRC
 ** Ivy
     #+BEGIN_SRC emacs-lisp
       (use-package ivy
 	:init (ivy-mode 1)
+	:general
+	(general-nmap :prefix my-leader-key
+	  "b" 'ivy-switch-buffer)
 	:config
 	(setq ivy-use-virtual-buffers t)
 	(setq ivy-count-format "(%d/%d) ")
@@ -192,11 +278,30 @@ Simulate a Vim modal editing experience
     #+END_SRC
 ** Swiper
     #+BEGIN_SRC emacs-lisp
-      (use-package swiper)
+      (use-package swiper
+	:general
+	(general-nmap :prefix my-leader-key
+	  "s" 'swiper))
     #+END_SRC
 ** Counsel
     #+BEGIN_SRC emacs-lisp
-      (use-package counsel)
+      (use-package counsel
+	:bind
+	(("M-x"    . counsel-M-x)
+	 ("M-y"    . counsel-yank-pop)
+	 ("<f1> f" . counsel-describe-function)
+	 ("<f1> v" . counsel-describe-variable)
+	 ("<f1> l" . counsel-find-library)
+	 ("<f2> i" . counsel-info-lookup-symbol)
+	 ("<f2> u" . counsel-unicode-char)
+	 ("<f2> j" . counsel-set-variable))
+	:general
+	(general-nmap :prefix my-leader-key
+	  "e" 'counsel-file-file
+	  "g" 'counsel-git
+	  "." 'counsel-fzf
+	  "`" (lambda() (interactive) (counsel-fzf nil "/"))))
+
     #+END_SRC
 * sr-speedbar
   #+BEGIN_SRC emacs-lisp
@@ -215,12 +320,6 @@ Simulate a Vim modal editing experience
   (use-package flycheck
     :init (global-flycheck-mode))
 #+END_SRC
-* which-key
-  #+BEGIN_SRC emacs-lisp
-    (use-package which-key
-      :init
-      (which-key-mode))
-  #+END_SRC
 * lsp
 #+BEGIN_SRC emacs-lisp
   (use-package lsp-mode
@@ -235,101 +334,6 @@ Simulate a Vim modal editing experience
   ;; optionally
   (use-package lsp-ui :commands lsp-ui-mode)
   (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
-#+END_SRC
-* key bindings
-#+BEGIN_SRC emacs-lisp
-  (use-package general
-    :config
-    (general-create-definer my--golden-key ;; all states
-      :states '(normal visual motion emacs insert)
-      :keymaps 'override)
-    (general-create-definer my--normal-key
-      :states 'normal
-      :keymaps 'override)
-    (general-create-definer my--motion-key
-      :states 'motion
-      :keymaps 'override)
-    (general-create-definer my--leader-key
-      :states '(normal visual motion insert emacs)
-      :keymaps 'override
-      :prefix "SPC"
-      :non-normal-prefix "M-SPC"))
-
-  (my--leader-key
-    "E" 'sudo-edit
-    "p" (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-paste-after))
-    "P" (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-paste-before))
-    "y" (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank))
-    "Y" (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank-line)))
-
-  (my--normal-key
-    "C-c +" 'evil-numbers/inc-at-pt
-    "C-c -" 'evil-numbers/dec-at-pt)
-
-  (my--normal-key
-    "L" 'evil-forward-arg
-    "H" 'evil-backward-arg
-    "K" 'evil-jump-out-args)
-
-  (my--motion-key
-    "L" 'evil-forward-arg
-    "H" 'evil-backward-arg)
-
-  (my--golden-key
-    :keymaps 'evil-inner-text-objects-map
-     "a" 'evil-inner-arg
-     "a" 'evil-outer-arg)
-
-  ;; org mode
-  (my--golden-key
-    :prefix "C-c"
-    "l" 'org-store-link
-    "a" 'org-agenda
-    "c" 'org-capture
-    "b" 'org-switchb)
-
-  ;; avy, ivy, swiper, counsel
-  (my--leader-key
-    "f" 'avy-goto-char
-    "b" 'ivy-switch-buffer
-    "s" 'swiper
-    "e" 'counsel-file-file
-    "g" 'counsel-git
-    "." 'counsel-fzf
-    "`" (lambda() (interactive) (counsel-fzf nil "/"))) ;; search from root dir
-
-  (my--golden-key
-    "M-x"    'counsel-M-x
-    "M-y"    'counsel-yank-pop
-    "<f1> f" 'counsel-describe-function
-    "<f1> v" 'counsel-describe-variable
-    "<f1> l" 'counsel-find-library
-    "<f2> i" 'counsel-info-lookup-symbol
-    "<f2> u" 'counsel-unicode-char
-    "<f2> j" 'counsel-set-variable
-    "<f9>"   'sr-speedbar-toggle
-    "C-`"    'shell)
-
-  ;; Mouse scrolling in terminal emacs
-  (unless (display-graphic-p)
-    ;; activate mouse-based scrolling
-    (xterm-mouse-mode 1)
-    (my--golden-key
-      "<mouse-4>" 'scroll-down-line
-      "<mouse-5>" 'scroll-up-line))
-#+END_SRC
-* modes
-#+BEGIN_SRC emacs-lisp
-  ;; enable some modes
-  (global-visual-line-mode t)
-  (column-number-mode t)
-  (global-hl-line-mode t)
-  (electric-pair-mode t)
-  (show-paren-mode t)
-  (size-indication-mode t)
-  (global-display-line-numbers-mode t)
-  (blink-cursor-mode t)
-  (save-place-mode t)
 #+END_SRC
 * misc
 #+BEGIN_SRC emacs-lisp

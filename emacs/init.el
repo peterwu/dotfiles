@@ -4,7 +4,7 @@
 	  (lambda ()
 	    (setq gc-cons-threshold (* 256 1024 1024) ; 256MB
 		  gc-cons-percentage 0.1
-		  file-name-handler-alist my--file-name-handler-alist)))
+		  file-name-handler-alist my-file-name-handler-alist)))
 
 ;; Tell custom to put its crap somewhere else, but load it early
 (setq custom-file (concat user-emacs-directory "custom.el"))
