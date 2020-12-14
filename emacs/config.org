@@ -4,12 +4,12 @@
 My Emacs Configuration
 
 * variables
-#+bEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
   (set-language-environment "utf-8")
   (prefer-coding-system 'utf-8)
   (set-default-coding-systems 'utf-8)
 
-  (defalias 'yes-or-no-p 'y-or-n-p)
+  (fset 'yes-or-no-p 'y-or-n-p)
 
   (setq inhibit-startup-screen t
 	inhibit-startup-echo-area-message t
@@ -38,7 +38,7 @@ My Emacs Configuration
   (setq frame-title-format
 	'(buffer-file-name "%f"
 			   (dired-directory dired-directory "%b")))
-#+eND_SRC
+#+END_SRC
 * modes
 #+BEGIN_SRC emacs-lisp
   ;; enable some modes
@@ -126,11 +126,14 @@ Simulate a Vim modal editing experience
     (setq evil-want-keybinding nil)
     (setq evil-mode-line-format '(after . mode-line-front-space))
     :general
+    (general-mmap :prefix my-leader-key :keymaps 'override
+	   "y" (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank)))
+
     (general-nvmap :prefix my-leader-key
-      "p" (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-paste-after))
-      "P" (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-paste-before))
-      "y" (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank))
-      "Y" (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank-line)))
+	   "p" (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-paste-after))
+	   "P" (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-paste-before))
+	   "y" (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank))
+	   "Y" (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank-line)))
     :config
     (evil-mode 1))
 
