@@ -8,9 +8,6 @@ fi
 # User specific environment and startup programs
 export CDPATH=".:$HOME"
 
-# use vim as man pager
-export MANPAGER="vim --not-a-term -c 'set nonu nornu nohls' -M +MANPAGER -"
-
 # less
 export LESSHISTFILE=-
 export LESS='-R --mouse --wheel-lines=3'
