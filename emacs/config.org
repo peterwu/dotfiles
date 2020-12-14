@@ -306,7 +306,8 @@ Simulate a Vim modal editing experience
 * sr-speedbar
   #+BEGIN_SRC emacs-lisp
     (use-package sr-speedbar
-      :defer t)
+      :defer t
+      :bind ([f9] . sr-speedbar-toggle))
   #+END_SRC
 * yasnippets
 #+BEGIN_SRC emacs-lisp
