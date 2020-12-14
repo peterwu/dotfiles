@@ -34,7 +34,7 @@ HISTFILESIZE=20000
 
 man() 
 { 
-    emacsclient -a '' -t -e "(progn (man \"$1\") (delete-window))"
+    emacsclient -a '' -t -e "(progn (man \"$*\") (delete-window))"
 }
 
 show_bash_prompt() {
