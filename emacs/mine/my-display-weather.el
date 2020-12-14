@@ -5,7 +5,7 @@
 
 (setq max-mini-window-height 10)
 
-(defun ixl--wind-degree-to-direction (degree)
+(defun my--wind-degree-to-direction (degree)
   (when  (numberp degree)
     (cond ((or  (>= degree 348.75)
 		(< degree 11.25))
@@ -57,15 +57,15 @@
 	   "NNW"))))
 
 ;; http://ip-api.com/json/
-;; (defun ixl-get-coordinate ()
+;; (defun my-get-coordinate ()
 ;;   (let ((url "http://ip-api.com/json/"))
-;;     (let ((data (ixl-get-and-parse-json url)))
+;;     (let ((data (my-get-and-parse-json url)))
 ;;       (list :lat (plist-get data :lat)
 ;; 	    :lon (plist-get data :lon)))))
 
 
 ;; https://ipinfo.io/json
-(defun ixl--get-coordinate ()
+(defun my--get-coordinate ()
   (let* ((token "44cf10c96aeed5")
 	 (url (concat "https://ipinfo.io/json"
 		      "?"
@@ -75,10 +75,10 @@
 	     :parser 'json-read
 	     :success (cl-function
 		       (lambda (&key data &allow-other-keys)
-			 (ixl--get-weather-info (-interleave '(:lat :lon) (split-string (assoc-default 'loc data) ","))))))))
+			 (my--get-weather-info (-interleave '(:lat :lon) (split-string (assoc-default 'loc data) ","))))))))
     
 
-(defun ixl--get-weather-info (coord)
+(defun my--get-weather-info (coord)
   (let* ((openweathermapUrl "https://api.openweathermap.org/data/2.5/weather")
 	 (appid "94f7172e9d0fd1e0c9756a48fa9c9477")
 	 (lat (plist-get coord :lat))
@@ -94,7 +94,7 @@
 	     :parser 'json-read
 	     :success (cl-function
 		       (lambda (&key data &allow-other-keys)
-			 (setq ixl--weather-info  (list
+			 (setq my--weather-info  (list
 						   :city (assoc-default 'name data)
 						   :main (assoc-default 'main (aref (assoc-default 'weather data) 0))
 						   :description (assoc-default 'description (aref (assoc-default 'weather data) 0))
@@ -108,61 +108,61 @@
 						   :windDir (assoc-default 'deg (assoc-default 'wind data))
 						   :sunrise (format-time-string "%R %Z" (seconds-to-time (assoc-default 'sunrise (assoc-default 'sys data))))
 						   :sunset (format-time-string "%R %Z" (seconds-to-time (assoc-default 'sunset (assoc-default 'sys data))))))
-			 (let* ((weather ixl--weather-info)
+			 (let* ((weather my--weather-info)
 			 	(weather-brief-info
 			 	 (format "[%s %d°C]" (plist-get weather :main)  (plist-get weather :temp))))
-			   (setq ixl-weather-mode-line-string
+			   (setq my-weather-mode-line-string
 			 	 (propertize weather-brief-info
 			 		     'help-echo (plist-get weather :city)))
 			   (force-mode-line-update)))))))
 
-(defcustom ixl-weather-visible-lines 10
+(defcustom my-weather-visible-lines 10
   "Display how many lines in the *Weather* buffer"
   :type 'number)
 
-(defconst ixl--weather-buffer-name "*Weather*")
+(defconst my--weather-buffer-name "*Weather*")
 
-(defvar ixl--weather-info nil)
+(defvar my--weather-info nil)
 
-(defvar ixl-weather-mode-line-string nil)
-(put 'ixl-weather-mode-line-string 'risky-local-variable t)
+(defvar my-weather-mode-line-string nil)
+(put 'my-weather-mode-line-string 'risky-local-variable t)
 
-(defun ixl--weather-details ()
-  (if ixl--weather-info  (concat
-			   (format "%12s: %s" "Location" (plist-get ixl--weather-info :city)) "\n"
-			   (format "%12s: %s { %s }" "Weather" (plist-get ixl--weather-info :main) (plist-get ixl--weather-info :description)) "\n"
-			   (format "%12s: %d°C / %d°C" "Temperature" (plist-get ixl--weather-info :minTemp) (plist-get ixl--weather-info :maxTemp)) "\n"
-			   (format "%12s: %d%%" "Cloudiness" (plist-get ixl--weather-info :cloudiness)) "\n"
-			   (format "%12s: %d%%" "Humidity" (plist-get ixl--weather-info :humidity)) "\n"
-			   (format "%12s: %d hPa" "Pressure" (plist-get ixl--weather-info :pressure)) "\n"
-			   (format "%12s: %d km/h %s" "Wind" (plist-get ixl--weather-info :windSpeed) (ixl--wind-degree-to-direction (plist-get ixl--weather-info :windDir))) "\n"
-			   (format "%12s: %s" "Sunrise" (plist-get ixl--weather-info :sunrise)) "\n"
-			   (format "%12s: %s" "Sunset" (plist-get ixl--weather-info :sunset) ""))
+(defun my--weather-details ()
+  (if my--weather-info  (concat
+			   (format "%12s: %s" "Location" (plist-get my--weather-info :city)) "\n"
+			   (format "%12s: %s { %s }" "Weather" (plist-get my--weather-info :main) (plist-get my--weather-info :description)) "\n"
+			   (format "%12s: %d°C / %d°C" "Temperature" (plist-get my--weather-info :minTemp) (plist-get my--weather-info :maxTemp)) "\n"
+			   (format "%12s: %d%%" "Cloudiness" (plist-get my--weather-info :cloudiness)) "\n"
+			   (format "%12s: %d%%" "Humidity" (plist-get my--weather-info :humidity)) "\n"
+			   (format "%12s: %d hPa" "Pressure" (plist-get my--weather-info :pressure)) "\n"
+			   (format "%12s: %d km/h %s" "Wind" (plist-get my--weather-info :windSpeed) (my--wind-degree-to-direction (plist-get my--weather-info :windDir))) "\n"
+			   (format "%12s: %s" "Sunrise" (plist-get my--weather-info :sunrise)) "\n"
+			   (format "%12s: %s" "Sunset" (plist-get my--weather-info :sunset) ""))
   "No weather information available at this time."))
 
-(defun ixl-show-weather-details ()
+(defun my-show-weather-details ()
   (interactive)
   (when (and (not (window-dedicated-p))
 	     (window-full-height-p))
-    (let ((win (split-window-below (- ixl-weather-visible-lines)))
-	  (buff (get-buffer-create ixl--weather-buffer-name)))
+    (let ((win (split-window-below (- my-weather-visible-lines)))
+	  (buff (get-buffer-create my--weather-buffer-name)))
       (with-current-buffer buff
 	(setq mode-line-format nil)
 	(erase-buffer)
-	(insert (ixl--weather-details)))
+	(insert (my--weather-details)))
       (set-window-buffer win buff))))
-(global-set-key (kbd "C-c w") 'ixl-show-weather-details)
+(global-set-key (kbd "C-c w") 'my-show-weather-details)
 
-(defun ixl--retrieve-weather-info ()
-  (ixl--get-coordinate))
+(defun my--retrieve-weather-info ()
+  (my--get-coordinate))
 
-(defun ixl-display-weather-info ()
+(defun my-display-weather-info ()
   (or global-mode-string (setq global-mode-string '("")))
-  (or (memq 'ixl-weather-mode-line-string global-mode-string)
+  (or (memq 'my-weather-mode-line-string global-mode-string)
       (setq global-mode-string
-	    (append global-mode-string '(ixl-weather-mode-line-string))))
+	    (append global-mode-string '(my-weather-mode-line-string))))
   (run-with-timer 0 (* 60 10)
 		  (lambda ()
-		    (ixl--retrieve-weather-info))))
+		    (my--retrieve-weather-info))))
 
-(provide 'ixl-display-weather)
+(provide 'my-display-weather)
