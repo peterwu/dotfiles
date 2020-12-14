@@ -18,17 +18,6 @@
   (require 'use-package))
 (setq use-package-always-ensure t)
 
-(use-package auto-package-update
-  :init
-  (setq auto-package-update-last-update-day-filename
-	(expand-file-name ".cache/last-package-update-day" user-emacs-directory))
-  :config
-  (setq auto-package-update-delete-old-versions t)
-  (setq auto-package-update-hide-results t)
-  (setq auto-package-update-prompt-before-update t)
-  (setq auto-package-update-interval 13)
-  (auto-package-update-maybe))
-
 (require 'org)
 (org-babel-load-file
  (expand-file-name "config.org" user-emacs-directory))

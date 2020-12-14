@@ -3,6 +3,19 @@
 
 My Emacs Configuration
 
+* auto update packages
+#+BEGIN_SRC emacs-lisp
+  (use-package auto-package-update
+    :init
+    (setq auto-package-update-last-update-day-filename
+	  (expand-file-name ".cache/last-package-update-day" user-emacs-directory))
+    :config
+    (setq auto-package-update-delete-old-versions t
+	  auto-package-update-hide-results t
+	  auto-package-update-prompt-before-update t
+	  auto-package-update-interval 13)
+    (auto-package-update-maybe))
+#+END_SRC
 * variables
 #+BEGIN_SRC emacs-lisp
   (set-language-environment "utf-8")
@@ -85,7 +98,8 @@ My Emacs Configuration
     (defconst my-leader-key "SPC")
     (defconst my-local-leader-key ",")
     :config
-    (general-evil-setup))
+    ;; use shortnames
+    (general-evil-setup t))
 
   (defhydra hydra-zoom (global-map "C-c z")
     "zoom"
@@ -104,15 +118,15 @@ My Emacs Configuration
     (bind-key "<mouse-5>" 'scroll-up-line))
 #+END_SRC
 * ace-window
-  #+BEGIN_SRC emacs-lisp
-    (use-package ace-window
-      :bind
-      ([remap other-window] . ace-window)
-      :config
-      (set-face-attribute 'aw-leading-char-face nil
-			  :height 3.0
-			  :box t))
-  #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package ace-window
+    :bind
+    ([remap other-window] . ace-window)
+    :config
+    (set-face-attribute 'aw-leading-char-face nil
+			:height 3.0
+			:box t))
+#+END_SRC
 * evils
 Simulate a Vim modal editing experience
 #+BEGIN_SRC emacs-lisp
@@ -126,14 +140,16 @@ Simulate a Vim modal editing experience
     (setq evil-want-keybinding nil)
     (setq evil-mode-line-format '(after . mode-line-front-space))
     :general
-    (general-mmap :prefix my-leader-key :keymaps 'override
-	   "y" (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank)))
+    (mmap 
+     :prefix my-leader-key :keymaps 'override
+     "y" (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank)))
 
-    (general-nvmap :prefix my-leader-key
-	   "p" (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-paste-after))
-	   "P" (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-paste-before))
-	   "y" (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank))
-	   "Y" (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank-line)))
+    (nvmap
+     :prefix my-leader-key
+     "p" (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-paste-after))
+     "P" (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-paste-before))
+     "y" (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank))
+     "Y" (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank-line)))
     :config
     (evil-mode 1))
 
@@ -174,19 +190,20 @@ Simulate a Vim modal editing experience
 
   (use-package evil-args
     :general
-    (general-nmap
-      "L" 'evil-forward-arg
-      "H" 'evil-backward-arg
-      "K" 'evil-jump-out-args)
+    (nmap
+     "L" 'evil-forward-arg
+     "H" 'evil-backward-arg
+     "K" 'evil-jump-out-args)
 
-    (general-mmap
-      "L" 'evil-forward-arg
-      "H" 'evil-backward-arg)
+    (mmap
+     "L" 'evil-forward-arg
+     "H" 'evil-backward-arg)
 
-    (general-itomap
-      "a" 'evil-inner-arg)
-    (general-otomap
-      "a" 'evil-outer-arg))
+    (itomap
+     "a" 'evil-inner-arg)
+
+    (otomap
+     "a" 'evil-outer-arg))
 
   (use-package evil-lion
     :config
@@ -210,7 +227,7 @@ Simulate a Vim modal editing experience
 * rainbow
 #+BEGIN_SRC emacs-lisp
   (use-package rainbow-mode
-    :hook prog-mode)
+    :hook text-mode)
 
   (use-package rainbow-delimiters
     :config
@@ -219,13 +236,13 @@ Simulate a Vim modal editing experience
 * org mode
 ** stock org-mode
 #+BEGIN_SRC emacs-lisp
-  (setq org-hide-emphasis-markers t)
-  (setq org-fontify-whole-heading-line t)
-  (setq org-support-shift-select t)
-  (setq org-odt-convert-process 'unoconv)
-  (setq org-odt-preferred-output-format "docx")
-  (setq org-agenda-files (list "~/Documents/Org"))
-  (setq org-capture-templates
+  (setq org-hide-emphasis-markers t
+	org-fontify-whole-heading-line t
+	org-support-shift-select t
+	org-odt-convert-process 'unoconv
+	org-odt-preferred-output-format "docx"
+	org-agenda-files (list "~/Documents/Org")
+	org-capture-templates
 	'(("t" "Todo" entry (file+headline "~/Documents/Org/gtd.org" "Tasks")
 	   "* TODO %?\n  %i\n  %a")
 	  ("n" "Notes" entry (file+headline "~/Documents/Org/notes.org" "Notes")
@@ -234,8 +251,7 @@ Simulate a Vim modal editing experience
 	   "* %?\nEntered on %U\n  %i\n  %a")))
 
   (bind-keys
-   :prefix "C-c"
-   :prefix-map mode-specific-map
+   :prefix "C-c" :prefix-map mode-specific-map
    ("a" . org-agenda)
    ("b" . org-switchb)
    ("c" . org-capture)
@@ -261,63 +277,66 @@ Simulate a Vim modal editing experience
 #+END_SRC
 * search
 ** Avy
-    #+BEGIN_SRC emacs-lisp
-      (use-package avy
+  #+BEGIN_SRC emacs-lisp
+    (use-package avy
 	:general
-	(general-nmap :prefix my-leader-key
-	  "f" 'avy-goto-char))
-    #+END_SRC
+	(nmap 
+	 :prefix my-leader-key
+	 "f" 'avy-goto-char))
+  #+END_SRC
 ** Ivy
-    #+BEGIN_SRC emacs-lisp
-      (use-package ivy
-	:init (ivy-mode 1)
-	:general
-	(general-nmap :prefix my-leader-key
-	  "b" 'ivy-switch-buffer)
-	:config
-	(setq ivy-use-virtual-buffers t)
-	(setq ivy-count-format "(%d/%d) ")
-	(setq enable-recursive-minibuffers t))
-    #+END_SRC
+  #+BEGIN_SRC emacs-lisp
+    (use-package ivy
+      :init (ivy-mode 1)
+      :general
+      (nmap 
+       :prefix my-leader-key
+       "b" 'ivy-switch-buffer)
+      :config
+      (setq ivy-use-virtual-buffers t
+	    ivy-count-format "(%d/%d) ")
+      (setq enable-recursive-minibuffers t))
+  #+END_SRC
 ** Swiper
-    #+BEGIN_SRC emacs-lisp
+  #+BEGIN_SRC emacs-lisp
       (use-package swiper
 	:general
-	(general-nmap :prefix my-leader-key
-	  "s" 'swiper))
-    #+END_SRC
-** Counsel
-    #+BEGIN_SRC emacs-lisp
-      (use-package counsel
-	:bind
-	(("M-x"    . counsel-M-x)
-	 ("M-y"    . counsel-yank-pop)
-	 ("<f1> f" . counsel-describe-function)
-	 ("<f1> v" . counsel-describe-variable)
-	 ("<f1> l" . counsel-find-library)
-	 ("<f2> i" . counsel-info-lookup-symbol)
-	 ("<f2> u" . counsel-unicode-char)
-	 ("<f2> j" . counsel-set-variable))
-	:general
-	(general-nmap :prefix my-leader-key
-	  "e" 'counsel-file-file
-	  "g" 'counsel-git
-	  "." 'counsel-fzf
-	  "`" (lambda() (interactive) (counsel-fzf nil "/"))))
-
-    #+END_SRC
-* sr-speedbar
-  #+BEGIN_SRC emacs-lisp
-    (use-package sr-speedbar
-      :defer t
-      :bind ([f9] . sr-speedbar-toggle))
+	(nmap
+	 :prefix my-leader-key
+	 "s" 'swiper))
   #+END_SRC
+** Counsel
+  #+BEGIN_SRC emacs-lisp
+    (use-package counsel
+      :bind
+      (("M-x"    . counsel-M-x)
+       ("M-y"    . counsel-yank-pop)
+       ("<f1> f" . counsel-describe-function)
+       ("<f1> v" . counsel-describe-variable)
+       ("<f1> l" . counsel-find-library)
+       ("<f2> i" . counsel-info-lookup-symbol)
+       ("<f2> u" . counsel-unicode-char)
+       ("<f2> j" . counsel-set-variable))
+      :general
+      (nmap 
+       :prefix my-leader-key
+       "e" 'counsel-file-file
+       "g" 'counsel-git
+       "." 'counsel-fzf
+       "`" (lambda() (interactive) (counsel-fzf nil "/"))))
+  #+END_SRC
+* sr-speedbar
+#+BEGIN_SRC emacs-lisp
+  (use-package sr-speedbar
+    :defer t
+    :bind ([f9] . sr-speedbar-toggle))
+#+END_SRC
 * yasnippets
 #+BEGIN_SRC emacs-lisp
-   (use-package yasnippet
-     :config
-     (use-package yasnippet-snippets)
-     (yas-global-mode 1))
+  (use-package yasnippet
+    :config
+    (use-package yasnippet-snippets)
+    (yas-global-mode 1))
 #+END_SRC
 * flycheck
 #+BEGIN_SRC emacs-lisp
@@ -336,7 +355,7 @@ Simulate a Vim modal editing experience
     :commands lsp)
 
   ;; optionally
-  (use-package lsp-ui :commands lsp-ui-mode)
+  (use-package lsp-ui  :commands lsp-ui-mode)
   (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
 #+END_SRC
 * misc
