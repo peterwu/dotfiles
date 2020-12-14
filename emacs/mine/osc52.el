@@ -1,22 +1,19 @@
-;; Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
-;; Use of this source code is governed by a BSD-style license that can be
-;; found in the LICENSE file.
-;;
-;; This script can be loaded during emacs initialization to automatically
-;; send `kill-region' and `kill-ring-save' regions to your system clipboard.
-;; The OSC 52 terminal escape sequence is used to transfer the selection from
-;; emacs to the host terminal.
-;;
-;; It works in hterm, xterm, and other terminal emulators which support the
-;; sequence.
-;;
-;; It also works under screen, via the `osc52-select-text-dcs' defined below, as
-;; long as the outer terminal supports OSC 52.
-;;
-;; It doesn't work under tmux.  Tmux consumes the OSC 52 sequence and doesn't
-;; use the DSC sequence as a pass-through to the host terminal.  Please feel
-;; free to submit patches.
-;;
+;;;; This script can be loaded during emacs initialization to automatically
+;;;; send `kill-region' and `kill-ring-save' regions to your system clipboard.
+;;;; The OSC 52 terminal escape sequence is used to transfer the selection from
+;;;; emacs to the host terminal.
+
+;;;; It is based off of the osc52.el copyright the Chromium OS authors, but
+;;;; was modified to add support for tmux, graphical displays, and
+;;;; multi-byte strings.
+
+;;;; It works in hterm, xterm, and other terminal emulators which support the
+;;;; sequence.
+
+;;;; It also works under screen, via `osc52-select-text-dcs' and tmux via
+;;;; `osc52-select-text-tmux', as long as the terminal supports OSC 52.
+
+;;;; Call `osc52-set-cut-function' to activate.
 
 (defcustom osc52-max-sequence 100000
   "Maximum length of the OSC 52 sequence.
@@ -32,14 +29,10 @@ If you select a region larger than this size, it won't be copied to your system
 clipboard.  Since clipboard data is base 64 encoded, the actual number of
 characters that can be copied is 1/3 of this value.")
 
-(defun osc52-encode-utf8-base64 (string &rest base64-encode-args)
-  "Encode STRING as utf8, convert to base64, and return the result.
+(defcustom osc52-multiplexer 'tmux
+  "Select which terminal multiplexer should be used when creating OSC 52 sequences. Device control string escape sequences are only used when the value of the environment variable TERM starts with the string \"screen\".
 
-BASE64-ENCODE-ARGS, if supplied, are passed as the second and later arguments to
-`base64-encode-string'."
-  (apply 'base64-encode-string
-         (encode-coding-string string 'utf-8)
-         base64-encode-args))
+If set to 'tmux, a tmux DCS escape sequence will be generated, otherwise a screen DCS will be used.")
 
 (defun osc52-select-text (string &optional replace yank-handler)
   "Copy STRING to the system clipboard using the OSC 52 escape sequence.
@@ -59,10 +52,10 @@ natively support OSC 52."
     (if (<= b64-length osc52-max-sequence)
         (send-string-to-terminal
          (concat "\e]52;c;"
-                 (osc52-encode-utf8-base64 string t)
+                 (base64-encode-string string t)
                  "\07"))
-        (message "Selection too long to send to terminal %d" b64-length)
-        (sit-for 2))))
+      (message \"Selection too long to send to terminal %d\" b64-length)
+      (sit-for 2))))
 
 (defun osc52-select-text-dcs (string &optional replace yank-handler)
   "Copy STRING to the system clipboard using the OSC 52 escape sequence, for
@@ -76,28 +69,61 @@ If the resulting OSC 52 sequence would be longer than
 clipboard.
 
 This function wraps the OSC 52 in a Device Control String sequence.  This causes
-screen to pass the wrapped OSC 52 sequence along to the host terminal.  This
+screen to pass the wrapped OSC 52 sequence along to the host termianl.  This
 function also chops long DCS sequences into multiple smaller ones to avoid
 hitting screen's max DCS length."
   (let ((b64-length (+ (* (length string) 3) 2)))
     (if (<= b64-length osc52-max-sequence)
         (send-string-to-terminal
          (concat "\eP\e]52;c;"
-                 (replace-regexp-in-string "\n" "\e\\\\\eP"
-                                           (osc52-encode-utf8-base64 string))
+                 (replace-regexp-in-string
+                  "\n" "\e\\\\\eP"
+                  (base64-encode-string (encode-coding-string string 'binary)))
                  "\07\e\\"))
         (message "Selection too long to send to terminal %d" b64-length)
         (sit-for 2))))
 
+(defun osc52-select-text-tmux (string &optional replace yank-handler)
+  "Copy STRING to the system clipboard using the OSC 52 escape sequence, for
+tmux users.
+
+Set `interprogram-cut-function' to this when using the screen program, and your
+system clipboard will be updated whenever you copy a region of text in emacs.
+
+If the resulting OSC 52 sequence would be longer than
+`osc52-max-sequence', then the STRING is not sent to the system
+clipboard.
+
+This function wraps the OSC 52 in a Device Control String sequence.  This causes
+screen to pass the wrapped OSC 52 sequence along to the host termianl.  This
+function also chops long DCS sequences into multiple smaller ones to avoid
+hitting screen's max DCS length."
+  (let ((b64-length (+ (* (length string) 3) 2)))
+    (if (<= b64-length osc52-max-sequence)
+        (send-string-to-terminal
+         (concat "\ePtmux;\e\e]52;c;"
+                 (base64-encode-string (encode-coding-string string 'binary)
+                                       t)
+                 "\a\e\\"))
+      (message "Selection too long to send to terminal %d" b64-length)
+      (sit-for 2))))
+
+(defvar osc52-cut-function)
+
+(defun osc52-interprogram-cut-function (string &optional replace yank-handler)
+  (if (display-graphic-p)
+      (x-select-text string)
+    (funcall osc52-cut-function string)))
+
 (defun osc52-set-cut-function ()
   "Initialize the `interprogram-cut-function' based on the value of
-`window-system' and the TERM environment variable."
-  (if (not window-system)
-      (setq interprogram-cut-function 'osc52-select-text)))
-
-            ;; (if (string-match "^screen"
-            ;;                   (getenv-internal "TERM" initial-environment))
-            ;;     'osc52-select-text-dcs
-            ;;   'osc52-select-text))))
+`display-graphic-p' and the TERM environment variable."
+  (interactive)
+  (setq osc52-cut-function
+	(if (equal osc52-multiplexer 'tmux)
+	    'osc52-select-text-tmux
+	  'osc52-select-text))
+  (setq interprogram-cut-function 'osc52-interprogram-cut-function))
 
 (provide 'osc52)
+;; osc52.el ends here

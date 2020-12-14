@@ -18,6 +18,12 @@
   (require 'use-package))
 (setq use-package-always-ensure t)
 
+;; osc52 support under supporting terminals and tmux
+(use-package osc52
+  :ensure nil
+  :config
+  (osc52-set-cut-function))
+
 (require 'org)
 (org-babel-load-file
  (expand-file-name "config.org" user-emacs-directory))
