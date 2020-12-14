@@ -3,56 +3,84 @@
 
 My Emacs Configuration
 
-* Package Management 
-  This section documents what packages that have been installed and configured.
-** which-key
-   #+BEGIN_SRC emacs-lisp
-     (use-package which-key
-       :init
-       (which-key-mode))
-   #+END_SRC
-** theme
-   #+BEGIN_SRC emacs-lisp
-     (load-theme 'modus-operandi t)
-     ;; (load-theme 'modus-vivendi t)
-   #+END_SRC
-** ace-window
-   #+BEGIN_SRC emacs-lisp
-     (use-package ace-window
-       :bind
-       ([remap other-window] . ace-window)
-       :config
-       (set-face-attribute 'aw-leading-char-face nil
-			   :height 3.0
-			   :box t))
-   #+END_SRC
-** evil and related packages
+* variables
+#+bEGIN_SRC emacs-lisp
+  (set-language-environment "utf-8")
+  (prefer-coding-system 'utf-8)
+  (set-default-coding-systems 'utf-8)
+
+  (defalias 'yes-or-no-p 'y-or-n-p)
+
+  (setq inhibit-startup-screen t
+	inhibit-startup-echo-area-message t
+	initial-major-mode 'org-mode
+	initial-scratch-message nil)
+  (setq backup-inhibited t
+	make-backup-files nil
+	auto-save-default nil
+	auto-save-list-file-prefix nil)
+  (setq scroll-step 1
+	scroll-margin 1
+	scroll-conservatively 10000
+	auto-window-vscroll nil)
+  (setq vc-follow-symlinks nil)
+  (setq delete-by-moving-to-trash t)
+  (setq display-line-numbers-type 'relative)
+  (setq display-time-24hr-format t
+	display-time-format "%R"
+	display-time-default-load-average nil)
+  (setq visible-bell t
+	visible-cursor nil)
+  (setq default-input-method "pyim")
+  (when (eq system-type 'windows-nt)
+    (setq w32-get-true-file-attributes nil)
+    (setq inhibit-compacting-font-caches t)) 
+  (setq frame-title-format
+	'(buffer-file-name "%f"
+			   (dired-directory dired-directory "%b")))
+#+eND_SRC
+* theme
+  #+BEGIN_SRC emacs-lisp
+    (load-theme 'modus-operandi t)
+  #+END_SRC
+* mode line
+#+BEGIN_SRC emacs-lisp
+  (use-package telephone-line
+    :init
+    (setq telephone-line-height 24
+	  telephone-line-evil-use-short-tag nil)
+
+    (setq telephone-line-primary-left-separator 'telephone-line-flat
+	  telephone-line-secondary-left-separator 'telephone-line-nil
+	  telephone-line-primary-right-separator 'telephone-line-flat
+	  telephone-line-secondary-right-separator 'telephone-line-nil)
+    :config
+    (telephone-line-mode t))
+#+END_SRC
+* ace-window
+  #+BEGIN_SRC emacs-lisp
+    (use-package ace-window
+      :bind
+      ([remap other-window] . ace-window)
+      :config
+      (set-face-attribute 'aw-leading-char-face nil
+			  :height 3.0
+			  :box t))
+  #+END_SRC
+* evils
 Simulate a Vim modal editing experience
 #+BEGIN_SRC emacs-lisp
-  (use-package evil-leader
-    :init
-    (setq evil-want-keybinding nil)
-    :config
-    (global-evil-leader-mode)
-    (evil-leader/set-leader "<SPC>")
-    (evil-leader/set-key
-      "e" 'find-file
-      "p" (lambda() (interactive) (evil-use-register ?+) (call-interactively 'evil-paste-after))
-      "P" (lambda() (interactive) (evil-use-register ?+) (call-interactively 'evil-paste-before))
-      "y" (lambda() (interactive) (evil-use-register ?+) (call-interactively 'evil-yank))
-      "Y" (lambda() (interactive) (evil-use-register ?+) (call-interactively 'evil-yank-line))))
-
   (use-package evil
-    :after evil-leader
     :init
-    (setq evil-want-C-i-jump nil)
-    (setq evil-want-integration t)
-    ;; (setq evil-want-keybinding nil)
     (fset 'evil-visual-update-x-selection 'ignore)
     (setq x-select-enable-clipboard nil)
+
+    (setq evil-want-C-i-jump nil)
+    (setq evil-want-integration t)
+    (setq evil-want-keybinding nil)
+    (setq evil-mode-line-format '(after . mode-line-front-space))
     :config
-    (evil-mode 1)
-    (setq evil-mode-line-format '(after . mode-line-front-space)))
+    (evil-mode 1))
 
   (use-package evil-collection
     :after evil
@@ -82,25 +110,9 @@ Simulate a Vim modal editing experience
     :config
     (global-evil-quickscope-mode t))
 
-  (use-package evil-numbers
-    :config
-    (define-key evil-normal-state-map (kbd "C-c +") 'evil-numbers/inc-at-pt)
-    (define-key evil-normal-state-map (kbd "C-c -") 'evil-numbers/dec-at-pt))
+  (use-package evil-numbers)
 
-  (use-package evil-args
-    :config
-    ;; bind evil-args text objects
-    (define-key evil-inner-text-objects-map "a" 'evil-inner-arg)
-    (define-key evil-outer-text-objects-map "a" 'evil-outer-arg)
-
-    ;; bind evil-forward/backward-args
-    (define-key evil-normal-state-map "L" 'evil-forward-arg)
-    (define-key evil-normal-state-map "H" 'evil-backward-arg)
-    (define-key evil-motion-state-map "L" 'evil-forward-arg)
-    (define-key evil-motion-state-map "H" 'evil-backward-arg)
-
-    ;; bind evil-jump-out-args
-    (define-key evil-normal-state-map "K" 'evil-jump-out-args))
+  (use-package evil-args)
 
   (use-package evil-lion
     :config
@@ -110,17 +122,17 @@ Simulate a Vim modal editing experience
     :config
     (evil-exchange-install))
 #+END_SRC
-** magit
+* magit
 #+BEGIN_SRC emacs-lisp
   (use-package magit
-    :bind ("C-x g" . magit-status))
+    :init
+    (setq magit-define-global-key-bindings t))
 #+END_SRC
-** sudo-edit
+* sudo-edit
 #+BEGIN_SRC emacs-lisp
-  (use-package sudo-edit
-    :bind ("s-e" . sudo-edit))
+  (use-package sudo-edit)
 #+END_SRC
-** rainbow
+* rainbow
 #+BEGIN_SRC emacs-lisp
   (use-package rainbow-mode
     :hook prog-mode)
@@ -129,30 +141,24 @@ Simulate a Vim modal editing experience
     :config
     (rainbow-delimiters-mode 1))
 #+END_SRC
-** org mode
-*** stock org-mode
+* org mode
+** stock org-mode
 #+BEGIN_SRC emacs-lisp
-  (use-package org
-    :init
-    (setq org-hide-emphasis-markers t)
-    (setq org-fontify-whole-heading-line t)
-    (setq org-support-shift-select t)
-    (setq org-odt-convert-process 'unoconv)
-    (setq org-odt-preferred-output-format "docx")
-    (setq org-agenda-files (list "~/Documents/Org"))
-    (setq org-capture-templates
-	  '(("t" "Todo" entry (file+headline "~/Documents/Org/gtd.org" "Tasks")
-	     "* TODO %?\n  %i\n  %a")
-	    ("n" "Notes" entry (file+headline "~/Documents/Org/notes.org" "Notes")
-	     "* Notes %?\n  %i\n  %a")
-	    ("j" "Journal" entry (file+olp+datetree "~/Documents/Org/journal.org")
-	     "* %?\nEntered on %U\n  %i\n  %a")))
-    :bind (("C-c l" . org-store-link)
-	   ("C-c a" . org-agenda)
-	   ("C-c c" . org-capture)
-	   ("C-c b" . org-switchb)))
+  (setq org-hide-emphasis-markers t)
+  (setq org-fontify-whole-heading-line t)
+  (setq org-support-shift-select t)
+  (setq org-odt-convert-process 'unoconv)
+  (setq org-odt-preferred-output-format "docx")
+  (setq org-agenda-files (list "~/Documents/Org"))
+  (setq org-capture-templates
+	'(("t" "Todo" entry (file+headline "~/Documents/Org/gtd.org" "Tasks")
+	   "* TODO %?\n  %i\n  %a")
+	  ("n" "Notes" entry (file+headline "~/Documents/Org/notes.org" "Notes")
+	   "* Notes %?\n  %i\n  %a")
+	  ("j" "Journal" entry (file+olp+datetree "~/Documents/Org/journal.org")
+	   "* %?\nEntered on %U\n  %i\n  %a")))
 #+END_SRC
-*** org-superstar
+** org-superstar
 #+BEGIN_SRC emacs-lisp
   (use-package org-superstar
     :hook (org-mode . org-superstar-mode)
@@ -161,122 +167,158 @@ Simulate a Vim modal editing experience
 	  org-superstar-prettify-item-bullets t
 	  org-superstar-leading-bullet ?\s))
 #+END_SRC
-** company
+* company
 #+BEGIN_SRC emacs-lisp
   (use-package company
-    :config
+    :init
     (setq company-idle-delay 0
 	  company-minimum-prefix-length 3)
+    :config
     (global-company-mode t))
 #+END_SRC
-** search
-*** Avy
+* search
+** Avy
     #+BEGIN_SRC emacs-lisp
-      (use-package avy
-	:bind ("M-s" . avy-goto-char))
+      (use-package avy)
     #+END_SRC
-*** Ivy
+** Ivy
     #+BEGIN_SRC emacs-lisp
       (use-package ivy
 	:init (ivy-mode 1)
-	:bind (("C-c C-r" . ivy-resume)
-	       ("<f6>" . ivy-resume))
 	:config
 	(setq ivy-use-virtual-buffers t)
+	(setq ivy-count-format "(%d/%d) ")
 	(setq enable-recursive-minibuffers t))
     #+END_SRC
-*** Swiper
+** Swiper
     #+BEGIN_SRC emacs-lisp
-      (use-package swiper
-	:bind ("C-s" . swiper))
+      (use-package swiper)
     #+END_SRC
-*** Counsel
+** Counsel
     #+BEGIN_SRC emacs-lisp
-      (use-package counsel
-	:bind
-	(("C-x C-f" . counsel-find-file)
-	 ("<f1> u" . counsel-unicode-char)))
+      (use-package counsel)
     #+END_SRC
-** sr-speedbar
-   #+BEGIN_SRC emacs-lisp
-     (use-package sr-speedbar
-       :defer t
-       :bind ([f9] . sr-speedbar-toggle))
-   #+END_SRC
-** yasnippets
+* sr-speedbar
+  #+BEGIN_SRC emacs-lisp
+    (use-package sr-speedbar
+      :defer t)
+  #+END_SRC
+* yasnippets
 #+BEGIN_SRC emacs-lisp
    (use-package yasnippet
      :config
      (use-package yasnippet-snippets)
      (yas-global-mode 1))
 #+END_SRC
-** flycheck
+* flycheck
 #+BEGIN_SRC emacs-lisp
   (use-package flycheck
     :init (global-flycheck-mode))
 #+END_SRC
-** lsp
+* which-key
+  #+BEGIN_SRC emacs-lisp
+    (use-package which-key
+      :init
+      (which-key-mode))
+  #+END_SRC
+* lsp
 #+BEGIN_SRC emacs-lisp
   (use-package lsp-mode
-    :hook ((c-mode . lsp)
-	   (c++-mode . lsp)
+    :hook ((c-mode    . lsp)
+	   (c++-mode  . lsp)
 	   (objc-mode . lsp)
-	   (go-mode . lsp)
+	   (go-mode   . lsp)
 	   (rust-mode . lsp)
-	   (lsp-mode . lsp-enable-which-key-integration))
+	   (lsp-mode  . lsp-enable-which-key-integration))
     :commands lsp)
 
   ;; optionally
   (use-package lsp-ui :commands lsp-ui-mode)
   (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
 #+END_SRC
-** various modes for programming languages and file types
+* key bindings
 #+BEGIN_SRC emacs-lisp
-  (use-package cmake-mode)
-  (use-package go-mode)
-  (use-package rust-mode)
+  (use-package general
+    :config
+    (general-create-definer my--golden-key ;; all states
+      :states '(normal visual motion emacs insert)
+      :keymaps 'override)
+    (general-create-definer my--normal-key
+      :states 'normal
+      :keymaps 'override)
+    (general-create-definer my--motion-key
+      :states 'motion
+      :keymaps 'override)
+    (general-create-definer my--leader-key
+      :states '(normal visual motion insert emacs)
+      :keymaps 'override
+      :prefix "SPC"
+      :non-normal-prefix "M-SPC"))
+
+  (my--leader-key
+    "E" 'sudo-edit
+    "p" (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-paste-after))
+    "P" (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-paste-before))
+    "y" (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank))
+    "Y" (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank-line)))
+
+  (my--normal-key
+    "C-c +" 'evil-numbers/inc-at-pt
+    "C-c -" 'evil-numbers/dec-at-pt)
+
+  (my--normal-key
+    "L" 'evil-forward-arg
+    "H" 'evil-backward-arg
+    "K" 'evil-jump-out-args)
+
+  (my--motion-key
+    "L" 'evil-forward-arg
+    "H" 'evil-backward-arg)
+
+  (my--golden-key
+    :keymaps 'evil-inner-text-objects-map
+     "a" 'evil-inner-arg
+     "a" 'evil-outer-arg)
+
+  ;; org mode
+  (my--golden-key
+    :prefix "C-c"
+    "l" 'org-store-link
+    "a" 'org-agenda
+    "c" 'org-capture
+    "b" 'org-switchb)
+
+  ;; avy, ivy, swiper, counsel
+  (my--leader-key
+    "f" 'avy-goto-char
+    "b" 'ivy-switch-buffer
+    "s" 'swiper
+    "e" 'counsel-file-file
+    "g" 'counsel-git
+    "." 'counsel-fzf
+    "`" (lambda() (interactive) (counsel-fzf nil "/"))) ;; search from root dir
+
+  (my--golden-key
+    "M-x"    'counsel-M-x
+    "M-y"    'counsel-yank-pop
+    "<f1> f" 'counsel-describe-function
+    "<f1> v" 'counsel-describe-variable
+    "<f1> l" 'counsel-find-library
+    "<f2> i" 'counsel-info-lookup-symbol
+    "<f2> u" 'counsel-unicode-char
+    "<f2> j" 'counsel-set-variable
+    "<f9>"   'sr-speedbar-toggle
+    "C-`"    'shell)
+
+  ;; Mouse scrolling in terminal emacs
+  (unless (display-graphic-p)
+    ;; activate mouse-based scrolling
+    (xterm-mouse-mode 1)
+    (my--golden-key
+      "<mouse-4>" 'scroll-down-line
+      "<mouse-5>" 'scroll-up-line))
 #+END_SRC
-** misc.
-#+BEGIN_SRC emacs-lisp
-  
-#+END_SRC
-* Personal Settings
-** Variables
-#+BEGIN_SRC emacs-lisp
-  (set-language-environment "utf-8")
-  (setq inhibit-startup-screen t
-	inhibit-startup-echo-area-message t
-	initial-major-mode 'org-mode
-	initial-scratch-message nil)
-  (setq backup-inhibited t
-	make-backup-files nil
-	auto-save-default nil
-	auto-save-list-file-prefix nil)
-  (setq scroll-step 1
-	scroll-margin 1
-	scroll-conservatively 10000
-	auto-window-vscroll nil)
-  (setq vc-follow-symlinks nil)
-  (setq delete-by-moving-to-trash t)
-  (setq display-line-numbers-type 'relative)
-  (setq display-time-24hr-format t
-	display-time-format "%R"
-	display-time-default-load-average nil)
-  (setq visible-bell t
-	visible-cursor nil)
-  (setq default-input-method "pyim")
-  (when (eq system-type 'windows-nt)
-    (setq w32-get-true-file-attributes nil)
-    (setq inhibit-compacting-font-caches t)) 
-  (setq frame-title-format
-	  '(buffer-file-name "%f"
-	    (dired-directory dired-directory "%b")))
-#+END_SRC
-** Functions
-#+BEGIN_SRC emacs-lisp
-  (fset 'yes-or-no-p 'y-or-n-p)
-#+END_SRC
-** Modes
+* modes
 #+BEGIN_SRC emacs-lisp
   ;; enable some modes
   (global-visual-line-mode t)
@@ -289,41 +331,9 @@ Simulate a Vim modal editing experience
   (blink-cursor-mode t)
   (save-place-mode t)
 #+END_SRC
-** Faces
+* misc
 #+BEGIN_SRC emacs-lisp
-  ;; default face
-  (set-face-attribute 'default nil
-		      :family "Iosevka Fusion"
-		      :foundry "outline"
-		      :height 130)
-#+END_SRC
-** Key bindings
-#+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "C-~") 'eshell)
-  (global-set-key (kbd "C-x C-b") 'ibuffer)
-
-  ;;;; Mouse scrolling in terminal emacs
-  (unless (display-graphic-p)
-    ;; activate mouse-based scrolling
-    (xterm-mouse-mode 1)
-    (global-set-key (kbd "<mouse-4>") 'scroll-down-line)
-    (global-set-key (kbd "<mouse-5>") 'scroll-up-line))
-#+END_SRC
-** Mode line
-#+BEGIN_SRC emacs-lisp
-  (use-package telephone-line
-    :init
-    (setq telephone-line-height 24
-	  telephone-line-evil-use-short-tag nil)
-
-    (setq telephone-line-primary-left-separator 'telephone-line-flat
-	  telephone-line-secondary-left-separator 'telephone-line-nil
-	  telephone-line-primary-right-separator 'telephone-line-flat
-	  telephone-line-secondary-right-separator 'telephone-line-nil)
-    :config
-    (telephone-line-mode t))
-#+END_SRC
-** EShell prompt
-#+BEGIN_SRC emacs-lisp
-  (setq eshell-highlight-prompt nil)
+  (use-package cmake-mode)
+  (use-package go-mode)
+  (use-package rust-mode)
 #+END_SRC
