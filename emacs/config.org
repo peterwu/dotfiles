@@ -2,8 +2,32 @@
 #+STARTUP: overview
 #+TITLE: My Emacs Configuration
 
-* auto update packages
+* bootstrap
 #+BEGIN_SRC emacs-lisp
+  ;; tune gc for better performance
+  (add-hook 'emacs-startup-hook
+            (lambda ()
+              (setq gc-cons-threshold (* 8 1024 1024) ; 8MB
+                    gc-cons-percentage 0.1
+                    file-name-handler-alist my-file-name-handler-alist)))
+  (run-with-idle-timer 5 nil (lambda () (garbage-collect)))
+
+  (setq custom-file (concat user-emacs-directory "custom.el"))
+  (load custom-file 'noerror)
+
+  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+
+  ;; install use-package if not
+  (unless (package-installed-p 'use-package)
+    (package-refresh-contents)
+    (package-install 'use-package))
+
+  (eval-when-compile
+    (require 'use-package))
+
+  (setq use-package-always-ensure t)
+
+  ;; auto update packages
   (use-package auto-package-update
     :custom
     (auto-package-update-last-update-day-filename
@@ -107,21 +131,19 @@
     ("-" text-scale-decrease "out")
     ("0" (lambda () (interactive) (text-scale-set 0)) "reset"))
 
-  ;; shell
-  (bind-key "C-`" 'shell)
-
   ;; Mouse scrolling in terminal emacs
   (unless (display-graphic-p)
     ;; activate mouse-based scrolling
     (xterm-mouse-mode 1)
-    (bind-key "<mouse-4>" 'scroll-down-line)
-    (bind-key "<mouse-5>" 'scroll-up-line))
+    (general-define-key
+     "<mouse-4>" 'scroll-down-line
+     "<mouse-5>" 'scroll-up-line))
 #+END_SRC
 * ace-window
 #+BEGIN_SRC emacs-lisp
   (use-package ace-window
-    :bind
-    ([remap other-window] . ace-window)
+    :general
+    ([remap other-window] 'ace-window)
     :config
     (set-face-attribute 'aw-leading-char-face nil
 			:height 3.0
@@ -224,29 +246,31 @@ Simulate a Vim modal editing experience
 * sudo-edit
 #+BEGIN_SRC emacs-lisp
   (use-package sudo-edit
-    :bind ("s-e" . sudo-edit))
+    :general
+    ("s-e" 'sudo-edit))
 #+END_SRC
 * rainbow
 #+BEGIN_SRC emacs-lisp
   (use-package rainbow-mode
-    :hook prog-mode)
+    :ghook prog-mode-hook)
 
   (use-package rainbow-delimiters
-    :hook (prog-mode . rainbow-delimiters-mode))
+    :ghook 'prog-mode-hook)
 #+END_SRC
 * org mode
 ** stock org-mode
 #+BEGIN_SRC emacs-lisp
   (use-package org
     :ensure nil
-    :hook (org-mode . (lambda ()
-			(org-indent-mode)
-			(variable-pitch-mode -1)
-			(display-line-numbers-mode -1)))
-    :bind (("C-c a" . org-agenda)
-	   ("C-c b" . org-switchb)
-	   ("C-c c" . org-capture)
-	   ("C-c l" . org-store-link))  
+    :gfhook #'(lambda ()
+                (org-indent-mode)
+                (variable-pitch-mode -1)
+                (display-line-numbers-mode -1))
+    :general
+    ("C-c a" 'org-agenda)
+    ("C-c b" 'org-switchb)
+    ("C-c c" 'org-capture)
+    ("C-c l" 'org-store-link)
     :custom
     (org-ellipsis " ▾")
     (org-startup-folded t)
@@ -265,11 +289,11 @@ Simulate a Vim modal editing experience
     (org-agenda-files (list "~/Documents/Org"))
     (org-capture-templates
      '(("t" "Todo" entry (file+headline "~/Documents/Org/gtd.org" "Tasks")
-	"* TODO %?\n  %i\n  %a")
+        "* TODO %?\n  %i\n  %a")
        ("n" "Notes" entry (file+headline "~/Documents/Org/notes.org" "Notes")
-	"* Notes %?\n  %i\n  %a")
+        "* Notes %?\n  %i\n  %a")
        ("j" "Journal" entry (file+olp+datetree "~/Documents/Org/journal.org")
-	"* %?\nEntered on %U\n  %i\n  %a"))))
+        "* %?\nEntered on %U\n  %i\n  %a"))))
 
   (use-package org-indent
     :ensure nil
@@ -278,7 +302,7 @@ Simulate a Vim modal editing experience
 ** org-superstar
 #+BEGIN_SRC emacs-lisp
   (use-package org-superstar
-    :hook (org-mode . org-superstar-mode)
+    :ghook 'org-mode-hook
     :custom
     (org-superstar-headline-bullets-list '("◉" "✸" "▷" "◆" "○" "▶"))
     (org-superstar-prettify-item-bullets t)
@@ -298,22 +322,32 @@ Simulate a Vim modal editing experience
 
   (use-package company-box
     :after company
-    :hook (company-mode . company-box-mode))
+    :ghook 'company-mode-hook)
 #+END_SRC
 * search
 ** Avy
   #+BEGIN_SRC emacs-lisp
     (use-package avy
-	:general
-	(nmap 
-	 :prefix my-leader-key
-	 "f" 'avy-goto-char))
+      :general
+      (nmap 
+        :prefix my-leader-key
+        "f" 'avy-goto-char))
   #+END_SRC
 ** Swiper!
   #+BEGIN_SRC emacs-lisp
     (use-package swiper
       :init (ivy-mode 1)
       :general
+      ("M-x"    'counsel-M-x)
+      ("M-y"    'counsel-yank-pop)
+      ("<f1> f" 'counsel-describe-function)
+      ("<f1> v" 'counsel-describe-variable)
+      ("<f1> l" 'counsel-find-library)
+      ("<f2> i" 'counsel-info-lookup-symbol)
+      ("<f2> u" 'counsel-unicode-char)
+      ("<f2> j" 'counsel-set-variable)
+      ("C-s"    'swiper)
+
       (nmap
         :prefix my-leader-key
         "b" 'ivy-switch-buffer
@@ -321,16 +355,6 @@ Simulate a Vim modal editing experience
         "g" 'counsel-git
         "." 'counsel-fzf
         "`" (lambda() (interactive) (counsel-fzf nil "/")))
-      :bind
-      (("M-x"    . counsel-M-x)
-       ("M-y"    . counsel-yank-pop)
-       ("<f1> f" . counsel-describe-function)
-       ("<f1> v" . counsel-describe-variable)
-       ("<f1> l" . counsel-find-library)
-       ("<f2> i" . counsel-info-lookup-symbol)
-       ("<f2> u" . counsel-unicode-char)
-       ("<f2> j" . counsel-set-variable)
-       ("C-s"    . swiper))
       :custom
       (ivy-use-virtual-buffers t)
       (ivy-count-format "(%d/%d) ")
@@ -347,8 +371,8 @@ Simulate a Vim modal editing experience
   (use-package sr-speedbar
     :custom
     (speedbar-use-images nil)
-    :bind
-    ([f9] . sr-speedbar-toggle))
+    :general
+    ([f9] 'sr-speedbar-toggle))
 #+END_SRC
 * yasnippets
 #+BEGIN_SRC emacs-lisp
@@ -364,11 +388,11 @@ Simulate a Vim modal editing experience
 #+BEGIN_SRC emacs-lisp
   (use-package helpful
     :after counsel
-    :bind
-    ([remap describe-key]      . helpful-key)
-    ([remap describe-command]  . helpful-command)
-    ([remap describe-variable] . counsel-describe-variable)
-    ([remap describe-function] . counsel-describe-function)
+    :general
+    ([remap describe-key]      'helpful-key)
+    ([remap describe-command]  'helpful-command)
+    ([remap describe-variable] 'counsel-describe-variable)
+    ([remap describe-function] 'counsel-describe-function)
     :custom
     (counsel-describe-function-function #'helpful-callable)
     (counsel-describe-variable-function #'helpful-variable))
@@ -387,12 +411,13 @@ Simulate a Vim modal editing experience
   (use-package flyspell
     :ensure nil
     :after ispell
-    :bind ("C-c s" . flyspell-mode))
+    :general ("C-c s" 'flyspell-mode))
 
   (use-package flyspell-correct
     :after flyspell
-    :bind (:map flyspell-mode-map
-		("C-;" . flyspell-correct-wrapper)))
+    :general
+    (:keymaps 'flyspell-mode-map
+              "C-;" 'flyspell-correct-wrapper))
 
   (use-package flyspell-correct-ivy
     :after (flyspell-correct ivy))
@@ -401,21 +426,21 @@ Simulate a Vim modal editing experience
 #+BEGIN_SRC emacs-lisp
   (use-package flycheck
     :after lsp-mode
-    :hook (lsp-mode . flycheck-mode))
+    :ghook 'lsp-mode-hook)
 #+END_SRC
 * lsp
 #+BEGIN_SRC emacs-lisp
   (use-package lsp-mode
-    :hook ((c-mode    . lsp)
-           (c++-mode  . lsp)
-           (objc-mode . lsp)
-           (go-mode   . lsp)
-           (rust-mode . lsp)
-           (lsp-mode  . lsp-enable-which-key-integration))
+    :ghook '(c-mode-hook
+             c++-mode-hook
+             objc-mode-hook
+             go-mode-hook
+             rust-mode-hook)
+    :gfhook #'lsp-enable-which-key-integration
     :commands lsp)
 
   (use-package lsp-ui
-    :hook (lsp-mode . lsp-ui-mode)
+    :ghook 'lsp-mode-hook
     :custom
     (lsp-ui-doc-position 'bottom))
 
