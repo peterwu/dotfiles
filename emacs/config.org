@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 #+STARTUP: overview
-
-My Emacs Configuration
+#+TITLE: My Emacs Configuration
 
 * auto update packages
 #+BEGIN_SRC emacs-lisp
@@ -68,10 +67,7 @@ My Emacs Configuration
 #+END_SRC
 * theme
 #+BEGIN_SRC emacs-lisp
-  ;; (use-package modus-themes
-  ;;   :ensure nil
-  ;;   :config
-  ;;   (load-theme 'modus-operandi t))
+  (load-theme 'modus-operandi t)
 #+END_SRC
 * mode line
 #+BEGIN_SRC emacs-lisp
@@ -321,9 +317,8 @@ Simulate a Vim modal editing experience
       (nmap
         :prefix my-leader-key
         "b" 'ivy-switch-buffer
-        "e" 'counsel-file-file
+        "e" 'counsel-find-file
         "g" 'counsel-git
-        "s" 'swiper
         "." 'counsel-fzf
         "`" (lambda() (interactive) (counsel-fzf nil "/")))
       :bind
@@ -334,7 +329,8 @@ Simulate a Vim modal editing experience
        ("<f1> l" . counsel-find-library)
        ("<f2> i" . counsel-info-lookup-symbol)
        ("<f2> u" . counsel-unicode-char)
-       ("<f2> j" . counsel-set-variable))
+       ("<f2> j" . counsel-set-variable)
+       ("C-s"    . swiper))
       :custom
       (ivy-use-virtual-buffers t)
       (ivy-count-format "(%d/%d) ")
@@ -349,7 +345,6 @@ Simulate a Vim modal editing experience
 * sr-speedbar
 #+BEGIN_SRC emacs-lisp
   (use-package sr-speedbar
-    :defer t
     :custom
     (speedbar-use-images nil)
     :bind
@@ -425,6 +420,15 @@ Simulate a Vim modal editing experience
     (lsp-ui-doc-position 'bottom))
 
   (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+#+END_SRC
+* osc52 support
+#+BEGIN_SRC emacs-lisp
+  ;; osc52 support under supporting terminals and tmux
+  (use-package osc52
+    :unless window-system
+    :load-path "mine/"
+    :config
+    (osc52-set-cut-function))
 #+END_SRC
 * misc
 #+BEGIN_SRC emacs-lisp
