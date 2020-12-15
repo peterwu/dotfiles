@@ -284,30 +284,19 @@ Simulate a Vim modal editing experience
 	 :prefix my-leader-key
 	 "f" 'avy-goto-char))
   #+END_SRC
-** Ivy
+** Swiper!
   #+BEGIN_SRC emacs-lisp
-    (use-package ivy
+    (use-package swiper
       :init (ivy-mode 1)
       :general
-      (nmap 
-       :prefix my-leader-key
-       "b" 'ivy-switch-buffer)
-      :config
-      (setq ivy-use-virtual-buffers t
-	    ivy-count-format "(%d/%d) ")
-      (setq enable-recursive-minibuffers t))
-  #+END_SRC
-** Swiper
-  #+BEGIN_SRC emacs-lisp
-      (use-package swiper
-	:general
-	(nmap
-	 :prefix my-leader-key
-	 "s" 'swiper))
-  #+END_SRC
-** Counsel
-  #+BEGIN_SRC emacs-lisp
-    (use-package counsel
+      (nmap
+	:prefix my-leader-key
+	"b" 'ivy-switch-buffer
+	"e" 'counsel-file-file
+	"g" 'counsel-git
+	"s" 'swiper
+	"." 'counsel-fzf
+	"`" (lambda() (interactive) (counsel-fzf nil "/")))
       :bind
       (("M-x"    . counsel-M-x)
        ("M-y"    . counsel-yank-pop)
@@ -317,19 +306,25 @@ Simulate a Vim modal editing experience
        ("<f2> i" . counsel-info-lookup-symbol)
        ("<f2> u" . counsel-unicode-char)
        ("<f2> j" . counsel-set-variable))
-      :general
-      (nmap 
-       :prefix my-leader-key
-       "e" 'counsel-file-file
-       "g" 'counsel-git
-       "." 'counsel-fzf
-       "`" (lambda() (interactive) (counsel-fzf nil "/"))))
+      :config
+      (setq ivy-use-virtual-buffers t
+	    ivy-count-format "(%d/%d) ")
+      (setq enable-recursive-minibuffers t)
+      (setq search-default-mode #'char-fold-to-regexp))
+
+    (use-package ivy-rich
+      :after ivy
+      :init
+      (ivy-rich-mode))
   #+END_SRC
 * sr-speedbar
 #+BEGIN_SRC emacs-lisp
   (use-package sr-speedbar
     :defer t
-    :bind ([f9] . sr-speedbar-toggle))
+    :init
+    (setq speedbar-use-images nil)
+    :bind
+    ([f9] . sr-speedbar-toggle))
 #+END_SRC
 * yasnippets
 #+BEGIN_SRC emacs-lisp
@@ -363,4 +358,5 @@ Simulate a Vim modal editing experience
   (use-package cmake-mode)
   (use-package go-mode)
   (use-package rust-mode)
+  (use-package yaml-mode)
 #+END_SRC

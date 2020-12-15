@@ -29,21 +29,23 @@ If you select a region larger than this size, it won't be copied to your system
 clipboard.  Since clipboard data is base 64 encoded, the actual number of
 characters that can be copied is 1/3 of this value.")
 
-(defcustom osc52-multiplexer 'tmux
-  "Select which terminal multiplexer should be used when creating OSC 52 sequences. Device control string escape sequences are only used when the value of the environment variable TERM starts with the string \"screen\".
+(defcustom osc52-multiplexer 'tmux "Select which terminal multiplexer should be
+  used when creating OSC 52 sequences. Device control string escape sequences
+  are only used when the value of the environment variable TERM starts with the
+  string \"screen\".
 
-If set to 'tmux, a tmux DCS escape sequence will be generated, otherwise a screen DCS will be used.")
+If set to 'tmux, a tmux DCS escape sequence will be generated, otherwise a
+screen DCS will be used.")
 
-(defun osc52-select-text (string &optional replace yank-handler)
-  "Copy STRING to the system clipboard using the OSC 52 escape sequence.
+(defun osc52-select-text (string &optional replace yank-handler) "Copy STRING to
+  the system clipboard using the OSC 52 escape sequence.
 
 Set `interprogram-cut-function' to this when using a compatible terminal, and
 your system clipboard will be updated whenever you copy a region of text in
 emacs.
 
-If the resulting OSC 52 sequence would be longer than
-`osc52-max-sequence', then the STRING is not sent to the system
-clipboard.
+If the resulting OSC 52 sequence would be longer than `osc52-max-sequence', then
+the STRING is not sent to the system clipboard.
 
 This function sends a raw OSC 52 sequence and will work on a bare terminal
 emulators.  It does not work on screen or tmux terminals, since they don't
