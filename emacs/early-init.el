@@ -1,13 +1,20 @@
 ;;; early-init.el -*- lexical-binding: t; -*-
 
-(defvar my-file-name-handler-alist file-name-handler-alist)
+(defvar file-name-handler-alist-original file-name-handler-alist)
 (setq gc-cons-threshold most-positive-fixnum
       gc-cons-percentage 0.6
-      file-name-handler-alist nil)
+      file-name-handler-alist nil
+      site-run-file nil)
 
-(setq site-run-file nil)
+;; tune gc for better performance
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (setq gc-cons-threshold (* 8 1024 1024) ; 8MB
+                  gc-cons-percentage 0.1
+                  file-name-handler-alist file-name-handler-alist-original)))
+(run-with-idle-timer 5 nil (lambda () (garbage-collect)))
 
-(setq package-enable-at-startup t
+(setq package-enable-at-startup nil
       package-quickstart t)
 
 ;; Do not resize the frame at this early stage.
@@ -31,11 +38,11 @@
       tramp-persistency-file-name (expand-file-name
 				   ".cache/tramp" user-emacs-directory))
 
-;; default face
+  ;; set default face
 (set-face-attribute 'default nil
-		    :family "Iosevka Fusion"
-		    :foundry "outline"
-		    :height 130)
+                    :family "Iosevka Fusion"
+                    :foundry "outline"
+                    :height 130)
 
 (provide 'early-init)
 ;;; early-init.el ends here

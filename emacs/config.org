@@ -4,14 +4,6 @@
 
 * bootstrap
 #+BEGIN_SRC emacs-lisp
-  ;; tune gc for better performance
-  (add-hook 'emacs-startup-hook
-            (lambda ()
-              (setq gc-cons-threshold (* 8 1024 1024) ; 8MB
-                    gc-cons-percentage 0.1
-                    file-name-handler-alist my-file-name-handler-alist)))
-  (run-with-idle-timer 5 nil (lambda () (garbage-collect)))
-
   (setq custom-file (concat user-emacs-directory "custom.el"))
   (load custom-file 'noerror)
 
@@ -39,7 +31,7 @@
     :config
     (auto-package-update-maybe))
 #+END_SRC
-* variables
+* sensible defaults
 #+BEGIN_SRC emacs-lisp
   (set-language-environment "utf-8")
   (prefer-coding-system 'utf-8)
@@ -91,9 +83,10 @@
 #+END_SRC
 * theme
 #+BEGIN_SRC emacs-lisp
+  ;; load favorite theme
   (load-theme 'modus-operandi t)
 #+END_SRC
-* mode line
+* telephone line
 #+BEGIN_SRC emacs-lisp
   (use-package telephone-line
     :custom
@@ -126,43 +119,42 @@
 * ace-window
 #+BEGIN_SRC emacs-lisp
   (use-package ace-window
-    :bind
-    ([remap other-window] . ace-window)
-    :config
-    (set-face-attribute 'aw-leading-char-face nil
-			:height 3.0
-			:box t))
+    :bind ([remap other-window] . ace-window)
+    :config (set-face-attribute 'aw-leading-char-face nil
+                                :height 3.0
+                                :box t))
 #+END_SRC
-* evils
+* evil
 Simulate a Vim modal editing experience
 #+BEGIN_SRC emacs-lisp
-  (defconst my-leader-key "SPC")
-  (defconst my-local-leader-key ",")
-
-  (defun define-my-leader-maps ()
-    "Define my-leader-maps for all evil states"
-
-    ;; normal
-    (define-prefix-command 'my-evil-leader-nmap)
-    (define-key evil-normal-state-map (kbd my-leader-key) 'my-evil-leader-nmap)
-
-    ;; visual
-    (define-prefix-command 'my-evil-leader-vmap)
-    (define-key evil-visual-state-map (kbd my-leader-key) 'my-evil-leader-vmap)
-
-    ;; motion
-    (define-prefix-command 'my-evil-leader-mmap)
-    (define-key evil-motion-state-map (kbd my-leader-key) 'my-evil-leader-mmap)
-
-    ;; insert
-    (define-prefix-command 'my-evil-leader-imap)
-    (define-key evil-insert-state-map (kbd (concat "C-" my-leader-key)) 'my-evil-leader-imap)
-
-    ;; emacs
-    (define-prefix-command 'my-evil-leader-emap)
-    (define-key evil-emacs-state-map (kbd (concat "C-" my-leader-key)) 'my-evil-leader-emap))
-
   (use-package evil
+    :preface
+    (defconst my-leader-key "SPC")
+    (defconst my-local-leader-key ",")
+    (defconst my-non-normal-prefix "C-")
+
+    (defun define-my-leader-maps ()
+      "Define key maps for with my-leader-key for all evil states"
+
+      ;; normal
+      (define-prefix-command 'my-evil-leader-nmap)
+      (define-key evil-normal-state-map (kbd my-leader-key) 'my-evil-leader-nmap)
+
+      ;; visual
+      (define-prefix-command 'my-evil-leader-vmap)
+      (define-key evil-visual-state-map (kbd my-leader-key) 'my-evil-leader-vmap)
+
+      ;; motion
+      (define-prefix-command 'my-evil-leader-mmap)
+      (define-key evil-motion-state-map (kbd my-leader-key) 'my-evil-leader-mmap)
+
+      ;; insert
+      (define-prefix-command 'my-evil-leader-imap)
+      (define-key evil-insert-state-map (kbd (concat my-non-normal-prefix my-leader-key)) 'my-evil-leader-imap)
+
+      ;; emacs
+      (define-prefix-command 'my-evil-leader-emap)
+      (define-key evil-emacs-state-map (kbd (concat my-non-normal-prefix my-leader-key)) 'my-evil-leader-emap))
     :init
     (fset 'evil-visual-update-x-selection 'ignore)
     :custom
@@ -171,16 +163,14 @@ Simulate a Vim modal editing experience
     (evil-want-integration t)
     (evil-want-keybinding nil)
     (evil-mode-line-format '(after . mode-line-front-space))
-    :bind
-    (:map my-evil-leader-mmap
-     ("y" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank)))
-     ("Y" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank-line)))
-
-     :map my-evil-leader-nmap
-     ("p" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-paste-after)))
-     ("P" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-paste-before)))
-     ("y" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank)))
-     ("Y" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank-line))))
+    :bind (:map my-evil-leader-mmap
+                ("y" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank)))
+                ("Y" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank-line))))
+    :bind (:map my-evil-leader-nmap
+                ("p" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-paste-after)))
+                ("P" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-paste-before)))
+                ("y" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank)))
+                ("Y" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank-line))))
     :config
     (define-my-leader-maps)
     (evil-mode 1))
@@ -222,23 +212,17 @@ Simulate a Vim modal editing experience
       ("-" evil-numbers/dec-at-pt "decrease")))
 
   (use-package evil-args
-    :bind
-    (:map evil-inner-text-objects-map
-     ("a" . evil-inner-arg)
-     :map evil-outer-text-objects-map
-     ("a" . evil-outer-arg)
-
-     :map evil-normal-state-map
-     ("L" . evil-forward-arg)
-     ("K" . evil-jump-out-args)
-
-     :map evil-normal-state-map
-     ("H" . evil-backward-arg)
-     ("L" . evil-forward-arg)
-
-     :map evil-motion-state-map
-     ("H" . evil-backward-arg)
-     ("L" . evil-forward-arg)))
+    :bind (:map evil-inner-text-objects-map
+                ("a" . evil-inner-arg))
+    :bind (:map evil-outer-text-objects-map
+                ("a" . evil-outer-arg))
+    :bind (:map evil-normal-state-map
+                ("H" . evil-backward-arg)
+                ("L" . evil-forward-arg)
+                ("K" . evil-jump-out-args))
+    :bind (:map evil-motion-state-map
+                ("H" . evil-backward-arg)
+                ("L" . evil-forward-arg)))
 
   (use-package evil-lion
     :config
@@ -257,8 +241,7 @@ Simulate a Vim modal editing experience
 * sudo-edit
 #+BEGIN_SRC emacs-lisp
   (use-package sudo-edit
-    :bind
-    ("s-e" . sudo-edit))
+    :bind ("s-e" . sudo-edit))
 #+END_SRC
 * rainbow
 #+BEGIN_SRC emacs-lisp
@@ -338,31 +321,28 @@ Simulate a Vim modal editing experience
 ** Avy
   #+BEGIN_SRC emacs-lisp
     (use-package avy
-      :bind
-      (:map my-evil-leader-nmap
-       ("f" . avy-goto-char)))
+      :bind (:map my-evil-leader-nmap
+                  ("f" . avy-goto-char-timer)))
   #+END_SRC
 ** Swiper!
   #+BEGIN_SRC emacs-lisp
     (use-package swiper
       :init (ivy-mode 1)
-      :bind
-      (("M-x"    . counsel-M-x)
-       ("M-y"    . counsel-yank-pop)
-       ("<f1> f" . counsel-describe-function)
-       ("<f1> v" . counsel-describe-variable)
-       ("<f1> l" . counsel-find-library)
-       ("<f2> i" . counsel-info-lookup-symbol)
-       ("<f2> u" . counsel-unicode-char)
-       ("<f2> j" . counsel-set-variable)
-       ("C-s"    . swiper)
-
-       :map my-evil-leader-nmap
-       ("b" . ivy-switch-buffer)
-       ("e" . counsel-find-file)
-       ("g" . counsel-git)
-       ("." . counsel-fzf)
-       ("`" . (lambda() (interactive) (counsel-fzf nil "/"))))
+      :bind (("M-x"    . counsel-M-x)
+             ("M-y"    . counsel-yank-pop)
+             ("<f1> f" . counsel-describe-function)
+             ("<f1> v" . counsel-describe-variable)
+             ("<f1> l" . counsel-find-library)
+             ("<f2> i" . counsel-info-lookup-symbol)
+             ("<f2> u" . counsel-unicode-char)
+             ("<f2> j" . counsel-set-variable)
+             ("C-s"    . swiper))
+      :bind (:map my-evil-leader-nmap
+                  ("b" . ivy-switch-buffer)
+                  ("e" . counsel-find-file)
+                  ("g" . counsel-git)
+                  ("." . counsel-fzf)
+                  ("`" . (lambda() (interactive) (counsel-fzf nil "/"))))
       :custom
       (ivy-use-virtual-buffers t)
       (ivy-count-format "(%d/%d) ")
@@ -377,10 +357,8 @@ Simulate a Vim modal editing experience
 * sr-speedbar
 #+BEGIN_SRC emacs-lisp
   (use-package sr-speedbar
-    :custom
-    (speedbar-use-images nil)
-    :bind
-    ([f9] . sr-speedbar-toggle))
+    :custom (speedbar-use-images nil)
+    :bind ([f9] . sr-speedbar-toggle))
 #+END_SRC
 * yasnippets
 #+BEGIN_SRC emacs-lisp
@@ -421,9 +399,8 @@ Simulate a Vim modal editing experience
 
   (use-package flyspell-correct
     :after flyspell
-    :bind
-    (:map flyspell-mode-map
-     ("C-;" . flyspell-correct-wrapper)))
+    :bind (:map flyspell-mode-map
+                ("C-;" . flyspell-correct-wrapper)))
 
   (use-package flyspell-correct-ivy
     :after (flyspell-correct ivy))
@@ -437,12 +414,8 @@ Simulate a Vim modal editing experience
 * lsp
 #+BEGIN_SRC emacs-lisp
   (use-package lsp-mode
-    :hook ((c-mode    . lsp)
-           (c++-mode  . lsp)
-           (objc-mode . lsp)
-           (go-mode   . lsp)
-           (rust-mode . lsp)
-           (lsp-mode  . lsp-enable-which-key-integration))
+    :hook ((c-mode c++-mode objc-mode go-mode rust-mode) . lsp)
+    :hook (lsp-mode . lsp-enable-which-key-integration)
     :commands lsp)
 
   (use-package lsp-ui
@@ -456,12 +429,12 @@ Simulate a Vim modal editing experience
   ;; osc52 support under supporting terminals and tmux
   (use-package osc52
     :unless window-system
-    :load-path "mine/"
+    :load-path "mine"
     :config
     (osc52-set-cut-function))
 
   ;; Mouse scrolling in terminal emacs
-  (unless (display-graphic-p)
+  (unless window-system
     ;; activate mouse-based scrolling
     (xterm-mouse-mode 1)
     (bind-key "<mouse-4>" 'scroll-down-line)

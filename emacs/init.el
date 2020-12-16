@@ -1,7 +1,6 @@
 ;;; init.el --- Initialization file for Emacs
 
-(require 'package)
-(require 'org)
+(package-initialize)
 
 (org-babel-load-file
  (expand-file-name "config.org" user-emacs-directory))
