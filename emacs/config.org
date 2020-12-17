@@ -447,7 +447,7 @@ Simulate a Vim modal editing experience
      ([C-mouse-5] . text-scale-decrease)
      ([C-0]       . (lambda () (interactive) (text-scale-set 0))))
   #+END_SRC
-* /zzz/
+* ...
 #+BEGIN_SRC emacs-lisp
   (use-package cmake-mode)
   (use-package go-mode)
