@@ -3,19 +3,16 @@
 (defvar file-name-handler-alist-original file-name-handler-alist)
 (setq gc-cons-threshold most-positive-fixnum
       gc-cons-percentage 0.6
-      file-name-handler-alist nil
-      site-run-file nil)
+      file-name-handler-alist nil)
 
 ;; tune gc for better performance
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (setq gc-cons-threshold (* 8 1024 1024) ; 8MB
-                  gc-cons-percentage 0.1
-                  file-name-handler-alist file-name-handler-alist-original)))
+(add-hook 'after-init-hook
+	  `(lambda ()
+	     (setq file-name-handler-alist file-name-handler-alist-original
+		   gc-cons-threshold (* 8 1024 1024) ; 8MB
+		   gc-cons-percentage 0.1)
+	     (garbage-collect)) t)
 (run-with-idle-timer 5 nil (lambda () (garbage-collect)))
-
-(setq package-enable-at-startup nil
-      package-quickstart t)
 
 ;; Do not resize the frame at this early stage.
 (setq frame-inhibit-implied-resize t)

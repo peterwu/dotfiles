@@ -17,7 +17,7 @@ set -o vi
 alias se='sudoedit'
 
 alias emacs='emacsclient -t -q -a ""'
-alias e='emacs'
+alias e='emacsclient -t -a ""'
 
 alias ls='ls --color' # use colors
 alias la='ls -Flsa'   # list all files
@@ -32,9 +32,10 @@ alias bc='bc -l'
 HISTSIZE=20000
 HISTFILESIZE=20000
 
-man() 
-{ 
-    emacsclient -a '' -t -e "(progn (man \"$*\") (delete-window))"
+man() { 
+    local m=$@
+    /usr/bin/man ${m} > /dev/null
+    [[ $? -eq 0 ]] && /usr/bin/emacsclient -nw --eval "(let ((m \"${m}\")) (man m) (delete-window) t)"
 }
 
 show_bash_prompt() {

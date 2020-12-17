@@ -2,7 +2,7 @@
 #+STARTUP: overview
 #+TITLE: My Emacs Configuration
 
-* bootstrap
+* =bootstrap=
 #+BEGIN_SRC emacs-lisp
   (setq custom-file (concat user-emacs-directory "custom.el"))
   (load custom-file 'noerror)
@@ -31,7 +31,7 @@
     :config
     (auto-package-update-maybe))
 #+END_SRC
-* sensible defaults
+* =defaults=
 #+BEGIN_SRC emacs-lisp
   (set-language-environment "utf-8")
   (prefer-coding-system 'utf-8)
@@ -59,6 +59,7 @@
         display-time-default-load-average nil)
   (setq visible-bell t
         visible-cursor nil)
+  (setq x-select-enable-clipboard nil)
   (setq default-input-method "pyim")
   (setq frame-title-format
         '(buffer-file-name "%f"
@@ -67,7 +68,8 @@
     (setq w32-get-true-file-attributes nil)
     (setq inhibit-compacting-font-caches t))
 #+END_SRC
-* modes
+
+* =modes=
 #+BEGIN_SRC emacs-lisp
   ;; enable some modes
   (column-number-mode t)
@@ -81,41 +83,6 @@
   (global-visual-line-mode t)
   (global-display-line-numbers-mode t)
 #+END_SRC
-* theme
-#+BEGIN_SRC emacs-lisp
-  ;; load favorite theme
-  (load-theme 'modus-operandi t)
-#+END_SRC
-* telephone line
-#+BEGIN_SRC emacs-lisp
-  (use-package telephone-line
-    :custom
-    (telephone-line-height 24)
-    (telephone-line-evil-use-short-tag nil)
-
-    (telephone-line-primary-left-separator 'telephone-line-flat)
-    (telephone-line-secondary-left-separator 'telephone-line-nil)
-    (telephone-line-primary-right-separator 'telephone-line-flat)
-    (telephone-line-secondary-right-separator 'telephone-line-nil)
-    :config
-    (telephone-line-mode t))
-#+END_SRC
-* which-key
-  #+BEGIN_SRC emacs-lisp
-    (use-package which-key
-      :init
-      (which-key-mode))
-  #+END_SRC
-* hydra
-#+BEGIN_SRC emacs-lisp
-  (use-package hydra)
-
-  (defhydra hydra-zoom (global-map "C-c z")
-    "zoom"
-    ("+" text-scale-increase "in")
-    ("-" text-scale-decrease "out")
-    ("0" (lambda () (interactive) (text-scale-set 0)) "reset"))
-#+END_SRC
 * ace-window
 #+BEGIN_SRC emacs-lisp
   (use-package ace-window
@@ -123,6 +90,22 @@
     :config (set-face-attribute 'aw-leading-char-face nil
                                 :height 3.0
                                 :box t))
+#+END_SRC
+* company
+#+BEGIN_SRC emacs-lisp
+  (use-package company
+    :init
+    (global-company-mode)
+    :custom
+    (company-idle-delay 0)
+    (company-minimum-prefix-length 1)
+    (company-selection-wrap-around t)
+    :config
+    (company-tng-mode t))
+
+  (use-package company-box
+    :after company
+    :hook (company-mode . company-box-mode))
 #+END_SRC
 * evil
 Simulate a Vim modal editing experience
@@ -134,7 +117,7 @@ Simulate a Vim modal editing experience
     (defconst my-non-normal-prefix "C-")
 
     (defun define-my-leader-maps ()
-      "Define key maps for with my-leader-key for all evil states"
+      "Define key maps for with my-leader-key for needed evil states"
 
       ;; normal
       (define-prefix-command 'my-evil-leader-nmap)
@@ -146,19 +129,10 @@ Simulate a Vim modal editing experience
 
       ;; motion
       (define-prefix-command 'my-evil-leader-mmap)
-      (define-key evil-motion-state-map (kbd my-leader-key) 'my-evil-leader-mmap)
-
-      ;; insert
-      (define-prefix-command 'my-evil-leader-imap)
-      (define-key evil-insert-state-map (kbd (concat my-non-normal-prefix my-leader-key)) 'my-evil-leader-imap)
-
-      ;; emacs
-      (define-prefix-command 'my-evil-leader-emap)
-      (define-key evil-emacs-state-map (kbd (concat my-non-normal-prefix my-leader-key)) 'my-evil-leader-emap))
+      (define-key evil-motion-state-map (kbd my-leader-key) 'my-evil-leader-mmap))
     :init
     (fset 'evil-visual-update-x-selection 'ignore)
     :custom
-    (x-select-enable-clipboard nil)
     (evil-want-C-i-jump nil)
     (evil-want-integration t)
     (evil-want-keybinding nil)
@@ -205,8 +179,9 @@ Simulate a Vim modal editing experience
     (global-evil-quickscope-mode t))
 
   (use-package evil-numbers
+    :after hydra
     :config
-    (defhydra hydra-evil-numbers (global-map "C-c n")
+    (defhydra hydra-evil-numbers (global-map "C-c")
       "evil-numbers"
       ("+" evil-numbers/inc-at-pt "increase")
       ("-" evil-numbers/dec-at-pt "decrease")))
@@ -232,24 +207,83 @@ Simulate a Vim modal editing experience
     :config
     (evil-exchange-install))
 #+END_SRC
+* flycheck
+#+BEGIN_SRC emacs-lisp
+  (use-package flycheck
+    :after lsp-mode
+    :hook (lsp-mode . flycheck-mode))
+#+END_SRC
+* flyspell
+#+BEGIN_SRC emacs-lisp
+  (use-package ispell
+    :ensure nil
+    :custom
+    (ispell-program-name "hunspell")
+    (ispell-dictionary "en_US")
+    :config
+    (ispell-set-spellchecker-params)
+    (ispell-hunspell-add-multi-dic "en_US"))
+
+  (use-package flyspell
+    :ensure nil
+    :after ispell
+    :bind ("C-c s" . flyspell-mode))
+
+  (use-package flyspell-correct
+    :after flyspell
+    :bind (:map flyspell-mode-map
+                ("C-;" . flyspell-correct-wrapper)))
+
+  (use-package flyspell-correct-ivy
+    :after (flyspell-correct ivy))
+#+END_SRC
+* helpful
+#+BEGIN_SRC emacs-lisp
+  (use-package helpful
+    :after counsel
+    :bind
+    ([remap describe-key]      . helpful-key)
+    ([remap describe-command]  . helpful-command)
+    ([remap describe-variable] . counsel-describe-variable)
+    ([remap describe-function] . counsel-describe-function)
+    :custom
+    (counsel-describe-function-function #'helpful-callable)
+    (counsel-describe-variable-function #'helpful-variable))
+#+END_SRC
+* hydra
+#+BEGIN_SRC emacs-lisp
+  (use-package hydra)
+#+END_SRC
+* lsp
+#+BEGIN_SRC emacs-lisp
+  (use-package lsp-mode
+    :hook ((c-mode c++-mode objc-mode go-mode rust-mode) . lsp)
+    :hook (lsp-mode . lsp-enable-which-key-integration)
+    :commands lsp)
+
+  (use-package lsp-ui
+    :commands lsp-ui-mode)
+
+  (use-package lsp-ivy
+    :commands lsp-ivy-workspace-symbol)
+#+END_SRC
 * magit
 #+BEGIN_SRC emacs-lisp
   (use-package magit
     :custom
     (magit-define-global-key-bindings t))
 #+END_SRC
-* sudo-edit
+* man
 #+BEGIN_SRC emacs-lisp
-  (use-package sudo-edit
-    :bind ("s-e" . sudo-edit))
-#+END_SRC
-* rainbow
-#+BEGIN_SRC emacs-lisp
-  (use-package rainbow-mode
-    :hook prog-mode)
-
-  (use-package rainbow-delimiters
-    :hook (prog-mode . rainbow-delimiters-mode))
+  (use-package man
+    :after evil
+    :config
+    (evil-define-key 'normal Man-mode-map "q" 
+      (lambda ()
+        (interactive)
+        (if (> (length (window-list)) 1)
+            (quit-window)
+          (delete-frame)))))
 #+END_SRC
 * org mode
 ** stock org-mode
@@ -301,21 +335,13 @@ Simulate a Vim modal editing experience
     (org-superstar-prettify-item-bullets t)
     (org-superstar-leading-bullet ?\s))
 #+END_SRC
-* company
+* rainbow
 #+BEGIN_SRC emacs-lisp
-  (use-package company
-    :init
-    (global-company-mode)
-    :custom
-    (company-idle-delay 0)
-    (company-minimum-prefix-length 1)
-    (company-selection-wrap-around t)
-    :config
-    (company-tng-mode t))
+  (use-package rainbow-mode
+    :hook prog-mode)
 
-  (use-package company-box
-    :after company
-    :hook (company-mode . company-box-mode))
+  (use-package rainbow-delimiters
+    :hook (prog-mode . rainbow-delimiters-mode))
 #+END_SRC
 * search
 ** Avy
@@ -360,69 +386,24 @@ Simulate a Vim modal editing experience
     :custom (speedbar-use-images nil)
     :bind ([f9] . sr-speedbar-toggle))
 #+END_SRC
-* yasnippets
+* sudo-edit
 #+BEGIN_SRC emacs-lisp
-  (use-package yasnippet
-    :hook ((prog-mode-hook org-mode-hook) . yas-minor-mode))
+  (use-package sudo-edit
+    :bind ("s-e" . sudo-edit))
+#+END_SRC
+* telephone line
+#+BEGIN_SRC emacs-lisp
+  (use-package telephone-line
+    :custom
+    (telephone-line-height 24)
+    (telephone-line-evil-use-short-tag nil)
 
-  (use-package yasnippet-snippets
-    :after yasnippet)
-#+END_SRC
-* helpful
-#+BEGIN_SRC emacs-lisp
-  (use-package helpful
-    :after counsel
-    :bind
-    ([remap describe-key]      . helpful-key)
-    ([remap describe-command]  . helpful-command)
-    ([remap describe-variable] . counsel-describe-variable)
-    ([remap describe-function] . counsel-describe-function)
-    :custom
-    (counsel-describe-function-function #'helpful-callable)
-    (counsel-describe-variable-function #'helpful-variable))
-#+END_SRC
-* flyspell
-#+BEGIN_SRC emacs-lisp
-  (use-package ispell
-    :ensure nil
-    :custom
-    (ispell-program-name "hunspell")
-    (ispell-dictionary "en_US")
+    (telephone-line-primary-left-separator 'telephone-line-flat)
+    (telephone-line-secondary-left-separator 'telephone-line-nil)
+    (telephone-line-primary-right-separator 'telephone-line-flat)
+    (telephone-line-secondary-right-separator 'telephone-line-nil)
     :config
-    (ispell-set-spellchecker-params)
-    (ispell-hunspell-add-multi-dic "en_US"))
-
-  (use-package flyspell
-    :ensure nil
-    :after ispell
-    :bind ("C-c s" . flyspell-mode))
-
-  (use-package flyspell-correct
-    :after flyspell
-    :bind (:map flyspell-mode-map
-                ("C-;" . flyspell-correct-wrapper)))
-
-  (use-package flyspell-correct-ivy
-    :after (flyspell-correct ivy))
-#+END_SRC
-* flycheck
-#+BEGIN_SRC emacs-lisp
-  (use-package flycheck
-    :after lsp-mode
-    :hook (lsp-mode . flycheck-mode))
-#+END_SRC
-* lsp
-#+BEGIN_SRC emacs-lisp
-  (use-package lsp-mode
-    :hook ((c-mode c++-mode objc-mode go-mode rust-mode) . lsp)
-    :hook (lsp-mode . lsp-enable-which-key-integration)
-    :commands lsp)
-
-  (use-package lsp-ui
-    :commands lsp-ui-mode)
-
-  (use-package lsp-ivy
-    :commands lsp-ivy-workspace-symbol)
+    (telephone-line-mode t))
 #+END_SRC
 * terminal support
 #+BEGIN_SRC emacs-lisp
@@ -440,7 +421,33 @@ Simulate a Vim modal editing experience
     (bind-key "<mouse-4>" 'scroll-down-line)
     (bind-key "<mouse-5>" 'scroll-up-line))
 #+END_SRC
-* misc
+* theme
+#+BEGIN_SRC emacs-lisp
+  ;; load favorite theme
+  (load-theme 'modus-operandi t)
+#+END_SRC
+* which-key
+  #+BEGIN_SRC emacs-lisp
+    (use-package which-key
+      :init
+      (which-key-mode))
+  #+END_SRC
+* yasnippets
+#+BEGIN_SRC emacs-lisp
+  (use-package yasnippet
+    :hook ((prog-mode org-mode) . yas-minor-mode))
+
+  (use-package yasnippet-snippets
+    :after yasnippet)
+#+END_SRC
+* zoom in/out
+  #+BEGIN_SRC emacs-lisp
+    (bind-keys
+     ([C-mouse-4] . text-scale-increase)
+     ([C-mouse-5] . text-scale-decrease)
+     ([C-0]       . (lambda () (interactive) (text-scale-set 0))))
+  #+END_SRC
+* /zzz/
 #+BEGIN_SRC emacs-lisp
   (use-package cmake-mode)
   (use-package go-mode)
