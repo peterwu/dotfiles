@@ -7,12 +7,12 @@
 
 ;; tune gc for better performance
 (add-hook 'after-init-hook
-	  `(lambda ()
-	     (setq file-name-handler-alist file-name-handler-alist-original
-		   gc-cons-threshold (* 8 1024 1024) ; 8MB
-		   gc-cons-percentage 0.1)
-	     (garbage-collect)) t)
-(run-with-idle-timer 5 nil (lambda () (garbage-collect)))
+	  (lambda ()
+	    (setq file-name-handler-alist file-name-handler-alist-original
+		  gc-cons-threshold (* 8 1024 1024) ; 8MB
+		  gc-cons-percentage 0.1)
+	    (garbage-collect)
+	    (run-with-idle-timer 5 t 'garbage-collect)))
 
 ;; Do not resize the frame at this early stage.
 (setq frame-inhibit-implied-resize t)
