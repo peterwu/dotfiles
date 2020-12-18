@@ -139,10 +139,6 @@
     :bind (:map flycheck-command-map
                 ("!" . consult-flycheck)))
 #+END_SRC
-* crux
-#+BEGIN_SRC emacs-lisp
-  (use-package crux)
-#+END_SRC
 * evil
 Simulate a Vim modal editing experience
 #+BEGIN_SRC emacs-lisp
@@ -152,7 +148,7 @@ Simulate a Vim modal editing experience
     (defconst my-local-leader-key ",")
     (defconst my-non-normal-prefix "C-")
 
-    (defun define-my-leader-maps ()
+    (defun my-define-leader-maps ()
       "Define key maps for with my-leader-key for needed evil states"
 
       ;; normal
@@ -166,13 +162,27 @@ Simulate a Vim modal editing experience
       ;; motion
       (define-prefix-command 'my-evil-leader-mmap)
       (define-key evil-motion-state-map (kbd my-leader-key) 'my-evil-leader-mmap))
+
+    (defun my-set-evil-state-color ()
+      (let* ((default 'modus-theme-intense-neutral)
+             (face (cond ((evil-emacs-state-p) 'modus-theme-intense-magenta)
+                         ((evil-insert-state-p) 'modus-theme-intense-green)
+                         ((evil-motion-state-p) 'modus-theme-intense-yellow)
+                         ((evil-normal-state-p) default)
+                         ((evil-operator-state-p) 'modus-theme-subtle-yellow)
+                         ((evil-replace-state-p) 'modus-theme-intense-red)
+                         ((evil-visual-state-p) 'modus-theme-intense-cyan)
+                         ((minibufferp) default)
+                         (t default))))
+        (set-face-background 'mode-line (face-background face))
+        (set-face-foreground 'mode-line (face-foreground face))))
     :init
     (fset 'evil-visual-update-x-selection 'ignore)
     :custom
     (evil-want-C-i-jump nil)
     (evil-want-integration t)
     (evil-want-keybinding nil)
-    (evil-mode-line-format '(after . mode-line-front-space))
+    (evil-mode-line-format nil)
     :bind (:map my-evil-leader-mmap
                 ("y" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank)))
                 ("Y" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank-line))))
@@ -181,8 +191,9 @@ Simulate a Vim modal editing experience
                 ("P" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-paste-before)))
                 ("y" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank)))
                 ("Y" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank-line))))
+    :hook (post-command . my-set-evil-state-color)
     :config
-    (define-my-leader-maps)
+    (my-define-leader-maps)
     (evil-mode +1))
 
   (use-package evil-args
@@ -227,7 +238,10 @@ Simulate a Vim modal editing experience
     :config  
     (global-evil-matchit-mode +1))
 
-  (use-package evil-numbers)
+  (use-package evil-numbers
+    :bind (:map evil-normal-state-map
+                ("C-c +" . evil-numbers/inc-at-pt)
+                ("C-c -" . evil-numbers/dec-at-pt)))
 
   (use-package evil-quickscope
     :config
@@ -264,15 +278,6 @@ Simulate a Vim modal editing experience
     :bind (:map flyspell-mode-map
                 ("C-;" . flyspell-correct-wrapper)))
 #+END_SRC
-* hydra
-#+BEGIN_SRC emacs-lisp
-  (use-package hydra)
-
-  (defhydra hydra-evil-numbers (global-map "C-c")
-    "evil-numbers"
-    ("+" evil-numbers/inc-at-pt "increase")
-    ("-" evil-numbers/dec-at-pt "decrease"))
-#+END_SRC
 * lsp
 #+BEGIN_SRC emacs-lisp
   (use-package lsp-mode
@@ -308,13 +313,18 @@ Simulate a Vim modal editing experience
     :init
     (marginalia-mode +1))
 #+END_SRC
+* minions
+#+BEGIN_SRC emacs-lisp
+  (use-package minions
+    :config (minions-mode +1))
+#+END_SRC
 * org mode
 ** stock org-mode
 #+BEGIN_SRC emacs-lisp
   (use-package org
     :ensure nil
     :hook (org-mode . (lambda ()
-                        (org-indent-mode)
+                        (org-indent-mode +1)
                         (variable-pitch-mode -1)
                         (display-line-numbers-mode -1)))
     :bind (("C-c a" . org-agenda)
@@ -390,20 +400,6 @@ Simulate a Vim modal editing experience
 #+BEGIN_SRC emacs-lisp
   (use-package sudo-edit
     :bind ("s-e" . sudo-edit))
-#+END_SRC
-* telephone line
-#+BEGIN_SRC emacs-lisp
-  (use-package telephone-line
-    :custom
-    (telephone-line-height 24)
-    (telephone-line-evil-use-short-tag nil)
-
-    (telephone-line-primary-left-separator 'telephone-line-flat)
-    (telephone-line-secondary-left-separator 'telephone-line-nil)
-    (telephone-line-primary-right-separator 'telephone-line-flat)
-    (telephone-line-secondary-right-separator 'telephone-line-nil)
-    :config
-    (telephone-line-mode +1))
 #+END_SRC
 * terminal support
 #+BEGIN_SRC emacs-lisp

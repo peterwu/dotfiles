@@ -18,14 +18,14 @@
 (setq frame-inhibit-implied-resize t)
 
 ;; disable some modes
-(display-battery-mode 0)
-(display-time-mode 0)
+(display-battery-mode -1)
+(display-time-mode -1)
 (if (fboundp 'tool-bar-mode)
-    (tool-bar-mode 0))
+    (tool-bar-mode -1))
 (if (fboundp 'scroll-bar-mode)
-    (scroll-bar-mode 0))
+    (scroll-bar-mode -1))
 (if (fboundp 'menu-bar-mode)
-    (menu-bar-mode 0))
+    (menu-bar-mode -1))
 
 ;; move state files off to .cache folder
 (setq save-place-file (expand-file-name ".cache/places" user-emacs-directory)
