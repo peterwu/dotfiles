@@ -72,16 +72,17 @@
 * =modes=
 #+BEGIN_SRC emacs-lisp
   ;; enable some modes
-  (column-number-mode t)
-  (electric-pair-mode t)
-  (show-paren-mode t)
-  (size-indication-mode t)
-  (save-place-mode t)
-  (blink-cursor-mode t)
-  (global-hl-line-mode t)
-  (global-auto-revert-mode t)
-  (global-visual-line-mode t)
-  (global-display-line-numbers-mode t)
+  (column-number-mode +1)
+  (blink-cursor-mode +1)
+  (electric-pair-mode +1)
+  (global-auto-revert-mode +1)
+  (global-display-line-numbers-mode +1)
+  (global-hl-line-mode +1)
+  (global-visual-line-mode +1)
+  (recentf-mode +1)
+  (save-place-mode +1)
+  (size-indication-mode +1)
+  (show-paren-mode +1)
 #+END_SRC
 * ace-window
 #+BEGIN_SRC emacs-lisp
@@ -91,21 +92,56 @@
                                 :height 3.0
                                 :box t))
 #+END_SRC
+* avy
+  #+BEGIN_SRC emacs-lisp
+    (use-package avy
+      :bind ("M-s" . avy-goto-char-timer))
+  #+END_SRC
 * company
 #+BEGIN_SRC emacs-lisp
   (use-package company
     :init
-    (global-company-mode)
+    (global-company-mode +1)
     :custom
     (company-idle-delay 0)
     (company-minimum-prefix-length 1)
     (company-selection-wrap-around t)
     :config
-    (company-tng-mode t))
+    (company-tng-mode +1))
 
   (use-package company-box
     :after company
     :hook (company-mode . company-box-mode))
+#+END_SRC
+* consult
+#+BEGIN_SRC emacs-lisp
+  (use-package consult
+    :bind (("C-c h" . consult-history)
+           ("C-c o" . consult-outline)
+           ([remap switch-to-buffer] . consult-buffer)
+           ("C-x 4 b" . consult-buffer-other-window)
+           ("C-x 5 b" . consult-buffer-other-frame)
+           ("C-x r x" . consult-register)
+           ("C-x r b" . consult-bookmark)
+           ;; ("C-s" . consult-line)
+           ([remap isearch-forward] . consult-line)
+           ("M-y" . consult-yank-pop)
+           ("<help> a" . consult-apropos))
+    :init
+    (fset 'multi-occur #'consult-multi-occur)
+    :config
+    (consult-preview-mode +1))
+
+  (use-package consult-selectrum
+    :demand t)
+
+  (use-package consult-flycheck
+    :bind (:map flycheck-command-map
+                ("!" . consult-flycheck)))
+#+END_SRC
+* crux
+#+BEGIN_SRC emacs-lisp
+  (use-package crux)
 #+END_SRC
 * evil
 Simulate a Vim modal editing experience
@@ -147,44 +183,7 @@ Simulate a Vim modal editing experience
                 ("Y" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank-line))))
     :config
     (define-my-leader-maps)
-    (evil-mode 1))
-
-  (use-package evil-collection
-    :after evil
-    :custom
-    (evil-collection-setup-minibuffer t)
-    :config
-    (evil-collection-init))
-
-  (use-package evil-commentary
-    :config
-    (evil-commentary-mode t))
-
-  (use-package evil-surround
-    :config  
-    (global-evil-surround-mode t))
-
-  (use-package evil-goggles
-    :custom
-    (evil-goggles-pulse t)
-    :config  
-    (evil-goggles-mode))
-
-  (use-package evil-matchit
-    :config  
-    (global-evil-matchit-mode t))
-
-  (use-package evil-quickscope
-    :config
-    (global-evil-quickscope-mode t))
-
-  (use-package evil-numbers
-    :after hydra
-    :config
-    (defhydra hydra-evil-numbers (global-map "C-c")
-      "evil-numbers"
-      ("+" evil-numbers/inc-at-pt "increase")
-      ("-" evil-numbers/dec-at-pt "decrease")))
+    (evil-mode +1))
 
   (use-package evil-args
     :bind (:map evil-inner-text-objects-map
@@ -199,13 +198,44 @@ Simulate a Vim modal editing experience
                 ("H" . evil-backward-arg)
                 ("L" . evil-forward-arg)))
 
-  (use-package evil-lion
+  (use-package evil-collection
+    :after evil
+    :custom
+    (evil-collection-setup-minibuffer t)
+    :init
+    (evil-collection-init))
+
+  (use-package evil-commentary
     :config
-    (evil-lion-mode))
+    (evil-commentary-mode +1))
 
   (use-package evil-exchange
     :config
     (evil-exchange-install))
+
+  (use-package evil-goggles
+    :custom
+    (evil-goggles-pulse t)
+    :config  
+    (evil-goggles-mode +1))
+
+  (use-package evil-lion
+    :config
+    (evil-lion-mode +1))
+
+  (use-package evil-matchit
+    :config  
+    (global-evil-matchit-mode +1))
+
+  (use-package evil-numbers)
+
+  (use-package evil-quickscope
+    :config
+    (global-evil-quickscope-mode +1))
+
+  (use-package evil-surround
+    :config  
+    (global-evil-surround-mode +1))
 #+END_SRC
 * flycheck
 #+BEGIN_SRC emacs-lisp
@@ -233,26 +263,15 @@ Simulate a Vim modal editing experience
     :after flyspell
     :bind (:map flyspell-mode-map
                 ("C-;" . flyspell-correct-wrapper)))
-
-  (use-package flyspell-correct-ivy
-    :after (flyspell-correct ivy))
-#+END_SRC
-* helpful
-#+BEGIN_SRC emacs-lisp
-  (use-package helpful
-    :after counsel
-    :bind
-    ([remap describe-key]      . helpful-key)
-    ([remap describe-command]  . helpful-command)
-    ([remap describe-variable] . counsel-describe-variable)
-    ([remap describe-function] . counsel-describe-function)
-    :custom
-    (counsel-describe-function-function #'helpful-callable)
-    (counsel-describe-variable-function #'helpful-variable))
 #+END_SRC
 * hydra
 #+BEGIN_SRC emacs-lisp
   (use-package hydra)
+
+  (defhydra hydra-evil-numbers (global-map "C-c")
+    "evil-numbers"
+    ("+" evil-numbers/inc-at-pt "increase")
+    ("-" evil-numbers/dec-at-pt "decrease"))
 #+END_SRC
 * lsp
 #+BEGIN_SRC emacs-lisp
@@ -263,15 +282,13 @@ Simulate a Vim modal editing experience
 
   (use-package lsp-ui
     :commands lsp-ui-mode)
-
-  (use-package lsp-ivy
-    :commands lsp-ivy-workspace-symbol)
 #+END_SRC
 * magit
 #+BEGIN_SRC emacs-lisp
   (use-package magit
-    :custom
-    (magit-define-global-key-bindings t))
+    :bind (("C-x g" . magit-status)
+           ("C-c j" . magit-dispatch)
+           ("C-c g" . magit-file-dispatch)))
 #+END_SRC
 * man
 #+BEGIN_SRC emacs-lisp
@@ -284,6 +301,12 @@ Simulate a Vim modal editing experience
         (if (> (length (window-list)) 1)
             (quit-window)
           (delete-frame)))))
+#+END_SRC
+* marginalia
+#+BEGIN_SRC emacs-lisp
+  (use-package marginalia
+    :init
+    (marginalia-mode +1))
 #+END_SRC
 * org mode
 ** stock org-mode
@@ -335,6 +358,14 @@ Simulate a Vim modal editing experience
     (org-superstar-prettify-item-bullets t)
     (org-superstar-leading-bullet ?\s))
 #+END_SRC
+* prescient
+#+begin_src emacs-lisp
+  (use-package prescient)
+  (use-package company-prescient
+    :after company)
+  (use-package selectrum-prescient
+    :after selectrum)
+#+end_src
 * rainbow
 #+BEGIN_SRC emacs-lisp
   (use-package rainbow-mode
@@ -343,43 +374,12 @@ Simulate a Vim modal editing experience
   (use-package rainbow-delimiters
     :hook (prog-mode . rainbow-delimiters-mode))
 #+END_SRC
-* search
-** Avy
-  #+BEGIN_SRC emacs-lisp
-    (use-package avy
-      :bind (:map my-evil-leader-nmap
-                  ("f" . avy-goto-char-timer)))
-  #+END_SRC
-** Swiper!
-  #+BEGIN_SRC emacs-lisp
-    (use-package swiper
-      :init (ivy-mode 1)
-      :bind (("M-x"    . counsel-M-x)
-             ("M-y"    . counsel-yank-pop)
-             ("<f1> f" . counsel-describe-function)
-             ("<f1> v" . counsel-describe-variable)
-             ("<f1> l" . counsel-find-library)
-             ("<f2> i" . counsel-info-lookup-symbol)
-             ("<f2> u" . counsel-unicode-char)
-             ("<f2> j" . counsel-set-variable)
-             ("C-s"    . swiper))
-      :bind (:map my-evil-leader-nmap
-                  ("b" . ivy-switch-buffer)
-                  ("e" . counsel-find-file)
-                  ("g" . counsel-git)
-                  ("." . counsel-fzf)
-                  ("`" . (lambda() (interactive) (counsel-fzf nil "/"))))
-      :custom
-      (ivy-use-virtual-buffers t)
-      (ivy-count-format "(%d/%d) ")
-      (enable-recursive-minibuffers t)
-      (search-default-mode #'char-fold-to-regexp))
-
-    (use-package ivy-rich
-      :after ivy
-      :init
-      (ivy-rich-mode))
-  #+END_SRC
+* selectrum
+#+BEGIN_SRC emacs-lisp
+  (use-package selectrum
+    :config
+    (selectrum-mode +1))
+#+END_SRC
 * sr-speedbar
 #+BEGIN_SRC emacs-lisp
   (use-package sr-speedbar
@@ -403,7 +403,7 @@ Simulate a Vim modal editing experience
     (telephone-line-primary-right-separator 'telephone-line-flat)
     (telephone-line-secondary-right-separator 'telephone-line-nil)
     :config
-    (telephone-line-mode t))
+    (telephone-line-mode +1))
 #+END_SRC
 * terminal support
 #+BEGIN_SRC emacs-lisp
@@ -417,7 +417,7 @@ Simulate a Vim modal editing experience
   ;; Mouse scrolling in terminal emacs
   (unless window-system
     ;; activate mouse-based scrolling
-    (xterm-mouse-mode 1)
+    (xterm-mouse-mode +1)
     (bind-key "<mouse-4>" 'scroll-down-line)
     (bind-key "<mouse-5>" 'scroll-up-line))
 #+END_SRC
@@ -430,7 +430,7 @@ Simulate a Vim modal editing experience
   #+BEGIN_SRC emacs-lisp
     (use-package which-key
       :init
-      (which-key-mode))
+      (which-key-mode +1))
   #+END_SRC
 * yasnippets
 #+BEGIN_SRC emacs-lisp
