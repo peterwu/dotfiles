@@ -79,11 +79,11 @@
 #+BEGIN_SRC emacs-lisp
   (use-package battery
     :custom
+    (battery-load-low 20)
+    (battery-load-critical 10)
     (battery-mode-line-format "[%b%p%%]")
     (battery-mode-line-limit 95)
     (battery-update-interval 180)
-    (battery-load-low 20)
-    (battery-load-critical 10)
     :bind
     ("C-c t b" . display-battery-mode)
     :config
@@ -166,12 +166,12 @@
 #+BEGIN_SRC emacs-lisp
   (use-package diff-mode
     :custom
-    (diff-default-read-only t)
     (diff-advance-after-apply-hunk t)
-    (diff-update-on-the-fly t)
-    (diff-refine nil)
+    (diff-default-read-only t)
     (diff-font-lock-prettify nil)
-    (diff-font-lock-syntax 'hunk-also))
+    (diff-font-lock-syntax 'hunk-also)
+    (diff-refine nil)
+    (diff-update-on-the-fly t))
 #+END_SRC
 
 * dired
@@ -189,8 +189,8 @@
 
   (use-package dired-aux
     :custom
-    (dired-isearch-filenames 'dwim)
     (dired-create-destination-dirs 'ask)
+    (dired-isearch-filenames 'dwim)
     (dired-vc-rename-file t)
     :bind (:map dired-mode-map
                 ("C-+" . dired-create-empty-file)
@@ -199,11 +199,11 @@
   (use-package dired-x
     :after dired
     :custom
-    (dired-clean-up-buffers-too t)
-    (dired-clean-confirm-killing-deleted-buffers t)
-    (dired-x-hands-off-my-keys t)    ; easier to show the keys I use
-    (dired-bind-man nil)
     (dired-bind-info nil)
+    (dired-bind-man nil)
+    (dired-clean-confirm-killing-deleted-buffers t)
+    (dired-clean-up-buffers-too t)
+    (dired-x-hands-off-my-keys t)    ; easier to show the keys I use
     :bind (("C-x C-j" . dired-jump)
            ("C-x 4 C-j" . dired-jump-other-window))
     :bind(:map dired-mode-map
@@ -212,9 +212,9 @@
   (use-package image-dired
     :custom
     (image-dired-external-viewer "xdg-open")
-    (image-dired-thumb-size 80)
     (image-dired-thumb-margin 2)
     (image-dired-thumb-relief 0)
+    (image-dired-thumb-size 80)
     (image-dired-thumbs-per-row 4)
     :bind (:map image-dired-thumbnail-mode-map
                 ("<return>" . image-dired-thumbnail-display-external)))
@@ -311,6 +311,9 @@
     (evil-want-integration t)
     (evil-want-keybinding nil)
     (evil-mode-line-format nil)
+    :bind (:map evil-motion-state-map
+                ("j" . evil-next-visual-line)
+                ("k" . evil-previous-visual-line))
     :bind (:map my-evil-leader-mmap
                 ("y" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank)))
                 ("Y" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank-line))))
@@ -322,6 +325,7 @@
     :hook (post-command . my-set-evil-state-color)
     :config
     (my-define-leader-maps)
+    (evil-set-undo-system 'undo-redo)
     (evil-mode +1))
 
   (use-package evil-args
@@ -359,6 +363,8 @@
   (use-package evil-goggles
     :ensure t
     :custom
+    (evil-goggles-async-duration 0.900)
+    (evil-goggles-blocking-duration 0.100)
     (evil-goggles-pulse t)
     :config  
     (evil-goggles-mode +1))
@@ -413,11 +419,11 @@
     :commands flymake-mode
     :custom
     (flymake-fringe-indicator-position 'left-fringe)
-    (flymake-suppress-zero-counters t)
-    (flymake-start-on-flymake-mode t)
     (flymake-no-changes-timeout nil)
-    (flymake-start-on-save-buffer t)
     (flymake-proc-compilation-prevents-syntax-check t)
+    (flymake-start-on-flymake-mode t)
+    (flymake-start-on-save-buffer t)
+    (flymake-suppress-zero-counters t)
     (flymake-wrap-around nil)
     :hook (lsp-mode . flymake-mode)
     :bind (:map flymake-mode-map
@@ -447,11 +453,11 @@
 #+BEGIN_SRC emacs-lisp
   (use-package frame
     :custom
-    (cursor-type '(hbar . 3))
-    (cursor-in-non-selected-windows 'hollow)
     (blink-cursor-blinks 20)
-    (blink-cursor-interval 0.5)
     (blink-cursor-delay 0.2)
+    (blink-cursor-interval 0.5)
+    (cursor-in-non-selected-windows 'hollow)
+    (cursor-type '(hbar . 3))
     :config
     (blink-cursor-mode +1))
 #+END_SRC
@@ -469,12 +475,6 @@
     (ibuffer-default-sorting-mode 'filename/process)
     (ibuffer-display-summary nil)
     (ibuffer-expert t)
-    (ibuffer-movement-cycle nil)
-    (ibuffer-old-time 48)
-    (ibuffer-saved-filter-groups nil)
-    (ibuffer-show-empty-filter-groups nil)
-    (ibuffer-use-header-line t)
-    (ibuffer-use-other-window nil)
     (ibuffer-formats
      '((mark modified read-only locked " "
              (name 30 30 :left :elide)
@@ -486,6 +486,12 @@
        (mark " "
              (name 16 -1)
              " " filename)))
+    (ibuffer-movement-cycle nil)
+    (ibuffer-old-time 48)
+    (ibuffer-saved-filter-groups nil)
+    (ibuffer-show-empty-filter-groups nil)
+    (ibuffer-use-header-line t)
+    (ibuffer-use-other-window nil)
     :hook (ibuffer-mode . hl-line-mode)
     :bind ("C-x C-b" . ibuffer)
     :bind (:map ibuffer-mode-map
@@ -499,13 +505,13 @@
 #+BEGIN_SRC emacs-lisp
   (use-package icomplete
     :custom
-    (icomplete-show-matches-on-no-input t)
     (icomplete-hide-common-prefix nil)
     (icomplete-separator (propertize " · " 'face 'shadow))
-    (icomplete-with-completion-tables t)
+    (icomplete-show-matches-on-no-input t)
     (icomplete-tidy-shadowed-file-names t)
+    (icomplete-with-completion-tables t)
     :config
-    (fido-mode -1)
+    (fido-mode +1)
     (icomplete-mode +1))
 #+END_SRC
 * ido
@@ -513,12 +519,12 @@
   (use-package ido
     :custom
     (ido-enable-flex-matching t)
-    (ido-use-virtual-buffers t)
     (ido-everywhere t)
-    (ido-default-file-method 'selected-window)
     (ido-default-buffer-method 'selected-window)
+    (ido-default-file-method 'selected-window)
     (ido-save-directory-list-file
      (expand-file-name ".cache/ido.last" user-emacs-directory))
+    (ido-use-virtual-buffers t)
     :config
     (ido-mode +1))
 #+END_SRC
@@ -526,30 +532,30 @@
 #+BEGIN_SRC emacs-lisp
   (use-package imenu
     :custom
-    (imenu-use-markers t)
     (imenu-auto-rescan t)
     (imenu-auto-rescan-maxout 600000)
-    (imenu-max-item-length 100)
-    (imenu-use-popup-menu nil)
     (imenu-eager-completion-buffer t)
-    (imenu-space-replacement " ")
     (imenu-level-separator "/")
+    (imenu-max-item-length 100)
+    (imenu-space-replacement " ")
+    (imenu-use-markers t)
+    (imenu-use-popup-menu nil)
     :bind ("M-i" . imenu))
 #+END_SRC
 * isearch
 #+BEGIN_SRC emacs-lisp
   (use-package isearch
     :custom
-    (search-highlight t)
-    (search-whitespace-regexp ".*?")
     (isearch-lax-whitespace t)
-    (isearch-regexp-lax-whitespace nil)
-    (isearch-lazy-highlight t)
     (isearch-lazy-count t)
+    (isearch-lazy-highlight t)
+    (isearch-regexp-lax-whitespace nil)
     (lazy-count-prefix-format nil)
     (lazy-count-suffix-format " (%s/%s)")
-    (isearch-yank-on-move 'shift)
     (isearch-allow-scroll 'unlimited)
+    (isearch-yank-on-move 'shift)
+    (search-highlight t)
+    (search-whitespace-regexp ".*?")
     :bind (:map minibuffer-local-isearch-map
                 ("M-/" . isearch-complete-edit))
     :bind	(:map isearch-mode-map
@@ -602,6 +608,9 @@
 #+BEGIN_SRC emacs-lisp
   (use-package minibuffer
     :custom
+    (completion-cycle-threshold 10)
+    (completion-styles '(initials partial-completion flex))
+
     (minibuffer-eldef-shorten-default t)
     :config
     (minibuffer-depth-indicate-mode +1)
@@ -618,15 +627,15 @@
   (use-package mouse
     :unless window-system
     :custom
+    (make-pointer-invisible t)
+    (mouse-drag-copy-region nil)
+    (mouse-wheel-follow-mouse t)
+    (mouse-wheel-progressive-speed t)
     (mouse-wheel-scroll-amount
      '(1
        ((shift) . 5)
        ((meta) . 0.5)
        ((control) . text-scale)))
-    (mouse-drag-copy-region nil)
-    (make-pointer-invisible t)
-    (mouse-wheel-progressive-speed t)
-    (mouse-wheel-follow-mouse t)
     :config
     (mouse-wheel-mode +1))
 #+END_SRC
@@ -643,19 +652,20 @@
            ("C-c l" . org-store-link))  
     :custom
     (org-ellipsis " ▾")
-    (org-startup-folded t)
+    (org-export-headline-levels 5)
+    (org-export-with-tags nil)
+    (org-fontify-whole-heading-line t)
+    (org-hide-emphasis-markers t)
     (org-log-done 'time)
     (org-log-into-drawer t)
-    (org-src-fontify-natively t)
-    (org-src-tab-acts-natively t)
-    (org-export-with-tags nil)
-    (org-export-headline-levels 5)
-    (org-hide-emphasis-markers t)
-    (org-fontify-whole-heading-line t)
-    (org-support-shift-select t)
-    (org-startup-with-inline-images t)
     (org-odt-convert-process 'unoconv)
     (org-odt-preferred-output-format "docx")
+    (org-src-fontify-natively t)
+    (org-src-tab-acts-natively t)
+    (org-startup-folded t)
+    (org-startup-with-inline-images t)
+    (org-support-shift-select t)
+
     (org-agenda-files (list "~/Documents/Org"))
     (org-capture-templates
      '(("t" "Todo" entry (file+headline "~/Documents/Org/gtd.org" "Tasks")
@@ -673,8 +683,8 @@
     :hook (org-mode . org-superstar-mode)
     :custom
     (org-superstar-headline-bullets-list '("◉" "✸" "▷" "◆" "○" "▶"))
-    (org-superstar-prettify-item-bullets t)
-    (org-superstar-leading-bullet ?\s))
+    (org-superstar-leading-bullet ?\s)
+    (org-superstar-prettify-item-bullets t))
 #+END_SRC
 * osc52
 #+BEGIN_SRC emacs-lisp
@@ -742,9 +752,9 @@
 #+BEGIN_SRC emacs-lisp
   (use-package recentf
     :custom
-    (recentf-save-file (expand-file-name ".cache/recentf" user-emacs-directory))
-    (recentf-max-saved-items 200)
     (recentf-exclude '(".gz" ".xz" ".zip" "/elpa/" "/ssh:" "/sudo:"))
+    (recentf-max-saved-items 200)
+    (recentf-save-file (expand-file-name ".cache/recentf" user-emacs-directory))
     :config
     (recentf-mode +1))
 #+END_SRC
@@ -805,13 +815,11 @@
 #+BEGIN_SRC emacs-lisp
   (use-package simple
     :after evil
-    :custom
+    :config
     (column-number-mode +1)
     (global-visual-line-mode +1)
     (prettify-symbols-mode +1)
-    (size-indication-mode +1)
-    :config
-    (evil-set-undo-system 'undo-redo))
+    (size-indication-mode +1))
 #+END_SRC
 * so-long
 #+BEGIN_SRC emacs-lisp
@@ -831,9 +839,9 @@
   (use-package time
     :commands world-clock
     :custom
+    (display-time-default-load-average nil)
     (display-time-format "[%H:%M]")
     (display-time-interval 60)
-    (display-time-default-load-average nil)
 
     (zoneinfo-style-world-list
      '(("America/Los_Angeles" "Los Angeles")
@@ -842,10 +850,10 @@
        ("Asia/Shanghai" "Shanghai")
        ("Asia/Tokyo" "Tokyo")))
 
-    (world-clock-list t)
-    (world-clock-time-format "%R %z  %A %d %B")
     (world-clock-buffer-name "*world-clock*")
+    (world-clock-list t)
     (world-clock-timer-enable t)
+    (world-clock-time-format "%R %z  %A %d %B")
     (world-clock-timer-second 60)
     :bind
     ("C-c t c" . display-time-mode)
@@ -866,13 +874,13 @@
   (use-package tooltip
     :custom
     (tooltip-delay 0.5)
-    (tooltip-short-delay 0.5)
-    (x-gtk-use-system-tooltips nil)
     (tooltip-frame-parameters
      '((name . "tooltip")
        (internal-border-width . 6)
        (border-width . 0)
        (no-special-glyphs . t)))
+    (tooltip-short-delay 0.5)
+    (x-gtk-use-system-tooltips nil)
     :config
     (tooltip-mode +1))
 #+END_SRC
@@ -887,9 +895,9 @@
 #+BEGIN_SRC emacs-lisp
   (use-package uniquify
     :custom
+    (uniquify-after-kill-buffer-p t)
     (uniquify-buffer-name-style 'forward)
-    (uniquify-strip-common-suffix t)
-    (uniquify-after-kill-buffer-p t))
+    (uniquify-strip-common-suffix t))
 #+END_SRC
 * vc
 #+BEGIN_SRC emacs-lisp
@@ -914,10 +922,10 @@
 #+BEGIN_SRC emacs-lisp
   (use-package window
     :custom
-    (window-combination-resize t)
     (even-window-sizes 'height-only)
-    (window-sides-vertical nil)
     (switch-to-buffer-in-dedicated-window 'pop)
+    (window-combination-resize t)
+    (window-sides-vertical nil)
     :hook ((help-mode . visual-line-mode)
            (custom-mode . visual-line-mode)))
 #+END_SRC

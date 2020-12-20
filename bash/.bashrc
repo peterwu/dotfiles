@@ -16,8 +16,10 @@ set -o vi
 
 alias se='sudoedit'
 
-alias emacs='emacsclient -t -q -a ""'
 alias e='emacsclient -t -a ""'
+alias emacs='emacs -mm'
+
+alias vi='emacsclient -t -a ""'
 
 alias ls='ls --color' # use colors
 alias la='ls -Flsa'   # list all files
