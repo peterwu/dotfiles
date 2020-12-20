@@ -237,8 +237,9 @@
 * eldoc
 #+BEGIN_SRC emacs-lisp
   (use-package eldoc
-    :config
-    (global-eldoc-mode +1))
+    :hook ((emacs-lisp-mode
+            ielm-mode
+            lisp-interaction-mode) . eldoc-mode))
 #+END_SRC
 * electric
 #+BEGIN_SRC emacs-lisp
@@ -568,7 +569,11 @@
     :ensure t
     :custom
     (lsp-session-file (expand-file-name ".cache/lsp-session" user-emacs-directory))
-    :hook ((c-mode c++-mode objc-mode go-mode rust-mode) . lsp)
+    :hook ((c-mode
+            c++-mode
+            objc-mode
+            go-mode
+            rust-mode) . lsp)
     :hook (lsp-mode . lsp-enable-which-key-integration)
     :commands lsp)
 
