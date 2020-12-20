@@ -616,6 +616,7 @@
 * mouse
 #+BEGIN_SRC emacs-lisp
   (use-package mouse
+    :unless window-system
     :custom
     (mouse-wheel-scroll-amount
      '(1
