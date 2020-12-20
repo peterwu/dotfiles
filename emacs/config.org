@@ -16,6 +16,7 @@
 
   ;; auto update packages
   (use-package auto-package-update
+    :ensure t
     :custom
     (auto-package-update-last-update-day-filename
      (expand-file-name ".cache/last-package-update-day" user-emacs-directory))
@@ -244,8 +245,16 @@
   (use-package electric
     :custom
     (electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
+    (electric-pair-pairs
+     '((8216 . 8217)
+       (8220 . 8221)
+       (171 . 187)))
     (electric-pair-preserve-balance t)
     (electric-pair-skip-self 'electric-pair-default-skip-self)
+    (electric-pair-skip-whitespace-chars
+     '(9
+       10
+       32))
     (electric-pair-skip-whitespace nil)
 
     (electric-quote-context-sensitive t)
@@ -401,6 +410,7 @@
 #+BEGIN_SRC emacs-lisp
   (use-package flymake
     :after lsp-mode
+    :commands flymake-mode
     :custom
     (flymake-fringe-indicator-position 'left-fringe)
     (flymake-suppress-zero-counters t)
@@ -665,6 +675,15 @@
     (org-superstar-prettify-item-bullets t)
     (org-superstar-leading-bullet ?\s))
 #+END_SRC
+* osc52
+#+BEGIN_SRC emacs-lisp
+  ;; osc52 support under supporting terminals and tmux
+  (use-package osc52
+    :unless window-system
+    :load-path "mine"
+    :config
+    (osc52-set-cut-function))
+#+END_SRC
 * paren
 #+BEGIN_SRC emacs-lisp
   (use-package paren
@@ -806,22 +825,6 @@
     :custom (speedbar-use-images nil)
     :bind ([f9] . sr-speedbar-toggle))
 #+END_SRC
-* terminal support
-#+BEGIN_SRC emacs-lisp
-  ;; osc52 support under supporting terminals and tmux
-  (use-package osc52
-    :unless window-system
-    :load-path "mine"
-    :config
-    (osc52-set-cut-function))
-
-  ;; Mouse scrolling in terminal emacs
-  (unless window-system
-    ;; activate mouse-based scrolling
-    (xterm-mouse-mode +1)
-    (bind-key "<mouse-4>" 'scroll-down-line)
-    (bind-key "<mouse-5>" 'scroll-up-line))
-#+END_SRC
 * time
 #+BEGIN_SRC emacs-lisp
   (use-package time
@@ -922,6 +925,15 @@
   (use-package xref
     :custom
     (xref-show-definitions-function #'xref--show-defs-minibuffer))
+#+END_SRC
+* xt-mouse
+#+BEGIN_SRC emacs-lisp
+  (use-package xt-mouse
+    :unless window-system
+    :bind (("<mouse-4>" . scroll-down-line)
+           ("<mouse-5>" . scroll-up-line))
+    :config
+    (xterm-mouse-mode +1))
 #+END_SRC
 * yasnippets
 #+BEGIN_SRC emacs-lisp
