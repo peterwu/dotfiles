@@ -83,8 +83,10 @@
     (battery-update-interval 180)
     (battery-load-low 20)
     (battery-load-critical 10)
+    :bind
+    ("C-c t b" . display-battery-mode)
     :config
-    (display-battery-mode +1))
+    (display-battery-mode -1))
 #+END_SRC
 * bind-key
 #+BEGIN_SRC emacs-lisp
@@ -229,7 +231,7 @@
     :custom
     (display-line-numbers-type 'relative)
     :hook ((text-mode prog-mode). display-line-numbers-mode)
-    :bind ("C-c n" . display-line-numbers-mode))
+    :bind ("C-c t n" . display-line-numbers-mode))
 #+END_SRC
 * eldoc
 #+BEGIN_SRC emacs-lisp
@@ -279,99 +281,104 @@
       (define-prefix-command 'my-evil-leader-mmap)
       (define-key evil-motion-state-map (kbd my-leader-key) 'my-evil-leader-mmap))
 
-    (defun my-set-evil-state-tag-colors ()
-      (setq evil-emacs-state-tag (propertize " <E> " 'face 'modus-theme-intense-magenta))  
-      (setq evil-insert-state-tag (propertize " <I> " 'face 'modus-theme-intense-green))  
-      (setq evil-motion-state-tag (propertize " <M> " 'face 'modus-theme-intense-yellow))  
-      (setq evil-normal-state-tag (propertize " <N> " 'face 'modus-theme-intense-neutral))  
-      (setq evil-operator-state-tag (propertize " <O> " 'face 'modus-theme-subtle-yellow))  
-      (setq evil-replace-state-tag (propertize " <R> " 'face 'modus-theme-intense-red))  
-      (setq evil-visual-state-tag (propertize " <V> " 'face 'modus-theme-intense-cyan))  
-      (setq evil-visual-block-tag (propertize " <Vb> " 'face 'modus-theme-intense-cyan)))
-      :init
-      (fset 'evil-visual-update-x-selection 'ignore)
-      :custom
-      (evil-want-C-i-jump nil)
-      (evil-want-integration t)
-      (evil-want-keybinding nil)
-      (evil-mode-line-format '(after . mode-line-front-space))
-      :bind (:map my-evil-leader-mmap
-                  ("y" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank)))
-                  ("Y" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank-line))))
-      :bind (:map my-evil-leader-nmap
-                  ("p" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-paste-after)))
-                  ("P" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-paste-before)))
-                  ("y" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank)))
-                  ("Y" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank-line))))
-      :config
-      (my-define-leader-maps)
-      ;; (my-set-evil-state-tag-colors)
-      (evil-mode +1))
+    (defun my-set-evil-state-color ()
+      (let* ((default 'modus-theme-intense-neutral)
+             (face (cond ((minibufferp) default)
+                         ((evil-emacs-state-p) 'modus-theme-intense-magenta)
+                         ((evil-insert-state-p) 'modus-theme-intense-green)
+                         ((evil-motion-state-p) 'modus-theme-intense-yellow)
+                         ((evil-normal-state-p) default)
+                         ((evil-operator-state-p) 'modus-theme-subtle-yellow)
+                         ((evil-replace-state-p) 'modus-theme-intense-red)
+                         ((evil-visual-state-p)  'modus-theme-intense-cyan)
+                         (t default))))
+        (set-face-attribute 'mode-line nil
+                            :foreground (face-foreground face)
+                            :background (face-background face))))
+    :init
+    (fset 'evil-visual-update-x-selection 'ignore)
+    :custom
+    (evil-want-C-i-jump nil)
+    (evil-want-integration t)
+    (evil-want-keybinding nil)
+    (evil-mode-line-format nil)
+    :bind (:map my-evil-leader-mmap
+                ("y" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank)))
+                ("Y" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank-line))))
+    :bind (:map my-evil-leader-nmap
+                ("p" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-paste-after)))
+                ("P" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-paste-before)))
+                ("y" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank)))
+                ("Y" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank-line))))
+    :hook (post-command . my-set-evil-state-color)
+    :config
+    (my-define-leader-maps)
+    (evil-mode +1))
 
-    (use-package evil-args
-      :ensure t
-      :bind (:map evil-inner-text-objects-map
-                  ("a" . evil-inner-arg))
-      :bind (:map evil-outer-text-objects-map
-                  ("a" . evil-outer-arg))
-      :bind (:map evil-normal-state-map
-                  ("H" . evil-backward-arg)
-                  ("L" . evil-forward-arg)
-                  ("K" . evil-jump-out-args))
-      :bind (:map evil-motion-state-map
-                  ("H" . evil-backward-arg)
-                  ("L" . evil-forward-arg)))
+  (use-package evil-args
+    :ensure t
+    :bind (:map evil-inner-text-objects-map
+                ("a" . evil-inner-arg))
+    :bind (:map evil-outer-text-objects-map
+                ("a" . evil-outer-arg))
+    :bind (:map evil-normal-state-map
+                ("H" . evil-backward-arg)
+                ("L" . evil-forward-arg)
+                ("K" . evil-jump-out-args))
+    :bind (:map evil-motion-state-map
+                ("H" . evil-backward-arg)
+                ("L" . evil-forward-arg)))
 
-    (use-package evil-collection
-      :ensure t
-      :after evil
-      :custom
-      (evil-collection-setup-minibuffer t)
-      :init
-      (evil-collection-init))
+  (use-package evil-collection
+    :ensure t
+    :after evil
+    :custom
+    (evil-collection-setup-minibuffer t)
+    :init
+    (evil-collection-init))
 
-    (use-package evil-commentary
-      :ensure t
-      :config
-      (evil-commentary-mode +1))
+  (use-package evil-commentary
+    :ensure t
+    :config
+    (evil-commentary-mode +1))
 
-    (use-package evil-exchange
-      :ensure t
-      :config
-      (evil-exchange-install))
+  (use-package evil-exchange
+    :ensure t
+    :config
+    (evil-exchange-install))
 
-    (use-package evil-goggles
-      :ensure t
-      :custom
-      (evil-goggles-pulse t)
-      :config  
-      (evil-goggles-mode +1))
+  (use-package evil-goggles
+    :ensure t
+    :custom
+    (evil-goggles-pulse t)
+    :config  
+    (evil-goggles-mode +1))
 
-    (use-package evil-lion
-      :ensure t
-      :config
-      (evil-lion-mode +1))
+  (use-package evil-lion
+    :ensure t
+    :config
+    (evil-lion-mode +1))
 
-    (use-package evil-matchit
-      :ensure t
-      :config  
-      (global-evil-matchit-mode +1))
+  (use-package evil-matchit
+    :ensure t
+    :config  
+    (global-evil-matchit-mode +1))
 
-    (use-package evil-numbers
-      :ensure t
-      :bind (:map evil-normal-state-map
-                  ("C-c +" . evil-numbers/inc-at-pt)
-                  ("C-c -" . evil-numbers/dec-at-pt)))
+  (use-package evil-numbers
+    :ensure t
+    :bind (:map evil-normal-state-map
+                ("C-c +" . evil-numbers/inc-at-pt)
+                ("C-c -" . evil-numbers/dec-at-pt)))
 
-    (use-package evil-quickscope
-      :ensure t
-      :config
-      (global-evil-quickscope-mode +1))
+  (use-package evil-quickscope
+    :ensure t
+    :config
+    (global-evil-quickscope-mode +1))
 
-    (use-package evil-surround
-      :ensure t
-      :config  
-      (global-evil-surround-mode +1))
+  (use-package evil-surround
+    :ensure t
+    :config  
+    (global-evil-surround-mode +1))
 #+END_SRC
 * faces
 #+BEGIN_SRC emacs-lisp
@@ -576,6 +583,8 @@
 * menu-bar
 #+BEGIN_SRC emacs-lisp
   (use-package menu-bar
+    :bind
+    ("C-c t m" . menu-bar-mode)
     :config
     (menu-bar-mode -1))
 #+END_SRC
@@ -753,6 +762,8 @@
 * scroll-bar
 #+BEGIN_SRC emacs-lisp
   (use-package scroll-bar
+    :bind
+    ("C-c t l" . scroll-bar-mode)
     :config
     (scroll-bar-mode -1))
 #+END_SRC
@@ -814,16 +825,35 @@
 * time
 #+BEGIN_SRC emacs-lisp
   (use-package time
+    :commands world-clock
     :custom
     (display-time-format "[%H:%M]")
     (display-time-interval 60)
     (display-time-default-load-average nil)
+
+    (zoneinfo-style-world-list
+     '(("America/Los_Angeles" "Los Angeles")
+       ("America/New_York" "New York")
+       ("Europe/Brussels" "Brussels")
+       ("Asia/Shanghai" "Shanghai")
+       ("Asia/Tokyo" "Tokyo")))
+
+    (world-clock-list t)
+    (world-clock-time-format "%R %z  %A %d %B")
+    (world-clock-buffer-name "*world-clock*")
+    (world-clock-timer-enable t)
+    (world-clock-timer-second 60)
+    :bind
+    ("C-c t c" . display-time-mode)
+    ("C-c t g" . world-clock)
     :config
-    (display-time-mode +1))
+    (display-time-mode -1))
 #+END_SRC
 * tool-bar
 #+BEGIN_SRC emacs-lisp
   (use-package tool-bar
+    :bind
+    ("C-c t t" . tool-bar-mode)
     :config
     (tool-bar-mode -1))
 #+END_SRC
@@ -874,7 +904,7 @@
 * whitespace
 #+BEGIN_SRC emacs-lisp
   (use-package whitespace
-    :bind ("C-c w" . whitespace-mode))
+    :bind ("C-c t w" . whitespace-mode))
 #+END_SRC
 * window
 #+BEGIN_SRC emacs-lisp
