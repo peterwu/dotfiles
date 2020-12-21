@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-#+TITLE: My Emacs Configuration
-#+STARTUP: overview
+#+title: My Emacs Configuration
+#+startup: overview
 
 * =bootstrap=
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 
   ;; install use-package if not
@@ -18,17 +18,17 @@
   (use-package auto-package-update
     :ensure t
     :custom
-    (auto-package-update-last-update-day-filename
-     (expand-file-name ".cache/last-package-update-day" user-emacs-directory))
     (auto-package-update-delete-old-versions t)
     (auto-package-update-hide-results t)
-    (auto-package-update-prompt-before-update t)
     (auto-package-update-interval 13)
+    (auto-package-update-last-update-day-filename
+     (expand-file-name ".cache/last-package-update-day" user-emacs-directory))
+    (auto-package-update-prompt-before-update t)
     :config
     (auto-package-update-maybe))
-#+END_SRC
+#+end_src
 * =defaults=
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package emacs
       :init
       (prefer-coding-system 'utf-8)
@@ -60,23 +60,23 @@
       (when (eq system-type 'windows-nt)
         (setq w32-get-true-file-attributes nil)
         (setq inhibit-compacting-font-caches t)))
-#+END_SRC
+#+end_src
 * autorevert
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package autorevert
     :custom
     (auto-revert-verbose t)
     :config
     (global-auto-revert-mode +1))
-#+END_SRC
+#+end_src
 * avy
-  #+BEGIN_SRC emacs-lisp
+  #+begin_src emacs-lisp
     (use-package avy
       :ensure t
       :bind ("C-c f" . avy-goto-char))
-  #+END_SRC 
+  #+end_src 
 * battery
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package battery
     :custom
     (battery-load-low 20)
@@ -88,24 +88,24 @@
     ("C-c t b" . display-battery-mode)
     :config
     (display-battery-mode -1))
-#+END_SRC
+#+end_src
 * bind-key
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package bind-key
     :ensure t
     :bind
     ;; reset text zooming
     ("C-c 0" . (lambda () (interactive) (text-scale-set 0))))
-#+END_SRC
+#+end_src
 * bookmark
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package bookmark
     :custom
     (bookmark-default-file
      (expand-file-name ".cache/bookmarks" user-emacs-directory)))
-#+END_SRC
+#+end_src
 * company
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package company
     :ensure t
     :init
@@ -121,9 +121,9 @@
     :ensure t
     :after company
     :hook (company-mode . company-box-mode))
-#+END_SRC
+#+end_src
 * cus-edit
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package cus-edit
     :init
     (defvar my-custom-file (expand-file-name ".cache/custom.el" user-emacs-directory))
@@ -134,15 +134,15 @@
                             (unless (file-exists-p file)
                               (make-empty-file file))
                             (load-file file)))))
-#+END_SRC
+#+end_src
 * custom
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package custom
     :config
     (load-theme 'modus-operandi t))
-#+END_SRC
+#+end_src
 * dabbrev
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package dabbrev
     :after (minibuffer icomplete)
     :custom
@@ -155,15 +155,15 @@
     (dabbrev-check-other-buffers t)
     (dabbrev-eliminate-newlines t)
     (dabbrev-upcase-means-case-search t))
-#+END_SRC
+#+end_src
 * delsel
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package delsel
     :config
     (delete-selection-mode +1))
-#+END_SRC
+#+end_src
 * diff-mode
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package diff-mode
     :custom
     (diff-advance-after-apply-hunk t)
@@ -172,10 +172,10 @@
     (diff-font-lock-syntax 'hunk-also)
     (diff-refine nil)
     (diff-update-on-the-fly t))
-#+END_SRC
+#+end_src
 
 * dired
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package dired
     :custom
     (delete-by-moving-to-trash t)
@@ -225,24 +225,24 @@
     :custom
     (wdired-allow-to-change-permissions t)
     (wdired-create-parent-directories t))
-#+END_SRC
+#+end_src
 * display-line-numbers
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package display-line-numbers
     :custom
     (display-line-numbers-type 'relative)
     :hook ((text-mode prog-mode). display-line-numbers-mode)
     :bind ("C-c t n" . display-line-numbers-mode))
-#+END_SRC
+#+end_src
 * eldoc
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package eldoc
     :hook ((emacs-lisp-mode
             ielm-mode
             lisp-interaction-mode) . eldoc-mode))
-#+END_SRC
+#+end_src
 * electric
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package electric
     :custom
     (electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
@@ -266,9 +266,18 @@
     (electric-indent-mode +1)
     (electric-pair-mode +1)
     (electric-quote-mode +1))
-#+END_SRC
+#+end_src
+* ehelp
+#+begin_src emacs-lisp
+  (use-package ehelp
+    :demand t
+    :bind (:map global-map
+                ("C-h" . ehelp-command)
+                ([f1] . ehelp-command)
+                ([help] . ehelp-command)))
+#+end_src
 * evil
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package evil
     :ensure t
     :preface
@@ -395,26 +404,26 @@
     :ensure t
     :config  
     (global-evil-surround-mode +1))
-#+END_SRC
+#+end_src
 * faces
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package faces
     :config
     (set-face-attribute 'default nil
                         :family "Iosevka Fusion"
                         :foundry "outline"
                         :height 130))
-#+END_SRC
+#+end_src
 * files
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package files
     :custom
     (auto-save-default nil)
     (backup-inhibited t)
     (make-backup-files nil))
-#+END_SRC
+#+end_src
 * flymake
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package flymake
     :after lsp-mode
     :commands flymake-mode
@@ -432,9 +441,9 @@
                 ("C-c ! d" . flymake-show-diagnostics-buffer)
                 ("C-c ! n" . flymake-goto-next-error)
                 ("C-c ! p" . flymake-goto-prev-error)))
-#+END_SRC
+#+end_src
 * flyspell
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package ispell
     :custom
     (ispell-program-name "hunspell")
@@ -449,9 +458,9 @@
     (flyspell-issue-message-flag nil)
     (flyspell-issue-welcome-flag nil)
     :bind ("C-c s" . flyspell-mode))
-#+END_SRC
+#+end_src
 * frame
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package frame
     :custom
     (blink-cursor-blinks 20)
@@ -461,15 +470,15 @@
     (cursor-type '(hbar . 3))
     :config
     (blink-cursor-mode +1))
-#+END_SRC
+#+end_src
 * hl-line
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package hl-line
     :config
     (global-hl-line-mode +1))
-#+END_SRC
+#+end_src
 * ibuffer
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package ibuffer
     :custom
     (ibuffer-default-shrink-to-minimum-size nil)
@@ -501,9 +510,9 @@
                 ("* n" . ibuffer-mark-by-name-regexp)
                 ("s n" . ibuffer-do-sort-by-alphabetic)  ; "sort name" mnemonic
                 ("/ g" . ibuffer-filter-by-content)))
-#+END_SRC
+#+end_src
 * icomplete
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package icomplete
     :custom
     (icomplete-hide-common-prefix nil)
@@ -514,9 +523,9 @@
     :config
     (fido-mode +1)
     (icomplete-mode +1))
-#+END_SRC
+#+end_src
 * ido
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package ido
     :custom
     (ido-enable-flex-matching t)
@@ -528,9 +537,9 @@
     (ido-use-virtual-buffers t)
     :config
     (ido-mode +1))
-#+END_SRC
+#+end_src
 * imenu
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package imenu
     :custom
     (imenu-auto-rescan t)
@@ -542,9 +551,9 @@
     (imenu-use-markers t)
     (imenu-use-popup-menu nil)
     :bind ("M-i" . imenu))
-#+END_SRC
+#+end_src
 * isearch
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package isearch
     :custom
     (isearch-lax-whitespace t)
@@ -562,9 +571,9 @@
     :bind	(:map isearch-mode-map
                 ("C-g" . isearch-cancel)       ; instead of `isearch-abort'
                 ("M-/" . isearch-complete)))
-#+END_SRC
+#+end_src
 * lsp
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package lsp-mode
     :ensure t
     :custom
@@ -580,17 +589,17 @@
   (use-package lsp-ui
     :ensure t
     :commands lsp-ui-mode)
-#+END_SRC
+#+end_src
 * magit
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package magit
     :ensure t
     :bind (("C-x g" . magit-status)
            ("C-c j" . magit-dispatch)
            ("C-c g" . magit-file-dispatch)))
-#+END_SRC
+#+end_src
 * man
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package man
     :after evil
     :config
@@ -600,17 +609,17 @@
         (if (> (length (window-list)) 1)
             (quit-window)
           (delete-frame)))))
-#+END_SRC
+#+end_src
 * menu-bar
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package menu-bar
     :bind
     ("C-c t m" . menu-bar-mode)
     :config
     (menu-bar-mode -1))
-#+END_SRC
+#+end_src
 * minibuffer
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package minibuffer
     :custom
     (completion-cycle-threshold 10)
@@ -620,17 +629,17 @@
     :config
     (minibuffer-depth-indicate-mode +1)
     (minibuffer-electric-default-mode +1))
-#+END_SRC
+#+end_src
 * minions
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package minions
     :ensure t
     :config (minions-mode +1))
-#+END_SRC
+#+end_src
 * mouse
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package mouse
-    :unless window-system
+    :when (display-graphic-p)
     :custom
     (make-pointer-invisible t)
     (mouse-drag-copy-region nil)
@@ -643,9 +652,9 @@
        ((control) . text-scale)))
     :config
     (mouse-wheel-mode +1))
-#+END_SRC
+#+end_src
 * org
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package org
     :hook (org-mode . (lambda ()
                         (org-indent-mode +1)
@@ -690,18 +699,18 @@
     (org-superstar-headline-bullets-list '("◉" "✸" "▷" "◆" "○" "▶"))
     (org-superstar-leading-bullet ?\s)
     (org-superstar-prettify-item-bullets t))
-#+END_SRC
+#+end_src
 * osc52
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   ;; osc52 support under supporting terminals and tmux
   (use-package osc52
     :unless window-system
     :load-path "mine"
     :config
     (osc52-set-cut-function))
-#+END_SRC
+#+end_src
 * paren
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package paren
     :custom
     (show-paren-style 'parenthesis)
@@ -709,9 +718,9 @@
     (show-paren-when-point-inside-paren nil)
     :config
     (show-paren-mode +1))
-#+END_SRC
+#+end_src
 * proced
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package proced
     :commands proced
     :custom
@@ -719,9 +728,9 @@
     (proced-auto-update-interval 1)
     (proced-descend t)
     (proced-filter 'user))
-#+END_SRC
+#+end_src
 * project
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package project
     :custom
     (project-switch-commands
@@ -733,9 +742,9 @@
        (?v "VC dir" project-vc-dir)
        (?e "Eshell" project-eshell)))
     :bind ("C-x p q" . project-query-replace-regexp)) 
-#+END_SRC
+#+end_src
 * rainbow
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package rainbow-mode
     :ensure t
     :custom
@@ -746,15 +755,15 @@
   (use-package rainbow-delimiters
     :ensure t
     :hook (prog-mode . rainbow-delimiters-mode))
-#+END_SRC
+#+end_src
 * re-builder
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package re-builder
     :custom
     (reb-re-syntax 'read))
-#+END_SRC
+#+end_src
 * recentf
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package recentf
     :custom
     (recentf-exclude '(".gz" ".xz" ".zip" "/elpa/" "/ssh:" "/sudo:"))
@@ -762,9 +771,9 @@
     (recentf-save-file (expand-file-name ".cache/recentf" user-emacs-directory))
     :config
     (recentf-mode +1))
-#+END_SRC
+#+end_src
 * replace
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package replace
     :custom
     (list-matching-lines-jump-to-current-line t)
@@ -773,9 +782,9 @@
     :bind (("M-s M-o" . multi-occur)
            :map occur-mode-map
            ("t" . toggle-truncate-lines)))
-#+END_SRC
+#+end_src
 * savehist
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package saveplace
     :custom
     (history-delete-duplicates t)
@@ -784,40 +793,40 @@
     (savehist-save-minibuffer-history t)
     :config
     (savehist-mode +1))
-#+END_SRC
+#+end_src
 * saveplace
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package saveplace
     :custom
     (save-place-file (expand-file-name ".cache/places" user-emacs-directory))
     (save-place-forget-unreadable-files t)
     :config
     (save-place-mode +1))
-#+END_SRC
+#+end_src
 * scroll-bar
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package scroll-bar
     :bind
     ("C-c t l" . scroll-bar-mode)
     :config
     (scroll-bar-mode -1))
-#+END_SRC
+#+end_src
 * select
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package select
     :custom
     (x-select-enable-clipboard nil))
-#+END_SRC
+#+end_src
 * shell
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package shell
     :commands shell-command
     :custom
     (setq ansi-color-for-comint-mode t)
     (setq shell-command-prompt-show-cwd t))
-#+END_SRC
+#+end_src
 * simple
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package simple
     :after evil
     :config
@@ -825,22 +834,22 @@
     (global-visual-line-mode +1)
     (prettify-symbols-mode +1)
     (size-indication-mode +1))
-#+END_SRC
+#+end_src
 * so-long
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package so-long
     :config
     (global-so-long-mode +1))
-#+END_SRC
+#+end_src
 * sr-speedbar
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package sr-speedbar
     :ensure t
     :custom (speedbar-use-images nil)
     :bind ([f9] . sr-speedbar-toggle))
-#+END_SRC
+#+end_src
 * time
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package time
     :commands world-clock
     :custom
@@ -865,17 +874,17 @@
     ("C-c t g" . world-clock)
     :config
     (display-time-mode -1))
-#+END_SRC
+#+end_src
 * tool-bar
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package tool-bar
     :bind
     ("C-c t t" . tool-bar-mode)
     :config
     (tool-bar-mode -1))
-#+END_SRC
+#+end_src
 * tooltip
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package tooltip
     :custom
     (tooltip-delay 0.5)
@@ -888,43 +897,43 @@
     (x-gtk-use-system-tooltips nil)
     :config
     (tooltip-mode +1))
-#+END_SRC
+#+end_src
 * tramp
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package tramp
     :custom
     (tramp-persistency-file-name
      (expand-file-name ".cache/tramp" user-emacs-directory)))
-#+END_SRC
+#+end_src
 * uniquify
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package uniquify
     :custom
     (uniquify-after-kill-buffer-p t)
     (uniquify-buffer-name-style 'forward)
     (uniquify-strip-common-suffix t))
-#+END_SRC
+#+end_src
 * vc
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package vc
     :custom
     (vc-find-revision-no-save t)
     (vc-follow-symlinks t))
-#+END_SRC
+#+end_src
 * which-key
-  #+BEGIN_SRC emacs-lisp
+  #+begin_src emacs-lisp
     (use-package which-key
       :ensure t
       :config
       (which-key-mode +1))
-  #+END_SRC
+  #+end_src
 * whitespace
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package whitespace
     :bind ("C-c t w" . whitespace-mode))
-#+END_SRC
+#+end_src
 * window
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package window
     :custom
     (even-window-sizes 'height-only)
@@ -933,24 +942,22 @@
     (window-sides-vertical nil)
     :hook ((help-mode . visual-line-mode)
            (custom-mode . visual-line-mode)))
-#+END_SRC
+#+end_src
 * xref
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package xref
     :custom
     (xref-show-definitions-function #'xref--show-defs-minibuffer))
-#+END_SRC
+#+end_src
 * xt-mouse
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package xt-mouse
-    :unless window-system
-    :bind (("<mouse-4>" . scroll-down-line)
-           ("<mouse-5>" . scroll-up-line))
+    :unless (display-graphic-p)
     :config
     (xterm-mouse-mode +1))
-#+END_SRC
+#+end_src
 * yasnippets
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package yasnippet
     :ensure t
     :hook ((prog-mode org-mode) . yas-minor-mode))
@@ -958,11 +965,11 @@
   (use-package yasnippet-snippets
     :ensure t
     :after yasnippet)
-#+END_SRC
+#+end_src
 * ...
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package cmake-mode :ensure t)
   (use-package go-mode :ensure t)
   (use-package rust-mode :ensure t)
   (use-package yaml-mode :ensure t)
-#+END_SRC
+#+end_src
