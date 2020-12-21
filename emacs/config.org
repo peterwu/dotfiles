@@ -523,6 +523,8 @@
     (icomplete-with-completion-tables t)
     (fido-mode t)
     :config
+    (bind-key "<left>" 'icomplete-backward-completions)
+    (bind-key "<right>" 'icomplete-forward-completions)
     (icomplete-mode +1))
 #+end_src
 * ido
@@ -640,7 +642,7 @@
 * mouse
 #+begin_src emacs-lisp
   (use-package mouse
-    :when (display-graphic-p)
+    :when window-system
     :custom
     (make-pointer-invisible t)
     (mouse-drag-copy-region nil)
@@ -953,8 +955,10 @@
 * xt-mouse
 #+begin_src emacs-lisp
   (use-package xt-mouse
-    :unless (display-graphic-p)
+    :unless window-system
     :config
+    (bind-key "<mouse-4>" 'scroll-down-line)
+    (bind-key "<mouse-5>" 'scroll-up-line)
     (xterm-mouse-mode +1))
 #+end_src
 * yasnippets
