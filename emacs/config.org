@@ -516,12 +516,13 @@
   (use-package icomplete
     :custom
     (icomplete-hide-common-prefix nil)
+    (icomplete-in-buffer t)
     (icomplete-separator (propertize " · " 'face 'shadow))
     (icomplete-show-matches-on-no-input t)
     (icomplete-tidy-shadowed-file-names t)
     (icomplete-with-completion-tables t)
+    (fido-mode t)
     :config
-    (fido-mode +1)
     (icomplete-mode +1))
 #+end_src
 * ido
