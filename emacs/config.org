@@ -4,8 +4,6 @@
 
 * =bootstrap=
 #+begin_src emacs-lisp
-  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-
   ;; install use-package if not
   (unless (package-installed-p 'use-package)
     (package-refresh-contents)
@@ -13,19 +11,6 @@
 
   (eval-when-compile
     (require 'use-package))
-
-  ;; auto update packages
-  (use-package auto-package-update
-    :ensure t
-    :custom
-    (auto-package-update-delete-old-versions t)
-    (auto-package-update-hide-results t)
-    (auto-package-update-interval 13)
-    (auto-package-update-last-update-day-filename
-     (expand-file-name ".cache/last-package-update-day" user-emacs-directory))
-    (auto-package-update-prompt-before-update t)
-    :config
-    (auto-package-update-maybe))
 #+end_src
 * =defaults=
 #+begin_src emacs-lisp
@@ -45,6 +30,7 @@
       (inhibit-startup-echo-area-message t)
       (inhibit-startup-screen t)
 
+      (initial-buffer-choice t)
       (initial-major-mode 'org-mode)
       (initial-scratch-message nil)
 
@@ -60,6 +46,20 @@
       (when (eq system-type 'windows-nt)
         (setq w32-get-true-file-attributes nil)
         (setq inhibit-compacting-font-caches t)))
+#+end_src
+* auto-package-update
+#+begin_src emacs-lisp
+  (use-package auto-package-update
+    :ensure t
+    :custom
+    (auto-package-update-delete-old-versions t)
+    (auto-package-update-hide-results t)
+    (auto-package-update-interval 183)
+    (auto-package-update-last-update-day-filename
+     (expand-file-name ".cache/last-package-update-day" user-emacs-directory))
+    (auto-package-update-prompt-before-update t)
+    :config
+    (auto-package-update-maybe))
 #+end_src
 * autorevert
 #+begin_src emacs-lisp
@@ -93,9 +93,13 @@
 #+begin_src emacs-lisp
   (use-package bind-key
     :ensure t
+    :preface
+    (defun my-text-scale-reset ()
+      (interactive)
+      (text-scale-set 0))
     :bind
     ;; reset text zooming
-    ("C-c 0" . (lambda () (interactive) (text-scale-set 0))))
+    ("C-c 0" . my-text-scale-reset))
 #+end_src
 * bookmark
 #+begin_src emacs-lisp
@@ -122,24 +126,19 @@
     :after company
     :hook (company-mode . company-box-mode))
 #+end_src
-* cus-edit
+* custom
 #+begin_src emacs-lisp
-  (use-package cus-edit
+  (use-package custom
     :init
     (defvar my-custom-file (expand-file-name ".cache/custom.el" user-emacs-directory))
     :config
     (setq custom-file my-custom-file)
+    (load-theme 'modus-operandi t)
     :hook (after-init . (lambda ()
                           (let ((file my-custom-file))
                             (unless (file-exists-p file)
                               (make-empty-file file))
                             (load-file file)))))
-#+end_src
-* custom
-#+begin_src emacs-lisp
-  (use-package custom
-    :config
-    (load-theme 'modus-operandi t))
 #+end_src
 * dabbrev
 #+begin_src emacs-lisp
@@ -155,6 +154,13 @@
     (dabbrev-check-other-buffers t)
     (dabbrev-eliminate-newlines t)
     (dabbrev-upcase-means-case-search t))
+#+end_src
+* dash
+#+begin_src emacs-lisp
+  (use-package dash
+    :ensure t
+    :config
+    (global-dash-fontify-mode +1))
 #+end_src
 * delsel
 #+begin_src emacs-lisp
@@ -217,7 +223,7 @@
     (image-dired-thumb-size 80)
     (image-dired-thumbs-per-row 4)
     :bind (:map image-dired-thumbnail-mode-map
-                ("<return>" . image-dired-thumbnail-display-external)))
+                ([return] . image-dired-thumbnail-display-external)))
 
   (use-package wdired
     :after dired
@@ -314,28 +320,49 @@
         (set-face-attribute 'mode-line nil
                             :foreground (face-foreground face)
                             :background (face-background face))))
+
+    (defun my-evil-yank-to-clipboard ()
+      (interactive)
+      (evil-use-register ?+)
+      (call-interactively 'evil-yank))
+
+    (defun my-evil-yank-line-to-clipboard ()
+      (interactive)
+      (evil-use-register ?+)
+      (call-interactively 'evil-yank-line))
+
+    (defun my-evil-paste-after-from-clipboard ()
+      (interactive)
+      (evil-use-register ?+)
+      (call-interactively 'evil-paste-after))
+
+    (defun my-evil-paste-before-from-clipboard ()
+      (interactive)
+      (evil-use-register ?+)
+      (call-interactively 'evil-paste-before))
     :init
     (fset 'evil-visual-update-x-selection 'ignore)
     :custom
+    (evil-mode-line-format nil)
+    (evil-undo-system 'undo-redo)
     (evil-want-C-i-jump nil)
+    (evil-want-Y-yank-to-eol t)
     (evil-want-integration t)
     (evil-want-keybinding nil)
-    (evil-mode-line-format nil)
     :bind (:map evil-motion-state-map
                 ("j" . evil-next-visual-line)
                 ("k" . evil-previous-visual-line))
     :bind (:map my-evil-leader-mmap
-                ("y" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank)))
-                ("Y" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank-line))))
+                ("y" . my-evil-yank-to-clipboard)
+                ("Y" . my-evil-yank-line-to-clipboard))
     :bind (:map my-evil-leader-nmap
-                ("p" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-paste-after)))
-                ("P" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-paste-before)))
-                ("y" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank)))
-                ("Y" . (lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank-line))))
+                ("p" . my-evil-paste-after-from-clipboard)
+                ("P" . my-evil-paste-before-from-clipboard)
+                ("y" . my-evil-yank-to-clipboard)
+                ("Y" . my-evil-yank-line-to-clipboard))
     :hook (post-command . my-set-evil-state-color)
     :config
     (my-define-leader-maps)
-    (evil-set-undo-system 'undo-redo)
     (evil-mode +1))
 
   (use-package evil-args
@@ -514,6 +541,7 @@
 * icomplete
 #+begin_src emacs-lisp
   (use-package icomplete
+    :demand t
     :custom
     (icomplete-hide-common-prefix nil)
     (icomplete-in-buffer t)
@@ -522,9 +550,9 @@
     (icomplete-tidy-shadowed-file-names t)
     (icomplete-with-completion-tables t)
     (fido-mode t)
+    :bind (([left] . icomplete-backward-completions)
+           ([right] . icomplete-forward-completions))
     :config
-    (bind-key "<left>" 'icomplete-backward-completions)
-    (bind-key "<right>" 'icomplete-forward-completions)
     (icomplete-mode +1))
 #+end_src
 * ido
@@ -604,14 +632,16 @@
 * man
 #+begin_src emacs-lisp
   (use-package man
+    :demand t
+    :preface
+    (defun my-quit-man ()
+      (interactive)
+      (if (> (length (window-list)) 1)
+          (quit-window)
+        (delete-frame)))
     :after evil
-    :config
-    (evil-define-key 'normal Man-mode-map "q" 
-      (lambda ()
-        (interactive)
-        (if (> (length (window-list)) 1)
-            (quit-window)
-          (delete-frame)))))
+    :bind (:map evil-normal-state-local-map
+                ("q" . my-quit-man)))
 #+end_src
 * menu-bar
 #+begin_src emacs-lisp
@@ -956,9 +986,10 @@
 #+begin_src emacs-lisp
   (use-package xt-mouse
     :unless window-system
+    :demand t
+    :bind(([mouse-4] . scroll-down-line)
+          ([mouse-5] . scroll-up-line))
     :config
-    (bind-key "<mouse-4>" 'scroll-down-line)
-    (bind-key "<mouse-5>" 'scroll-up-line)
     (xterm-mouse-mode +1))
 #+end_src
 * yasnippets

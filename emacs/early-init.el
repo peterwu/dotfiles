@@ -20,5 +20,9 @@
 (setq package-quickstart t
       package-quickstart-file (expand-file-name ".cache/package-quickstart.el" user-emacs-directory))
 
+(with-eval-after-load 'package
+  (add-to-list 'package-archives
+	       (cons "melpa" "https://melpa.org/packages/") t))
+
 (provide 'early-init)
 ;;; early-init.el ends here
