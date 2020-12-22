@@ -2,7 +2,7 @@
 #+title: My Emacs Configuration
 #+startup: overview
 
-* =bootstrap=
+* ~bootstrap~
 #+begin_src emacs-lisp
   ;; install use-package if not
   (unless (package-installed-p 'use-package)
@@ -12,40 +12,40 @@
   (eval-when-compile
     (require 'use-package))
 #+end_src
-* =defaults=
+* ~defaults~
 #+begin_src emacs-lisp
   (use-package emacs
-      :init
-      (prefer-coding-system 'utf-8)
-      (set-default-coding-systems 'utf-8)
-      (set-language-environment "utf-8")
+    :init
+    (prefer-coding-system 'utf-8)
+    (set-default-coding-systems 'utf-8)
+    (set-language-environment "utf-8")
 
-      (fset 'yes-or-no-p 'y-or-n-p)
-      :custom
-      (auto-save-list-file-prefix nil)
+    (fset 'yes-or-no-p 'y-or-n-p)
+    :custom
+    (auto-save-list-file-prefix nil)
 
-      (bidi-inhibit-bpa t)
+    (bidi-inhibit-bpa t)
 
-      (inhibit-startup-buffer-menu t)
-      (inhibit-startup-echo-area-message t)
-      (inhibit-startup-screen t)
+    (inhibit-startup-buffer-menu t)
+    (inhibit-startup-echo-area-message t)
+    (inhibit-startup-screen t)
 
-      (initial-buffer-choice t)
-      (initial-major-mode 'org-mode)
-      (initial-scratch-message nil)
+    (initial-buffer-choice t)
+    (initial-major-mode 'org-mode)
+    (initial-scratch-message nil)
 
-      (scroll-conservatively 10000)
-      (scroll-margin 1)
-      (scroll-preserve-screen-position t)
-      (scroll-step 1)
-      :config
-      (setq frame-title-format
-            '(buffer-file-name "%f"
-                               (dired-directory dired-directory "%b")))
+    (scroll-conservatively 10000)
+    (scroll-margin 1)
+    (scroll-preserve-screen-position t)
+    (scroll-step 1)
+    :config
+    (setq frame-title-format
+          '(buffer-file-name "%f"
+                             (dired-directory dired-directory "%b")))
 
-      (when (eq system-type 'windows-nt)
-        (setq w32-get-true-file-attributes nil)
-        (setq inhibit-compacting-font-caches t)))
+    (when (eq system-type 'windows-nt)
+      (setq w32-get-true-file-attributes nil)
+      (setq inhibit-compacting-font-caches t)))
 #+end_src
 * auto-package-update
 #+begin_src emacs-lisp
@@ -73,7 +73,9 @@
   #+begin_src emacs-lisp
     (use-package avy
       :ensure t
-      :bind ("C-c f" . avy-goto-char))
+      :after evil
+      :bind (:map my-evil-leader-mmap
+                  ("f" . avy-goto-char)))
   #+end_src 
 * battery
 #+begin_src emacs-lisp
@@ -131,14 +133,14 @@
   (use-package custom
     :init
     (defvar my-custom-file (expand-file-name ".cache/custom.el" user-emacs-directory))
-    :config
     (setq custom-file my-custom-file)
-    (load-theme 'modus-operandi t)
     :hook (after-init . (lambda ()
                           (let ((file my-custom-file))
                             (unless (file-exists-p file)
                               (make-empty-file file))
-                            (load-file file)))))
+                            (load-file file))))
+    :config
+    (load-theme 'modus-operandi t))
 #+end_src
 * dabbrev
 #+begin_src emacs-lisp
@@ -179,7 +181,6 @@
     (diff-refine nil)
     (diff-update-on-the-fly t))
 #+end_src
-
 * dired
 #+begin_src emacs-lisp
   (use-package dired
@@ -238,7 +239,8 @@
     :custom
     (display-line-numbers-type 'relative)
     :hook ((text-mode prog-mode). display-line-numbers-mode)
-    :bind ("C-c t n" . display-line-numbers-mode))
+    :bind (:map my-toggle-map
+                ("n" . display-line-numbers-mode)))
 #+end_src
 * eldoc
 #+begin_src emacs-lisp
@@ -273,39 +275,11 @@
     (electric-pair-mode +1)
     (electric-quote-mode +1))
 #+end_src
-* ehelp
-#+begin_src emacs-lisp
-  (use-package ehelp
-    :demand t
-    :bind (:map global-map
-                ("C-h" . ehelp-command)
-                ([f1] . ehelp-command)
-                ([help] . ehelp-command)))
-#+end_src
 * evil
 #+begin_src emacs-lisp
   (use-package evil
     :ensure t
     :preface
-    (defconst my-leader-key "SPC")
-    (defconst my-local-leader-key ",")
-    (defconst my-non-normal-prefix "C-")
-
-    (defun my-define-leader-maps ()
-      "Define key maps for with my-leader-key for needed evil states"
-
-      ;; normal
-      (define-prefix-command 'my-evil-leader-nmap)
-      (define-key evil-normal-state-map (kbd my-leader-key) 'my-evil-leader-nmap)
-
-      ;; visual
-      (define-prefix-command 'my-evil-leader-vmap)
-      (define-key evil-visual-state-map (kbd my-leader-key) 'my-evil-leader-vmap)
-
-      ;; motion
-      (define-prefix-command 'my-evil-leader-mmap)
-      (define-key evil-motion-state-map (kbd my-leader-key) 'my-evil-leader-mmap))
-
     (defun my-set-evil-state-color ()
       (let* ((default 'modus-theme-intense-neutral)
              (face (cond ((minibufferp) default)
@@ -344,25 +318,30 @@
     (fset 'evil-visual-update-x-selection 'ignore)
     :custom
     (evil-mode-line-format nil)
+    ;; (evil-respect-visual-line-mode t)
     (evil-undo-system 'undo-redo)
     (evil-want-C-i-jump nil)
     (evil-want-Y-yank-to-eol t)
     (evil-want-integration t)
     (evil-want-keybinding nil)
     :bind (:map evil-motion-state-map
-                ("j" . evil-next-visual-line)
-                ("k" . evil-previous-visual-line))
-    :bind (:map my-evil-leader-mmap
+                :prefix "<SPC>"
+                :prefix-map my-evil-leader-mmap
                 ("y" . my-evil-yank-to-clipboard)
                 ("Y" . my-evil-yank-line-to-clipboard))
-    :bind (:map my-evil-leader-nmap
+    :bind (:map evil-normal-state-map
+                :prefix "<SPC>"
+                :prefix-map my-evil-leader-nmap
                 ("p" . my-evil-paste-after-from-clipboard)
                 ("P" . my-evil-paste-before-from-clipboard)
                 ("y" . my-evil-yank-to-clipboard)
                 ("Y" . my-evil-yank-line-to-clipboard))
+    :bind (:map evil-normal-state-map
+                :prefix "<SPC> t"
+                :prefix-map my-toggle-map
+                nil)
     :hook (post-command . my-set-evil-state-color)
     :config
-    (my-define-leader-maps)
     (evil-mode +1))
 
   (use-package evil-args
@@ -435,11 +414,13 @@
 * faces
 #+begin_src emacs-lisp
   (use-package faces
+    :preface
+    (defun my-set-font-faces ()
+      (set-face-attribute 'default nil :family "Iosevka Fusion" :height 130)
+      (set-face-attribute 'fixed-pitch nil :family "Iosevka Fusion" :height 130)
+      (set-face-attribute 'variable-pitch nil :font "Carlito" :height 130 :weight 'regular))
     :config
-    (set-face-attribute 'default nil
-                        :family "Iosevka Fusion"
-                        :foundry "outline"
-                        :height 130))
+    (my-set-font-faces))
 #+end_src
 * files
 #+begin_src emacs-lisp
@@ -497,6 +478,13 @@
     (cursor-type '(hbar . 3))
     :config
     (blink-cursor-mode +1))
+#+end_src
+* help
+#+begin_src emacs-lisp
+  (use-package help
+    :defer t
+    :config
+    (temp-buffer-resize-mode +1))
 #+end_src
 * hl-line
 #+begin_src emacs-lisp
@@ -646,8 +634,8 @@
 * menu-bar
 #+begin_src emacs-lisp
   (use-package menu-bar
-    :bind
-    ("C-c t m" . menu-bar-mode)
+    :bind (:map my-toggle-map
+                ("m" . menu-bar-mode))
     :config
     (menu-bar-mode -1))
 #+end_src
@@ -839,8 +827,8 @@
 * scroll-bar
 #+begin_src emacs-lisp
   (use-package scroll-bar
-    :bind
-    ("C-c t l" . scroll-bar-mode)
+    :bind (:map my-toggle-map
+                ("l" . scroll-bar-mode))
     :config
     (scroll-bar-mode -1))
 #+end_src
@@ -848,7 +836,7 @@
 #+begin_src emacs-lisp
   (use-package select
     :custom
-    (x-select-enable-clipboard nil))
+    (select-enable-clipboard nil))
 #+end_src
 * shell
 #+begin_src emacs-lisp
@@ -902,17 +890,17 @@
     (world-clock-timer-enable t)
     (world-clock-time-format "%R %z  %A %d %B")
     (world-clock-timer-second 60)
-    :bind
-    ("C-c t c" . display-time-mode)
-    ("C-c t g" . world-clock)
+    :bind (:map my-toggle-map
+                ("c" . display-time-mode)
+                ("g" . world-clock))
     :config
     (display-time-mode -1))
 #+end_src
 * tool-bar
 #+begin_src emacs-lisp
   (use-package tool-bar
-    :bind
-    ("C-c t t" . tool-bar-mode)
+    :bind (:map my-toggle-map
+                ("t" . tool-bar-mode))
     :config
     (tool-bar-mode -1))
 #+end_src
@@ -963,7 +951,8 @@
 * whitespace
 #+begin_src emacs-lisp
   (use-package whitespace
-    :bind ("C-c t w" . whitespace-mode))
+    :bind (:map my-toggle-map
+                ("w" . whitespace-mode)))
 #+end_src
 * window
 #+begin_src emacs-lisp
@@ -975,6 +964,15 @@
     (window-sides-vertical nil)
     :hook ((help-mode . visual-line-mode)
            (custom-mode . visual-line-mode)))
+#+end_src
+* windmove
+#+begin_src emacs-lisp
+  (use-package windmove
+    :bind (:map my-evil-leader-nmap
+                ([left] . windmove-left)
+                ([right] . windmove-right)
+                ([up] . windmove-up)
+                ([down] . windmove-down)))
 #+end_src
 * xref
 #+begin_src emacs-lisp
