@@ -15,6 +15,10 @@
 * ~defaults~
 #+begin_src emacs-lisp
   (use-package emacs
+    :preface
+    (defun my-text-scale-reset ()
+      (interactive)
+      (text-scale-set 0))
     :init
     (prefer-coding-system 'utf-8)
     (set-default-coding-systems 'utf-8)
@@ -38,6 +42,13 @@
     (scroll-margin 1)
     (scroll-preserve-screen-position t)
     (scroll-step 1)
+    :bind
+    (:map mode-specific-map
+          ;; expand macros
+          ([return]. pp-macroexpand-last-sexp)
+
+          ;; reset text zooming
+          ("0" . my-text-scale-reset))
     :config
     (setq frame-title-format
           '(buffer-file-name "%f"
@@ -80,28 +91,16 @@
 * battery
 #+begin_src emacs-lisp
   (use-package battery
+    :after evil
     :custom
     (battery-load-low 20)
     (battery-load-critical 10)
     (battery-mode-line-format "[%b%p%%]")
     (battery-mode-line-limit 95)
     (battery-update-interval 180)
-    :bind
-    ("C-c t b" . display-battery-mode)
+    :bind ("C-c t b" . display-battery-mode)
     :config
     (display-battery-mode -1))
-#+end_src
-* bind-key
-#+begin_src emacs-lisp
-  (use-package bind-key
-    :ensure t
-    :preface
-    (defun my-text-scale-reset ()
-      (interactive)
-      (text-scale-set 0))
-    :bind
-    ;; reset text zooming
-    ("C-c 0" . my-text-scale-reset))
 #+end_src
 * bookmark
 #+begin_src emacs-lisp
@@ -239,8 +238,7 @@
     :custom
     (display-line-numbers-type 'relative)
     :hook ((text-mode prog-mode). display-line-numbers-mode)
-    :bind (:map my-toggle-map
-                ("n" . display-line-numbers-mode)))
+    :bind ("C-c t n" . display-line-numbers-mode))
 #+end_src
 * eldoc
 #+begin_src emacs-lisp
@@ -325,21 +323,15 @@
     (evil-want-integration t)
     (evil-want-keybinding nil)
     :bind (:map evil-motion-state-map
-                :prefix "<SPC>"
-                :prefix-map my-evil-leader-mmap
+                :prefix "<SPC>" :prefix-map my-evil-leader-mmap
                 ("y" . my-evil-yank-to-clipboard)
                 ("Y" . my-evil-yank-line-to-clipboard))
     :bind (:map evil-normal-state-map
-                :prefix "<SPC>"
-                :prefix-map my-evil-leader-nmap
+                :prefix "<SPC>" :prefix-map my-evil-leader-nmap
                 ("p" . my-evil-paste-after-from-clipboard)
                 ("P" . my-evil-paste-before-from-clipboard)
                 ("y" . my-evil-yank-to-clipboard)
                 ("Y" . my-evil-yank-line-to-clipboard))
-    :bind (:map evil-normal-state-map
-                :prefix "<SPC> t"
-                :prefix-map my-toggle-map
-                nil)
     :hook (post-command . my-set-evil-state-color)
     :config
     (evil-mode +1))
@@ -398,8 +390,9 @@
   (use-package evil-numbers
     :ensure t
     :bind (:map evil-normal-state-map
-                ("C-c +" . evil-numbers/inc-at-pt)
-                ("C-c -" . evil-numbers/dec-at-pt)))
+                :prefix "C-c" :prefix-map my-evil-numbers-map
+                ("+" . evil-numbers/inc-at-pt)
+                ("-" . evil-numbers/dec-at-pt)))
 
   (use-package evil-quickscope
     :ensure t
@@ -634,8 +627,7 @@
 * menu-bar
 #+begin_src emacs-lisp
   (use-package menu-bar
-    :bind (:map my-toggle-map
-                ("m" . menu-bar-mode))
+    :bind ("C-c t m" . menu-bar-mode)
     :config
     (menu-bar-mode -1))
 #+end_src
@@ -827,8 +819,7 @@
 * scroll-bar
 #+begin_src emacs-lisp
   (use-package scroll-bar
-    :bind (:map my-toggle-map
-                ("l" . scroll-bar-mode))
+    :bind ("C-c t l" . scroll-bar-mode)
     :config
     (scroll-bar-mode -1))
 #+end_src
@@ -890,17 +881,15 @@
     (world-clock-timer-enable t)
     (world-clock-time-format "%R %z  %A %d %B")
     (world-clock-timer-second 60)
-    :bind (:map my-toggle-map
-                ("c" . display-time-mode)
-                ("g" . world-clock))
+    :bind (("C-c t c" . display-time-mode)
+           ("C-c t g" . world-clock))
     :config
     (display-time-mode -1))
 #+end_src
 * tool-bar
 #+begin_src emacs-lisp
   (use-package tool-bar
-    :bind (:map my-toggle-map
-                ("t" . tool-bar-mode))
+    :bind ("C-c t t" . tool-bar-mode)
     :config
     (tool-bar-mode -1))
 #+end_src
@@ -951,8 +940,7 @@
 * whitespace
 #+begin_src emacs-lisp
   (use-package whitespace
-    :bind (:map my-toggle-map
-                ("w" . whitespace-mode)))
+    :bind ("C-c t w" . whitespace-mode))
 #+end_src
 * window
 #+begin_src emacs-lisp
@@ -964,15 +952,6 @@
     (window-sides-vertical nil)
     :hook ((help-mode . visual-line-mode)
            (custom-mode . visual-line-mode)))
-#+end_src
-* windmove
-#+begin_src emacs-lisp
-  (use-package windmove
-    :bind (:map my-evil-leader-nmap
-                ([left] . windmove-left)
-                ([right] . windmove-right)
-                ([up] . windmove-up)
-                ([down] . windmove-down)))
 #+end_src
 * xref
 #+begin_src emacs-lisp
