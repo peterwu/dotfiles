@@ -80,14 +80,6 @@
     :config
     (global-auto-revert-mode +1))
 #+end_src
-* avy
-  #+begin_src emacs-lisp
-    (use-package avy
-      :ensure t
-      :after evil
-      :bind (:map my-evil-leader-mmap
-                  ("f" . avy-goto-char)))
-  #+end_src 
 * battery
 #+begin_src emacs-lisp
   (use-package battery
@@ -316,7 +308,7 @@
     (fset 'evil-visual-update-x-selection 'ignore)
     :custom
     (evil-mode-line-format nil)
-    ;; (evil-respect-visual-line-mode t)
+    (evil-respect-visual-line-mode nil)
     (evil-undo-system 'undo-redo)
     (evil-want-C-i-jump nil)
     (evil-want-Y-yank-to-eol t)
@@ -329,9 +321,7 @@
     :bind (:map evil-normal-state-map
                 :prefix "<SPC>" :prefix-map my-evil-leader-nmap
                 ("p" . my-evil-paste-after-from-clipboard)
-                ("P" . my-evil-paste-before-from-clipboard)
-                ("y" . my-evil-yank-to-clipboard)
-                ("Y" . my-evil-yank-line-to-clipboard))
+                ("P" . my-evil-paste-before-from-clipboard))
     :hook (post-command . my-set-evil-state-color)
     :config
     (evil-mode +1))
@@ -394,10 +384,14 @@
                 ("+" . evil-numbers/inc-at-pt)
                 ("-" . evil-numbers/dec-at-pt)))
 
-  (use-package evil-quickscope
+  (use-package evil-snipe
     :ensure t
+    :custom
+    (evil-snipe-scope 'visible)
+    (evil-snipe-repeat-scope 'whole-visible)
     :config
-    (global-evil-quickscope-mode +1))
+    (evil-snipe-mode +1)
+    (evil-snipe-override-mode +1))
 
   (use-package evil-surround
     :ensure t
