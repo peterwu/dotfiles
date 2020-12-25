@@ -2,7 +2,7 @@
 #+title: My Emacs Configuration
 #+startup: overview
 
-* ~defaults~
+* /defaults/
 #+begin_src emacs-lisp
   (use-package emacs
     :preface
@@ -37,7 +37,7 @@
     :bind
     (:map mode-specific-map
           ;; expand macros
-          ([return]. pp-macroexpand-last-sexp)
+          ([return] . pp-macroexpand-last-sexp)
 
           ;; reset text zooming
           ("0" . my-text-scale-reset))
@@ -260,6 +260,7 @@
   (use-package evil
     :ensure t
     :preface
+    (defconst my-leader-key "<SPC>")
     (defun my-set-evil-state-color ()
       (let* ((default 'modus-theme-intense-neutral)
              (face (cond ((minibufferp) default)
@@ -379,6 +380,7 @@
     :custom
     (evil-snipe-repeat-scope 'whole-visible)
     (evil-snipe-scope 'visible)
+    (evil-snipe-smart-case t)
     (evil-snipe-use-vim-sneak-bindings t)
     :config
     (evil-snipe-mode +1)
@@ -583,6 +585,18 @@
     :bind (("C-x g" . magit-status)
            ("C-c j" . magit-dispatch)
            ("C-c g" . magit-file-dispatch)))
+#+end_src
+* man
+#+begin_src emacs-lisp
+  (use-package man
+    :preface
+    (defun my-exit-man ()
+      (interactive)
+      (if (> (length (window-list)) 1)
+          (quit-window)
+        (delete-frame)))
+    :bind (:map Man-mode-map
+                ("Q" . my-exit-man)))
 #+end_src
 * minibuffer
 #+begin_src emacs-lisp
