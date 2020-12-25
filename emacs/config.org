@@ -2,16 +2,6 @@
 #+title: My Emacs Configuration
 #+startup: overview
 
-* ~bootstrap~
-#+begin_src emacs-lisp
-  ;; install use-package if not
-  (unless (package-installed-p 'use-package)
-    (package-refresh-contents)
-    (package-install 'use-package))
-
-  (eval-when-compile
-    (require 'use-package))
-#+end_src
 * ~defaults~
 #+begin_src emacs-lisp
   (use-package emacs
@@ -22,7 +12,9 @@
     :init
     (prefer-coding-system 'utf-8)
     (set-default-coding-systems 'utf-8)
-    (set-language-environment "utf-8")
+    (set-language-environment 'utf-8)
+    (set-selection-coding-system 'utf-8)
+    (set-terminal-coding-system 'utf-8)
 
     (fset 'yes-or-no-p 'y-or-n-p)
     :custom
@@ -129,9 +121,7 @@
                           (let ((file my-custom-file))
                             (unless (file-exists-p file)
                               (make-empty-file file))
-                            (load-file file))))
-    :config
-    (load-theme 'modus-operandi t))
+                            (load-file file)))))
 #+end_src
 * dabbrev
 #+begin_src emacs-lisp
@@ -387,8 +377,9 @@
   (use-package evil-snipe
     :ensure t
     :custom
-    (evil-snipe-scope 'visible)
     (evil-snipe-repeat-scope 'whole-visible)
+    (evil-snipe-scope 'visible)
+    (evil-snipe-use-vim-sneak-bindings t)
     :config
     (evil-snipe-mode +1)
     (evil-snipe-override-mode +1))
@@ -397,17 +388,6 @@
     :ensure t
     :config  
     (global-evil-surround-mode +1))
-#+end_src
-* faces
-#+begin_src emacs-lisp
-  (use-package faces
-    :preface
-    (defun my-set-font-faces ()
-      (set-face-attribute 'default nil :family "Iosevka Fusion" :height 130)
-      (set-face-attribute 'fixed-pitch nil :family "Iosevka Fusion" :height 130)
-      (set-face-attribute 'variable-pitch nil :font "Carlito" :height 130 :weight 'regular))
-    :config
-    (my-set-font-faces))
 #+end_src
 * files
 #+begin_src emacs-lisp
@@ -604,27 +584,6 @@
            ("C-c j" . magit-dispatch)
            ("C-c g" . magit-file-dispatch)))
 #+end_src
-* man
-#+begin_src emacs-lisp
-  (use-package man
-    :demand t
-    :preface
-    (defun my-quit-man ()
-      (interactive)
-      (if (> (length (window-list)) 1)
-          (quit-window)
-        (delete-frame)))
-    :after evil
-    :bind (:map evil-normal-state-local-map
-                ("q" . my-quit-man)))
-#+end_src
-* menu-bar
-#+begin_src emacs-lisp
-  (use-package menu-bar
-    :bind ("C-c t m" . menu-bar-mode)
-    :config
-    (menu-bar-mode -1))
-#+end_src
 * minibuffer
 #+begin_src emacs-lisp
   (use-package minibuffer
@@ -810,13 +769,6 @@
     :config
     (save-place-mode +1))
 #+end_src
-* scroll-bar
-#+begin_src emacs-lisp
-  (use-package scroll-bar
-    :bind ("C-c t l" . scroll-bar-mode)
-    :config
-    (scroll-bar-mode -1))
-#+end_src
 * select
 #+begin_src emacs-lisp
   (use-package select
@@ -879,13 +831,6 @@
            ("C-c t g" . world-clock))
     :config
     (display-time-mode -1))
-#+end_src
-* tool-bar
-#+begin_src emacs-lisp
-  (use-package tool-bar
-    :bind ("C-c t t" . tool-bar-mode)
-    :config
-    (tool-bar-mode -1))
 #+end_src
 * tooltip
 #+begin_src emacs-lisp

@@ -1,5 +1,4 @@
 ;;; early-init.el -*- lexical-binding: t; -*-
-
 (defvar file-name-handler-alist-original file-name-handler-alist)
 (setq gc-cons-threshold most-positive-fixnum
       gc-cons-percentage 0.6
@@ -20,9 +19,20 @@
 (setq package-quickstart t
       package-quickstart-file (expand-file-name ".cache/package-quickstart.el" user-emacs-directory))
 
-(with-eval-after-load 'package
-  (add-to-list 'package-archives
-	       (cons "melpa" "https://melpa.org/packages/") t))
+(if (fboundp 'menu-bar-mode)
+    (menu-bar-mode -1))
+(if (fboundp 'tool-bar-mode)
+    (tool-bar-mode -1))
+(if (fboundp 'scroll-bar-mode)
+    (scroll-bar-mode -1))
+(if (fboundp 'horizontal-scroll-bar-mode)
+    (horizontal-scroll-bar-mode -1))
+
+(set-face-attribute 'default nil :family "Iosevka Fusion" :height 130)
+(set-face-attribute 'fixed-pitch nil :family "Iosevka Fusion" :height 130)
+(set-face-attribute 'variable-pitch nil :font "Carlito" :height 130 :weight 'regular)
+
+(load-theme 'modus-operandi t)
 
 (provide 'early-init)
 ;;; early-init.el ends here
