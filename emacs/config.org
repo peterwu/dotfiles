@@ -5,10 +5,6 @@
 * /defaults/
 #+begin_src emacs-lisp
   (use-package emacs
-    :preface
-    (defun my-text-scale-reset ()
-      (interactive)
-      (text-scale-set 0))
     :init
     (prefer-coding-system 'utf-8)
     (set-default-coding-systems 'utf-8)
@@ -22,6 +18,12 @@
 
     (bidi-inhibit-bpa t)
 
+    (fill-column 76)
+
+    (frame-title-format
+     '(buffer-file-name "%f"
+			(dired-directory dired-directory "%b")))
+
     (inhibit-startup-buffer-menu t)
     (inhibit-startup-echo-area-message t)
     (inhibit-startup-screen t)
@@ -34,21 +36,17 @@
     (scroll-margin 1)
     (scroll-preserve-screen-position t)
     (scroll-step 1)
-    :bind
-    (:map mode-specific-map
-          ;; expand macros
-          ([return] . pp-macroexpand-last-sexp)
 
-          ;; reset text zooming
-          ("0" . my-text-scale-reset))
-    :config
-    (setq frame-title-format
-          '(buffer-file-name "%f"
-                             (dired-directory dired-directory "%b")))
+    (visible-bell t)
+    :bind (:map mode-specific-map
+		([return] . pp-macroexpand-last-sexp))
+    :hook (text-mode . turn-on-auto-fill))
 
-    (when (eq system-type 'windows-nt)
-      (setq w32-get-true-file-attributes nil)
-      (setq inhibit-compacting-font-caches t)))
+  (use-package emacs
+    :when (eq system-type 'windows-nt)
+    :custom
+    (w32-get-true-file-attributes nil)
+    (inhibit-compacting-font-caches t))
 #+end_src
 * auto-package-update
 #+begin_src emacs-lisp
@@ -115,10 +113,10 @@
 #+begin_src emacs-lisp
   (use-package custom
     :init
-    (defvar my-custom-file (expand-file-name ".cache/custom.el" user-emacs-directory))
-    (setq custom-file my-custom-file)
+    (defvar pwy:custom-file (expand-file-name ".cache/custom.el" user-emacs-directory))
+    (setq custom-file pwy:custom-file)
     :hook (after-init . (lambda ()
-                          (let ((file my-custom-file))
+                          (let ((file pwy:custom-file))
                             (unless (file-exists-p file)
                               (make-empty-file file))
                             (load-file file)))))
@@ -260,8 +258,8 @@
   (use-package evil
     :ensure t
     :preface
-    (defconst my-leader-key "<SPC>")
-    (defun my-set-evil-state-color ()
+    (defconst pwy:leader-key "<SPC>")
+    (defun pwy:set-evil-state-color ()
       (let* ((default 'modus-theme-intense-neutral)
              (face (cond ((minibufferp) default)
                          ((evil-emacs-state-p) 'modus-theme-intense-magenta)
@@ -276,22 +274,22 @@
                             :foreground (face-foreground face)
                             :background (face-background face))))
 
-    (defun my-evil-yank-to-clipboard ()
+    (defun pwy:evil-yank-to-clipboard ()
       (interactive)
       (evil-use-register ?+)
       (call-interactively 'evil-yank))
 
-    (defun my-evil-yank-line-to-clipboard ()
+    (defun pwy:evil-yank-line-to-clipboard ()
       (interactive)
       (evil-use-register ?+)
       (call-interactively 'evil-yank-line))
 
-    (defun my-evil-paste-after-from-clipboard ()
+    (defun pwy:evil-paste-after-from-clipboard ()
       (interactive)
       (evil-use-register ?+)
       (call-interactively 'evil-paste-after))
 
-    (defun my-evil-paste-before-from-clipboard ()
+    (defun pwy:evil-paste-before-from-clipboard ()
       (interactive)
       (evil-use-register ?+)
       (call-interactively 'evil-paste-before))
@@ -306,14 +304,16 @@
     (evil-want-integration t)
     (evil-want-keybinding nil)
     :bind (:map evil-motion-state-map
-                :prefix "<SPC>" :prefix-map my-evil-leader-mmap
-                ("y" . my-evil-yank-to-clipboard)
-                ("Y" . my-evil-yank-line-to-clipboard))
+                :prefix "<SPC>" :prefix-map pwy:yank-map
+                ("y" . pwy:evil-yank-to-clipboard)
+                ("Y" . pwy:evil-yank-line-to-clipboard))
     :bind (:map evil-normal-state-map
-                :prefix "<SPC>" :prefix-map my-evil-leader-nmap
-                ("p" . my-evil-paste-after-from-clipboard)
-                ("P" . my-evil-paste-before-from-clipboard))
-    :hook (post-command . my-set-evil-state-color)
+                :prefix "<SPC>" :prefix-map pwy:paste-map
+                ("p" . pwy:evil-paste-after-from-clipboard)
+                ("P" . pwy:evil-paste-before-from-clipboard))
+    :bind (:map evil-normal-state-map
+                ("<SPC> z" . text-scale-adjust))
+    :hook (post-command . pwy:set-evil-state-color)
     :config
     (evil-mode +1))
 
@@ -368,17 +368,10 @@
     :config  
     (global-evil-matchit-mode +1))
 
-  (use-package evil-numbers
-    :ensure t
-    :bind (:map evil-normal-state-map
-                :prefix "C-c" :prefix-map my-evil-numbers-map
-                ("+" . evil-numbers/inc-at-pt)
-                ("-" . evil-numbers/dec-at-pt)))
-
   (use-package evil-snipe
     :ensure t
     :custom
-    (evil-snipe-repeat-scope 'whole-visible)
+    (evil-snipe-repeat-scope 'visible)
     (evil-snipe-scope 'visible)
     (evil-snipe-smart-case t)
     (evil-snipe-use-vim-sneak-bindings t)
@@ -500,15 +493,19 @@
   (use-package icomplete
     :demand t
     :custom
+    (fido-mode t)
+
     (icomplete-hide-common-prefix nil)
     (icomplete-in-buffer t)
     (icomplete-separator (propertize " · " 'face 'shadow))
     (icomplete-show-matches-on-no-input t)
     (icomplete-tidy-shadowed-file-names t)
     (icomplete-with-completion-tables t)
-    (fido-mode t)
-    :bind (([left] . icomplete-backward-completions)
-           ([right] . icomplete-forward-completions))
+    :bind (:map icomplete-minibuffer-map
+		([left]  . icomplete-backward-completions)
+		([right] . icomplete-forward-completions)
+		([up]    . icomplete-backward-completions)
+		([down]  . icomplete-forward-completions))
     :config
     (icomplete-mode +1))
 #+end_src
@@ -516,14 +513,16 @@
 #+begin_src emacs-lisp
   (use-package ido
     :custom
-    (ido-enable-flex-matching t)
-    (ido-everywhere t)
     (ido-default-buffer-method 'selected-window)
     (ido-default-file-method 'selected-window)
+    (ido-enable-flex-matching t)
+    (ido-everywhere t)
     (ido-save-directory-list-file
      (expand-file-name ".cache/ido.last" user-emacs-directory))
     (ido-use-virtual-buffers t)
     :config
+    (setf (nth 2 ido-decorations) (propertize " · " 'face 'shadow))
+    (setf (nth 3 ido-decorations) (propertize (concat " · " (if (char-displayable-p ?…) "…" "...")) 'face 'shadow))
     (ido-mode +1))
 #+end_src
 * imenu
@@ -590,13 +589,13 @@
 #+begin_src emacs-lisp
   (use-package man
     :preface
-    (defun my-exit-man ()
+    (defun pwy:exit-man ()
       (interactive)
       (if (> (length (window-list)) 1)
           (quit-window)
         (delete-frame)))
     :bind (:map Man-mode-map
-                ("Q" . my-exit-man)))
+                ("Q" . pwy:exit-man)))
 #+end_src
 * minibuffer
 #+begin_src emacs-lisp
@@ -636,14 +635,6 @@
 * org
 #+begin_src emacs-lisp
   (use-package org
-    :hook (org-mode . (lambda ()
-                        (org-indent-mode +1)
-                        (variable-pitch-mode -1)
-                        (display-line-numbers-mode -1)))
-    :bind (("C-c a" . org-agenda)
-           ("C-c b" . org-switchb)
-           ("C-c c" . org-capture)
-           ("C-c l" . org-store-link))  
     :custom
     (org-ellipsis " ▾")
     (org-export-headline-levels 5)
@@ -663,20 +654,24 @@
     (org-agenda-files (list "~/Documents/Org"))
     (org-capture-templates
      '(("t" "Todo" entry (file+headline "~/Documents/Org/gtd.org" "Tasks")
-        "* TODO %?\n  %i\n  %a")
+	"* TODO %?\n  %i\n  %a")
        ("n" "Notes" entry (file+headline "~/Documents/Org/notes.org" "Notes")
-        "* Notes %?\n  %i\n  %a")
+	"* Notes %?\n  %i\n  %a")
        ("j" "Journal" entry (file+olp+datetree "~/Documents/Org/journal.org")
-        "* %?\nEntered on %U\n  %i\n  %a"))))
-
-  (use-package org-indent
-    :after org)
+	"* %?\nEntered on %U\n  %i\n  %a")))
+    :hook (org-mode . (lambda ()
+			(variable-pitch-mode -1)
+			(display-line-numbers-mode -1)))
+    :bind (("C-c a" . org-agenda)
+	   ("C-c b" . org-switchb)
+	   ("C-c c" . org-capture)
+	   ("C-c l" . org-store-link)))
 
   (use-package org-superstar
     :ensure t
     :hook (org-mode . org-superstar-mode)
     :custom
-    (org-superstar-headline-bullets-list '("◉" "✸" "▷" "◆" "○" "▶"))
+    (org-superstar-headline-bullets-list '("◉" "○" "✸" "▷" "◆" "▶"))
     (org-superstar-leading-bullet ?\s)
     (org-superstar-prettify-item-bullets t))
 #+end_src
@@ -865,6 +860,7 @@
 #+begin_src emacs-lisp
   (use-package tramp
     :custom
+    (tramp-default-method "sshx")
     (tramp-persistency-file-name
      (expand-file-name ".cache/tramp" user-emacs-directory)))
 #+end_src

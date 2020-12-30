@@ -2,9 +2,7 @@
 (require 'package)
 (require 'org)
 
-(setq package-archives
-      '(("melpa" . "http://melpa.org/packages/")
-	("gnu" . "https://elpa.gnu.org/packages/")))
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 
 ;; install use-package if not
 (unless (package-installed-p 'use-package)
