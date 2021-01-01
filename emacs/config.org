@@ -5,6 +5,17 @@
 * /defaults/
 #+begin_src emacs-lisp
   (use-package emacs
+    :preface
+    (defun pwy:mode-line-render (left right)
+      "Return a string of `window-total-width' length.
+	  Containing LEFT, and RIGHT aligned respectively."
+      (let ((available-width
+	     (- (window-total-width)
+		(string-width (format-mode-line left))
+		(string-width (format-mode-line right)))))
+	(append left
+		(list (format (format "%%%ds" available-width) ""))
+		right)))
     :init
     (prefer-coding-system 'utf-8)
     (set-default-coding-systems 'utf-8)
@@ -20,10 +31,6 @@
 
     (fill-column 76)
 
-    (frame-title-format
-     '(buffer-file-name "%f"
-			(dired-directory dired-directory "%b")))
-
     (inhibit-startup-buffer-menu t)
     (inhibit-startup-echo-area-message t)
     (inhibit-startup-screen t)
@@ -31,6 +38,31 @@
     (initial-buffer-choice t)
     (initial-major-mode 'org-mode)
     (initial-scratch-message nil)
+
+    (mode-line-format
+     '((:eval
+	(pwy:mode-line-render
+	 ;; Left.
+	 `("%e"
+	   evil-mode-line-tag
+	   mode-line-mule-info
+	   mode-line-client
+	   mode-line-modified
+	   mode-line-remote
+	   " "
+	   ,(let ((fname (buffer-file-name)))
+	      (cond (fname (concat 
+			    (propertize (file-name-directory (abbreviate-file-name fname)) 'face '(:inherit mode-line-buffer-id))
+			    (propertize (file-name-nondirectory fname) 'face '(:inherit mode-line-emphasis))))
+		    (t (propertize (buffer-name) 'face '(:inherit mode-line-buffer-id)))))
+
+	   (vc-mode vc-mode))
+	 ;; Right.
+	 `(,(propertize (concat "%p " (if (char-displayable-p ?∈) "∈" "of") " %I") 'help-echo "Size indication")
+	   " "
+	   ,(propertize "[%l,%c]" 'help-echo "Line/Column indication")
+	   ,(string-trim (format-mode-line mode-line-modes))
+	   mode-line-misc-info)))))
 
     (scroll-conservatively 10000)
     (scroll-margin 1)
@@ -41,6 +73,32 @@
     :bind (:map mode-specific-map
 		([return] . pp-macroexpand-last-sexp))
     :hook (text-mode . turn-on-auto-fill))
+
+  (use-package emacs
+    :preface
+    (require 'pulse)
+
+    (defface pwy:beacon-pulse-face
+      '((t (:inherit highlight :extend t)))
+      "Face for beaconing")
+
+    (defun pwy:beacon-vanish-line ()
+      (pulse-momentary-unhighlight))
+
+    (defun pwy:beacon-pulse-line (&rest _)
+      "Beacon the current line."
+      (save-excursion
+	(let ((beg (point-at-bol))
+	      (end (min (point-max) (+ 1 (point-at-eol)))))
+	  (pulse-momentary-highlight-overlay (make-overlay beg end) 'pwy:beacon-pulse-face)
+	  ;; set a timer to vanish the pulse
+	  (run-at-time 0.5 nil #'pwy:beacon-vanish-line))))
+    :config
+    (dolist (command '(scroll-up-command
+		       scroll-down-command
+		       recenter-top-bottom
+		       other-window))
+      (advice-add command :after #'pwy:beacon-pulse-line)))
 
   (use-package emacs
     :when (eq system-type 'windows-nt)
@@ -81,8 +139,7 @@
     (battery-mode-line-limit 95)
     (battery-update-interval 180)
     :bind ("C-c t b" . display-battery-mode)
-    :config
-    (display-battery-mode -1))
+    :hook (after-init . display-battery-mode))
 #+end_src
 * bookmark
 #+begin_src emacs-lisp
@@ -258,41 +315,43 @@
   (use-package evil
     :ensure t
     :preface
-    (defconst pwy:leader-key "<SPC>")
     (defun pwy:set-evil-state-color ()
       (let* ((default 'modus-theme-intense-neutral)
-             (face (cond ((minibufferp) default)
-                         ((evil-emacs-state-p) 'modus-theme-intense-magenta)
-                         ((evil-insert-state-p) 'modus-theme-intense-green)
-                         ((evil-motion-state-p) 'modus-theme-intense-yellow)
-                         ((evil-normal-state-p) default)
-                         ((evil-operator-state-p) 'modus-theme-subtle-yellow)
-                         ((evil-replace-state-p) 'modus-theme-intense-red)
-                         ((evil-visual-state-p)  'modus-theme-intense-cyan)
-                         (t default))))
-        (set-face-attribute 'mode-line nil
-                            :foreground (face-foreground face)
-                            :background (face-background face))))
+	     (face (cond ((minibufferp) default)
+			 ((evil-emacs-state-p) 'modus-theme-intense-magenta)
+			 ((evil-insert-state-p) 'modus-theme-intense-green)
+			 ((evil-motion-state-p) 'modus-theme-intense-yellow)
+			 ((evil-normal-state-p) default)
+			 ((evil-operator-state-p) 'modus-theme-subtle-yellow)
+			 ((evil-replace-state-p) 'modus-theme-intense-red)
+			 ((evil-visual-state-p)  'modus-theme-intense-cyan)
+			 (t default))))
+	(set-face-attribute 'mode-line nil
+			    :foreground (face-foreground face)
+			    :background (face-background face))))
 
-    (defun pwy:evil-yank-to-clipboard ()
-      (interactive)
-      (evil-use-register ?+)
-      (call-interactively 'evil-yank))
+    (defun pwy:define-evil-commands ()
+      (evil-define-operator pwy:evil-yank-to-clipboard (beg end type register yank-handler)
+	:move-point nil
+	:repeat nil
+	(interactive "<R><x><y>")
+	(evil-yank beg end type ?+ yank-handler))
 
-    (defun pwy:evil-yank-line-to-clipboard ()
-      (interactive)
-      (evil-use-register ?+)
-      (call-interactively 'evil-yank-line))
+      (evil-define-operator pwy:evil-yank-line-to-clipboard (beg end type register)
+	:motion evil-line-or-visual-line
+	:move-point nil
+	(interactive "<R><x>")
+	(evil-yank-line beg end type ?+ yank-handler))
 
-    (defun pwy:evil-paste-after-from-clipboard ()
-      (interactive)
-      (evil-use-register ?+)
-      (call-interactively 'evil-paste-after))
+      (evil-define-command pwy:evil-paste-before-from-clipboard (count &optional register yank-handler)
+	:suppress-operator t
+	(interactive "*P<x>")
+	(evil-paste-before count ?+ yank-handler))
 
-    (defun pwy:evil-paste-before-from-clipboard ()
-      (interactive)
-      (evil-use-register ?+)
-      (call-interactively 'evil-paste-before))
+      (evil-define-command pwy:evil-paste-after-from-clipboard (count &optional register yank-handler)
+	:suppress-operator t
+	(interactive "*P<x>")
+	(evil-paste-after count ?+ yank-handler)))
     :init
     (fset 'evil-visual-update-x-selection 'ignore)
     :custom
@@ -304,32 +363,33 @@
     (evil-want-integration t)
     (evil-want-keybinding nil)
     :bind (:map evil-motion-state-map
-                :prefix "<SPC>" :prefix-map pwy:yank-map
-                ("y" . pwy:evil-yank-to-clipboard)
-                ("Y" . pwy:evil-yank-line-to-clipboard))
+		:prefix "<SPC>" :prefix-map pwy:evil-yank-map
+		("y" . pwy:evil-yank-to-clipboard)
+		("Y" . pwy:evil-yank-line-to-clipboard))
     :bind (:map evil-normal-state-map
-                :prefix "<SPC>" :prefix-map pwy:paste-map
-                ("p" . pwy:evil-paste-after-from-clipboard)
-                ("P" . pwy:evil-paste-before-from-clipboard))
+		:prefix "<SPC>" :prefix-map pwy:evil-paste-map
+		("p" . pwy:evil-paste-after-from-clipboard)
+		("P" . pwy:evil-paste-before-from-clipboard))
     :bind (:map evil-normal-state-map
-                ("<SPC> z" . text-scale-adjust))
-    :hook (post-command . pwy:set-evil-state-color)
+		("<SPC> z" . text-scale-adjust))
+    :hook ((post-command . pwy:set-evil-state-color)
+	   (evil-mode . pwy:define-evil-commands))
     :config
     (evil-mode +1))
 
   (use-package evil-args
     :ensure t
     :bind (:map evil-inner-text-objects-map
-                ("a" . evil-inner-arg))
+		("a" . evil-inner-arg))
     :bind (:map evil-outer-text-objects-map
-                ("a" . evil-outer-arg))
+		("a" . evil-outer-arg))
     :bind (:map evil-normal-state-map
-                ("H" . evil-backward-arg)
-                ("L" . evil-forward-arg)
-                ("K" . evil-jump-out-args))
+		("H" . evil-backward-arg)
+		("L" . evil-forward-arg)
+		("K" . evil-jump-out-args))
     :bind (:map evil-motion-state-map
-                ("H" . evil-backward-arg)
-                ("L" . evil-forward-arg)))
+		("H" . evil-backward-arg)
+		("L" . evil-forward-arg)))
 
   (use-package evil-collection
     :ensure t
@@ -351,11 +411,37 @@
 
   (use-package evil-goggles
     :ensure t
+    :preface
+    (defun pwy:add-evil-commands-to-goggles ()
+      (add-to-list 'evil-goggles--commands
+		   '(pwy:evil-yank-to-clipboard
+		     :face evil-goggles-yank-face
+		     :switch evil-goggles-enable-yank
+		     :advice evil-goggles--generic-async-advice))
+
+      (add-to-list 'evil-goggles--commands
+		   '(pwy:evil-yank-line-to-clipboard
+		     :face evil-goggles-yank-face
+		     :switch evil-goggles-enable-yank
+		     :advice evil-goggles--generic-async-advice))
+
+      (add-to-list 'evil-goggles--commands
+		   '(pwy:evil-paste-before-from-clipboard
+		     :face evil-goggles-paste-face
+		     :switch evil-goggles-enable-paste
+		     :advice evil-goggles--paste-advice :after t))
+
+      (add-to-list 'evil-goggles--commands
+		   '(pwy:evil-paste-after-from-clipboard
+		     :face evil-goggles-paste-face
+		     :switch evil-goggles-enable-paste
+		     :advice evil-goggles--paste-advice :after t)))
     :custom
     (evil-goggles-async-duration 0.900)
     (evil-goggles-blocking-duration 0.100)
     (evil-goggles-pulse t)
     :config  
+    (pwy:add-evil-commands-to-goggles)
     (evil-goggles-mode +1))
 
   (use-package evil-lion
@@ -613,6 +699,9 @@
 #+begin_src emacs-lisp
   (use-package minions
     :ensure t
+    :custom
+    (minions-mode-line-delimiters '("[" . "]"))
+    (minions-mode-line-lighter (if (char-displayable-p ?…) "…" "..."))
     :config (minions-mode +1))
 #+end_src
 * mouse
@@ -837,9 +926,8 @@
     (world-clock-time-format "%R %z  %A %d %B")
     (world-clock-timer-second 60)
     :bind (("C-c t c" . display-time-mode)
-           ("C-c t g" . world-clock))
-    :config
-    (display-time-mode -1))
+	   ("C-c t g" . world-clock))
+    :hook (after-init . display-time-mode))
 #+end_src
 * tooltip
 #+begin_src emacs-lisp
