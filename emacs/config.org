@@ -6,9 +6,35 @@
 #+begin_src emacs-lisp
   (use-package emacs
     :preface
+    (defun pwy:ellipsize-file-or-directory-name (name maxlen)
+      "Ellipsize the directory part of a file NAME.
+  If NAME is larget than MAXLEN, ellipsise the directory part,
+  preserving, ‘file-name-nondirectory’ if it's a file or the last
+  directory name if a directory, returning the ellipsized string as
+  the result."
+      (if (> (length name) maxlen)
+	  (if (or (file-directory-p name)
+		  (save-match-data (string-match "/$" name)))
+	      (let* ((bits (split-string name "/" t))
+		     (head (butlast bits))
+		     (tail (car (last bits))))
+		(concat
+		 (unless (equal (car bits) "~") "/")
+		 (substring (mapconcat #'identity head "/") 0
+			    (- (- maxlen 4) (length bits)))
+		 (if (char-displayable-p ?…) "…" "...")	      
+		 tail "/"))
+	    (let ((fnod (file-name-nondirectory name)))
+	      (concat
+	       (substring (file-name-directory name) 0
+			  (- (- maxlen 4) (length fnod)))
+	       (if (char-displayable-p ?…) "…" "...")
+	       fnod)))
+	name))
+
     (defun pwy:mode-line-render (left right)
       "Return a string of `window-total-width' length.
-	  Containing LEFT, and RIGHT aligned respectively."
+	    Containing LEFT, and RIGHT aligned respectively."
       (let ((available-width
 	     (- (window-total-width)
 		(string-width (format-mode-line left))
@@ -31,6 +57,12 @@
 
     (fill-column 76)
 
+    (frame-title-format
+     '((:eval
+	(if (buffer-file-name)
+	    (abbreviate-file-name (buffer-file-name))
+	  "%b"))))
+
     (inhibit-startup-buffer-menu t)
     (inhibit-startup-echo-area-message t)
     (inhibit-startup-screen t)
@@ -42,27 +74,41 @@
     (mode-line-format
      '((:eval
 	(pwy:mode-line-render
-	 ;; Left.
+	 ;; Left
 	 `("%e"
-	   evil-mode-line-tag
+	   " "
 	   mode-line-mule-info
 	   mode-line-client
 	   mode-line-modified
 	   mode-line-remote
 	   " "
-	   ,(let ((fname (buffer-file-name)))
-	      (cond (fname (concat 
-			    (propertize (file-name-directory (abbreviate-file-name fname)) 'face '(:inherit mode-line-buffer-id))
-			    (propertize (file-name-nondirectory fname) 'face '(:inherit mode-line-emphasis))))
-		    (t (propertize (buffer-name) 'face '(:inherit mode-line-buffer-id)))))
-
-	   (vc-mode vc-mode))
-	 ;; Right.
-	 `(,(propertize (concat "%p " (if (char-displayable-p ?∈) "∈" "of") " %I") 'help-echo "Size indication")
+	   ,(propertize
+	     (if (string-equal (format-mode-line "%I") (format-mode-line "%i"))
+		 "%I"
+	       "~%I")
+	     'help-echo "Size")
 	   " "
-	   ,(propertize "[%l,%c]" 'help-echo "Line/Column indication")
-	   ,(string-trim (format-mode-line mode-line-modes))
-	   mode-line-misc-info)))))
+	   ,(if (buffer-file-name)
+		(propertize (file-name-nondirectory (buffer-file-name))
+			    'help-echo (abbreviate-file-name (buffer-file-name))
+			    'face '(:inherit mode-line-emphasis))
+	      (propertize (buffer-name) 'face '(:inherit mode-line-buffer-id)))
+	   (vc-mode vc-mode))
+	 ;; Right
+	 `(,(propertize "(%l,%C)" 'help-echo "(Line,Column)")
+	   " "
+	   ,(cond ((consp mode-name)
+		   (setcar mode-name (propertize (car mode-name) 'help-echo "Major mode" 'face '(:inherit mode-line-emphasis)))
+		   (format-mode-line mode-name))
+		  (t (propertize (format-mode-line mode-name) 'help-echo "Major mode" 'face '(:inherit mode-line-emphasis))))
+	   " "
+	   ,(let ((p (format-mode-line "%p")))
+	      (cond
+	       ((string-equal p "All") (propertize "+++" 'help-echo "All"))
+	       ((string-equal p "Top") (propertize "^^^" 'help-echo "Top"))
+	       ((string-equal p "Bottom") (propertize "___" 'help-echo "Bottom"))
+	       (t (propertize (string-replace "%" "%%" (string-pad p 3 nil t)) 'help-echo "Position"))))
+	   " ")))))
 
     (scroll-conservatively 10000)
     (scroll-margin 1)
@@ -139,7 +185,7 @@
     (battery-mode-line-limit 95)
     (battery-update-interval 180)
     :bind ("C-c t b" . display-battery-mode)
-    :hook (after-init . display-battery-mode))
+    :config (display-battery-mode -1))
 #+end_src
 * bookmark
 #+begin_src emacs-lisp
@@ -355,6 +401,7 @@
     :init
     (fset 'evil-visual-update-x-selection 'ignore)
     :custom
+    (evil-echo-state nil)
     (evil-mode-line-format nil)
     (evil-respect-visual-line-mode nil)
     (evil-undo-system 'undo-redo)
@@ -413,29 +460,28 @@
     :ensure t
     :preface
     (defun pwy:add-evil-commands-to-goggles ()
-      (add-to-list 'evil-goggles--commands
-		   '(pwy:evil-yank-to-clipboard
-		     :face evil-goggles-yank-face
-		     :switch evil-goggles-enable-yank
-		     :advice evil-goggles--generic-async-advice))
+      (let ((commands (list
+		       '(pwy:evil-yank-to-clipboard
+			 :face evil-goggles-yank-face
+			 :switch evil-goggles-enable-yank
+			 :advice evil-goggles--generic-async-advice)
 
-      (add-to-list 'evil-goggles--commands
-		   '(pwy:evil-yank-line-to-clipboard
-		     :face evil-goggles-yank-face
-		     :switch evil-goggles-enable-yank
-		     :advice evil-goggles--generic-async-advice))
+		       '(pwy:evil-yank-line-to-clipboard
+			 :face evil-goggles-yank-face
+			 :switch evil-goggles-enable-yank
+			 :advice evil-goggles--generic-async-advice)
 
-      (add-to-list 'evil-goggles--commands
-		   '(pwy:evil-paste-before-from-clipboard
-		     :face evil-goggles-paste-face
-		     :switch evil-goggles-enable-paste
-		     :advice evil-goggles--paste-advice :after t))
+		       '(pwy:evil-paste-before-from-clipboard
+			 :face evil-goggles-paste-face
+			 :switch evil-goggles-enable-paste
+			 :advice evil-goggles--paste-advice :after t)
 
-      (add-to-list 'evil-goggles--commands
-		   '(pwy:evil-paste-after-from-clipboard
-		     :face evil-goggles-paste-face
-		     :switch evil-goggles-enable-paste
-		     :advice evil-goggles--paste-advice :after t)))
+		       '(pwy:evil-paste-after-from-clipboard
+			 :face evil-goggles-paste-face
+			 :switch evil-goggles-enable-paste
+			 :advice evil-goggles--paste-advice :after t))))
+	(dolist (command commands)
+	  (add-to-list 'evil-goggles--commands command))))
     :custom
     (evil-goggles-async-duration 0.900)
     (evil-goggles-blocking-duration 0.100)
@@ -695,15 +741,6 @@
     (minibuffer-depth-indicate-mode +1)
     (minibuffer-electric-default-mode +1))
 #+end_src
-* minions
-#+begin_src emacs-lisp
-  (use-package minions
-    :ensure t
-    :custom
-    (minions-mode-line-delimiters '("[" . "]"))
-    (minions-mode-line-lighter (if (char-displayable-p ?…) "…" "..."))
-    :config (minions-mode +1))
-#+end_src
 * mouse
 #+begin_src emacs-lisp
   (use-package mouse
@@ -927,7 +964,7 @@
     (world-clock-timer-second 60)
     :bind (("C-c t c" . display-time-mode)
 	   ("C-c t g" . world-clock))
-    :hook (after-init . display-time-mode))
+    :config (display-time-mode -1))
 #+end_src
 * tooltip
 #+begin_src emacs-lisp
@@ -979,6 +1016,15 @@
   (use-package whitespace
     :bind ("C-c t w" . whitespace-mode))
 #+end_src
+* windmove
+#+begin_src emacs-lisp
+  (use-package windmove
+    :bind (:map evil-window-map
+		([left]  . windmove-left)
+		([right] . windmove-right)
+		([up]    . windmove-up)
+		([down]  . windmove-down)))
+#+end_src
 * window
 #+begin_src emacs-lisp
   (use-package window
@@ -989,6 +1035,15 @@
     (window-sides-vertical nil)
     :hook ((help-mode . visual-line-mode)
            (custom-mode . visual-line-mode)))
+#+end_src
+* winner
+#+begin_src emacs-lisp
+  (use-package winner
+    :bind (:map evil-window-map
+		("u" . winner-undo)
+		("U" . winner-redo))
+    :config
+    (winner-mode +1))
 #+end_src
 * xref
 #+begin_src emacs-lisp
