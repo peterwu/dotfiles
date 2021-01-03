@@ -45,91 +45,172 @@
 		 ([return] . pp-macroexpand-last-sexp))
      :hook (text-mode . turn-on-auto-fill))
  #+end_src
-** mode line customization
- #+begin_src emacs-lisp
-   (use-package emacs
-     :preface
-     (defun pwy:ellipsize-file-or-directory-name (name maxlen)
-       "Ellipsize the directory part of a file NAME.
-   If NAME is larget than MAXLEN, ellipsise the directory part,
-   preserving, ‘file-name-nondirectory’ if it's a file or the last
-   directory name if a directory, returning the ellipsized string as
-   the result."
-       (if (> (length name) maxlen)
-	   (if (or (file-directory-p name)
-		   (save-match-data (string-match "/$" name)))
-	       (let* ((bits (split-string name "/" t))
-		      (head (butlast bits))
-		      (tail (car (last bits))))
-		 (concat
-		  (unless (equal (car bits) "~") "/")
-		  (substring (mapconcat #'identity head "/") 0
-			     (- (- maxlen 4) (length bits)))
-		  (if (char-displayable-p ?…) "…" "...")	      
-		  tail "/"))
-	     (let ((fnod (file-name-nondirectory name)))
-	       (concat
-		(substring (file-name-directory name) 0
-			   (- (- maxlen 4) (length fnod)))
-		(if (char-displayable-p ?…) "…" "...")
-		fnod)))
-	 name))
+** mode line
+*** home brew
+  #+begin_src emacs-lisp
+    (use-package emacs
+      :preface
+      (defun pwy:ellipsize-file-or-directory-name (name maxlen)
+	"Ellipsize the directory part of a file NAME.
+    If NAME is larget than MAXLEN, ellipsise the directory part,
+    preserving, ‘file-name-nondirectory’ if it's a file or the last
+    directory name if a directory, returning the ellipsized string as
+    the result."
+	(if (> (length name) maxlen)
+	    (if (or (file-directory-p name)
+		    (save-match-data (string-match "/$" name)))
+		(let* ((bits (split-string name "/" t))
+		       (head (butlast bits))
+		       (tail (car (last bits))))
+		  (concat
+		   (unless (equal (car bits) "~") "/")
+		   (substring (mapconcat #'identity head "/") 0
+			      (- (- maxlen 4) (length bits)))
+		   (if (char-displayable-p ?…) "…" "...")
+		   tail "/"))
+	      (let ((fnod (file-name-nondirectory name)))
+		(concat
+		 (substring (file-name-directory name) 0
+			    (- (- maxlen 4) (length fnod)))
+		 (if (char-displayable-p ?…) "…" "...")
+		 fnod)))
+	  name))
 
-     (defun pwy:mode-line-render (left right)
-       "Return a string of `window-total-width' length.
-   Containing LEFT, and RIGHT aligned respectively."
-       (let ((available-width
-	      (- (window-total-width)
-		 (string-width (format-mode-line left))
-		 (string-width (format-mode-line right)))))
-	 (append left
-		 (list (format (format "%%%ds" available-width) ""))
-		 right)))
-     :custom
-     (mode-line-format
-      '((:eval
-	 (pwy:mode-line-render
-	  ;; Left
-	  `("%e"
-	    " "
-	    mode-line-mule-info
-	    mode-line-client
-	    mode-line-modified
-	    mode-line-remote
-	    " "
-	    ,(if (buffer-file-name)
-		 (propertize (file-name-nondirectory (buffer-file-name))
-			     'help-echo (abbreviate-file-name (buffer-file-name))
-			     'face '(:inherit mode-line-emphasis))
-	       (propertize (buffer-name)
-			   'help-echo "Buffer name"
-			   'face '(:inherit mode-line-buffer-id)))
-	    (vc-mode vc-mode)
-	    ;; ,(string-replace "Git-" " " (vc-mode vc-mode))
-	    )
-	  ;; Right
-	  `(,(propertize "(%l,%C)" 'help-echo "(Line,Column)")
-	    " "
-	    ,(cond ((consp mode-name)
-		    (setcar mode-name (propertize (car mode-name) 'help-echo "Major mode" 'face '(:inherit mode-line-emphasis)))
-		    (format-mode-line mode-name))
-		   (t (propertize (format-mode-line mode-name) 'help-echo "Major mode" 'face '(:inherit mode-line-emphasis))))
-	    " "
-	    ,(let ((p (format-mode-line "%p")))
-	       (cond
-		((string-equal p "All") (propertize "★★★" 'help-echo "All"))
-		((string-equal p "Top") (propertize "⤒⤒⤒" 'help-echo "Top"))
-		((string-equal p "Bottom") (propertize "⤓⤓⤓" 'help-echo "Bottom"))
-		(t (propertize (string-replace "%" "%%" (string-pad p 3 nil t)) 'help-echo "Position"))))
-	    " "
-	    ,(propertize
+      (defun pwy:render-mode-line (left right)
+	"Return a string of `window-total-width' length.
+    Containing LEFT, and RIGHT aligned respectively."
+	(let ((available-width
+	       (- (window-total-width)
+		  (string-width (format-mode-line left))
+		  (string-width (format-mode-line right)))))
+	  (append left
+		  (list (format (format "%%%ds" available-width) ""))
+		  right)))
+      :custom
+      (mode-line-format
+       '((:eval
+	  (pwy:render-mode-line
+	   ;; left hand side
+	   `("%e"
+	     " "
+	     mode-line-mule-info
+	     mode-line-client
+	     mode-line-modified
+	     mode-line-remote
+	     " "
+	     ,(cond ((buffer-file-name)
+		     (propertize (file-name-nondirectory (buffer-file-name))
+				 'help-echo (abbreviate-file-name (buffer-file-name))
+				 'face '(:inherit mode-line-emphasis)
+				 'mouse-face 'mode-line-highlight))
+		    (t
+		     (propertize (buffer-name)
+				 'help-echo "Buffer name"
+				 'face '(:inherit mode-line-buffer-id)
+				 'mouse-face 'mode-line-highlight)))
+	     " "
+
+	     ;; Format: (defun vc-default-mode-line-string (backend file) in vc-hooks.el
+	     ;;   \"BACKEND-REV\"        if the file is up-to-date
+	     ;;   \"BACKEND:REV\"        if the file is edited (or locked by the calling user)
+	     ;;   \"BACKEND:LOCKER:REV\" if the file is locked by somebody else
+	     ;;   \"BACKEND@REV\"        if the file was locally added
+	     ;;   \"BACKEND!REV\"        if the file contains conflicts or was removed
+	     ;;   \"BACKEND?REV\"        if the file is under VC, but is missing
+
+	     ,(when vc-mode
+		(let* ((git-logo "")
+		       (git-status (vc-git-mode-line-string (buffer-file-name)))
+		       (status (replace-regexp-in-string "^Git" "" git-status))
+		       (class (substring-no-properties status 0 1))
+		       (locked? (string-match
+				 (rx (and
+				      line-start ":"
+				      (one-or-more alnum) ":"
+				      (group (one-or-more alnum))))
+				 status))
+		       (branch
+			(if locked?  (match-string 1 status)
+			  (substring status 1)))
+		       (git-mode-line-status (concat git-logo " " branch)))
+		  (cond
+		   ;; up-to-date
+		   ((string-equal "-" class)
+		    (propertize git-mode-line-status
+				'face '(:inherit vc-up-to-date-state :weight bold)
+				'mouse-face 'mode-line-highlight))
+		   ;; locked
+		   (locked?
+		    (propertize git-mode-line-status
+				'face '(:inherit vc-locked-state :weight bold)
+				'mouse-face 'mode-line-highlight))
+		   ;; edited
+		   ((string-equal ":" class)
+		    (propertize git-mode-line-status
+				'face '(:inherit vc-edited-state :weight bold)
+				'mouse-face 'mode-line-highlight))
+		   ;; locally added
+		   ((string-equal "@" class)
+		    (propertize git-mode-line-status
+				'face '(:inherit vc-locally-added-state :weight bold)
+				'mouse-face 'mode-line-highlight))
+		   ;; removed or conflicting
+		   ((string-equal "!" class)
+		    (propertize git-mode-line-status
+				'face '(:inherit vc-removed-state :weight bold)
+				'mouse-face 'mode-line-highlight))
+		   ;; missing
+		   ((string-equal "?" class)
+		    (propertize git-mode-line-status
+				'face '(:inherit vc-missing-state :weight bold)
+				'mouse-face 'mode-line-highlight))
+		   ((t git-mode-line-status))))))
+
+	   ;; right hand side
+	   `((:propertize "(%l,%C)"
+			  help-echo "(Line,Column)"
+			  mouse-face mode-line-highlight)
+	     " "
+	     ,(and (or (and (consp mode-name)
+			    (setcar mode-name
+				    (propertize (car mode-name)
+						'face '(:inherit mode-line-emphasis))))
+		       (setq mode-name
+			     (propertize mode-name
+					 'face '(:inherit mode-line-emphasis))))
+		   mode-line-modes)
+	     ,(let ((p (format-mode-line "%p")))
+		(cond
+		 ((string-equal p "All")
+		  (propertize "***" 'help-echo p 'mouse-face 'mode-line-highlight))
+		 ((string-equal p "Top")
+		  (propertize "*--" 'help-echo p 'mouse-face 'mode-line-highlight))
+		 ((string-equal p "Bottom")
+		  (propertize "--*" 'help-echo p 'mouse-face 'mode-line-highlight))
+		 (t
+		  (propertize (string-replace "%" "%%" (string-pad p 3 nil t))
+			      'help-echo "Position"
+			      'mouse-face 'mode-line-highlight))))
+	     " "
+	     (:propertize
 	      (if (string-equal (format-mode-line "%I") (format-mode-line "%i"))
 		  "%I"
 		"~%I")
-	      'help-echo "Size")
-	    " "))))))
- #+end_src
-
+	      help-echo "Size"
+	      mouse-face mode-line-highlight)
+	     " "))))))
+  #+end_src
+*** minions
+  #+begin_src emacs-lisp
+    (use-package minions
+      :ensure t
+      :custom
+      (minions-mode-line-delimiters '("" . ""))
+      (minions-mode-line-face 'mode-line-emphasis)
+      (minions-mode-line-lighter (if (char-displayable-p ?…) "…" "..."))
+      :config
+      (minions-mode +1))
+  #+end_src
 ** Windows specifics
  #+begin_src emacs-lisp
    (use-package emacs
@@ -197,7 +278,7 @@
     (bookmark-default-file
      (expand-file-name ".cache/bookmarks" user-emacs-directory)))
 #+end_src
-* company, et al.
+* company, /et al./
 ** company
  #+begin_src emacs-lisp
    (use-package company
@@ -225,10 +306,10 @@
     (defvar pwy:custom-file (expand-file-name ".cache/custom.el" user-emacs-directory))
     (setq custom-file pwy:custom-file)
     :hook (after-init . (lambda ()
-                          (let ((file pwy:custom-file))
-                            (unless (file-exists-p file)
-                              (make-empty-file file))
-                            (load-file file)))))
+			  (let ((file pwy:custom-file))
+			    (unless (file-exists-p file)
+			      (make-empty-file file))
+			    (load-file file)))))
 #+end_src
 * dabbrev
 #+begin_src emacs-lisp
@@ -269,7 +350,7 @@
     (diff-refine nil)
     (diff-update-on-the-fly t))
 #+end_src
-* dired, et al.
+* dired, /et al./
 ** dired
  #+begin_src emacs-lisp
    (use-package dired
@@ -281,7 +362,7 @@
       "-AGFhlv --group-directories-first --time-style=long-iso")
      (dired-dwim-target t)
      :hook ((dired-mode . dired-hide-details-mode)
-            (dired-mode . hl-line-mode)))
+	    (dired-mode . hl-line-mode)))
  #+end_src
 ** dired-aux
  #+begin_src emacs-lisp
@@ -291,12 +372,12 @@
      (dired-isearch-filenames 'dwim)
      (dired-vc-rename-file t)
      :bind (:map dired-mode-map
-                 ("C-+" . dired-create-empty-file)))
+		 ("C-+" . dired-create-empty-file)))
  #+end_src
 ** dired-x
  #+begin_src emacs-lisp
    (use-package dired-x
-     :after dired
+     :after (dired evil)
      :custom
      (dired-bind-info nil)
      (dired-bind-man nil)
@@ -319,7 +400,7 @@
      (image-dired-thumb-size 80)
      (image-dired-thumbs-per-row 4)
      :bind (:map image-dired-thumbnail-mode-map
-                 ([return] . image-dired-thumbnail-display-external)))
+		 ([return] . image-dired-thumbnail-display-external)))
  #+end_src
 ** wdired
  #+begin_src emacs-lisp
@@ -343,8 +424,8 @@
 #+begin_src emacs-lisp
   (use-package eldoc
     :hook ((emacs-lisp-mode
-            ielm-mode
-            lisp-interaction-mode) . eldoc-mode))
+	    ielm-mode
+	    lisp-interaction-mode) . eldoc-mode))
 #+end_src
 * electric
 #+begin_src emacs-lisp
@@ -372,8 +453,8 @@
     (electric-pair-mode +1)
     (electric-quote-mode +1))
 #+end_src
-* evil, et al.
-** evil-mode
+* evil, /et al./
+** evil
  #+begin_src emacs-lisp
    (use-package evil
      :ensure t
@@ -437,20 +518,35 @@
 		 ("p" . pwy:evil-paste-after-from-clipboard)
 		 ("P" . pwy:evil-paste-before-from-clipboard)
 		 ("z" . text-scale-adjust))
+
      :bind (:map pwy:evil-leader-nmap
 		 :prefix "b" :prefix-map pwy:evil-buffer-map)
+     :bind-keymap ("C-c b" . pwy:evil-buffer-map)
+
      :bind (:map pwy:evil-leader-nmap
 		 :prefix "d" :prefix-map pwy:evil-dired-map)
+     :bind-keymap ("C-c d" . pwy:evil-dired-map)
+
      :bind (:map pwy:evil-leader-nmap
 		 :prefix "g" :prefix-map pwy:evil-magit-map)
+     :bind-keymap ("C-c g" . pwy:evil-magit-map)
+
      :bind (:map pwy:evil-leader-nmap
 		 :prefix "j" :prefix-map pwy:evil-jump-map)
+     :bind-keymap ("C-c j" . pwy:evil-jump-map)
+
      :bind (:map pwy:evil-leader-nmap
 		 :prefix "o" :prefix-map pwy:evil-org-map)
+     :bind-keymap ("C-c o" . pwy:evil-org-map)
+
      :bind (:map pwy:evil-leader-nmap
 		 :prefix "s" :prefix-map pwy:evil-spell-map)
+     :bind-keymap ("C-c s" . pwy:evil-spell-map)
+
      :bind (:map pwy:evil-leader-nmap
 		 :prefix "t" :prefix-map pwy:evil-toggle-map)
+     :bind-keymap ("C-c t" . pwy:evil-toggle-map)
+
      :hook ((post-command . pwy:set-evil-state-color)
 	    (evil-mode . pwy:define-evil-commands))
      :config
@@ -526,7 +622,7 @@
      (evil-goggles-async-duration 0.900)
      (evil-goggles-blocking-duration 0.100)
      (evil-goggles-pulse t)
-     :config  
+     :config
      (pwy:add-evil-commands-to-goggles)
      (evil-goggles-mode +1))
  #+end_src
@@ -541,14 +637,14 @@
  #+begin_src emacs-lisp
   (use-package evil-matchit
      :ensure t
-     :config  
+     :config
      (global-evil-matchit-mode +1))
  #+end_src
 ** evil-surround
  #+begin_src emacs-lisp
    (use-package evil-surround
      :ensure t
-     :config  
+     :config
      (global-evil-surround-mode +1))
  #+end_src
 * files
@@ -574,15 +670,16 @@
     (flymake-wrap-around nil)
     :hook (lsp-mode . flymake-mode)
     :bind (:map flymake-mode-map
-                ("C-c ! s" . flymake-start)
-                ("C-c ! d" . flymake-show-diagnostics-buffer)
-                ("C-c ! n" . flymake-goto-next-error)
-                ("C-c ! p" . flymake-goto-prev-error)))
+		("C-c ! s" . flymake-start)
+		("C-c ! d" . flymake-show-diagnostics-buffer)
+		("C-c ! n" . flymake-goto-next-error)
+		("C-c ! p" . flymake-goto-prev-error)))
 #+end_src
-* flyspell, et al.
-** ispell 
+* flyspell, /et al./
+** ispell
  #+begin_src emacs-lisp
    (use-package ispell
+     :unless (eq system-type 'windows-nt)
      :custom
      (ispell-program-name "hunspell")
      (ispell-dictionary "en_US")
@@ -593,6 +690,7 @@
 ** flyspell
  #+begin_src emacs-lisp
    (use-package flyspell
+     :unless (eq system-type 'windows-nt)
      :after (ispell evil)
      :custom
      (flyspell-issue-message-flag nil)
@@ -733,7 +831,7 @@
 		("C-g" . isearch-cancel)       ; instead of `isearch-abort'
 		("M-/" . isearch-complete)))
 #+end_src
-* lsp, et al.
+* lsp, /et al./
 ** lsp-mode
  #+begin_src emacs-lisp
    (use-package lsp-mode
@@ -747,7 +845,7 @@
       :hook (lsp-mode . lsp-enable-which-key-integration)
       :commands lsp)
  #+end_src
-** lsp-ui  
+** lsp-ui
  #+begin_src emacs-lisp
    (use-package lsp-ui
      :ensure t
@@ -769,10 +867,10 @@
     (defun pwy:exit-man ()
       (interactive)
       (if (> (length (window-list)) 1)
-          (quit-window)
-        (delete-frame)))
+	  (quit-window)
+	(delete-frame)))
     :bind (:map Man-mode-map
-                ("Q" . pwy:exit-man)))
+		("Q" . pwy:exit-man)))
 #+end_src
 * minibuffer
 #+begin_src emacs-lisp
@@ -803,7 +901,7 @@
     :config
     (mouse-wheel-mode +1))
 #+end_src
-* org, et al.
+* org, /et al./
 ** org
  #+begin_src emacs-lisp
    (use-package org
@@ -892,9 +990,9 @@
 	       (?v "VC dir" project-vc-dir)
 	       (?e "Eshell" project-eshell)))
     :bind (:map project-prefix-map
-		("q" . project-query-replace-regexp))) 
+		("q" . project-query-replace-regexp)))
 #+end_src
-* rainbow, et al.
+* rainbow, /et al./
 ** rainbow-mode
  #+begin_src emacs-lisp
    (use-package rainbow-mode
@@ -930,10 +1028,10 @@
   (use-package replace
     :custom (list-matching-lines-jump-to-current-line t)
     :hook ((occur-mode . hl-line-mode)
-           (occur-mode . (lambda () (toggle-truncate-lines t))))
+	   (occur-mode . (lambda () (toggle-truncate-lines t))))
     :bind (("M-s M-o" . multi-occur)
-           :map occur-mode-map
-           ("t" . toggle-truncate-lines)))
+	   :map occur-mode-map
+	   ("t" . toggle-truncate-lines)))
 #+end_src
 * savehist
 #+begin_src emacs-lisp
@@ -1064,6 +1162,7 @@
 * whitespace
 #+begin_src emacs-lisp
   (use-package whitespace
+    :hook (before-save . whitespace-cleanup)
     :bind (:map pwy:evil-toggle-map
 		("w" . whitespace-mode)))
 #+end_src
@@ -1085,7 +1184,7 @@
     (window-combination-resize t)
     (window-sides-vertical nil)
     :hook ((help-mode . visual-line-mode)
-           (custom-mode . visual-line-mode)))
+	   (custom-mode . visual-line-mode)))
 #+end_src
 * winner
 #+begin_src emacs-lisp
@@ -1107,11 +1206,11 @@
     :unless window-system
     :demand t
     :bind(([mouse-4] . scroll-down-line)
-          ([mouse-5] . scroll-up-line))
+	  ([mouse-5] . scroll-up-line))
     :config
     (xterm-mouse-mode +1))
 #+end_src
-* yasnippet, et al.
+* yasnippet, /et al./
 ** yasnippet
  #+begin_src emacs-lisp
   (use-package yasnippet
