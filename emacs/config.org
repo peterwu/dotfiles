@@ -35,6 +35,8 @@
      (initial-major-mode 'org-mode)
      (initial-scratch-message nil)
 
+     (max-mini-window-height 0.5)
+
      (scroll-conservatively 10000)
      (scroll-margin 1)
      (scroll-preserve-screen-position t)
@@ -46,171 +48,176 @@
      :hook (text-mode . turn-on-auto-fill))
  #+end_src
 ** mode line
-*** home brew
-  #+begin_src emacs-lisp
-    (use-package emacs
-      :preface
-      (defun pwy:ellipsize-file-or-directory-name (name maxlen)
-	"Ellipsize the directory part of a file NAME.
-    If NAME is larget than MAXLEN, ellipsise the directory part,
-    preserving, ‘file-name-nondirectory’ if it's a file or the last
-    directory name if a directory, returning the ellipsized string as
-    the result."
-	(if (> (length name) maxlen)
-	    (if (or (file-directory-p name)
-		    (save-match-data (string-match "/$" name)))
-		(let* ((bits (split-string name "/" t))
-		       (head (butlast bits))
-		       (tail (car (last bits))))
-		  (concat
-		   (unless (equal (car bits) "~") "/")
-		   (substring (mapconcat #'identity head "/") 0
-			      (- (- maxlen 4) (length bits)))
-		   (if (char-displayable-p ?…) "…" "...")
-		   tail "/"))
-	      (let ((fnod (file-name-nondirectory name)))
-		(concat
-		 (substring (file-name-directory name) 0
-			    (- (- maxlen 4) (length fnod)))
-		 (if (char-displayable-p ?…) "…" "...")
-		 fnod)))
-	  name))
+ #+begin_src emacs-lisp
+   (use-package emacs
+     :preface
+     (defun pwy:ellipsize-file-or-directory-name (name maxlen)
+       "Ellipsize the directory part of a file NAME.
+       If NAME is larget than MAXLEN, ellipsise the directory part,
+       preserving, ‘file-name-nondirectory’ if it's a file or the last
+       directory name if a directory, returning the ellipsized string as
+       the result."
+       (if (> (length name) maxlen)
+	   (if (or (file-directory-p name)
+		   (save-match-data (string-match "/$" name)))
+	       (let* ((bits (split-string name "/" t))
+		      (head (butlast bits))
+		      (tail (car (last bits))))
+		 (concat
+		  (unless (equal (car bits) "~") "/")
+		  (substring (mapconcat #'identity head "/") 0
+			     (- (- maxlen 4) (length bits)))
+		  (if (char-displayable-p ?…) "…" "...")
+		  tail "/"))
+	     (let ((fnod (file-name-nondirectory name)))
+	       (concat
+		(substring (file-name-directory name) 0
+			   (- (- maxlen 4) (length fnod)))
+		(if (char-displayable-p ?…) "…" "...")
+		fnod)))
+	 name))
 
-      (defun pwy:render-mode-line (left right)
-	"Return a string of `window-total-width' length.
-    Containing LEFT, and RIGHT aligned respectively."
-	(let ((available-width
-	       (- (window-total-width)
-		  (string-width (format-mode-line left))
-		  (string-width (format-mode-line right)))))
-	  (append left
-		  (list (format (format "%%%ds" available-width) ""))
-		  right)))
-      :custom
-      (mode-line-format
-       '((:eval
-	  (pwy:render-mode-line
-	   ;; left hand side
-	   `("%e"
-	     " "
-	     mode-line-mule-info
-	     mode-line-client
-	     mode-line-modified
-	     mode-line-remote
-	     " "
-	     ,(cond ((buffer-file-name)
-		     (propertize (file-name-nondirectory (buffer-file-name))
-				 'help-echo (abbreviate-file-name (buffer-file-name))
-				 'face '(:inherit mode-line-emphasis)
-				 'mouse-face 'mode-line-highlight))
-		    (t
-		     (propertize (buffer-name)
-				 'help-echo "Buffer name"
-				 'face '(:inherit mode-line-buffer-id)
-				 'mouse-face 'mode-line-highlight)))
-	     " "
+     (defun pwy:mode-line-render (left right)
+       "Return a string of `window-total-width' length.
+       Containing LEFT, and RIGHT aligned respectively."
+       (let ((available-width
+	      (- (window-total-width)
+		 (string-width (format-mode-line left))
+		 (string-width (format-mode-line right)))))
+	 (append left
+		 (list (format (format "%%%ds" available-width) ""))
+		 right)))
 
-	     ;; Format: (defun vc-default-mode-line-string (backend file) in vc-hooks.el
-	     ;;   \"BACKEND-REV\"        if the file is up-to-date
-	     ;;   \"BACKEND:REV\"        if the file is edited (or locked by the calling user)
-	     ;;   \"BACKEND:LOCKER:REV\" if the file is locked by somebody else
-	     ;;   \"BACKEND@REV\"        if the file was locally added
-	     ;;   \"BACKEND!REV\"        if the file contains conflicts or was removed
-	     ;;   \"BACKEND?REV\"        if the file is under VC, but is missing
+     (defun pwy:mode-line-buffer-identification ()
+       (cond ((buffer-file-name)
+	      (propertize (file-name-nondirectory (buffer-file-name))
+			  'help-echo (abbreviate-file-name (buffer-file-name))
+			  'face '(:inherit mode-line-emphasis)
+			  'mouse-face 'mode-line-highlight))
+	     (t
+	      (propertize (buffer-name)
+			  'help-echo "Buffer name"
+			  'face '(:inherit mode-line-buffer-id)
+			  'mouse-face 'mode-line-highlight))))
 
-	     ,(when vc-mode
-		(let* ((git-logo "")
-		       (git-status (vc-git-mode-line-string (buffer-file-name)))
-		       (status (replace-regexp-in-string "^Git" "" git-status))
-		       (class (substring-no-properties status 0 1))
-		       (locked? (string-match
-				 (rx (and
-				      line-start ":"
-				      (one-or-more alnum) ":"
-				      (group (one-or-more alnum))))
-				 status))
-		       (branch
-			(if locked?  (match-string 1 status)
-			  (substring status 1)))
-		       (git-mode-line-status (concat git-logo " " branch)))
-		  (cond
-		   ;; up-to-date
-		   ((string-equal "-" class)
-		    (propertize git-mode-line-status
-				'face '(:inherit vc-up-to-date-state :weight bold)
-				'mouse-face 'mode-line-highlight))
-		   ;; locked
-		   (locked?
-		    (propertize git-mode-line-status
-				'face '(:inherit vc-locked-state :weight bold)
-				'mouse-face 'mode-line-highlight))
-		   ;; edited
-		   ((string-equal ":" class)
-		    (propertize git-mode-line-status
-				'face '(:inherit vc-edited-state :weight bold)
-				'mouse-face 'mode-line-highlight))
-		   ;; locally added
-		   ((string-equal "@" class)
-		    (propertize git-mode-line-status
-				'face '(:inherit vc-locally-added-state :weight bold)
-				'mouse-face 'mode-line-highlight))
-		   ;; removed or conflicting
-		   ((string-equal "!" class)
-		    (propertize git-mode-line-status
-				'face '(:inherit vc-removed-state :weight bold)
-				'mouse-face 'mode-line-highlight))
-		   ;; missing
-		   ((string-equal "?" class)
-		    (propertize git-mode-line-status
-				'face '(:inherit vc-missing-state :weight bold)
-				'mouse-face 'mode-line-highlight))
-		   ((t git-mode-line-status))))))
+     (defun pwy:mode-line-git-status ()
+       ;; Format: (defun vc-default-mode-line-string (backend file) in vc-hooks.el
+       ;;   \"BACKEND-REV\"        if the file is up-to-date
+       ;;   \"BACKEND:REV\"        if the file is edited (or locked by the calling user)
+       ;;   \"BACKEND:LOCKER:REV\" if the file is locked by somebody else
+       ;;   \"BACKEND@REV\"        if the file was locally added
+       ;;   \"BACKEND!REV\"        if the file contains conflicts or was removed
+       ;;   \"BACKEND?REV\"        if the file is under VC, but is missing
 
-	   ;; right hand side
-	   `((:propertize "(%l,%C)"
-			  help-echo "(Line,Column)"
-			  mouse-face mode-line-highlight)
-	     " "
-	     ,(and (or (and (consp mode-name)
-			    (setcar mode-name
-				    (propertize (car mode-name)
-						'face '(:inherit mode-line-emphasis))))
-		       (setq mode-name
-			     (propertize mode-name
-					 'face '(:inherit mode-line-emphasis))))
-		   mode-line-modes)
-	     ,(let ((p (format-mode-line "%p")))
-		(cond
-		 ((string-equal p "All")
-		  (propertize "***" 'help-echo p 'mouse-face 'mode-line-highlight))
-		 ((string-equal p "Top")
-		  (propertize "*--" 'help-echo p 'mouse-face 'mode-line-highlight))
-		 ((string-equal p "Bottom")
-		  (propertize "--*" 'help-echo p 'mouse-face 'mode-line-highlight))
-		 (t
-		  (propertize (string-replace "%" "%%" (string-pad p 3 nil t))
-			      'help-echo "Position"
-			      'mouse-face 'mode-line-highlight))))
-	     " "
-	     (:propertize
-	      (if (string-equal (format-mode-line "%I") (format-mode-line "%i"))
-		  "%I"
-		"~%I")
-	      help-echo "Size"
-	      mouse-face mode-line-highlight)
-	     " "))))))
-  #+end_src
-*** minions
-  #+begin_src emacs-lisp
-    (use-package minions
-      :ensure t
-      :custom
-      (minions-mode-line-delimiters '("" . ""))
-      (minions-mode-line-face 'mode-line-emphasis)
-      (minions-mode-line-lighter (if (char-displayable-p ?…) "…" "..."))
-      :config
-      (minions-mode +1))
-  #+end_src
+       (when vc-mode
+	 (let* ((git-logo "")
+		(git-status (vc-git-mode-line-string (buffer-file-name)))
+		(status (replace-regexp-in-string "^Git" "" git-status))
+		(class (substring-no-properties status 0 1))
+		(locked? (string-match
+			  (rx (and
+			       line-start ":"
+			       (one-or-more alnum) ":"
+			       (group (one-or-more alnum))))
+			  status))
+		(branch
+		 (if locked?  (match-string 1 status)
+		   (substring status 1)))
+		(git-mode-line-status (concat git-logo " " branch)))
+	   (cond
+	    ;; up-to-date
+	    ((string-equal "-" class)
+	     (propertize git-mode-line-status
+			 'face '(:inherit vc-up-to-date-state :weight bold)
+			 'mouse-face 'mode-line-highlight))
+	    ;; locked
+	    (locked?
+	     (propertize git-mode-line-status
+			 'face '(:inherit vc-locked-state :weight bold)
+			 'mouse-face 'mode-line-highlight))
+	    ;; edited
+	    ((string-equal ":" class)
+	     (propertize git-mode-line-status
+			 'face '(:inherit vc-edited-state :weight bold)
+			 'mouse-face 'mode-line-highlight))
+	    ;; locally added
+	    ((string-equal "@" class)
+	     (propertize git-mode-line-status
+			 'face '(:inherit vc-locally-added-state :weight bold)
+			 'mouse-face 'mode-line-highlight))
+	    ;; removed or conflicting
+	    ((string-equal "!" class)
+	     (propertize git-mode-line-status
+			 'face '(:inherit vc-removed-state :weight bold)
+			 'mouse-face 'mode-line-highlight))
+	    ;; missing
+	    ((string-equal "?" class)
+	     (propertize git-mode-line-status
+			 'face '(:inherit vc-missing-state :weight bold)
+			 'mouse-face 'mode-line-highlight))
+	    ((t git-mode-line-status))))))
+
+     (defun pwy:mode-line-position ()
+       (propertize "(%l,%C)"
+		   'help-echo "(Line,Column)"
+		   'mouse-face 'mode-line-highlight))
+
+     (defun pwy:mode-line-format-minions ()
+       (not (not (or (and (consp mode-name)
+			  (setcar mode-name
+				  (propertize (car mode-name)
+					      'face '(:inherit mode-line-emphasis))))
+		     (setq mode-name
+			   (propertize mode-name
+				       'face '(:inherit mode-line-emphasis)))))))
+
+     (defun pwy:mode-line-percent-position ()
+       (let ((p (format-mode-line "%p")))
+	 (cond
+	  ((string-equal p "All")
+	   (propertize "###" 'help-echo p 'mouse-face 'mode-line-highlight))
+	  ((string-equal p "Top")
+	   (propertize "#--" 'help-echo p 'mouse-face 'mode-line-highlight))
+	  ((string-equal p "Bottom")
+	   (propertize "--#" 'help-echo p 'mouse-face 'mode-line-highlight))
+	  (t
+	   (propertize (string-replace "%" "%%" p)
+		       'help-echo "Position"
+		       'mouse-face 'mode-line-highlight)))))
+
+     (defun pwy:mode-line-buffer-size ()
+       (propertize
+	(if (string-equal (format-mode-line "%I") (format-mode-line "%i"))
+	    "%I"
+	  "~%I")
+	'help-echo "Size"
+	'mouse-face 'mode-line-highlight))
+
+     :custom
+     (mode-line-format
+      '(:eval
+	(pwy:mode-line-render
+	 ;; left hand side
+	 `("%e"
+	   " "
+	   mode-line-mule-info
+	   mode-line-client
+	   mode-line-modified
+	   mode-line-remote
+	   " "
+	   ,(pwy:mode-line-buffer-identification)
+	   " "
+	   ,(pwy:mode-line-git-status))
+
+	 ;; right hand side
+	 `(,(pwy:mode-line-position)
+	   " "
+	   (,(pwy:mode-line-format-minions) mode-line-modes)
+	   ,(pwy:mode-line-percent-position)
+	   " "
+	   ,(pwy:mode-line-buffer-size)
+	   " ")))))
+ #+end_src
 ** Windows specifics
  #+begin_src emacs-lisp
    (use-package emacs
@@ -459,7 +466,7 @@
    (use-package evil
      :ensure t
      :preface
-     (defun pwy:set-evil-state-color ()
+     (defun pwy:colorize-mode-line-on-evil-state ()
        (let* ((default 'modus-theme-intense-neutral)
 	      (face (cond ((minibufferp) default)
 			  ((evil-emacs-state-p) 'modus-theme-intense-magenta)
@@ -496,8 +503,10 @@
 	 :suppress-operator t
 	 (interactive "*P<x>")
 	 (evil-paste-after count ?+ yank-handler)))
-     :init
-     (fset 'evil-visual-update-x-selection 'ignore)
+
+     (defun pwy:ignore-some-evil-functions ()
+       (fset 'evil-refresh-mode-line 'ignore)
+       (fset 'evil-visual-update-x-selection 'ignore))
      :custom
      (evil-echo-state nil)
      (evil-mode-line-format nil)
@@ -547,8 +556,9 @@
 		 :prefix "t" :prefix-map pwy:evil-toggle-map)
      :bind-keymap ("C-c t" . pwy:evil-toggle-map)
 
-     :hook ((post-command . pwy:set-evil-state-color)
-	    (evil-mode . pwy:define-evil-commands))
+     :hook ((post-command    . pwy:colorize-mode-line-on-evil-state)
+	    (evil-after-load . pwy:define-evil-commands)
+	    (evil-after-load . pwy:ignore-some-evil-functions))
      :config
      (evil-mode +1))
  #+end_src
@@ -726,6 +736,7 @@
 * ibuffer
 #+begin_src emacs-lisp
   (use-package ibuffer
+    :demand t
     :custom
     (ibuffer-default-shrink-to-minimum-size nil)
     (ibuffer-default-sorting-mode 'filename/process)
@@ -767,7 +778,7 @@
 
     (icomplete-hide-common-prefix nil)
     (icomplete-in-buffer t)
-    (icomplete-separator (propertize " · " 'face 'shadow))
+    (icomplete-separator "\n ")
     (icomplete-show-matches-on-no-input t)
     (icomplete-tidy-shadowed-file-names t)
     (icomplete-with-completion-tables t)
@@ -782,6 +793,7 @@
 * ido
 #+begin_src emacs-lisp
   (use-package ido
+    :demand t
     :custom
     (ido-default-buffer-method 'selected-window)
     (ido-default-file-method 'selected-window)
@@ -789,12 +801,18 @@
     (ido-everywhere t)
     (ido-save-directory-list-file
      (expand-file-name ".cache/ido.last" user-emacs-directory))
+    (ido-show-dot-for-dired t)
     (ido-use-virtual-buffers t)
+    :bind (:map ido-completion-map
+		([left]  . ido-prev-match)
+		([right] . ido-next-match)
+		([up]    . ido-prev-match)
+		([down]  . ido-next-match))
     :bind (:map pwy:evil-buffer-map
 		("b" . ido-switch-buffer))
     :config
-    (setf (nth 2 ido-decorations) (propertize " · " 'face 'shadow))
-    (setf (nth 3 ido-decorations) (propertize (concat " · " (if (char-displayable-p ?…) "…" "...")) 'face 'shadow))
+    (setf (nth 2 ido-decorations) (propertize "\n " 'face 'shadow))
+    (setf (nth 3 ido-decorations) (propertize (concat "\n " (if (char-displayable-p ?…) "…" "...")) 'face 'shadow))
     (ido-mode +1))
 #+end_src
 * imenu
@@ -827,7 +845,7 @@
     (search-whitespace-regexp ".*?")
     :bind (:map minibuffer-local-isearch-map
 		("M-/" . isearch-complete-edit))
-    :bind	(:map isearch-mode-map
+    :bind (:map isearch-mode-map
 		("C-g" . isearch-cancel)       ; instead of `isearch-abort'
 		("M-/" . isearch-complete)))
 #+end_src
@@ -876,13 +894,24 @@
 #+begin_src emacs-lisp
   (use-package minibuffer
     :custom
-    (completion-cycle-threshold 10)
+    (completion-cycle-threshold 16)
     (completion-styles '(initials partial-completion flex))
 
     (minibuffer-eldef-shorten-default t)
     :config
     (minibuffer-depth-indicate-mode +1)
     (minibuffer-electric-default-mode +1))
+#+end_src
+* minions
+#+begin_src emacs-lisp
+  (use-package minions
+    :ensure t
+    :custom
+    (minions-mode-line-delimiters '("" . ""))
+    (minions-mode-line-face 'mode-line-emphasis)
+    (minions-mode-line-lighter (if (char-displayable-p ?…) "…" "..."))
+    :config
+    (minions-mode +1))
 #+end_src
 * mouse
 #+begin_src emacs-lisp
