@@ -88,19 +88,20 @@
 		 (list (format (format "%%%ds" available-width) ""))
 		 right)))
 
-     (defun pwy:mode-line-buffer-identification ()
-       (cond ((buffer-file-name)
-	      (propertize (file-name-nondirectory (buffer-file-name))
-			  'help-echo (abbreviate-file-name (buffer-file-name))
-			  'face '(:inherit mode-line-emphasis)
-			  'mouse-face 'mode-line-highlight))
-	     (t
-	      (propertize (buffer-name)
-			  'help-echo "Buffer name"
-			  'face '(:inherit mode-line-buffer-id)
-			  'mouse-face 'mode-line-highlight))))
+     (defvar-local pwy:mode-line-buffer-identification
+       '(:eval (cond ((buffer-file-name)
+		      (propertize (file-name-nondirectory (buffer-file-name))
+				  'help-echo (abbreviate-file-name (buffer-file-name))
+				  'face '(:inherit mode-line-emphasis)
+				  'mouse-face 'mode-line-highlight))
+		     (t
+		      (propertize (buffer-name)
+				  'help-echo "Buffer name"
+				  'face '(:inherit mode-line-buffer-id)
+				  'mouse-face 'mode-line-highlight)))))
+     (put 'pwy:mode-line-buffer-identification 'risky-local-variable t)
 
-     (defun pwy:mode-line-git-status ()
+     (defvar-local pwy:mode-line-git-status
        ;; Format: (defun vc-default-mode-line-string (backend file) in vc-hooks.el
        ;;   \"BACKEND-REV\"        if the file is up-to-date
        ;;   \"BACKEND:REV\"        if the file is edited (or locked by the calling user)
@@ -109,113 +110,116 @@
        ;;   \"BACKEND!REV\"        if the file contains conflicts or was removed
        ;;   \"BACKEND?REV\"        if the file is under VC, but is missing
 
-       (when vc-mode
-	 (let* ((git-logo "")
-		(git-status (vc-git-mode-line-string (buffer-file-name)))
-		(status (replace-regexp-in-string "^Git" "" git-status))
-		(class (substring-no-properties status 0 1))
-		(locked? (string-match
-			  (rx (and
-			       line-start ":"
-			       (one-or-more alnum) ":"
-			       (group (one-or-more alnum))))
-			  status))
-		(branch
-		 (if locked?  (match-string 1 status)
-		   (substring status 1)))
-		(git-mode-line-status (concat git-logo " " branch)))
-	   (cond
-	    ;; up-to-date
-	    ((string-equal "-" class)
-	     (propertize git-mode-line-status
-			 'face '(:inherit vc-up-to-date-state :weight bold)
-			 'mouse-face 'mode-line-highlight))
-	    ;; locked
-	    (locked?
-	     (propertize git-mode-line-status
-			 'face '(:inherit vc-locked-state :weight bold)
-			 'mouse-face 'mode-line-highlight))
-	    ;; edited
-	    ((string-equal ":" class)
-	     (propertize git-mode-line-status
-			 'face '(:inherit vc-edited-state :weight bold)
-			 'mouse-face 'mode-line-highlight))
-	    ;; locally added
-	    ((string-equal "@" class)
-	     (propertize git-mode-line-status
-			 'face '(:inherit vc-locally-added-state :weight bold)
-			 'mouse-face 'mode-line-highlight))
-	    ;; removed or conflicting
-	    ((string-equal "!" class)
-	     (propertize git-mode-line-status
-			 'face '(:inherit vc-removed-state :weight bold)
-			 'mouse-face 'mode-line-highlight))
-	    ;; missing
-	    ((string-equal "?" class)
-	     (propertize git-mode-line-status
-			 'face '(:inherit vc-missing-state :weight bold)
-			 'mouse-face 'mode-line-highlight))
-	    ((t git-mode-line-status))))))
+       '(:eval (when vc-mode
+		 (let* ((git-logo "")
+			(git-status (vc-git-mode-line-string (buffer-file-name)))
+			(status (replace-regexp-in-string "^Git" "" git-status))
+			(class (substring-no-properties status 0 1))
+			(locked? (string-match
+				  (rx (and
+				       line-start ":"
+				       (one-or-more alnum) ":"
+				       (group (one-or-more alnum))))
+				  status))
+			(branch
+			 (if locked?  (match-string 1 status)
+			   (substring status 1)))
+			(git-mode-line-status (concat git-logo " " branch)))
+		   (cond
+		    ;; up-to-date
+		    ((string-equal "-" class)
+		     (propertize git-mode-line-status
+				 'face '(:inherit vc-up-to-date-state :weight bold)
+				 'mouse-face 'mode-line-highlight))
+		    ;; locked
+		    (locked?
+		     (propertize git-mode-line-status
+				 'face '(:inherit vc-locked-state :weight bold)
+				 'mouse-face 'mode-line-highlight))
+		    ;; edited
+		    ((string-equal ":" class)
+		     (propertize git-mode-line-status
+				 'face '(:inherit vc-edited-state :weight bold)
+				 'mouse-face 'mode-line-highlight))
+		    ;; locally added
+		    ((string-equal "@" class)
+		     (propertize git-mode-line-status
+				 'face '(:inherit vc-locally-added-state :weight bold)
+				 'mouse-face 'mode-line-highlight))
+		    ;; removed or conflicting
+		    ((string-equal "!" class)
+		     (propertize git-mode-line-status
+				 'face '(:inherit vc-removed-state :weight bold)
+				 'mouse-face 'mode-line-highlight))
+		    ;; missing
+		    ((string-equal "?" class)
+		     (propertize git-mode-line-status
+				 'face '(:inherit vc-missing-state :weight bold)
+				 'mouse-face 'mode-line-highlight))
+		    ((t git-mode-line-status)))))))
+     (put 'pwy:mode-line-git-status 'risky-local-variable t)
 
-     (defun pwy:mode-line-position ()
-       (propertize "(%l,%C)"
-		   'help-echo "(Line,Column)"
-		   'mouse-face 'mode-line-highlight))
+     (defvar-local pwy:mode-line-position
+       '(:propertize "(%l,%C)"
+		     help-echo "(Line,Column)"
+		     mouse-face mode-line-highlight))
+     (put 'pwy:mode-line-position 'risky-local-variable t)
 
-     (defun pwy:mode-line-format-minions ()
-       (not (not (or (and (consp mode-name)
-			  (setcar mode-name
-				  (propertize (car mode-name)
-					      'face '(:inherit mode-line-emphasis))))
-		     (setq mode-name
-			   (propertize mode-name
-				       'face '(:inherit mode-line-emphasis)))))))
+     (defvar-local pwy:mode-line-modes
+       '(:eval (and (or (and (consp mode-name)
+			     (setcar mode-name
+				     (propertize (car mode-name)
+						 'face '(:inherit mode-line-emphasis))))
+			(setq mode-name
+			      (propertize mode-name
+					  'face '(:inherit mode-line-emphasis))))
+		    minions-mode-line-modes)))
+     (put 'pwy:mode-line-modes 'risky-local-variable t)
 
-     (defun pwy:mode-line-percent-position ()
-       (let ((p (format-mode-line "%p")))
-	 (cond
-	  ((string-equal p "All")
-	   (propertize "###" 'help-echo p 'mouse-face 'mode-line-highlight))
-	  ((string-equal p "Top")
-	   (propertize "#--" 'help-echo p 'mouse-face 'mode-line-highlight))
-	  ((string-equal p "Bottom")
-	   (propertize "--#" 'help-echo p 'mouse-face 'mode-line-highlight))
-	  (t
-	   (propertize (string-replace "%" "%%" p)
-		       'help-echo "Position"
-		       'mouse-face 'mode-line-highlight)))))
+     (defvar-local pwy:mode-line-percent-position
+       '(:eval (let ((p (format-mode-line "%p")))
+		 (cond
+		  ((string-equal p "All")
+		   (propertize "###" 'help-echo p 'mouse-face 'mode-line-highlight))
+		  ((string-equal p "Top")
+		   (propertize "#--" 'help-echo p 'mouse-face 'mode-line-highlight))
+		  ((string-equal p "Bottom")
+		   (propertize "--#" 'help-echo p 'mouse-face 'mode-line-highlight))
+		  (t
+		   (propertize (string-replace "%" "%%" p)
+			       'help-echo "Position"
+			       'mouse-face 'mode-line-highlight))))))
+     (put 'pwy:mode-line-percent-position 'risky-local-variable t)
 
-     (defun pwy:mode-line-buffer-size ()
-       (propertize
-	(if (string-equal (format-mode-line "%I") (format-mode-line "%i"))
-	    "%I"
-	  "~%I")
-	'help-echo "Size"
-	'mouse-face 'mode-line-highlight))
-
+     (defvar-local pwy:mode-line-buffer-size
+       '(:propertize "%I"
+		     help-echo "Size"
+		     mouse-face mode-line-highlight))
+     (put 'pwy:mode-line-buffer-size 'risky-local-variable t)
      :custom
      (mode-line-format
       '(:eval
 	(pwy:mode-line-render
 	 ;; left hand side
-	 `("%e"
+	 '("%e"
 	   " "
 	   mode-line-mule-info
 	   mode-line-client
 	   mode-line-modified
 	   mode-line-remote
 	   " "
-	   ,(pwy:mode-line-buffer-identification)
+	   pwy:mode-line-buffer-identification
 	   " "
-	   ,(pwy:mode-line-git-status))
+	   pwy:mode-line-git-status)
 
 	 ;; right hand side
-	 `(,(pwy:mode-line-position)
+	 '(""
+	   pwy:mode-line-position
 	   " "
-	   (,(pwy:mode-line-format-minions) mode-line-modes)
-	   ,(pwy:mode-line-percent-position)
+	   pwy:mode-line-modes
+	   pwy:mode-line-percent-position
 	   " "
-	   ,(pwy:mode-line-buffer-size)
+	   pwy:mode-line-buffer-size
 	   " ")))))
  #+end_src
 ** Windows specifics
@@ -505,7 +509,6 @@
 	 (evil-paste-after count ?+ yank-handler)))
 
      (defun pwy:ignore-some-evil-functions ()
-       (fset 'evil-refresh-mode-line 'ignore)
        (fset 'evil-visual-update-x-selection 'ignore))
      :custom
      (evil-echo-state nil)
@@ -811,8 +814,8 @@
     :bind (:map pwy:evil-buffer-map
 		("b" . ido-switch-buffer))
     :config
-    (setf (nth 2 ido-decorations) (propertize "\n " 'face 'shadow))
-    (setf (nth 3 ido-decorations) (propertize (concat "\n " (if (char-displayable-p ?…) "…" "...")) 'face 'shadow))
+    (setf (nth 2 ido-decorations) "\n ")
+    (setf (nth 3 ido-decorations) (concat "\n " (if (char-displayable-p ?…) "…" "...")))
     (ido-mode +1))
 #+end_src
 * imenu
@@ -909,9 +912,7 @@
     :custom
     (minions-mode-line-delimiters '("" . ""))
     (minions-mode-line-face 'mode-line-emphasis)
-    (minions-mode-line-lighter (if (char-displayable-p ?…) "…" "..."))
-    :config
-    (minions-mode +1))
+    (minions-mode-line-lighter (if (char-displayable-p ?…) "…" "...")))
 #+end_src
 * mouse
 #+begin_src emacs-lisp
@@ -935,6 +936,8 @@
  #+begin_src emacs-lisp
    (use-package org
      :after evil
+     :init
+     (require 'org-tempo)
      :custom
      (org-ellipsis " ▾")
      (org-export-headline-levels 5)
@@ -1239,19 +1242,6 @@
     :config
     (xterm-mouse-mode +1))
 #+end_src
-* yasnippet, /et al./
-** yasnippet
- #+begin_src emacs-lisp
-  (use-package yasnippet
-     :ensure t
-     :hook ((prog-mode org-mode) . yas-minor-mode))
- #+end_src
-** yasnippet-snippets
- #+begin_src emacs-lisp
-   (use-package yasnippet-snippets
-     :ensure t
-     :after yasnippet)
- #+end_src
 * ...
 #+begin_src emacs-lisp
   (use-package cmake-mode :ensure t)
