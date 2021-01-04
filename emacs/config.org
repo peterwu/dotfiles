@@ -781,7 +781,7 @@
 
     (icomplete-hide-common-prefix nil)
     (icomplete-in-buffer t)
-    (icomplete-separator "\n ")
+    (icomplete-separator (propertize " · " 'face 'shadow))
     (icomplete-show-matches-on-no-input t)
     (icomplete-tidy-shadowed-file-names t)
     (icomplete-with-completion-tables t)
@@ -797,6 +797,14 @@
 #+begin_src emacs-lisp
   (use-package ido
     :demand t
+    :preface
+    (defun pwy:customize-ido-decorations ()
+      (setf (nth 2 ido-decorations)
+	    (propertize " · " 'face 'shadow))
+      (setf (nth 3 ido-decorations)
+	    (propertize
+	     (concat " · " (if (char-displayable-p ?…) "…" "..."))
+	     'face 'shadow)))
     :custom
     (ido-default-buffer-method 'selected-window)
     (ido-default-file-method 'selected-window)
@@ -813,9 +821,8 @@
 		([down]  . ido-next-match))
     :bind (:map pwy:evil-buffer-map
 		("b" . ido-switch-buffer))
+    :hook (ido-minibuffer-setup . pwy:customize-ido-decorations)
     :config
-    (setf (nth 2 ido-decorations) "\n ")
-    (setf (nth 3 ido-decorations) (concat "\n " (if (char-displayable-p ?…) "…" "...")))
     (ido-mode +1))
 #+end_src
 * imenu
@@ -897,7 +904,7 @@
 #+begin_src emacs-lisp
   (use-package minibuffer
     :custom
-    (completion-cycle-threshold 16)
+    (completion-cycle-threshold 12)
     (completion-styles '(initials partial-completion flex))
 
     (minibuffer-eldef-shorten-default t)
