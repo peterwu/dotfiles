@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-#+title: My Emacs Configuration
 #+startup: overview
+#+title: My Emacs Configuration
 
 * /scaffolding/
 ** defaults
@@ -35,7 +35,7 @@
      (initial-major-mode 'org-mode)
      (initial-scratch-message nil)
 
-     (max-mini-window-height 0.5)
+     ;; (max-mini-window-height 0.35)
 
      (scroll-conservatively 10000)
      (scroll-margin 1)
@@ -469,6 +469,7 @@
  #+begin_src emacs-lisp
    (use-package evil
      :ensure t
+     :demand t
      :preface
      (defun pwy:colorize-mode-line-on-evil-state ()
        (let* ((default 'modus-theme-intense-neutral)
@@ -777,8 +778,6 @@
   (use-package icomplete
     :demand t
     :custom
-    (fido-mode t)
-
     (icomplete-hide-common-prefix nil)
     (icomplete-in-buffer t)
     (icomplete-separator (propertize " · " 'face 'shadow))
@@ -791,7 +790,7 @@
 		([up]    . icomplete-backward-completions)
 		([down]  . icomplete-forward-completions))
     :config
-    (icomplete-mode +1))
+    (fido-mode +1))
 #+end_src
 * ido
 #+begin_src emacs-lisp
@@ -943,8 +942,6 @@
  #+begin_src emacs-lisp
    (use-package org
      :after evil
-     :init
-     (require 'org-tempo)
      :custom
      (org-ellipsis " ▾")
      (org-export-headline-levels 5)
@@ -1007,6 +1004,19 @@
     :config
     (show-paren-mode +1))
 #+end_src
+* plus-minus
+  #+begin_src emacs-lisp
+    (use-package plus-minus
+      :ensure nil
+      :demand t
+      :after evil
+      :load-path "mine/plus-minus"
+      :bind (:map pwy:evil-leader-nmap
+		  ("C-a" . +/-:forward+)
+		  ("C-x" . +/-:forward-)
+		  ("M-a" . +/-:backward+)
+		  ("M-x" . +/-:backward-)))
+  #+end_src
 * proced
 #+begin_src emacs-lisp
   (use-package proced
@@ -1252,7 +1262,5 @@
 * ...
 #+begin_src emacs-lisp
   (use-package cmake-mode :ensure t)
-  (use-package go-mode :ensure t)
-  (use-package rust-mode :ensure t)
   (use-package yaml-mode :ensure t)
 #+end_src
