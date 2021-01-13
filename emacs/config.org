@@ -724,6 +724,39 @@
       (gdb-many-windows t)
       (gdb-show-main t))
   #+end_src
+* gnus
+  #+begin_src emacs-lisp
+    (use-package gnus
+      :custom
+      (user-full-name "Peter Wu")
+      (user-mail-address "peterwu@hotmail.com")
+
+      (gnus-home-directory (expand-file-name "gnus" user-emacs-directory))
+      (gnus-startup-file (expand-file-name ".newsrc" gnus-home-directory))
+      (gnus-directory (expand-file-name "news" gnus-home-directory))
+      (message-directory (expand-file-name "mail" gnus-home-directory))
+
+      (gnus-always-read-dribble-file nil)
+      (gnus-asynchronous t)
+      (gnus-expert-user t)
+      (gnus-interactive-exit nil)
+      (gnus-novice-user nil)
+      (gnus-show-threads t)
+      (gnus-use-dribble-file nil)
+
+      (gnus-select-method '(nntp "news.gmane.io"))
+      (gnus-secondary-select-methods
+       '((nnimap "hotmail"
+                 (nnimap-address "outlook.office365.com")
+                 (nnimap-server-port 993)
+                 (nnimap-stream ssl)
+                 (nnimap-authenticator login))))
+
+      (send-mail-function 'smtpmail-send-it)
+      (smtpmail-smtp-server "smtp.office365.com")
+      (smtpmail-smtp-service 587)
+      :hook (gnus-group-mode . gnus-topic-mode))
+  #+end_src
 * help
   #+begin_src emacs-lisp
     (use-package help
@@ -1286,6 +1319,5 @@
   #+end_src
 * ...
   #+begin_src emacs-lisp
-    (use-package cmake-mode :ensure t)
     (use-package yaml-mode :ensure t)
   #+end_src
