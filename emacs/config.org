@@ -13,33 +13,29 @@
        (set-selection-coding-system 'utf-8)
        (set-terminal-coding-system 'utf-8)
        :custom
+       (auto-save-default nil)
        (auto-save-list-file-prefix nil)
-
+       (backup-inhibited t)
        (bidi-inhibit-bpa t)
-
        (fill-column 76)
-
        (frame-title-format
         '((:eval
            (if (buffer-file-name)
                (abbreviate-file-name (buffer-file-name))
              "%b"))))
-
        (indent-tabs-mode nil)
-
        (inhibit-startup-buffer-menu t)
        (inhibit-startup-echo-area-message t)
        (inhibit-startup-screen t)
-
        (initial-buffer-choice t)
        (initial-major-mode 'org-mode)
        (initial-scratch-message nil)
-
+       (make-backup-files nil)
        (scroll-conservatively 10000)
        (scroll-margin 1)
        (scroll-preserve-screen-position t)
        (scroll-step 1)
-
+       (tab-width 4)
        (visible-bell t)
        :bind (:map mode-specific-map
                    ([return] . pp-macroexpand-last-sexp))
@@ -214,6 +210,8 @@
    #+begin_src emacs-lisp
      (use-package emacs
        :when (eq system-type 'windows-nt)
+       :init
+       (set-selection-coding-system 'utf-16le-dos)
        :custom
        (w32-get-true-file-attributes nil)
        (inhibit-compacting-font-caches t))
@@ -586,7 +584,9 @@
 ** evil-commentary
    #+begin_src emacs-lisp
      (use-package evil-commentary
-       :ensure t
+       :ensure nil
+       :load-path "mine/evil-commentary"
+       :hook (prog-mode . evil-commentary-mode)
        :config
        (evil-commentary-mode +1))
    #+end_src
@@ -654,14 +654,6 @@
        :config
        (global-evil-surround-mode +1))
    #+end_src
-* files
-  #+begin_src emacs-lisp
-    (use-package files
-      :custom
-      (auto-save-default nil)
-      (backup-inhibited t)
-      (make-backup-files nil))
-  #+end_src
 * flymake
   #+begin_src emacs-lisp
     (use-package flymake
@@ -738,6 +730,7 @@
 
       (gnus-always-read-dribble-file nil)
       (gnus-asynchronous t)
+      (gnus-blocked-images nil)
       (gnus-expert-user t)
       (gnus-interactive-exit nil)
       (gnus-novice-user nil)
