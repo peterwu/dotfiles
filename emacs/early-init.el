@@ -35,7 +35,5 @@
 (set-face-attribute 'fixed-pitch nil :family "Iosevka Fusion" :height 130)
 (set-face-attribute 'variable-pitch nil :font "Carlito" :height 130 :weight 'regular)
 
-(load-theme 'modus-operandi t)
-
 (provide 'early-init)
 ;;; early-init.el ends here

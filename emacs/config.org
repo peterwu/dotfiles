@@ -206,6 +206,17 @@
             pwy:mode-line-buffer-size
             " ")))))
    #+end_src
+** theme
+   #+begin_src emacs-lisp
+     (use-package modus-themes
+       :ensure t
+       :init
+       ;; Load the theme files before enabling a theme
+       (modus-themes-load-themes)
+       :config
+       ;; Load the theme of your choice:
+       (modus-themes-load-operandi))
+   #+end_src
 ** Windows specifics
    #+begin_src emacs-lisp
      (use-package emacs
@@ -463,15 +474,15 @@
        :ensure t
        :preface
        (defun pwy:colorize-mode-line-on-evil-state ()
-         (let* ((default 'modus-theme-intense-neutral)
+         (let* ((default 'modus-themes-intense-neutral)
                 (face (cond ((minibufferp) default)
-                            ((evil-emacs-state-p) 'modus-theme-subtle-magenta)
-                            ((evil-insert-state-p) 'modus-theme-subtle-green)
-                            ((evil-motion-state-p) 'modus-theme-subtle-blue)
+                            ((evil-emacs-state-p) 'modus-themes-subtle-magenta)
+                            ((evil-insert-state-p) 'modus-themes-subtle-green)
+                            ((evil-motion-state-p) 'modus-themes-subtle-blue)
                             ((evil-normal-state-p) default)
-                            ((evil-operator-state-p) 'modus-theme-subtle-yellow)
-                            ((evil-replace-state-p) 'modus-theme-subtle-red)
-                            ((evil-visual-state-p)  'modus-theme-subtle-cyan)
+                            ((evil-operator-state-p) 'modus-themes-subtle-yellow)
+                            ((evil-replace-state-p) 'modus-themes-subtle-red)
+                            ((evil-visual-state-p)  'modus-themes-subtle-cyan)
                             (t default))))
            (set-face-attribute 'mode-line nil
                                :foreground (face-foreground face)
@@ -1062,17 +1073,17 @@
   #+end_src
 * project
   #+begin_src emacs-lisp
-    (use-package project
-      :custom (project-switch-commands
-               '((?f "File" project-find-file)
-                 (?g "Grep" project-find-regexp)
-                 (?d "Dired" project-dired)
-                 (?b "Buffer" project-switch-to-buffer)
-                 (?q "Query replace" project-query-replace-regexp)
-                 (?v "VC dir" project-vc-dir)
-                 (?e "Eshell" project-eshell)))
-      :bind (:map project-prefix-map
-                  ("q" . project-query-replace-regexp)))
+    ;; (use-package project
+    ;;   :custom (project-switch-commands
+    ;;            '((?f "File" project-find-file)
+    ;;              (?g "Grep" project-find-regexp)
+    ;;              (?d "Dired" project-dired)
+    ;;              (?b "Buffer" project-switch-to-buffer)
+    ;;              (?q "Query replace" project-query-replace-regexp)
+    ;;              (?v "VC dir" project-vc-dir)
+    ;;              (?e "Eshell" project-eshell)))
+    ;;   :bind (:map project-prefix-map
+    ;;               ("q" . project-query-replace-regexp)))
   #+end_src
 * rainbow, /et al./
 ** rainbow-mode
