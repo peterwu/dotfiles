@@ -214,7 +214,7 @@
        ;; Load the theme files before enabling a theme
        (modus-themes-load-themes)
        :config
-       ;; Load the theme of your choice:
+       ;; Load the theme of my choice: operandi
        (modus-themes-load-operandi))
    #+end_src
 ** Windows specifics
@@ -227,20 +227,6 @@
        (w32-get-true-file-attributes nil)
        (inhibit-compacting-font-caches t))
    #+end_src
-* auto-package-update
-  #+begin_src emacs-lisp
-    (use-package auto-package-update
-      :ensure t
-      :custom
-      (auto-package-update-delete-old-versions t)
-      (auto-package-update-hide-results t)
-      (auto-package-update-interval 183)
-      (auto-package-update-last-update-day-filename
-       (expand-file-name ".cache/last-package-update-day" user-emacs-directory))
-      (auto-package-update-prompt-before-update t)
-      :config
-      (auto-package-update-maybe))
-  #+end_src
 * autorevert
   #+begin_src emacs-lisp
     (use-package autorevert
