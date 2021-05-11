@@ -6,14 +6,7 @@ set smartindent expandtab tabstop=2 shiftwidth=2 softtabstop=2
 set smartcase ignorecase shortmess+=I mouse=a noshowmode
 set nolist listchars=trail:·,tab:»·
 set inccommand=nosplit path+=**
-set termguicolors
-set omnifunc=syntaxcomplete#Complete
-
-" colors
-packadd! vim-dracula
-colorscheme dracula
-highlight SpecialKey ctermfg=60 guifg=#ffffa5
-highlight Whitespace ctermfg=60 guifg=#ffffa5
+set termguicolors background=light
 
 """"""""""""""""
 " key mappings "
@@ -42,8 +35,8 @@ imap <Left>  <Nop>
 imap <Right> <Nop>
 
 " swap j/k <-> gj/gk
-noremap <expr> j (v:count? 'j' : 'gj')
-noremap <expr> k (v:count? 'k' : 'gk')
+nnoremap <expr> j (v:count? 'j' : 'gj')
+nnoremap <expr> k (v:count? 'k' : 'gk')
 
 " copy to clipboard
 nnoremap Y          y$
@@ -58,9 +51,14 @@ nnoremap <Leader>P "+P
 vnoremap <Leader>p "+p
 vnoremap <Leader>P "+P
 
+" use <C-L> to clear the highlighting of :set hlsearch.
+if maparg('<C-L>', 'n') ==# ''
+  nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
+endif
+
 " terminal
 " tnoremap <Esc> <C-\><C-n>
-nnoremap <Leader>o :below 10sp term://$SHELL<CR>i
+nnoremap <silent> <Leader>o :below 10sp term://$SHELL<CR>i
 
 " restore last known cursor position
 " :help restore-cursor
@@ -71,6 +69,15 @@ autocmd BufReadPost *
 
 " set list when in insert mode
 autocmd InsertEnter,InsertLeave * set list!
+
+" initialization
+" set list when in insert mode
+autocmd InsertEnter,InsertLeave * set list!
+
+augroup AutoSaveFolds | autocmd!
+  autocmd BufWinLeave,BufLeave,BufWritePost ?* nested silent! mkview!
+  autocmd BufWinEnter ?* silent! loadview
+augroup END
 
 """""""""""""""""""
 " plugin settings "
@@ -95,14 +102,14 @@ function! s:NetrwMapping()
   nmap <buffer> <silent> <nowait> <LocalLeader>cd  :execute "cd ".b:netrw_curdir<CR>:pwd<CR>
 endfunction
 
-""""""""""""""""""
-" quick scope
-let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
+"""""""""""""""""""
+" sneak
+let g:sneak#label = 1
 
 """""""""""""""""""
 " lightline
 let g:lightline = {
-      \   'colorscheme': 'dracula',
+      \   'colorscheme': 'solarized',
       \   'active': {
       \     'left': [ [ 'mode', 'paste' ],
       \               [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
@@ -113,55 +120,56 @@ let g:lightline = {
       \ }
 
 """""""""""""""""""
-" nnn
-let g:nnn#statusline           = 0
-let g:nnn#replace_netrw        = 0
-let g:nnn#set_default_mappings = 0
-let g:nnn#layout               = { 'window': { 'width': 0.9, 'height': 0.6, 'highlight': 'Debug' } }
-
-nnoremap <Leader>n :NnnPicker %:p:h<CR>
-
-"""""""""""""""""""
 " fzf
-nnoremap <Leader>. :Files .<CR>
-nnoremap <Leader>` :Files /<CR>
-nnoremap <Leader>~ :Files $HOME<CR>
-nnoremap <Leader>% :Files %:p:h<CR>
+nnoremap <Leader>f. :Files .<CR>
+nnoremap <Leader>f` :Files /<CR>
+nnoremap <Leader>f~ :Files $HOME<CR>
+nnoremap <Leader>f% :Files %:p:h<CR>
 
-nnoremap <Leader>? :History<CR>
-nnoremap <Leader>: :History:<CR>
-nnoremap <Leader>/ :History/<CR>
+nnoremap <Leader>f? :History<CR>
+nnoremap <Leader>f: :History:<CR>
+nnoremap <Leader>f/ :History/<CR>
 
-nnoremap <Leader>b :Buffers<CR>
-nnoremap <Leader>h :Helptags<CR>
-nnoremap <Leader>m :Maps<CR>
-nnoremap <Leader>t :Tags<CR>
+nnoremap <Leader>fb :Buffers<CR>
+nnoremap <Leader>fh :Helptags<CR>
+nnoremap <Leader>fm :Maps<CR>
+nnoremap <Leader>ft :Tags<CR>
+
+" fugitive
+nnoremap <Leader>gs :Git<CR>
+nnoremap <Leader>gb :Git blame<CR>
+nnoremap <Leader>gr :Gread<CR>
+nnoremap <Leader>gw :Gwrite<CR>
+nnoremap <Leader>gl :Gclog<CR>
+nnoremap <Leader>gp :Git push<CR>
+
+nnoremap <Leader>gd :Gvdiffsplit<CR>
+nnoremap gdh        :diffget //2<CR>
+nnoremap gdl        :diffget //3<CR>
 
 """""""""""""""""""
 " lion
 let g:lion_squeeze_spaces = 1
 
 """""""""""""""""""
-" easymotion
-map <Leader><Leader>. <Plug>(easymotion-repeat)
-
-"""""""""""""""""""
 " vinegar
-noremap - k^
+nnoremap - k^
 
 """""""""""""""""""
 " lspconfig
 lua <<EOF
-  vim.cmd('packadd nvim-lspconfig')
-  local nvim_lsp = require'nvim_lsp'
-  nvim_lsp.clangd.setup{
-        filetypes = { "c", "cpp", "objc", "objcpp" }
-  }
+vim.cmd('packadd nvim-lspconfig')
+local nvim_lsp = require'lspconfig'
+nvim_lsp.clangd.setup{
+  filetypes = { "c", "cpp"}
+}
 EOF
 
 " use :setf + ctrl-d to see the list of filetypes
 augroup lspconfig | autocmd!
-  autocmd FileType c,cpp,objc,objcpp call s:lspconfig_mappings()
+  autocmd FileType c,cpp call s:lspconfig_mappings()
+  autocmd FileType c,cpp setlocal omnifunc=v:lua.vim.lsp.omnifunc
+  autocmd FileType c,cpp let b:vcm_tab_complete = "omni"
 augroup END
 
 function! s:lspconfig_mappings()
@@ -176,6 +184,24 @@ function! s:lspconfig_mappings()
   nnoremap <silent> gd    <cmd>lua vim.lsp.buf.declaration()<CR>
 endfunction
 
+"""""""""""""""""""
+" ide setup
+
+" f5            : start debugging / continue
+" ctrl-f5       : run without debugging
+" shift-f5      : stop debugging
+" ctrl-shift-f5 : restart debugging
+" f7            : step into
+" f8            : step over
+" shift-f8      : step out
+
+
+
+
+"""""""""""""""""""
+" termdebug
+let g:termdebug_wide = 1
+
 """"""""""""""""""
 " minpac plugins "
 """"""""""""""""""
@@ -186,22 +212,21 @@ if exists('g:loaded_minpac')
   call minpac#add('jiangmiao/auto-pairs',          {'name': 'vim-auto-pairs'})
   call minpac#add('tpope/vim-commentary')
   call minpac#add('machakann/vim-highlightedyank', {'name': 'vim-highlighted-yank'})
-  call minpac#add('unblevable/quick-scope',        {'name': 'vim-quick-scope'})
   call minpac#add('tpope/vim-repeat')
   call minpac#add('tpope/vim-surround')
   call minpac#add('tpope/vim-unimpaired')
-  call minpac#add('easymotion/vim-easymotion')
+  call minpac#add('justinmk/vim-sneak')
   call minpac#add('tommcdo/vim-exchange')
   call minpac#add('tommcdo/vim-lion')
 
   call minpac#add('tpope/vim-fugitive')
+  call minpac#add('tpope/vim-rhubarb')
+
   call minpac#add('tpope/vim-eunuch')
   call minpac#add('tpope/vim-vinegar')
   call minpac#add('mattn/emmet-vim',  {'name': 'vim-emmet'})
   call minpac#add('junegunn/fzf.vim', {'name': 'vim-fzf'})
-  call minpac#add('mcchrish/nnn.vim', {'name': 'vim-nnn'})
 
-  call minpac#add('dracula/vim',           {'name': 'vim-dracula'})
   call minpac#add('sheerun/vim-polyglot')
   call minpac#add('chrisbra/colorizer',    {'name': 'vim-colorizer'})
   call minpac#add('itchyny/lightline.vim', {'name': 'vim-lightline'})
@@ -210,9 +235,7 @@ if exists('g:loaded_minpac')
   call minpac#add('ajh17/VimCompletesMe', {'name': 'vim-vcm'})
 endif
 
-" Define user commands for updating/cleaning the plugins.
-" Each of them loads minpac, reloads .vimrc to register the
-" information of plugins, then performs the task.
+" define user commands for updating/cleaning the plugins
 command! PackUpdate packadd minpac | source $MYVIMRC | call minpac#update('', {'do': 'call minpac#status()'})
 command! PackClean  packadd minpac | source $MYVIMRC | call minpac#clean()
 command! PackStatus packadd minpac | source $MYVIMRC | call minpac#status()
