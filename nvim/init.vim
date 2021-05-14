@@ -8,6 +8,13 @@ set nolist listchars=trail:·,tab:»·
 set inccommand=nosplit path+=**
 set termguicolors background=light
 
+" colorscheme
+let g:modus_yellow_comments  = 1
+let g:modus_green_strings    = 1
+let g:modus_faint_syntax     = 1
+let g:modus_termtrans_enable = 1
+colorscheme modus-operandi
+
 """"""""""""""""
 " key mappings "
 """"""""""""""""
@@ -228,8 +235,9 @@ if exists('g:loaded_minpac')
   call minpac#add('junegunn/fzf.vim', {'name': 'vim-fzf'})
 
   call minpac#add('sheerun/vim-polyglot')
-  call minpac#add('chrisbra/colorizer',    {'name': 'vim-colorizer'})
-  call minpac#add('itchyny/lightline.vim', {'name': 'vim-lightline'})
+  call minpac#add('chrisbra/colorizer',        {'name': 'vim-colorizer'})
+  call minpac#add('itchyny/lightline.vim',     {'name': 'vim-lightline'})
+  call minpac#add('ishan9299/modus-theme-vim', {'name': 'vim-modus-theme'}) 
 
   call minpac#add('neovim/nvim-lspconfig')
   call minpac#add('ajh17/VimCompletesMe', {'name': 'vim-vcm'})
