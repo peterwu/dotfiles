@@ -213,6 +213,8 @@
        :init
        ;; Load the theme files before enabling a theme
        (modus-themes-load-themes)
+       :custom
+       (modus-themes-syntax 'yellow-comments-green-strings)
        :config
        ;; Load the theme of my choice: operandi
        (modus-themes-load-operandi))
