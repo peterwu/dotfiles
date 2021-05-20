@@ -646,6 +646,18 @@
        :config
        (global-evil-matchit-mode +1))
    #+end_src
+** evil-numbers
+   #+begin_src emacs-lisp
+     (use-package evil-numbers
+       :ensure t
+       :demand t
+       :after evil
+       :bind (:map pwy:evil-leader-nmap
+                   ("C-a" . evil-numbers/inc-at-pt)
+                   ("C-x" . evil-numbers/dec-at-pt)
+                   ("M-a" . evil-numbers/inc-at-pt-incremental)
+                   ("M-x" . evil-numbers/dec-at-pt-incremental)))
+   #+end_src
 ** evil-surround
    #+begin_src emacs-lisp
      (use-package evil-surround
@@ -1036,19 +1048,6 @@
       :config
       (show-paren-mode +1))
   #+end_src
-* plus-minus
-  #+begin_src emacs-lisp
-    (use-package plus-minus
-      :ensure nil
-      :demand t
-      :after evil
-      :load-path "mine/plus-minus"
-      :bind (:map pwy:evil-leader-nmap
-                  ("C-a" . +/-:forward+)
-                  ("C-x" . +/-:forward-)
-                  ("M-a" . +/-:backward+)
-                  ("M-x" . +/-:backward-)))
-  #+end_src
 * proced
   #+begin_src emacs-lisp
     (use-package proced
@@ -1311,5 +1310,8 @@
   #+end_src
 * ...
   #+begin_src emacs-lisp
+    (use-package go-mode :ensure t)
+    (use-package lua-mode :ensure t)
+    (use-package rust-mode :ensure t)
     (use-package yaml-mode :ensure t)
   #+end_src
