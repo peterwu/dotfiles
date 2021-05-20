@@ -206,6 +206,16 @@
             pwy:mode-line-buffer-size
             " ")))))
    #+end_src
+** msft specifics
+   #+begin_src emacs-lisp
+     (use-package emacs
+       :when (eq system-type 'windows-nt)
+       :init
+       (set-selection-coding-system 'utf-16le-dos)
+       :custom
+       (w32-get-true-file-attributes nil)
+       (inhibit-compacting-font-caches t))
+   #+end_src
 ** theme
    #+begin_src emacs-lisp
      (use-package modus-themes
@@ -218,16 +228,6 @@
        :config
        ;; Load the theme of my choice: operandi
        (modus-themes-load-operandi))
-   #+end_src
-** Windows specifics
-   #+begin_src emacs-lisp
-     (use-package emacs
-       :when (eq system-type 'windows-nt)
-       :init
-       (set-selection-coding-system 'utf-16le-dos)
-       :custom
-       (w32-get-true-file-attributes nil)
-       (inhibit-compacting-font-caches t))
    #+end_src
 * autorevert
   #+begin_src emacs-lisp
@@ -531,6 +531,10 @@
        :bind-keymap ("C-c d" . pwy:evil-dired-map)
 
        :bind (:map pwy:evil-leader-nmap
+                   :prefix "f" :prefix-map pwy:evil-find-map)
+       :bind-keymap ("C-c f" . pwy:evil-find-map)
+
+       :bind (:map pwy:evil-leader-nmap
                    :prefix "g" :prefix-map pwy:evil-magit-map)
        :bind-keymap ("C-c g" . pwy:evil-magit-map)
 
@@ -719,6 +723,27 @@
       (cursor-type '(hbar . 3))
       :config
       (blink-cursor-mode +1))
+  #+end_src
+* fzf
+  #+begin_src emacs-lisp
+    (use-package fzf
+      :ensure t
+      :preface
+      (defun pwy:fzf-find-file-in-current-dir ()
+        (interactive)
+        (let* ((client (frame-parameter nil 'client))
+               (cwd (process-get client 'server-client-directory)))
+          (fzf-find-file-in-dir (expand-file-name cwd))))
+
+      (defun pwy:fzf-find-file-in-same-dir ()
+        (interactive)
+        (fzf-find-file-in-dir (expand-file-name default-directory)))
+      :bind (:map pwy:evil-find-map
+                  ("b" . fzf-switch-buffer)
+                  ("d" . fzf-find-file-in-dir)
+                  ("f" . pwy:fzf-find-file-in-same-dir)
+                  ("." . pwy:fzf-find-file-in-current-dir)
+                  ("?" . fzf-recentf)))
   #+end_src
 * gdb
   #+begin_src emacs-lisp
