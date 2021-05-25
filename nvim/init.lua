@@ -15,7 +15,7 @@ vim.o.termguicolors = true
 vim.o.timeoutlen    = 500
 
 vim.wo.cursorline     = true
-vim.wo.list           = false
+vim.wo.list           = true
 vim.wo.listchars      = 'trail:·,tab:»·'
 vim.wo.number         = true
 vim.wo.relativenumber = true
@@ -69,7 +69,7 @@ vim.api.nvim_set_keymap('n', '<C-l>', [[<Cmd>nohlsearch<CR><C-l>]], {noremap = t
 vim.api.nvim_set_keymap('n', '<Leader>o', [[<Cmd>below 10sp term://$SHELL<CR>i]], {noremap = true, silent = true})
 
 -- set list when in insert mode
-vim.cmd [[autocmd InsertEnter,InsertLeave * set list!]]
+-- vim.cmd [[autocmd InsertEnter,InsertLeave * set list!]]
 
 vim.cmd [[
 augroup AutoSaveFolds | autocmd!
@@ -113,6 +113,8 @@ require('packer').startup(function()
   use {'norcalli/nvim-colorizer.lua', as = 'colorizer.nvim', config = function()
     require('colorizer').setup()
   end}
+
+  use {'tpope/vim-commentary', as = 'commentary.vim'}
 
   use {'hrsh7th/nvim-compe', as = 'compe.nvim', config = function()
     require('compe').setup {
@@ -301,15 +303,6 @@ require('packer').startup(function()
 
   end}
 
-  use {'b3nj5m1n/kommentary', as = 'kommentary.vim', config = function()
-    local kommentary = require('kommentary.config')
-
-    kommentary.use_extended_mappings()
-    kommentary.configure_language('default', {
-        prefer_single_line_comments = true
-      })
-  end}
-
   use {'tommcdo/vim-lion', as = 'lion.vim', config = [[vim.g.lion_squeeze_spaces = 1]]}
 
   use {'neovim/nvim-lspconfig', as = 'lspconfig.nvim', config = function()
@@ -373,17 +366,17 @@ require('packer').startup(function()
   use {'nvim-telescope/telescope.nvim',
     requires = {{'nvim-lua/popup.nvim'}, {'nvim-lua/plenary.nvim'}},
     config = function()
-      vim.api.nvim_set_keymap('n', '<Leader>f.', [[<Cmd>Telescope find_files<CR>]],   {noremap = true})
-      vim.api.nvim_set_keymap('n', '<Leader>ff', [[<Cmd>Telescope file_browser<CR>]], {noremap = true})
+      vim.api.nvim_set_keymap('n', '<Leader>ff', [[<Cmd>Telescope find_files<CR>]],   {noremap = true})
+      vim.api.nvim_set_keymap('n', '<Leader>fo', [[<Cmd>Telescope oldfiles<CR>]],     {noremap = true})
+      vim.api.nvim_set_keymap('n', '<Leader>fx', [[<Cmd>Telescope file_browser<CR>]], {noremap = true})
 
-      vim.api.nvim_set_keymap('n', '<Leader>f?', [[<Cmd>Telescope oldfiles<CR>]],        {noremap = true})
       vim.api.nvim_set_keymap('n', '<Leader>f:', [[<Cmd>Telescope command_history<CR>]], {noremap = true})
       vim.api.nvim_set_keymap('n', '<Leader>f/', [[<Cmd>Telescope search_history<CR>]],  {noremap = true})
 
-      vim.api.nvim_set_keymap('n', '<Leader>fb', [[<Cmd>Telescope buffers<CR>]],  {noremap = true})
+      vim.api.nvim_set_keymap('n', '<Leader>fb', [[<Cmd>Telescope buffers<CR>]],   {noremap = true})
       vim.api.nvim_set_keymap('n', '<Leader>fh', [[<Cmd>Telescope help_tags<CR>]], {noremap = true})
-      vim.api.nvim_set_keymap('n', '<Leader>fm', [[<Cmd>Telescope keymaps<CR>]],     {noremap = true})
-      vim.api.nvim_set_keymap('n', '<Leader>ft', [[<Cmd>Telescope tags<CR>]],     {noremap = true})
+      vim.api.nvim_set_keymap('n', '<Leader>fm', [[<Cmd>Telescope keymaps<CR>]],   {noremap = true})
+      vim.api.nvim_set_keymap('n', '<Leader>ft', [[<Cmd>Telescope tags<CR>]],      {noremap = true})
     end}
 
   use {'tpope/vim-unimpaired', as = 'unimpaired.vim'}
