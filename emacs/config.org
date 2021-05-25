@@ -169,7 +169,7 @@
                     ((string-equal p "Bottom")
                      (propertize "--#" 'help-echo p 'mouse-face 'mode-line-highlight))
                     (t
-                     (propertize (string-replace "%" "%%" p)
+                     (propertize (concat p  "%")
                                  'help-echo "Position"
                                  'mouse-face 'mode-line-highlight))))))
        (put 'pwy:mode-line-percent-position 'risky-local-variable t)
@@ -729,20 +729,20 @@
     (use-package fzf
       :ensure t
       :preface
-      (defun pwy:fzf-find-file-in-current-dir ()
+      (defun pwy:fzf-find-file-in-cwd ()
         (interactive)
         (let* ((client (frame-parameter nil 'client))
                (cwd (process-get client 'server-client-directory)))
           (fzf-find-file-in-dir (expand-file-name cwd))))
 
-      (defun pwy:fzf-find-file-in-same-dir ()
+      (defun pwy:fzf-find-neighboring-file ()
         (interactive)
         (fzf-find-file-in-dir (expand-file-name default-directory)))
       :bind (:map pwy:evil-find-map
                   ("b" . fzf-switch-buffer)
                   ("d" . fzf-find-file-in-dir)
-                  ("f" . pwy:fzf-find-file-in-same-dir)
-                  ("." . pwy:fzf-find-file-in-current-dir)
+                  ("f" . pwy:fzf-find-neiboring-file)
+                  ("." . pwy:fzf-find-file-in-cwd)
                   ("?" . fzf-recentf)))
   #+end_src
 * gdb
