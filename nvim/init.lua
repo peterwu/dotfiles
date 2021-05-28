@@ -12,7 +12,7 @@ vim.o.showmatch     = true
 vim.o.showmode      = false
 vim.o.smartcase     = true
 vim.o.termguicolors = true
-vim.o.timeoutlen    = 500
+vim.o.timeoutlen    = 750
 
 vim.wo.cursorline     = true
 vim.wo.list           = true
@@ -67,9 +67,6 @@ vim.api.nvim_set_keymap('n', '<C-l>', [[<Cmd>nohlsearch<CR><C-l>]], {noremap = t
 
 -- launch terminal
 vim.api.nvim_set_keymap('n', '<Leader>o', [[<Cmd>below 10sp term://$SHELL<CR>i]], {noremap = true, silent = true})
-
--- set list when in insert mode
--- vim.cmd [[autocmd InsertEnter,InsertLeave * set list!]]
 
 vim.cmd [[
 augroup AutoSaveFolds | autocmd!
@@ -362,7 +359,7 @@ require('packer').startup(function()
   end}
 
   use {'tpope/vim-surround', as = 'surround.vim'}
-  
+
   use {'nvim-telescope/telescope.nvim',
     requires = {{'nvim-lua/popup.nvim'}, {'nvim-lua/plenary.nvim'}},
     config = function()
@@ -379,15 +376,14 @@ require('packer').startup(function()
       vim.api.nvim_set_keymap('n', '<Leader>ft', [[<Cmd>Telescope tags<CR>]],      {noremap = true})
     end}
 
-  use {'tpope/vim-unimpaired', as = 'unimpaired.vim'}
+    use {'tpope/vim-unimpaired', as = 'unimpaired.vim'}
 
-  use {'tpope/vim-vinegar', as = 'vinegar.vim', config = function()
-    vim.api.nvim_set_keymap('n', '-', [[k^]], {noremap = true})
-  end}
+    use {'tpope/vim-vinegar', as = 'vinegar.vim', config = function()
+      vim.api.nvim_set_keymap('n', '-', [[k^]], {noremap = true})
+    end}
 
-  use {'folke/which-key.nvim', config = function()
-    require("which-key").setup {}
-  end}
+    use {'folke/which-key.nvim', config = function()
+      require("which-key").setup {}
+    end}
 
-end)
-
+  end)
