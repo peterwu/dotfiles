@@ -163,11 +163,11 @@
          '(:eval (let ((p (format-mode-line "%p")))
                    (cond
                     ((string-equal p "All")
-                     (propertize "###" 'help-echo p 'mouse-face 'mode-line-highlight))
+                     (propertize "***" 'help-echo p 'mouse-face 'mode-line-highlight))
                     ((string-equal p "Top")
-                     (propertize "#--" 'help-echo p 'mouse-face 'mode-line-highlight))
+                     (propertize "{**" 'help-echo p 'mouse-face 'mode-line-highlight))
                     ((string-equal p "Bottom")
-                     (propertize "--#" 'help-echo p 'mouse-face 'mode-line-highlight))
+                     (propertize "**}" 'help-echo p 'mouse-face 'mode-line-highlight))
                     (t
                      (propertize (concat p  "%")
                                  'help-echo "Position"
@@ -1335,8 +1335,8 @@
   #+end_src
 * ...
   #+begin_src emacs-lisp
-    (use-package go-mode :ensure t)
-    (use-package lua-mode :ensure t)
+    (use-package go-mode   :ensure t)
+    (use-package lua-mode  :ensure t)
     (use-package rust-mode :ensure t)
     (use-package yaml-mode :ensure t)
   #+end_src
