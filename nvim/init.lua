@@ -1,24 +1,23 @@
 -- set defaults
-vim.o.autochdir     = true
-vim.o.completeopt   = 'menuone,noselect'
-vim.o.hidden        = true
-vim.o.ignorecase    = true
-vim.o.inccommand    = 'nosplit'
-vim.o.lazyredraw    = true
-vim.o.mouse         = 'a'
-vim.o.path          = vim.o.path .. '**'
-vim.o.shortmess     = vim.o.shortmess .. 'I'
-vim.o.showmatch     = true
-vim.o.showmode      = false
-vim.o.smartcase     = true
-vim.o.termguicolors = true
-vim.o.timeoutlen    = 750
-
-vim.wo.cursorline     = true
-vim.wo.list           = true
-vim.wo.listchars      = 'trail:·,tab:»·'
-vim.wo.number         = true
-vim.wo.relativenumber = true
+vim.opt.autochdir      = true
+vim.opt.completeopt    = 'menuone,noselect'
+vim.opt.cursorline     = true
+vim.opt.hidden         = true
+vim.opt.ignorecase     = true
+vim.opt.inccommand     = 'nosplit'
+vim.opt.lazyredraw     = true
+vim.opt.list           = true
+vim.opt.listchars      = {trail = '·', tab = '»·'}
+vim.opt.mouse          = 'a'
+vim.opt.number         = true
+vim.opt.path           = vim.opt.path + '**'
+vim.opt.relativenumber = true
+vim.opt.shortmess      = vim.opt.shortmess + 'I'
+vim.opt.showmatch      = true
+vim.opt.showmode       = false
+vim.opt.smartcase      = true
+vim.opt.termguicolors  = true
+vim.opt.timeoutlen     = 750
 
 -- assign leader keys
 vim.g.mapleader      = ' '
@@ -95,7 +94,7 @@ vim.g.termdebug_wide = 1
 
 -- use packer for package management
 vim.cmd ('packadd packer.nvim')
-require('packer').startup(function()
+require('packer').startup {function()
   use {'wbthomason/packer.nvim', opt = true, setup = function()
     vim.api.nvim_set_keymap('n', '<Leader>qc', [[<Cmd>PackerClean<CR>]],    {noremap = true, silent = true})
     vim.api.nvim_set_keymap('n', '<Leader>qi', [[<Cmd>PackerInstsall<CR>]], {noremap = true, silent = true})
@@ -386,4 +385,12 @@ require('packer').startup(function()
       require("which-key").setup {}
     end}
 
-  end)
+  end,
+  config = {
+    display = {
+      open_fn = function()
+        return require('packer.util').float({ border = 'single' })
+      end
+    }
+  }
+}
