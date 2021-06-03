@@ -351,7 +351,6 @@ require('packer').startup {function()
   end}
 
   use {'tpope/vim-repeat', as = 'repeat.vim'}
-  use {'tpope/vim-sleuth', as = 'sleuth.vim'}
 
   use {'phaazon/hop.nvim', config = function()
     require'hop'.setup {keys = 'etovxqpdygfblzhckisuran'}
