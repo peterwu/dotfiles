@@ -6,7 +6,7 @@ vim.opt.hidden         = true
 vim.opt.ignorecase     = true
 vim.opt.inccommand     = 'nosplit'
 vim.opt.lazyredraw     = true
-vim.opt.list           = true
+vim.opt.list           = false
 vim.opt.listchars      = {trail = '·', tab = '»·'}
 vim.opt.mouse          = 'a'
 vim.opt.number         = true
@@ -71,6 +71,11 @@ vim.cmd [[
 augroup AutoSaveFolds | autocmd!
   autocmd BufWinLeave,BufLeave,BufWritePost ?* nested silent! mkview!
   autocmd BufWinEnter ?* silent! loadview
+augroup END
+
+augroup AutoSetList | autocmd!
+  autocmd InsertEnter * set list
+  autocmd InsertLeave * set nolist
 augroup END
 
 augroup Highlighted_Yank | autocmd!
@@ -345,7 +350,6 @@ require('packer').startup {function()
     vim.cmd('colorscheme modus-operandi')
   end}
 
-  use {'sheerun/vim-polyglot', as = 'polyglot.vim'}
   use {'tpope/vim-repeat', as = 'repeat.vim'}
   use {'tpope/vim-sleuth', as = 'sleuth.vim'}
 
@@ -374,6 +378,8 @@ require('packer').startup {function()
       vim.api.nvim_set_keymap('n', '<Leader>fm', [[<Cmd>Telescope keymaps<CR>]],   {noremap = true})
       vim.api.nvim_set_keymap('n', '<Leader>ft', [[<Cmd>Telescope tags<CR>]],      {noremap = true})
     end}
+
+    use { 'nvim-treesitter/nvim-treesitter', as = 'tree-sitter.nvim', run = ':TSUpdate' }
 
     use {'tpope/vim-unimpaired', as = 'unimpaired.vim'}
 
