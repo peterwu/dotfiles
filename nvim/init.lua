@@ -18,6 +18,7 @@ vim.opt.showmode       = false
 vim.opt.smartcase      = true
 vim.opt.termguicolors  = true
 vim.opt.timeoutlen     = 750
+vim.opt.viewoptions    = 'cursor,folds,unix'
 
 -- assign leader keys
 vim.g.mapleader      = ' '
@@ -378,7 +379,7 @@ require('packer').startup {function()
       vim.api.nvim_set_keymap('n', '<Leader>ft', [[<Cmd>Telescope tags<CR>]],      {noremap = true})
     end}
 
-    use { 'nvim-treesitter/nvim-treesitter', as = 'tree-sitter.nvim', run = ':TSUpdate' }
+    use {'nvim-treesitter/nvim-treesitter', as = 'tree-sitter.nvim', run = ':TSUpdate'}
 
     use {'tpope/vim-unimpaired', as = 'unimpaired.vim'}
 

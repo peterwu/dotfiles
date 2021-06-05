@@ -1259,6 +1259,20 @@
       (tramp-persistency-file-name
        (expand-file-name ".cache/tramp" user-emacs-directory)))
   #+end_src
+* tree-sitter, /et al./
+** tree-sitter
+   #+begin_src emacs-lisp
+     (use-package tree-sitter
+       :ensure t
+       :hook (prog-mode . tree-sitter-hl-mode)
+       :config
+       (global-tree-sitter-mode +1))
+      #+end_src
+** tree-sitter-langs
+   #+begin_src emacs-lisp
+     (use-package tree-sitter-langs
+       :ensure t)
+   #+end_src
 * uniquify
   #+begin_src emacs-lisp
     (use-package uniquify
