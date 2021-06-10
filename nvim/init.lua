@@ -17,8 +17,7 @@ vim.opt.showmatch      = true
 vim.opt.showmode       = false
 vim.opt.smartcase      = true
 vim.opt.termguicolors  = true
-vim.opt.timeoutlen     = 750
-vim.opt.viewoptions    = 'cursor,folds,unix'
+vim.opt.timeoutlen     = 777
 
 -- assign leader keys
 vim.g.mapleader      = ' '
