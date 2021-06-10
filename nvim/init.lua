@@ -146,8 +146,8 @@ require('packer').startup {function()
   end}
 
   use {'mattn/emmet-vim', as = 'emmet.vim'}
-  use {'tommcdo/vim-exchange', as = 'exchange.vim'}
   use {'tpope/vim-eunuch', as = 'eunuch.vim'}
+  use {'tommcdo/vim-exchange', as = 'exchange.vim'}
 
   use {'tpope/vim-fugitive', as = 'fugitive.vim', config = function()
     vim.api.nvim_set_keymap('n', '<Leader>gs', [[<Cmd>Git<CR>]],       {noremap = true})
@@ -305,6 +305,14 @@ require('packer').startup {function()
 
   end}
 
+  use {'phaazon/hop.nvim', config = function()
+    require'hop'.setup {keys = 'etovxqpdygfblzhckisuran'}
+
+    vim.api.nvim_set_keymap('n', '<Leader>jj', [[<Cmd>HopChar1<CR>]], {noremap = true})
+    vim.api.nvim_set_keymap('n', '<Leader>jf', [[<Cmd>HopChar2<CR>]], {noremap = true})
+    vim.api.nvim_set_keymap('n', '<Leader>jw', [[<Cmd>HopWord<CR>]],  {noremap = true})
+  end}
+
   use {'tommcdo/vim-lion', as = 'lion.vim', config = [[vim.g.lion_squeeze_spaces = 1]]}
 
   use {'neovim/nvim-lspconfig', as = 'lspconfig.nvim', config = function()
@@ -353,13 +361,7 @@ require('packer').startup {function()
 
   use {'tpope/vim-repeat', as = 'repeat.vim'}
 
-  use {'phaazon/hop.nvim', config = function()
-    require'hop'.setup {keys = 'etovxqpdygfblzhckisuran'}
-
-    vim.api.nvim_set_keymap('n', '<Leader>jj', [[<Cmd>HopChar1<CR>]], {noremap = true})
-    vim.api.nvim_set_keymap('n', '<Leader>jf', [[<Cmd>HopChar2<CR>]], {noremap = true})
-    vim.api.nvim_set_keymap('n', '<Leader>jw', [[<Cmd>HopWord<CR>]],  {noremap = true})
-  end}
+  use {'dstein64/nvim-scrollview', as = 'scrollview.nvim'}
 
   use {'tpope/vim-surround', as = 'surround.vim'}
 
