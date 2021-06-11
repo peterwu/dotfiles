@@ -2,6 +2,7 @@
 vim.opt.autochdir      = true
 vim.opt.completeopt    = 'menuone,noselect'
 vim.opt.cursorline     = true
+vim.opt.expandtab      = true
 vim.opt.hidden         = true
 vim.opt.ignorecase     = true
 vim.opt.inccommand     = 'nosplit'
@@ -12,12 +13,17 @@ vim.opt.mouse          = 'a'
 vim.opt.number         = true
 vim.opt.path           = vim.opt.path + '**'
 vim.opt.relativenumber = true
+vim.opt.shiftwidth     = 2
+vim.opt.softtabstop    = 2
 vim.opt.shortmess      = vim.opt.shortmess + 'I'
 vim.opt.showmatch      = true
 vim.opt.showmode       = false
 vim.opt.smartcase      = true
+vim.opt.smartindent    = true
+vim.opt.tabstop        = 2
 vim.opt.termguicolors  = true
 vim.opt.timeoutlen     = 777
+vim.opt.viewoptions    = 'cursor,folds'
 
 -- assign leader keys
 vim.g.mapleader      = ' '
@@ -79,7 +85,7 @@ augroup AutoSetList | autocmd!
 augroup END
 
 augroup Highlighted_Yank | autocmd!
-    autocmd TextYankPost * silent! lua vim.highlight.on_yank{higroup="IncSearch", timeout=700}
+  autocmd TextYankPost * silent! lua vim.highlight.on_yank{higroup="IncSearch", timeout=700}
 augroup END
 ]]
 
@@ -142,6 +148,45 @@ require('packer').startup {function()
         ultisnips = true
       }
     }
+  end}
+
+  use {'mfussenegger/nvim-dap', as = 'dap.nvim', config = function()
+    local dap = require('dap')
+    dap.adapters.lldb = {
+      type = 'executable',
+      command = '/usr/bin/lldb-vscode',
+      name = 'lldb'
+    }
+
+    dap.configurations.c = {
+      {
+        name = 'Launch',
+        type = 'lldb',
+        request = 'launch',
+        program = function()
+          return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+        end,
+        cwd = '${workspaceFolder}',
+        stopOnEntry = false,
+        args = {},
+        runInTerminal = true,
+      },
+    }
+
+    dap.configurations.cpp = dap.configurations.c
+    dap.configurations.rust = dap.configurations.cpp
+
+    local opts = {noremap=true, silent=true}
+
+    vim.api.nvim_set_keymap('n', '<F5>',   [[<Cmd>lua require'dap'.continue()<CR>]],          opts)
+    vim.api.nvim_set_keymap('n', '<F8>',   [[<Cmd>lua require'dap'.step_over()<CR>]],         opts)
+    vim.api.nvim_set_keymap('n', '<F7>',   [[<Cmd>lua require'dap'.into()<CR>]],              opts)
+    vim.api.nvim_set_keymap('n', '<S-F7>', [[<Cmd>lua require'dap'.out()<CR>]],               opts)
+    vim.api.nvim_set_keymap('n', '<F6>',   [[<Cmd>lua require'dap'.toggle_breakpoint()<CR>]], opts)
+
+    vim.cmd [[
+    nnoremap <silent> <leader>dr :lua require'dap'.repl.open()<CR>
+    ]]
   end}
 
   use {'mattn/emmet-vim', as = 'emmet.vim'}
@@ -326,21 +371,21 @@ require('packer').startup {function()
       -- mappings
       local opts = {noremap=true, silent=true}
 
-      buf_set_keymap('n', 'gD',        [[<Cmd>lua vim.lsp.buf.declaration()<CR>]],                                opts)
-      buf_set_keymap('n', 'gd',        [[<Cmd>lua vim.lsp.buf.definition()<CR>]],                                 opts)
-      buf_set_keymap('n', 'K',         [[<Cmd>lua vim.lsp.buf.hover()<CR>]],                                      opts)
-      buf_set_keymap('n', 'gi',        [[<Cmd>lua vim.lsp.buf.implementation()<CR>]],                             opts)
-      buf_set_keymap('n', '<C-k>',     [[<Cmd>lua vim.lsp.buf.signature_help()<CR>]],                             opts)
-      buf_set_keymap('n', '<space>wa', [[<Cmd>lua vim.lsp.buf.add_workspace_folder()<CR>]],                       opts)
-      buf_set_keymap('n', '<space>wr', [[<Cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>]],                    opts)
-      buf_set_keymap('n', '<space>wl', [[<Cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>]], opts)
-      buf_set_keymap('n', '<space>D',  [[<Cmd>lua vim.lsp.buf.type_definition()<CR>]],                            opts)
-      buf_set_keymap('n', '<space>rn', [[<cmd>lua vim.lsp.buf.rename()<CR>]],                                     opts)
-      buf_set_keymap('n', 'gr',        [[<Cmd>lua vim.lsp.buf.references()<CR>]],                                 opts)
-      buf_set_keymap('n', '<space>e',  [[<Cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>]],               opts)
-      buf_set_keymap('n', '[d',        [[<Cmd>lua vim.lsp.diagnostic.goto_prev()<CR>]],                           opts)
-      buf_set_keymap('n', ']d',        [[<Cmd>lua vim.lsp.diagnostic.goto_next()<CR>]],                           opts)
-      buf_set_keymap('n', '<space>q',  [[<Cmd>lua vim.lsp.diagnostic.set_loclist()<CR>]],                         opts)
+      buf_set_keymap('n', 'gD',         [[<Cmd>lua vim.lsp.buf.declaration()<CR>]],                                opts)
+      buf_set_keymap('n', 'gd',         [[<Cmd>lua vim.lsp.buf.definition()<CR>]],                                 opts)
+      buf_set_keymap('n', 'K',          [[<Cmd>lua vim.lsp.buf.hover()<CR>]],                                      opts)
+      buf_set_keymap('n', 'gi',         [[<Cmd>lua vim.lsp.buf.implementation()<CR>]],                             opts)
+      buf_set_keymap('n', '<C-k>',      [[<Cmd>lua vim.lsp.buf.signature_help()<CR>]],                             opts)
+      buf_set_keymap('n', '<Leader>wa', [[<Cmd>lua vim.lsp.buf.add_workspace_folder()<CR>]],                       opts)
+      buf_set_keymap('n', '<Leader>wr', [[<Cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>]],                    opts)
+      buf_set_keymap('n', '<Leader>wl', [[<Cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>]], opts)
+      buf_set_keymap('n', '<Leader>D',  [[<Cmd>lua vim.lsp.buf.type_definition()<CR>]],                            opts)
+      buf_set_keymap('n', '<Leader>rn', [[<cmd>lua vim.lsp.buf.rename()<CR>]],                                     opts)
+      buf_set_keymap('n', 'gr',         [[<Cmd>lua vim.lsp.buf.references()<CR>]],                                 opts)
+      buf_set_keymap('n', '<Leader>e',  [[<Cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>]],               opts)
+      buf_set_keymap('n', '[d',         [[<Cmd>lua vim.lsp.diagnostic.goto_prev()<CR>]],                           opts)
+      buf_set_keymap('n', ']d',         [[<Cmd>lua vim.lsp.diagnostic.goto_next()<CR>]],                           opts)
+      buf_set_keymap('n', '<Leader>q',  [[<Cmd>lua vim.lsp.diagnostic.set_loclist()<CR>]],                         opts)
     end
 
     nvim_lsp.clangd.setup {
@@ -365,39 +410,52 @@ require('packer').startup {function()
   use {'tpope/vim-surround', as = 'surround.vim'}
 
   use {'nvim-telescope/telescope.nvim',
-    requires = {{'nvim-lua/popup.nvim'}, {'nvim-lua/plenary.nvim'}},
-    config = function()
-      vim.api.nvim_set_keymap('n', '<Leader>ff', [[<Cmd>Telescope find_files<CR>]],   {noremap = true})
-      vim.api.nvim_set_keymap('n', '<Leader>fo', [[<Cmd>Telescope oldfiles<CR>]],     {noremap = true})
-      vim.api.nvim_set_keymap('n', '<Leader>fx', [[<Cmd>Telescope file_browser<CR>]], {noremap = true})
+  requires = {{'nvim-lua/popup.nvim'}, {'nvim-lua/plenary.nvim'}},
+  config = function()
+    vim.api.nvim_set_keymap('n', '<Leader>ff', [[<Cmd>Telescope find_files<CR>]],   {noremap = true})
+    vim.api.nvim_set_keymap('n', '<Leader>fo', [[<Cmd>Telescope oldfiles<CR>]],     {noremap = true})
+    vim.api.nvim_set_keymap('n', '<Leader>fx', [[<Cmd>Telescope file_browser<CR>]], {noremap = true})
 
-      vim.api.nvim_set_keymap('n', '<Leader>f:', [[<Cmd>Telescope command_history<CR>]], {noremap = true})
-      vim.api.nvim_set_keymap('n', '<Leader>f/', [[<Cmd>Telescope search_history<CR>]],  {noremap = true})
+    vim.api.nvim_set_keymap('n', '<Leader>f:', [[<Cmd>Telescope command_history<CR>]], {noremap = true})
+    vim.api.nvim_set_keymap('n', '<Leader>f/', [[<Cmd>Telescope search_history<CR>]],  {noremap = true})
 
-      vim.api.nvim_set_keymap('n', '<Leader>fb', [[<Cmd>Telescope buffers<CR>]],   {noremap = true})
-      vim.api.nvim_set_keymap('n', '<Leader>fh', [[<Cmd>Telescope help_tags<CR>]], {noremap = true})
-      vim.api.nvim_set_keymap('n', '<Leader>fm', [[<Cmd>Telescope keymaps<CR>]],   {noremap = true})
-      vim.api.nvim_set_keymap('n', '<Leader>ft', [[<Cmd>Telescope tags<CR>]],      {noremap = true})
-    end}
+    vim.api.nvim_set_keymap('n', '<Leader>fb', [[<Cmd>Telescope buffers<CR>]],   {noremap = true})
+    vim.api.nvim_set_keymap('n', '<Leader>fh', [[<Cmd>Telescope help_tags<CR>]], {noremap = true})
+    vim.api.nvim_set_keymap('n', '<Leader>fm', [[<Cmd>Telescope keymaps<CR>]],   {noremap = true})
+    vim.api.nvim_set_keymap('n', '<Leader>ft', [[<Cmd>Telescope tags<CR>]],      {noremap = true})
+  end}
 
-    use {'nvim-treesitter/nvim-treesitter', as = 'tree-sitter.nvim', run = ':TSUpdate'}
+  use {'nvim-telescope/telescope-dap.nvim', config = function()
+    require('telescope').load_extension('dap')
 
-    use {'tpope/vim-unimpaired', as = 'unimpaired.vim'}
+    local opts = {noremap=true, silent=true}
 
-    use {'tpope/vim-vinegar', as = 'vinegar.vim', config = function()
-      vim.api.nvim_set_keymap('n', '-', [[k^]], {noremap = true})
-    end}
+    vim.api.nvim_set_keymap('n', '<Leader>fdd', [[<Cmd>Telescope dap commands<CR>]],         opts)
+    vim.api.nvim_set_keymap('n', '<Leader>fdc', [[<Cmd>Telescope dap configurations<CR>]],   opts)
+    vim.api.nvim_set_keymap('n', '<Leader>fdb', [[<Cmd>Telescope dap list_breakpoints<CR>]], opts)
+    vim.api.nvim_set_keymap('n', '<Leader>fdv', [[<Cmd>Telescope dap variables<CR>]],        opts)
+    vim.api.nvim_set_keymap('n', '<Leader>fdf', [[<Cmd>Telescope dap frames<CR>]],           opts)
 
-    use {'folke/which-key.nvim', config = function()
-      require("which-key").setup {}
-    end}
+  end}
 
-  end,
-  config = {
-    display = {
-      open_fn = function()
-        return require('packer.util').float({ border = 'single' })
-      end
-    }
+  use {'nvim-treesitter/nvim-treesitter', as = 'tree-sitter.nvim', run = ':TSUpdate'}
+
+  use {'tpope/vim-unimpaired', as = 'unimpaired.vim'}
+
+  use {'tpope/vim-vinegar', as = 'vinegar.vim', config = function()
+    vim.api.nvim_set_keymap('n', '-', [[k^]], {noremap = true})
+  end}
+
+  use {'folke/which-key.nvim', config = function()
+    require("which-key").setup {}
+  end}
+
+end,
+config = {
+  display = {
+    open_fn = function()
+      return require('packer.util').float({ border = 'single' })
+    end
   }
+}
 }
