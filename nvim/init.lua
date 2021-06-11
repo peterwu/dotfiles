@@ -13,16 +13,18 @@ vim.opt.mouse          = 'a'
 vim.opt.number         = true
 vim.opt.path           = vim.opt.path + '**'
 vim.opt.relativenumber = true
+vim.opt.sessionoptions = 'folds'
 vim.opt.shiftwidth     = 2
-vim.opt.softtabstop    = 2
 vim.opt.shortmess      = vim.opt.shortmess + 'I'
 vim.opt.showmatch      = true
 vim.opt.showmode       = false
 vim.opt.smartcase      = true
 vim.opt.smartindent    = true
+vim.opt.softtabstop    = 2
 vim.opt.tabstop        = 2
 vim.opt.termguicolors  = true
 vim.opt.timeoutlen     = 777
+vim.opt.title          = true
 vim.opt.viewoptions    = 'cursor,folds'
 
 -- assign leader keys
@@ -84,8 +86,8 @@ augroup AutoSetList | autocmd!
   autocmd InsertLeave * set nolist
 augroup END
 
-augroup Highlighted_Yank | autocmd!
-  autocmd TextYankPost * silent! lua vim.highlight.on_yank{higroup="IncSearch", timeout=700}
+augroup HighlightedYank | autocmd!
+  autocmd TextYankPost * silent! lua vim.highlight.on_yank{higroup="IncSearch", timeout=777}
 augroup END
 ]]
 
@@ -178,19 +180,19 @@ require('packer').startup {function()
 
     local opts = {noremap=true, silent=true}
 
-    vim.api.nvim_set_keymap('n', '<F5>',   [[<Cmd>lua require'dap'.continue()<CR>]],          opts)
-    vim.api.nvim_set_keymap('n', '<F8>',   [[<Cmd>lua require'dap'.step_over()<CR>]],         opts)
-    vim.api.nvim_set_keymap('n', '<F7>',   [[<Cmd>lua require'dap'.into()<CR>]],              opts)
-    vim.api.nvim_set_keymap('n', '<S-F7>', [[<Cmd>lua require'dap'.out()<CR>]],               opts)
-    vim.api.nvim_set_keymap('n', '<F6>',   [[<Cmd>lua require'dap'.toggle_breakpoint()<CR>]], opts)
+    vim.api.nvim_set_keymap('n', '<F5>',       [[<Cmd>lua require('dap').continue()<CR>]],          opts)
+    vim.api.nvim_set_keymap('n', '<F8>',       [[<Cmd>lua require('dap').step_over()<CR>]],         opts)
+    vim.api.nvim_set_keymap('n', '<F7>',       [[<Cmd>lua require('dap').into()<CR>]],              opts)
+    vim.api.nvim_set_keymap('n', '<S-F7>',     [[<Cmd>lua require('dap').out()<CR>]],               opts)
+    vim.api.nvim_set_keymap('n', '<F6>',       [[<Cmd>lua require('dap').toggle_breakpoint()<CR>]], opts)
+    vim.api.nvim_set_keymap('n', '<Leader>dr', [[<Cmd>lua require('dap').repl.open()<CR>]],         opts)
 
-    vim.cmd [[
-    nnoremap <silent> <leader>dr :lua require'dap'.repl.open()<CR>
-    ]]
   end}
 
   use {'mattn/emmet-vim', as = 'emmet.vim'}
+
   use {'tpope/vim-eunuch', as = 'eunuch.vim'}
+
   use {'tommcdo/vim-exchange', as = 'exchange.vim'}
 
   use {'tpope/vim-fugitive', as = 'fugitive.vim', config = function()
@@ -350,7 +352,7 @@ require('packer').startup {function()
   end}
 
   use {'phaazon/hop.nvim', config = function()
-    require'hop'.setup {keys = 'etovxqpdygfblzhckisuran'}
+    require('hop').setup {keys = 'etovxqpdygfblzhckisuran'}
 
     vim.api.nvim_set_keymap('n', '<Leader>jj', [[<Cmd>HopChar1<CR>]], {noremap = true})
     vim.api.nvim_set_keymap('n', '<Leader>jf', [[<Cmd>HopChar2<CR>]], {noremap = true})
