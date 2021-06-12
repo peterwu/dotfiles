@@ -169,13 +169,13 @@
          '(:eval (let ((p (format-mode-line "%p")))
                    (cond
                     ((string-equal p "All")
-                     (propertize "All" 'help-echo p 'mouse-face 'mode-line-highlight))
+                     (propertize "%%%%%%" 'help-echo p 'mouse-face 'mode-line-highlight))
                     ((string-equal p "Top")
-                     (propertize "Top" 'help-echo p 'mouse-face 'mode-line-highlight))
+                     (propertize " 0%%" 'help-echo p 'mouse-face 'mode-line-highlight))
                     ((string-equal p "Bottom")
-                     (propertize "Bot" 'help-echo p 'mouse-face 'mode-line-highlight))
+                     (propertize "__%%" 'help-echo p 'mouse-face 'mode-line-highlight))
                     (t
-                     (propertize (concat p  "%")
+                     (propertize (concat p  "%%")
                                  'help-echo "Position"
                                  'mouse-face 'mode-line-highlight))))))
        (put 'wy:mode-line-percent-position 'risky-local-variable t)
