@@ -31,6 +31,7 @@
        (initial-major-mode 'org-mode)
        (initial-scratch-message nil)
        (make-backup-files nil)
+       (nsm-settings-file (expand-file-name "cache/network-security.data" user-emacs-directory))
        (scroll-conservatively 10000)
        (scroll-margin 1)
        (scroll-preserve-screen-position t)
@@ -272,7 +273,7 @@
     (use-package bookmark
       :custom
       (bookmark-default-file
-       (expand-file-name ".cache/bookmarks" user-emacs-directory)))
+       (expand-file-name "cache/bookmarks" user-emacs-directory)))
   #+end_src
 * company, /et al./
 ** company
@@ -299,7 +300,7 @@
   #+begin_src emacs-lisp
     (use-package custom
       :init
-      (defvar pwy:custom-file (expand-file-name ".cache/custom.el" user-emacs-directory))
+      (defvar pwy:custom-file (expand-file-name "cache/custom.el" user-emacs-directory))
       (setq custom-file pwy:custom-file)
       :hook (after-init . (lambda ()
                             (let ((file pwy:custom-file))
@@ -321,6 +322,18 @@
       (dabbrev-check-other-buffers t)
       (dabbrev-eliminate-newlines t)
       (dabbrev-upcase-means-case-search t))
+  #+end_src
+* dap
+  #+begin_src emacs-lisp
+    (use-package dap-mode
+      :ensure t
+      :custom
+      (dap-lldb-debug-program '("/usr/bin/lldb-vscode"))
+      (dap-breakpoints-file (expand-file-name "cache/dap-breakpoints" user-emacs-directory))
+      :hook (dap-stopped . (lambda (arg) (call-interactively #'dap-hydra)))
+      :config
+      (dap-auto-configure-mode +1)
+      (require 'dap-lldb))
   #+end_src
 * dash
   #+begin_src emacs-lisp
@@ -587,9 +600,7 @@
 ** evil-commentary
    #+begin_src emacs-lisp
      (use-package evil-commentary
-       :ensure nil
-       :load-path "mine/evil-commentary"
-       :hook (prog-mode . evil-commentary-mode)
+       :ensure t
        :config
        (evil-commentary-mode +1))
    #+end_src
@@ -872,7 +883,7 @@
       (ido-enable-flex-matching t)
       (ido-everywhere t)
       (ido-save-directory-list-file
-       (expand-file-name ".cache/ido.last" user-emacs-directory))
+       (expand-file-name "cache/ido.last" user-emacs-directory))
       (ido-show-dot-for-dired t)
       (ido-use-virtual-buffers t)
       :bind (:map ido-completion-map
@@ -925,7 +936,7 @@
    #+begin_src emacs-lisp
      (use-package lsp-mode
        :ensure t
-       :custom (lsp-session-file (expand-file-name ".cache/lsp-session" user-emacs-directory))
+       :custom (lsp-session-file (expand-file-name "cache/lsp-session" user-emacs-directory))
        :hook ((c-mode
                c++-mode
                objc-mode
@@ -1124,7 +1135,7 @@
       :custom
       (recentf-exclude '(".gz" ".xz" ".zip" "/elpa/" "/ssh:" "/sudo:"))
       (recentf-max-saved-items 200)
-      (recentf-save-file (expand-file-name ".cache/recentf" user-emacs-directory))
+      (recentf-save-file (expand-file-name "cache/recentf" user-emacs-directory))
       :config
       (recentf-mode +1))
   #+end_src
@@ -1144,7 +1155,7 @@
       :custom
       (history-delete-duplicates t)
       (history-length 1000)
-      (savehist-file (expand-file-name ".cache/savehist" user-emacs-directory))
+      (savehist-file (expand-file-name "cache/savehist" user-emacs-directory))
       (savehist-save-minibuffer-history t)
       :config
       (savehist-mode +1))
@@ -1153,7 +1164,7 @@
   #+begin_src emacs-lisp
     (use-package saveplace
       :custom
-      (save-place-file (expand-file-name ".cache/places" user-emacs-directory))
+      (save-place-file (expand-file-name "cache/places" user-emacs-directory))
       (save-place-forget-unreadable-files t)
       :config
       (save-place-mode +1))
@@ -1191,7 +1202,8 @@
     (use-package sr-speedbar
       :ensure t
       :custom (speedbar-use-images nil)
-      :bind ([f9] . sr-speedbar-toggle))
+      :bind (:map pwy:evil-toggle-map
+                  ("b" . sr-speedbar-toggle)))
   #+end_src
 * tab-bar
   #+begin_src emacs-lisp
@@ -1257,21 +1269,39 @@
       :custom
       (tramp-default-method "sshx")
       (tramp-persistency-file-name
-       (expand-file-name ".cache/tramp" user-emacs-directory)))
+       (expand-file-name "cache/tramp" user-emacs-directory)))
   #+end_src
-* tree-sitter, /et al./
-** tree-sitter
+* treemacs, /et al./
+** treemacs
    #+begin_src emacs-lisp
-     (use-package tree-sitter
+    (use-package treemacs
+      :ensure t
+      :defer t
+      :custom
+      (treemacs-persist-file (expand-file-name "cache/treemacs-persist" user-emacs-directory))
+      :bind (:map pwy:evil-toggle-map
+                  ("t" . treemacs)))
+   #+end_src
+** treemacs-evil
+   #+begin_src emacs-lisp
+     (use-package treemacs-evil
        :ensure t
-       :hook (prog-mode . tree-sitter-hl-mode)
-       :config
-       (global-tree-sitter-mode +1))
-      #+end_src
-** tree-sitter-langs
+       :after (treemacs evil))
+
+   #+end_src
+** treemacs-icons-dired
    #+begin_src emacs-lisp
-     (use-package tree-sitter-langs
-       :ensure t)
+     (use-package treemacs-icons-dired
+       :ensure t
+       :after (treemacs dired)
+       :config
+       (treemacs-icons-dired-mode +1))
+   #+end_src
+** treemacs-magit
+   #+begin_src emacs-lisp
+     (use-package treemacs-magit
+       :ensure t
+       :after (treemacs magit))
    #+end_src
 * uniquify
   #+begin_src emacs-lisp
@@ -1332,10 +1362,7 @@
     (use-package xref
       :custom
       (xref-file-name-display 'project-relative)
-      (xref-search-program 'grep)
-      (xref-show-definitions-function #'xref-show-definitions-completing-read)
-      (xref-show-xrefs-function #'xref-show-definitions-completing-read))
-
+      (xref-search-program 'grep))
   #+end_src
 * xt-mouse
   #+begin_src emacs-lisp

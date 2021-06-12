@@ -17,7 +17,7 @@
 (setq frame-inhibit-implied-resize t)
 
 (setq package-quickstart t
-      package-quickstart-file (expand-file-name ".cache/package-quickstart.el" user-emacs-directory))
+      package-quickstart-file (expand-file-name "cache/package-quickstart.el" user-emacs-directory))
 
 (if (fboundp 'menu-bar-mode)
     (menu-bar-mode -1))
