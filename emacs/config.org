@@ -321,20 +321,6 @@
       (dabbrev-eliminate-newlines t)
       (dabbrev-upcase-means-case-search t))
   #+end_src
-* dap
-  #+begin_src emacs-lisp
-    (use-package dap-mode
-      :ensure t
-      :custom
-      (dap-lldb-debug-program '("/usr/bin/lldb-vscode"))
-      (dap-breakpoints-file (expand-file-name "cache/dap-breakpoints" user-emacs-directory))
-      ;; disable dap tooltip by default
-      ;; https://github.com/emacs-lsp/dap-mode/issues/314
-      (dap-auto-configure-features '(sessions locals breakpoints expressions controls))
-      :hook (dap-stopped . (lambda (arg) (call-interactively #'dap-hydra)))
-      :config
-      (require 'dap-lldb))
-  #+end_src
 * dash
   #+begin_src emacs-lisp
     (use-package dash
@@ -1271,37 +1257,6 @@
       (tramp-persistency-file-name
        (expand-file-name "cache/tramp" user-emacs-directory)))
   #+end_src
-* treemacs, /et al./
-** treemacs
-   #+begin_src emacs-lisp
-    (use-package treemacs
-      :ensure t
-      :defer t
-      :custom
-      (treemacs-persist-file (expand-file-name "cache/treemacs-persist" user-emacs-directory))
-      :bind (:map wy:evil-toggle-map
-                  ("t" . treemacs)))
-   #+end_src
-** treemacs-evil
-   #+begin_src emacs-lisp
-     (use-package treemacs-evil
-       :ensure t
-       :after (treemacs evil))
-   #+end_src
-** treemacs-icons-dired
-   #+begin_src emacs-lisp
-     (use-package treemacs-icons-dired
-       :ensure t
-       :after (treemacs dired)
-       :config
-       (treemacs-icons-dired-mode +1))
-   #+end_src
-** treemacs-magit
-   #+begin_src emacs-lisp
-     (use-package treemacs-magit
-       :ensure t
-       :after (treemacs magit))
-   #+end_src
 * uniquify
   #+begin_src emacs-lisp
     (use-package uniquify
