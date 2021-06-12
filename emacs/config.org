@@ -71,6 +71,11 @@
                    (list (format (format "%%%ds" available-width) ""))
                    right)))
 
+       (defvar-local wy:evil-mode-line-tag
+         '(:eval (propertize evil-mode-line-tag
+                             'face 'bold)))
+       (put 'wy:evil-mode-line-tag 'risky-local-variable t)
+
        (defvar-local wy:mode-line-buffer-identification
          '(:eval (if (buffer-file-name)
                      (propertize (wy:ellipsize-file-name
@@ -187,24 +192,17 @@
            ;; left hand side
            (list
             "%e"
-            " "
-            mode-line-mule-info
-            mode-line-client
-            mode-line-modified
-            mode-line-remote
-            " "
+            wy:evil-mode-line-tag
             wy:mode-line-buffer-identification
             " "
             wy:mode-line-git-status)
 
            ;; right hand side
            (list
-            wy:mode-line-position
+            wy:mode-line-buffer-size
             " "
             wy:mode-line-modes
             wy:mode-line-percent-position
-            " "
-            wy:mode-line-buffer-size
             " ")))))
    #+end_src
 ** msft specifics
