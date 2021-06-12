@@ -1287,7 +1287,6 @@
      (use-package treemacs-evil
        :ensure t
        :after (treemacs evil))
-
    #+end_src
 ** treemacs-icons-dired
    #+begin_src emacs-lisp
@@ -1356,13 +1355,6 @@
                   ("U" . winner-redo))
       :config
       (winner-mode +1))
-  #+end_src
-* xref
-  #+begin_src emacs-lisp
-    (use-package xref
-      :custom
-      (xref-file-name-display 'project-relative)
-      (xref-search-program 'grep))
   #+end_src
 * xt-mouse
   #+begin_src emacs-lisp
