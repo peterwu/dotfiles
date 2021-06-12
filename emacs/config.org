@@ -164,11 +164,11 @@
          '(:eval (let ((p (format-mode-line "%p")))
                    (cond
                     ((string-equal p "All")
-                     (propertize "***" 'help-echo p 'mouse-face 'mode-line-highlight))
+                     (propertize "All" 'help-echo p 'mouse-face 'mode-line-highlight))
                     ((string-equal p "Top")
-                     (propertize "{**" 'help-echo p 'mouse-face 'mode-line-highlight))
+                     (propertize "Top" 'help-echo p 'mouse-face 'mode-line-highlight))
                     ((string-equal p "Bottom")
-                     (propertize "**}" 'help-echo p 'mouse-face 'mode-line-highlight))
+                     (propertize "Bot" 'help-echo p 'mouse-face 'mode-line-highlight))
                     (t
                      (propertize (concat p  "%")
                                  'help-echo "Position"
@@ -330,9 +330,11 @@
       :custom
       (dap-lldb-debug-program '("/usr/bin/lldb-vscode"))
       (dap-breakpoints-file (expand-file-name "cache/dap-breakpoints" user-emacs-directory))
+      ;; disable dap tooltip by default
+      ;; https://github.com/emacs-lsp/dap-mode/issues/314
+      (dap-auto-configure-features '(sessions locals breakpoints expressions controls))
       :hook (dap-stopped . (lambda (arg) (call-interactively #'dap-hydra)))
       :config
-      (dap-auto-configure-mode +1)
       (require 'dap-lldb))
   #+end_src
 * dash
