@@ -185,8 +185,11 @@ require('packer').startup {function()
     vim.api.nvim_set_keymap('n', '<F7>',       [[<Cmd>lua require('dap').into()<CR>]],              opts)
     vim.api.nvim_set_keymap('n', '<S-F7>',     [[<Cmd>lua require('dap').out()<CR>]],               opts)
     vim.api.nvim_set_keymap('n', '<F6>',       [[<Cmd>lua require('dap').toggle_breakpoint()<CR>]], opts)
-    vim.api.nvim_set_keymap('n', '<Leader>dr', [[<Cmd>lua require('dap').repl.open()<CR>]],         opts)
+    vim.api.nvim_set_keymap('n', '<F10>', [[<Cmd>lua require('dap').repl.open()<CR>]],         opts)
+  end}
 
+  use {"rcarriga/nvim-dap-ui", as = 'dap-ui.nvim', config = function()
+    require("dapui").setup()
   end}
 
   use {'mattn/emmet-vim', as = 'emmet.vim'}
@@ -348,7 +351,6 @@ require('packer').startup {function()
         highlight = {colors.fg_active[1], colors.bg_active[1]}
       }
     }
-
   end}
 
   use {'phaazon/hop.nvim', config = function()
@@ -437,7 +439,6 @@ require('packer').startup {function()
     vim.api.nvim_set_keymap('n', '<Leader>fdb', [[<Cmd>Telescope dap list_breakpoints<CR>]], opts)
     vim.api.nvim_set_keymap('n', '<Leader>fdv', [[<Cmd>Telescope dap variables<CR>]],        opts)
     vim.api.nvim_set_keymap('n', '<Leader>fdf', [[<Cmd>Telescope dap frames<CR>]],           opts)
-
   end}
 
   use {'nvim-treesitter/nvim-treesitter', as = 'tree-sitter.nvim', run = ':TSUpdate'}
