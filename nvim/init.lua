@@ -286,7 +286,7 @@ require('packer').startup {function()
       },
       {
         LeftEnd = {
-          provider = function() return ' ' end,
+          provider = 'WhiteSpace',
           condition = buffer_not_empty,
           highlight = {colors.bg_active[1], colors.bg_main[1]}
         }
