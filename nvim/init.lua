@@ -215,30 +215,92 @@ require('packer').startup {function()
   use {'glepnir/galaxyline.nvim', config = function()
     local gl = require('galaxyline')
     local gls = gl.section
-    local colors = require('modus-themes.modus_operandi').setup()
+
+    local colors = {
+      bg_main                 = "#ffffff",
+      fg_main                 = "#000000",
+      bg_dim                  = "#f8f8f8",
+      fg_dim                  = "#282828",
+      bg_alt                  = "#f0f0f0",
+      fg_alt                  = "#505050",
+      bg_active               = "#d7d7d7",
+      fg_active               = "#0a0a0a",
+      bg_inactive             = "#efefef",
+      fg_inactive             = "#404148",
+      red                     = "#a60000",
+      red_alt                 = "#972500",
+      red_alt_other           = "#a0132f",
+      red_faint               = "#7f1010",
+      red_alt_faint           = "#702f00",
+      red_alt_other_faint     = "#7f002f",
+      green                   = "#005e00",
+      green_alt               = "#315b00",
+      green_alt_other         = "#145c33",
+      green_faint             = "#104410",
+      green_alt_faint         = "#30440f",
+      green_alt_other_faint   = "#0f443f",
+      yellow                  = "#813e00",
+      yellow_alt              = "#70480f",
+      yellow_alt_other        = "#863927",
+      yellow_faint            = "#5f4400",
+      yellow_alt_faint        = "#5d5000",
+      yellow_alt_other_faint  = "#5e3a20",
+      blue                    = "#0031a9",
+      blue_alt                = "#2544bb",
+      blue_alt_other          = "#0000c0",
+      blue_faint              = "#003497",
+      blue_alt_faint          = "#0f3d8c",
+      blue_alt_other_faint    = "#001087",
+      magenta                 = "#721045",
+      magenta_alt             = "#8f0075",
+      magenta_alt_other       = "#5317ac",
+      magenta_faint           = "#752f50",
+      magenta_alt_faint       = "#7b206f",
+      magenta_alt_other_faint = "#55348e",
+      cyan                    = "#00538b",
+      cyan_alt                = "#30517f",
+      cyan_alt_other          = "#005a5f",
+      cyan_faint              = "#005077",
+      cyan_alt_faint          = "#354f6f",
+      cyan_alt_other_faint    = "#125458",
+      red_intense             = "#b60000",
+      orange_intense          = "#904200",
+      green_intense           = "#006800",
+      yellow_intense          = "#605b00",
+      blue_intense            = "#1f1fce",
+      magenta_intense         = "#a8007f",
+      purple_intense          = "#7f10d0",
+      cyan_intense            = "#005f88",
+      red_active              = "#8a0000",
+      green_active            = "#004c2e",
+      yellow_active           = "#702d1f",
+      blue_active             = "#0030b4",
+      magenta_active          = "#5c2092",
+      cyan_active             = "#003f8a",
+    }
 
     -- left sections
     gls.left = {
       {
         FirstElement = {
           provider = function() return ' ' end,
-          highlight = {colors.bg_active[1], colors.bg_active[1]}
+          highlight = {colors.bg_active, colors.bg_active}
         }
       },
       {
         ViMode = {
           provider = function()
             local mode_color = {
-              n      = colors.magenta_active[1],
-              i      = colors.green_active[1],
-              v      = colors.cyan_active[1],
-              [''] = colors.cyan_active[1],
-              V      = colors.cyan_active[1],
-              c      = colors.red_active[1],
-              R      = colors.red_active[1],
-              Rv     = colors.red_active[1],
-              t      = colors.blue_active[1],
-              ['!']  = colors.blue_active[1],
+              n      = colors.magenta_active,
+              i      = colors.green_active,
+              v      = colors.cyan_active,
+              [''] = colors.cyan_active,
+              V      = colors.cyan_active,
+              c      = colors.red_active,
+              R      = colors.red_active,
+              Rv     = colors.red_active,
+              t      = colors.blue_active,
+              ['!']  = colors.blue_active,
             }
 
             local alias = {
@@ -258,8 +320,8 @@ require('packer').startup {function()
             return alias[vim.fn.mode()]
           end,
           separator = ' ',
-          separator_highlight = {colors.fg_active[1], colors.bg_active[1], 'bold'},
-          highlight = {colors.fg_active[1], colors.bg_active[1], 'bold'},
+          separator_highlight = {colors.fg_active, colors.bg_active, 'bold'},
+          highlight = {colors.fg_active, colors.bg_active, 'bold'},
         },
       },
       {
@@ -272,8 +334,8 @@ require('packer').startup {function()
           provider = 'FileName',
           condition = buffer_not_empty,
           separator = '' ,
-          separator_highlight = {colors.bg_active[1], colors.bg_main[1]},
-          highlight = {colors.fg_active[1], colors.bg_main[1], 'bold'}
+          separator_highlight = {colors.bg_active, colors.bg_main},
+          highlight = {colors.fg_active, colors.bg_main, 'bold'}
         }
       },
       {
@@ -281,14 +343,14 @@ require('packer').startup {function()
           provider = 'GitBranch',
           icon = ' ',
           condition = buffer_not_empty,
-          highlight = {colors.fg_dim[1], colors.bg_main[1]}
+          highlight = {colors.fg_dim, colors.bg_main}
         }
       },
       {
         LeftEnd = {
-          provider = 'WhiteSpace',
+          provider = function() return ' ' end,
           condition = buffer_not_empty,
-          highlight = {colors.bg_active[1], colors.bg_main[1]}
+          highlight = {colors.bg_active, colors.bg_main}
         }
       }
     }
@@ -299,15 +361,15 @@ require('packer').startup {function()
         FileSize = {
           provider = 'FileSize',
           condition = buffer_not_empty,
-          highlight = {colors.fg_dim[1], colors.bg_main[1]}
+          highlight = {colors.fg_dim, colors.bg_main}
         },
       },
       {
         FileFormat = {
           provider = 'FileFormat',
           separator = ' ',
-          separator_highlight = {colors.bg_main[1], colors.bg_active[1]},
-          highlight = {colors.fg_active[1], colors.bg_active[1]},
+          separator_highlight = {colors.bg_main, colors.bg_active},
+          highlight = {colors.fg_active, colors.bg_active},
         }
       },
       {
@@ -315,8 +377,8 @@ require('packer').startup {function()
           provider = 'FileEncode',
           condition = buffer_not_empty,
           separator = ' |',
-          separator_highlight = {colors.fg_active[1], colors.bg_active[1]},
-          highlight = {colors.fg_active[1], colors.bg_active[1]},
+          separator_highlight = {colors.fg_active, colors.bg_active},
+          highlight = {colors.fg_active, colors.bg_active},
         },
       },
       {
@@ -327,8 +389,8 @@ require('packer').startup {function()
             return string.format('%5s', percent)
           end,
           separator = ' ',
-          separator_highlight = {colors.bg_main[1], colors.bg_active[1]},
-          highlight = {colors.fg_active[1], colors.bg_main[1]},
+          separator_highlight = {colors.bg_main, colors.bg_active},
+          highlight = {colors.fg_active, colors.bg_main},
         }
       }
     }
@@ -338,8 +400,8 @@ require('packer').startup {function()
       BufferType = {
         provider = 'FileName',
         separator = ' ',
-        separator_highlight = {colors.bg_active[1], colors.bg_main[1]},
-        highlight = {colors.fg_active[1], colors.bg_active[1]}
+        separator_highlight = {colors.bg_active, colors.bg_main},
+        highlight = {colors.fg_active, colors.bg_active}
       }
     }
 
@@ -347,8 +409,8 @@ require('packer').startup {function()
       BufferIcon = {
         provider= 'BufferIcon',
         separator = ' ',
-        separator_highlight = {colors.bg_active[1], colors.bg_main[1]},
-        highlight = {colors.fg_active[1], colors.bg_active[1]}
+        separator_highlight = {colors.bg_active, colors.bg_main},
+        highlight = {colors.fg_active, colors.bg_active}
       }
     }
   end}
@@ -404,7 +466,7 @@ require('packer').startup {function()
     vim.g.modus_termtrans_enable   = 1
     vim.g.modus_yellow_comments    = 1
 
-    vim.cmd('colorscheme modus-operandi')
+    vim.cmd [[colorscheme modus-operandi]]
   end}
 
   use {'tpope/vim-repeat', as = 'repeat.vim'}
