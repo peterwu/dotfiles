@@ -1,5 +1,4 @@
 -- set defaults
-vim.opt.autochdir      = true
 vim.opt.completeopt    = 'menuone,noselect'
 vim.opt.cursorline     = true
 vim.opt.expandtab      = true
@@ -34,6 +33,9 @@ vim.g.maplocalleader = ','
 -- handle $MYVIMRC
 vim.api.nvim_set_keymap('n', '<Leader>ev', [[<Cmd>edit $MYVIMRC<CR>]],   {noremap = true, silent = true})
 vim.api.nvim_set_keymap('n', '<Leader>sv', [[<Cmd>source $MYVIMRC<CR>]], {noremap = true, silent = true})
+
+-- change cwd
+vim.api.nvim_set_keymap('n', '<Leader>cd', [[<Cmd>chdir %:p:h<CR><Cmd>pwd<CR>]], {noremap = true, silent = true})
 
 -- disable arrow keys
 vim.api.nvim_set_keymap('', '<Up>',    [[<Nop>]], {noremap = true, silent = true})
@@ -77,8 +79,8 @@ vim.api.nvim_set_keymap('n', '<Leader>o', [[<Cmd>below 10sp term://$SHELL<CR>i]]
 
 vim.cmd [[
 augroup AutoSaveFolds | autocmd!
-  autocmd BufWinLeave,BufLeave,BufWritePost ?* nested silent! mkview!
-  autocmd BufWinEnter ?* silent! loadview
+  autocmd BufWinLeave,BufLeave,BufWritePost *.* nested silent! mkview!
+  autocmd BufWinEnter *.* silent! loadview
 augroup END
 
 augroup AutoSetList | autocmd!
@@ -90,17 +92,6 @@ augroup HighlightedYank | autocmd!
   autocmd TextYankPost * silent! lua vim.highlight.on_yank{higroup="IncSearch", timeout=777}
 augroup END
 ]]
-
--- tweak netrw as a file explorer
-vim.g.netrw_dirhistmax   = 0
-vim.g.netrw_liststyle    = 3
-vim.g.netrw_banner       = 0
-vim.g.netrw_browse_split = 4
-vim.g.netrw_winsize      = 25
-vim.g.netrw_list_hide    = [[\(^\|\s\s\)\zs\.\S\+]]
-vim.g.netrw_keepdir      = 1
-
-vim.api.nvim_set_keymap('n', '<F9>', [[<Cmd>Lexplore<CR>]], {noremap = true, silent = true})
 
 -- tweak termdebug
 vim.g.termdebug_wide = 1
@@ -180,12 +171,12 @@ require('packer').startup {function()
 
     local opts = {noremap=true, silent=true}
 
-    vim.api.nvim_set_keymap('n', '<F5>',       [[<Cmd>lua require('dap').continue()<CR>]],          opts)
-    vim.api.nvim_set_keymap('n', '<F8>',       [[<Cmd>lua require('dap').step_over()<CR>]],         opts)
-    vim.api.nvim_set_keymap('n', '<F7>',       [[<Cmd>lua require('dap').into()<CR>]],              opts)
-    vim.api.nvim_set_keymap('n', '<S-F7>',     [[<Cmd>lua require('dap').out()<CR>]],               opts)
-    vim.api.nvim_set_keymap('n', '<F6>',       [[<Cmd>lua require('dap').toggle_breakpoint()<CR>]], opts)
-    vim.api.nvim_set_keymap('n', '<F10>', [[<Cmd>lua require('dap').repl.open()<CR>]],         opts)
+    vim.api.nvim_set_keymap('n', '<F5>',   [[<Cmd>lua require('dap').continue()<CR>]],          opts)
+    vim.api.nvim_set_keymap('n', '<F8>',   [[<Cmd>lua require('dap').step_over()<CR>]],         opts)
+    vim.api.nvim_set_keymap('n', '<F7>',   [[<Cmd>lua require('dap').into()<CR>]],              opts)
+    vim.api.nvim_set_keymap('n', '<S-F7>', [[<Cmd>lua require('dap').out()<CR>]],               opts)
+    vim.api.nvim_set_keymap('n', '<F6>',   [[<Cmd>lua require('dap').toggle_breakpoint()<CR>]], opts)
+    vim.api.nvim_set_keymap('n', '<F10>',  [[<Cmd>lua require('dap').repl.open()<CR>]],         opts)
   end}
 
   use {"rcarriga/nvim-dap-ui", as = 'dap-ui.nvim', config = function()
@@ -193,8 +184,6 @@ require('packer').startup {function()
   end}
 
   use {'mattn/emmet-vim', as = 'emmet.vim'}
-
-  use {'tpope/vim-eunuch', as = 'eunuch.vim'}
 
   use {'tommcdo/vim-exchange', as = 'exchange.vim'}
 
@@ -207,9 +196,9 @@ require('packer').startup {function()
     vim.api.nvim_set_keymap('n', '<Leader>gp', [[<Cmd>Git push<CR>]],  {noremap = true})
 
     -- diff / merge
-    vim.api.nvim_set_keymap('n', '<Leader>gd', [[<Cmd>Gvdiffsplit<CR>]], {noremap = true})
-    vim.api.nvim_set_keymap('n', 'gdh',        [[<Cmd>diffget //2<CR>]], {noremap = true})
-    vim.api.nvim_set_keymap('n', 'gdl',        [[<Cmd>diffget //3<CR>]], {noremap = true})
+    vim.api.nvim_set_keymap('n', '<Leader>gdd', [[<Cmd>Gvdiffsplit<CR>]], {noremap = true})
+    vim.api.nvim_set_keymap('n', '<Leader>gdh', [[<Cmd>diffget //2<CR>]], {noremap = true})
+    vim.api.nvim_set_keymap('n', '<Leader>gdl', [[<Cmd>diffget //3<CR>]], {noremap = true})
   end}
 
   use {'glepnir/galaxyline.nvim', config = function()
@@ -276,7 +265,7 @@ require('packer').startup {function()
       yellow_active           = "#702d1f",
       blue_active             = "#0030b4",
       magenta_active          = "#5c2092",
-      cyan_active             = "#003f8a",
+      cyan_active             = "#003f8a"
     }
 
     -- left sections
@@ -300,7 +289,7 @@ require('packer').startup {function()
               R      = colors.red_active,
               Rv     = colors.red_active,
               t      = colors.blue_active,
-              ['!']  = colors.blue_active,
+              ['!']  = colors.blue_active
             }
 
             local alias = {
@@ -407,7 +396,7 @@ require('packer').startup {function()
 
     gls.short_line_right[1] = {
       BufferIcon = {
-        provider= 'BufferIcon',
+        provider = 'BufferIcon',
         separator = ' ',
         separator_highlight = {colors.bg_active, colors.bg_main},
         highlight = {colors.fg_active, colors.bg_active}
@@ -469,6 +458,10 @@ require('packer').startup {function()
     vim.cmd [[colorscheme modus-operandi]]
   end}
 
+  use {'kristijanhusak/orgmode.nvim', config = function()
+    require('orgmode').setup()
+  end}
+
   use {'tpope/vim-repeat', as = 'repeat.vim'}
 
   use {'dstein64/nvim-scrollview', as = 'scrollview.nvim'}
@@ -505,11 +498,21 @@ require('packer').startup {function()
 
   use {'nvim-treesitter/nvim-treesitter', as = 'tree-sitter.nvim', run = ':TSUpdate'}
 
-  use {'tpope/vim-unimpaired', as = 'unimpaired.vim'}
+  use {'kyazdani42/nvim-tree.lua', as = 'tree.nvim', config = function()
+    vim.g.nvim_tree_add_trailing           = 1
+    vim.g.nvim_tree_follow                 = 1
+    vim.g.nvim_tree_git_hl                 = 1
+    vim.g.nvim_tree_hide_dotfiles          = 1
+    vim.g.nvim_tree_highlight_opened_files = 2
+    vim.g.nvim_tree_indent_markers         = 1
+    vim.g.nvim_tree_special_files          = {}
+    vim.g.nvim_tree_update_cwd             = 1
+    vim.g.nvim_tree_width                  = 37
 
-  use {'tpope/vim-vinegar', as = 'vinegar.vim', config = function()
-    vim.api.nvim_set_keymap('n', '-', [[k^]], {noremap = true})
+    vim.api.nvim_set_keymap('n', '<F9>', [[<Cmd>NvimTreeToggle<CR>]], {noremap = true, silent = true})
   end}
+
+  use {'tpope/vim-unimpaired', as = 'unimpaired.vim'}
 
   use {'folke/which-key.nvim', config = function()
     require("which-key").setup {}
