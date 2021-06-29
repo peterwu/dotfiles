@@ -2,24 +2,25 @@
 
 # Source global definitions
 if [ -f /etc/bashrc ]; then
-	. /etc/bashrc
+  . /etc/bashrc
 fi
 
 # User specific environment
-if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]
-then
-    PATH="$HOME/.local/bin:$HOME/bin:$PATH"
+if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]; then
+  PATH="$HOME/.local/bin:$HOME/bin:$PATH"
 fi
 
-# User specific aliases and functions
+# User specific aliases and functions 
 set -o vi
-
 alias se='sudoedit'
 
-alias e='emacsclient -t -a ""'
 alias emacs='emacs -mm'
+alias e='emacsclient -t -a ""'
+alias vi='vim'
+alias vim='nvim'
+alias vimdiff='nvim -d'
 
-alias vi='emacsclient -t -a ""'
+alias nnn='nnn -C'
 
 alias ls='ls --color' # use colors
 alias la='ls -Flsa'   # list all files
@@ -34,53 +35,49 @@ alias bc='bc -l'
 HISTSIZE=20000
 HISTFILESIZE=20000
 
-man() { 
-    local m=$@
-    /usr/bin/man ${m} > /dev/null
-    [[ $? -eq 0 ]] && /usr/bin/emacsclient -nw --eval "(let ((m \"${m}\")) (man m) (delete-window) t)"
-}
+export MANPAGER='nvim +Man!'
 
 show_bash_prompt() {
-    # The entire table of ANSI color codes
-    # https://gist.github.com/iamnewton/8754917
-    # \### format must be used in functions
-    # \001 == \[
-    # \002 == \]
-    # \033 == \e
+  # The entire table of ANSI color codes
+  # https://gist.github.com/iamnewton/8754917
+  # \### format must be used in functions
+  # \001 == \[
+  # \002 == \]
+  # \033 == \e
 
-    local last_command_status=$?
-    local prompt=''
+  local last_command_status=$?
+  local prompt=''
 
     # current time
-    prompt+="\001\e[0;93m\002"
+    prompt+="\001\e[0;35m\002"
     prompt+="$(date +%R)"
     prompt+=' '
 
     # user@host:pwd
-    prompt+="\001\e[0;95m\002"
+    prompt+="\001\e[0;94m\002"
     prompt+="$(whoami)"
-    prompt+="\001\e[0;90m\002"
+    prompt+="\001\e[0;30m\002"
     prompt+="@"
-    prompt+="\001\e[0;96m\002"
+    prompt+="\001\e[0;30m\002"
     prompt+="$(hostname)"
-    prompt+="\001\e[0;90m\002"
+    prompt+="\001\e[0;30m\002"
     prompt+=':'
-    prompt+="\001\e[1;94m\002"
+    prompt+="\001\e[1;34m\002"
     prompt+="$(dirs +0)"
     prompt+=' '
 
     # show git branch and its status if in a git tree
-    local branch=$(git rev-parse --abbrev-ref HEAD 2> /dev/null)
+    local branch=$(git branch --show-current HEAD 2> /dev/null)
 
     if [[ -n "${branch}" ]]; then
-	if [[ -z $(git status --short) ]]; then
-	    # clean -> GREEN
-	    prompt+="\001\e[0;32m\002"
-	else
-	    # modified -> RED
-	    prompt+="\001\e[0;31m\002"
-	fi 
-	prompt+="${branch}"
+      if [[ -z $(git status --short) ]]; then
+        # clean -> GREEN
+        prompt+="\001\e[0;32m\002"
+      else
+        # modified -> RED
+        prompt+="\001\e[0;31m\002"
+      fi
+      prompt+=" ${branch}"
     fi
 
     # change line
@@ -88,30 +85,29 @@ show_bash_prompt() {
 
     # change the prompt to indicate the status of last executed command
     if [[ ${last_command_status} -eq 0 ]]; then
-	# success -> GREEN
-	prompt+="\001\e[1;92m\002"
+      # success -> GREEN
+      prompt+="\001\e[1;32m\002"
     else
-	# error -> RED
-	prompt+="\001\e[1;91m\002"
+      # error -> RED
+      prompt+="\001\e[1;31m\002"
     fi
 
     # use appropriate prompt to reflect effective uid
     if [[ $(id -u) -eq 0 ]]; then
-	# root
-	prompt+="Λ"
+      # root
+      prompt+="Λ"
     else
-	# non-root
-	prompt+="λ"
+      # non-root
+      prompt+="λ"
     fi
 
     # change line + reset colors
     prompt+="\001\e[0m\002 "
 
     printf "${prompt}"
-}
+  }
 
 PS1='`show_bash_prompt`'
 
 # fzf
 source /usr/share/fzf/shell/key-bindings.bash
-
