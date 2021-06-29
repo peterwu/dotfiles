@@ -1,6 +1,7 @@
 require 'settings'
 require 'mappings'
 require 'plugins'
+require 'statusline'
 
 vim.cmd [[
 augroup AutoSaveFolds | autocmd!

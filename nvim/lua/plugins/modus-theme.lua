@@ -7,5 +7,4 @@ local function setup()
   vim.cmd [[colorscheme modus-operandi]]
 end
 
-
 return {setup = setup}
