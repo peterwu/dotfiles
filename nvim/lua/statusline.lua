@@ -180,13 +180,13 @@ local function get_file_encode()
 end
 
 local function set_highlights()
-  highlight('StatusFileName',   colors.fg_active,   colors.bg_alt,  'bold')
-  highlight('StatusFileState',  colors.blue_active, colors.bg_alt,  'bold')
-  highlight('StatusFileSize',   colors.fg_active,   colors.bg_main, 'NONE')
-  highlight('StatusFileFormat', colors.fg_active,   colors.bg_alt,  'NONE')
-  highlight('StatusFileEncode', colors.fg_active,   colors.bg_alt,  'NONE')
-  highlight('StatusPercent',    colors.fg_active,   colors.bg_main, 'NONE')
-  highlight('StatusBlank',      colors.fg_active,   colors.bg_main, 'NONE')
+  highlight('StatusFileName',   colors.fg_active,      colors.bg_alt,  'bold')
+  highlight('StatusFileState',  colors.purple_intense, colors.bg_alt,  'bold')
+  highlight('StatusFileSize',   colors.fg_active,      colors.bg_main, 'NONE')
+  highlight('StatusFileFormat', colors.fg_active,      colors.bg_alt,  'NONE')
+  highlight('StatusFileEncode', colors.fg_active,      colors.bg_alt,  'NONE')
+  highlight('StatusPercent',    colors.fg_active,      colors.bg_main, 'NONE')
+  highlight('StatusBlank',      colors.fg_active,      colors.bg_main, 'NONE')
 end
 
 local function build_status_line()

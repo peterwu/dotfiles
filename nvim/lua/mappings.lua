@@ -10,19 +10,19 @@ vim.api.nvim_set_keymap('n', '<Leader>sv', [[<Cmd>source $MYVIMRC<CR>]], {norema
 vim.api.nvim_set_keymap('n', '<Leader>cd', [[<Cmd>chdir %:p:h<CR><Cmd>pwd<CR>]], {noremap = true, silent = true})
 
 -- disable arrow keys
-vim.api.nvim_set_keymap('', '<Up>',    [[<Nop>]], {noremap = true, silent = true})
-vim.api.nvim_set_keymap('', '<Down>',  [[<Nop>]], {noremap = true, silent = true})
-vim.api.nvim_set_keymap('', '<Left>',  [[<Nop>]], {noremap = true, silent = true})
-vim.api.nvim_set_keymap('', '<Right>', [[<Nop>]], {noremap = true, silent = true})
+vim.api.nvim_set_keymap('', '<Up>',    [[<NOP>]], {noremap = true, silent = true})
+vim.api.nvim_set_keymap('', '<Down>',  [[<NOP>]], {noremap = true, silent = true})
+vim.api.nvim_set_keymap('', '<Left>',  [[<NOP>]], {noremap = true, silent = true})
+vim.api.nvim_set_keymap('', '<Right>', [[<NOP>]], {noremap = true, silent = true})
 
-vim.api.nvim_set_keymap('i', '<Up>',    [[<Nop>]], {noremap = true, silent = true})
-vim.api.nvim_set_keymap('i', '<Down>',  [[<Nop>]], {noremap = true, silent = true})
-vim.api.nvim_set_keymap('i', '<Left>',  [[<Nop>]], {noremap = true, silent = true})
-vim.api.nvim_set_keymap('i', '<Right>', [[<Nop>]], {noremap = true, silent = true})
+vim.api.nvim_set_keymap('i', '<Up>',    [[<NOP>]], {noremap = true, silent = true})
+vim.api.nvim_set_keymap('i', '<Down>',  [[<NOP>]], {noremap = true, silent = true})
+vim.api.nvim_set_keymap('i', '<Left>',  [[<NOP>]], {noremap = true, silent = true})
+vim.api.nvim_set_keymap('i', '<Right>', [[<NOP>]], {noremap = true, silent = true})
 
 -- swap j/k <-> gj/gk
-vim.api.nvim_set_keymap('n', 'j', [[(v:count? 'j' : 'gj')]], {noremap = true, expr = true})
-vim.api.nvim_set_keymap('n', 'k', [[(v:count? 'k' : 'gk')]], {noremap = true, expr = true})
+vim.api.nvim_set_keymap('n', 'j', [[v:count? 'j' : 'gj']], {noremap = true, expr = true})
+vim.api.nvim_set_keymap('n', 'k', [[v:count? 'k' : 'gk']], {noremap = true, expr = true})
 
 -- copy to clipboard
 vim.api.nvim_set_keymap('n', 'Y',          [[y$]],   {noremap = true})

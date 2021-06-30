@@ -24,6 +24,7 @@ vim.opt.tabstop        = 2
 vim.opt.termguicolors  = true
 vim.opt.timeoutlen     = 777
 vim.opt.title          = true
+vim.opt.undofile       = true
 vim.opt.viewoptions    = 'cursor,folds'
 
 -- tweak termdebug

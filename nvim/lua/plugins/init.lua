@@ -29,6 +29,10 @@ require('packer').startup {function()
 
   use {'tommcdo/vim-exchange', as = 'exchange.vim'}
 
+  use {'junegunn/fzf.vim', config = function()
+    require('plugins.fzf').setup()
+  end}
+
   use {'phaazon/hop.nvim', config = function()
     require('plugins.hop').setup()
   end}
@@ -54,16 +58,6 @@ require('packer').startup {function()
   use {'dstein64/nvim-scrollview', as = 'scrollview.nvim'}
 
   use {'tpope/vim-surround', as = 'surround.vim'}
-
-  use {'nvim-telescope/telescope.nvim',
-  requires = {{'nvim-lua/popup.nvim'}, {'nvim-lua/plenary.nvim'}},
-  config = function()
-    require('plugins.telescope').setup()
-  end}
-
-  use {'nvim-telescope/telescope-dap.nvim', config = function()
-    require('plugins.telescope-dap').setup()
-  end}
 
   use {'nvim-treesitter/nvim-treesitter', as = 'tree-sitter.nvim', run = ':TSUpdate'}
 
