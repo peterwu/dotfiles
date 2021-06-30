@@ -26,8 +26,8 @@ local function setup()
 
   local opts = {noremap=true, silent=true, expr=true}
 
-  vim.api.nvim_set_keymap('i', '<Tab>',   [[pumvisible() ? '<C-n>' : '<Tab>']], opts)
-  vim.api.nvim_set_keymap('i', '<S-Tab>', [[pumvisible() ? '<C-p>' : '<C-h>']], opts)
+  vim.api.nvim_set_keymap('i', '<Tab>',   [[pumvisible() ? '<C-N>' : '<Tab>']], opts)
+  vim.api.nvim_set_keymap('i', '<S-Tab>', [[pumvisible() ? '<C-P>' : '<C-H>']], opts)
 end
 
 return {setup = setup}

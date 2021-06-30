@@ -10,15 +10,15 @@ vim.api.nvim_set_keymap('n', '<Leader>sv', [[<Cmd>source $MYVIMRC<CR>]], {norema
 vim.api.nvim_set_keymap('n', '<Leader>cd', [[<Cmd>chdir %:p:h<CR><Cmd>pwd<CR>]], {noremap = true, silent = true})
 
 -- disable arrow keys
-vim.api.nvim_set_keymap('', '<Up>',    [[<NOP>]], {noremap = true, silent = true})
-vim.api.nvim_set_keymap('', '<Down>',  [[<NOP>]], {noremap = true, silent = true})
-vim.api.nvim_set_keymap('', '<Left>',  [[<NOP>]], {noremap = true, silent = true})
-vim.api.nvim_set_keymap('', '<Right>', [[<NOP>]], {noremap = true, silent = true})
+vim.api.nvim_set_keymap('', '<Up>',    [[<Nop>]], {noremap = true, silent = true})
+vim.api.nvim_set_keymap('', '<Down>',  [[<Nop>]], {noremap = true, silent = true})
+vim.api.nvim_set_keymap('', '<Left>',  [[<Nop>]], {noremap = true, silent = true})
+vim.api.nvim_set_keymap('', '<Right>', [[<Nop>]], {noremap = true, silent = true})
 
-vim.api.nvim_set_keymap('i', '<Up>',    [[<NOP>]], {noremap = true, silent = true})
-vim.api.nvim_set_keymap('i', '<Down>',  [[<NOP>]], {noremap = true, silent = true})
-vim.api.nvim_set_keymap('i', '<Left>',  [[<NOP>]], {noremap = true, silent = true})
-vim.api.nvim_set_keymap('i', '<Right>', [[<NOP>]], {noremap = true, silent = true})
+vim.api.nvim_set_keymap('i', '<Up>',    [[<Nop>]], {noremap = true, silent = true})
+vim.api.nvim_set_keymap('i', '<Down>',  [[<Nop>]], {noremap = true, silent = true})
+vim.api.nvim_set_keymap('i', '<Left>',  [[<Nop>]], {noremap = true, silent = true})
+vim.api.nvim_set_keymap('i', '<Right>', [[<Nop>]], {noremap = true, silent = true})
 
 -- swap j/k <-> gj/gk
 vim.api.nvim_set_keymap('n', 'j', [[v:count? 'j' : 'gj']], {noremap = true, expr = true})
@@ -44,7 +44,7 @@ vim.api.nvim_set_keymap('n', '<A-Left>',  [[<Cmd>tabmove -1<CR>]], {noremap = tr
 vim.api.nvim_set_keymap('n', '<A-Right>', [[<Cmd>tabmove +1<CR>]], {noremap = true})
 
 -- <Ctrl-L> redraws the screen and removes any search highlighting
-vim.api.nvim_set_keymap('n', '<C-l>', [[<Cmd>nohlsearch<CR><C-l>]], {noremap = true, silent = true})
+vim.api.nvim_set_keymap('n', '<C-L>', [[<Cmd>nohlsearch<CR><C-L>]], {noremap = true, silent = true})
 
 -- launch terminal
 vim.api.nvim_set_keymap('n', '<Leader>o', [[<Cmd>below 10sp term://$SHELL<CR>i]], {noremap = true, silent = true})

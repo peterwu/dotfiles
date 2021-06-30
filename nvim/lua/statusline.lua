@@ -75,20 +75,20 @@ end
 
 local function get_vi_mode()
   local mode_color = {
-    n      = colors.magenta_active,
-    i      = colors.green_active,
-    ic     = colors.green_active,
-    ix     = colors.green_active,
-    v      = colors.cyan_active,
-    [''] = colors.cyan_active,
-    V      = colors.cyan_active,
-    c      = colors.yellow_active,
-    R      = colors.red_active,
-    Rc     = colors.red_active,
-    Rv     = colors.red_active,
-    Rx     = colors.red_active,
-    t      = colors.blue_active,
-    ['!']  = colors.blue_active
+    n      = colors.magenta,
+    i      = colors.green,
+    ic     = colors.green,
+    ix     = colors.green,
+    v      = colors.cyan,
+    [''] = colors.cyan,
+    V      = colors.cyan,
+    c      = colors.yellow,
+    R      = colors.red,
+    Rc     = colors.red,
+    Rv     = colors.red,
+    Rx     = colors.red,
+    t      = colors.blue,
+    ['!']  = colors.blue
   }
 
   local mode_alias = {
@@ -125,7 +125,7 @@ local function get_git_branch()
   git_branch = vim.fn.trim(git_branch)
 
   if string.len(git_branch) == 0 then
-    highlight('StatusGitBranch', colors.fg_active, colors.bg_main, 'NONE')
+    highlight('StatusGitBranch', colors.fg_main, colors.bg_main, 'NONE')
     return ''
   end
 
@@ -180,13 +180,13 @@ local function get_file_encode()
 end
 
 local function set_highlights()
-  highlight('StatusFileName',   colors.fg_active,      colors.bg_alt,  'bold')
-  highlight('StatusFileState',  colors.purple_intense, colors.bg_alt,  'bold')
-  highlight('StatusFileSize',   colors.fg_active,      colors.bg_main, 'NONE')
-  highlight('StatusFileFormat', colors.fg_active,      colors.bg_alt,  'NONE')
-  highlight('StatusFileEncode', colors.fg_active,      colors.bg_alt,  'NONE')
-  highlight('StatusPercent',    colors.fg_active,      colors.bg_main, 'NONE')
-  highlight('StatusBlank',      colors.fg_active,      colors.bg_main, 'NONE')
+  highlight('StatusFileName',   colors.fg_active,      colors.bg_active, 'bold')
+  highlight('StatusFileState',  colors.purple_intense, colors.bg_main,   'bold')
+  highlight('StatusFileSize',   colors.fg_main,        colors.bg_main,   'NONE')
+  highlight('StatusFileFormat', colors.fg_active,      colors.bg_active, 'NONE')
+  highlight('StatusFileEncode', colors.fg_active,      colors.bg_active, 'NONE')
+  highlight('StatusPercent',    colors.fg_main,        colors.bg_main,   'NONE')
+  highlight('StatusBlank',      colors.fg_main,        colors.bg_main,   'NONE')
 end
 
 local function build_status_line()
