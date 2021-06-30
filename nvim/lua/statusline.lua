@@ -62,7 +62,15 @@ local colors = {
 }
 
 local function highlight(group, fg, bg, style)
-  vim.cmd('highlight ' .. group .. ' guifg=' .. fg .. ' guibg=' .. bg .. ' gui=' .. style)
+  local cmd = table.concat ({
+    'highlight',
+    group,
+    'guifg='..fg,
+    'guibg='..bg,
+    'gui='..style
+  }, ' ')
+
+  vim.cmd(cmd)
 end
 
 local function get_vi_mode()
@@ -181,7 +189,7 @@ local function set_highlights()
   highlight('StatusBlank',      colors.fg_active,   colors.bg_main, 'NONE')
 end
 
-function build_status_line()
+local function build_status_line()
   local focus = vim.g.statusline_winid == vim.fn.win_getid()
 
   if not focus then 
@@ -207,6 +215,7 @@ function build_status_line()
       '%=',
       '%#StatusFileSize#',
       get_file_size(),
+      '%#StatusBlank#',
       ' ',
       '%#StatusFileFormat#',
       ' ',
@@ -225,13 +234,12 @@ function build_status_line()
   end
 end
 
-vim.opt.statusline = [[%!luaeval('build_status_line()')]]
+vim.opt.statusline = [[%!v:lua.require'statusline'.statusline()]]
 
 vim.cmd [[
-augroup StatusLineHighlights | autocmd!
-  autocmd ColorScheme * lua require('statusline').set_highlights()
+augroup StatusLine | autocmd!
+  autocmd ColorScheme * lua require('statusline').highlights()
 augroup END
 ]]
 
-return {set_highlights = set_highlights}
-
+return {statusline = build_status_line, highlights = set_highlights}

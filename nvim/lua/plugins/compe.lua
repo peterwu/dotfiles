@@ -23,6 +23,11 @@ local function setup()
       ultisnips = true
     }
   }
+
+  local opts = {noremap=true, silent=true, expr=true}
+
+  vim.api.nvim_set_keymap('i', '<Tab>',   [[pumvisible() ? '<C-n>' : '<Tab>']], opts)
+  vim.api.nvim_set_keymap('i', '<S-Tab>', [[pumvisible() ? '<C-p>' : '<C-h>']], opts)
 end
 
 return {setup = setup}

@@ -5,8 +5,8 @@ require 'statusline'
 
 vim.cmd [[
 augroup AutoSaveFolds | autocmd!
-  autocmd BufWinLeave,BufLeave,BufWritePost *.* nested silent! mkview!
-  autocmd BufWinEnter *.* silent! loadview
+  autocmd BufWinLeave,BufLeave,BufWritePost ?* nested silent! mkview!
+  autocmd BufWinEnter ?* silent! loadview
 augroup END
 
 augroup AutoSetList | autocmd!
@@ -15,6 +15,6 @@ augroup AutoSetList | autocmd!
 augroup END
 
 augroup HighlightedYank | autocmd!
-  autocmd TextYankPost * silent! lua vim.highlight.on_yank{higroup="IncSearch", timeout=777}
+  autocmd TextYankPost * silent! lua vim.highlight.on_yank {higroup='IncSearch', timeout=777}
 augroup END
 ]]
