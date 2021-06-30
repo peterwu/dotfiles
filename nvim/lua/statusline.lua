@@ -121,13 +121,13 @@ local function get_git_branch()
     return ''
   end
 
-  git_cmd = 'git -C ' .. git_dir .. ' status --short'
+  git_cmd = 'git -C ' .. git_dir .. ' status --porcelain'
   git_status = vim.fn.system(git_cmd)
 
   if string.len(git_status) == 0 then 
-    git_color = colors.green
+    git_color = colors.green_active
   else
-    git_color = colors.red
+    git_color = colors.red_active
   end
 
   highlight('StatusGitBranch', git_color, colors.bg_main, 'NONE')
@@ -162,10 +162,6 @@ local function get_file_size()
   return format_file_size(file)
 end
 
-local function get_file_type()
-  return vim.bo.filetype
-end
-
 local function get_file_format()
   return vim.bo.fileformat:upper()
 end
@@ -176,55 +172,64 @@ local function get_file_encode()
 end
 
 local function set_highlights()
-  highlight('StatusFileName', colors.fg_active, colors.bg_alt, 'bold')
-  highlight('StatusFileSize', colors.fg_active, colors.bg_main, 'NONE')
-  highlight('StatusFileFormat', colors.fg_active, colors.bg_alt, 'NONE')
-  highlight('StatusFileEncode', colors.fg_active, colors.bg_alt, 'NONE')
-  highlight('StatusPercent', colors.fg_active, colors.bg_main, 'NONE')
-  highlight('StatusBlank', colors.fg_active, colors.bg_main, 'NONE')
+  highlight('StatusFileName',   colors.fg_active,   colors.bg_alt,  'bold')
+  highlight('StatusFileState',  colors.blue_active, colors.bg_alt,  'bold')
+  highlight('StatusFileSize',   colors.fg_active,   colors.bg_main, 'NONE')
+  highlight('StatusFileFormat', colors.fg_active,   colors.bg_alt,  'NONE')
+  highlight('StatusFileEncode', colors.fg_active,   colors.bg_alt,  'NONE')
+  highlight('StatusPercent',    colors.fg_active,   colors.bg_main, 'NONE')
+  highlight('StatusBlank',      colors.fg_active,   colors.bg_main, 'NONE')
 end
 
 function build_status_line()
-  return table.concat {
-    '%#StatusBlank#',
-    ' ',
-    '%#StatusViMode#',
-    get_vi_mode(),
-    '%#StatusBlank#',
-    ' ',
-    '%#StatusFileName#',
-    ' ',
-    '%<%F',
-    ' ',
-    '%#StatusBlank#',
-    ' ',
-    '%#StatusGitBranch#',
-    get_git_branch(),
-    '%=',
-    '%#StatusFileSize#',
-    get_file_size(),
-    ' ',
-    '%#StatusFileFormat#',
-    ' ',
-    get_file_format(),
-    ' | ',
-    '%#StatusFileEncode#',
-    get_file_encode(),
-    ' ',
-    '%#StatusBlank#',
-    ' ',
-    '%#StatusPercent#',
-    '%P',
-    '%#StatusBlank#',
-    ' '
-  }
+  local focus = vim.g.statusline_winid == vim.fn.win_getid()
+
+  if not focus then 
+    return ' '
+  else
+    return table.concat {
+      '%#StatusBlank#',
+      ' ',
+      '%#StatusViMode#',
+      get_vi_mode(),
+      '%#StatusBlank#',
+      ' ',
+      '%#StatusFileName#',
+      ' ',
+      '%<%F',
+      ' ',
+      '%#StatusFileState#',
+      '%m%r%h%w%q',
+      '%#StatusBlank#',
+      ' ',
+      '%#StatusGitBranch#',
+      get_git_branch(),
+      '%=',
+      '%#StatusFileSize#',
+      get_file_size(),
+      ' ',
+      '%#StatusFileFormat#',
+      ' ',
+      get_file_format(),
+      ' | ',
+      '%#StatusFileEncode#',
+      get_file_encode(),
+      ' ',
+      '%#StatusBlank#',
+      ' ',
+      '%#StatusPercent#',
+      '%P',
+      '%#StatusBlank#',
+      ' '
+    }
+  end
 end
 
 vim.opt.statusline = [[%!luaeval('build_status_line()')]]
 
 vim.cmd [[
 augroup StatusLineHighlights | autocmd!
-autocmd ColorScheme * lua require('statusline').set_highlights()
+  autocmd ColorScheme * lua require('statusline').set_highlights()
 augroup END
 ]]
 

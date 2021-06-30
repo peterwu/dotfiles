@@ -27,8 +27,6 @@ require 'packer'.startup {function()
     require 'dapui'.setup()
   end}
 
-  use {'mattn/emmet-vim', as = 'emmet.vim'}
-
   use {'tommcdo/vim-exchange', as = 'exchange.vim'}
 
   use {'phaazon/hop.nvim', config = function()
