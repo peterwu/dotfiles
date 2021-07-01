@@ -71,9 +71,7 @@ Comment[wa]=Asspougnî des fitchîs tecses
 Comment[zh_CN]=编辑文本文件
 Comment[zh_TW]=編輯文字檔
 TryExec=nvim
-#Exec=kitty --class Nvim -e nvim %F
-#Exec=xterm -class Nvim -name XTerm -e nvim %F
-Exec=alacritty --class Nvim -e nvim %F
+Exec=env WAYLAND_DISPLAY=alacritty alacritty --title Neovim --class nvim,nvim -e nvim %F
 Terminal=false
 Type=Application
 Keywords=Text;editor;
@@ -82,4 +80,3 @@ Categories=Utility;TextEditor;
 StartupNotify=false
 MimeType=text/english;text/plain;text/x-makefile;text/x-c++hdr;text/x-c++src;text/x-chdr;text/x-csrc;text/x-java;text/x-moc;text/x-pascal;text/x-tcl;text/x-tex;application/x-shellscript;text/x-c;text/x-c++;
 X-Desktop-File-Install-Version=0.24
-NoDisplay=true
