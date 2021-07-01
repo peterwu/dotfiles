@@ -63,11 +63,10 @@ local colors = {
 
 local function highlight(group, fg, bg, style)
   local cmd = table.concat ({
-    'highlight',
-    group,
-    'guifg='..fg,
-    'guibg='..bg,
-    'gui='..style
+    'highlight ' .. group,
+    'guifg=' .. fg,
+    'guibg=' .. bg,
+    'gui=' .. style
   }, ' ')
 
   vim.cmd(cmd)
@@ -143,21 +142,32 @@ local function get_git_branch()
   return git_icon .. ' ' .. git_branch
 end
 
-local function format_file_size(file)
-  local size = vim.fn.getfsize(file)
-
+local function format_file_size(size)
   if size == 0 or size == -1 or size == -2 then
     return ''
   end
 
-  if size < 1024 then
-    size = size .. 'b'
-  elseif size < 1024 * 1024 then
-    size = string.format('%.1f',size/1024) .. 'k'
-  elseif size < 1024 * 1024 * 1024 then
-    size = string.format('%.1f',size/1024/1024) .. 'm'
-  else
-    size = string.format('%.1f',size/1024/1024/1024) .. 'g'
+  local _1k = 1024
+  local _1m = 1024 * _1k
+  local _1g = 1024 * _1m
+  local _1t = 1024 * _1g
+  local _1p = 1024 * _1t
+  local _1e = 1024 * _1p
+
+  if size < _1k then
+    size = string.format('%db', size)
+  elseif size < _1m then
+    size = string.format('%.1fk',size/_1k)
+  elseif size < _1g then
+    size = string.format('%.1fm',size/_1m)
+  elseif size < _1t then
+    size = string.format('%.1fg',size/_1g)
+  elseif size < _1p then
+    size = string.format('%.1ft',size/_1t)
+  elseif size < _1e then
+    size = string.format('%.1fp',size/_1p)
+  else -- math.maxinteger = 2^63 - 1
+    size = string.format('%.1fe',size/_1e)
   end
 
   return size
@@ -165,9 +175,15 @@ end
 
 local function get_file_size()
   local file = vim.fn.expand('%:p')
-  if string.len(file) == 0 then return '' end
+  local size = 0
 
-  return format_file_size(file)
+  if string.len(file) == 0 then -- it's a buffer
+    size = vim.fn.wordcount().bytes
+  else
+    size = vim.fn.getfsize(file)
+  end
+
+  return format_file_size(size)
 end
 
 local function get_file_format()
