@@ -11,6 +11,7 @@ vim.opt.listchars      = {trail = '·', tab = '»·'}
 vim.opt.mouse          = 'a'
 vim.opt.number         = true
 vim.opt.path           = vim.opt.path + '**'
+vim.opt.pumheight      = 7
 vim.opt.relativenumber = true
 vim.opt.sessionoptions = 'folds'
 vim.opt.shiftwidth     = 2
