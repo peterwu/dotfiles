@@ -29,7 +29,9 @@ local plugins ={
     setup = require('plugins.hop').setup
   }, {
     paq = {'tommcdo/vim-lion', as = 'lion.vim'},
-    setup = require('plugins.lion').setup
+    setup = function()
+      vim.g.lion_squeeze_spaces = 1
+    end
   }, {
     paq = {'neovim/nvim-lspconfig', as = 'lspconfig.nvim'},
     setup = require('plugins.lspconfig').setup
@@ -54,7 +56,7 @@ local plugins ={
     setup = require('plugins.vinegar').setup
   }, {
     paq = {'folke/which-key.nvim'},
-    setup = require('which-key').setup
+    setup = require('plugins.which-key').setup
   }
 }
 
