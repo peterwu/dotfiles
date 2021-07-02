@@ -1,17 +1,25 @@
 local function setup()
-  vim.api.nvim_set_keymap('n', '<Leader>f.', [[<Cmd>Files .<CR>]],     {noremap = true})
-  vim.api.nvim_set_keymap('n', '<Leader>f`', [[<Cmd>Files /<CR>]],     {noremap = true})
-  vim.api.nvim_set_keymap('n', '<Leader>f~', [[<Cmd>Files $HOME<CR>]], {noremap = true})
-  vim.api.nvim_set_keymap('n', '<Leader>f%', [[<Cmd>Files %:p:h<CR>]], {noremap = true})
 
-  vim.api.nvim_set_keymap('n', '<Leader>f?', [[<Cmd>History<CR>]],  {noremap = true})
-  vim.api.nvim_set_keymap('n', '<Leader>f:', [[<Cmd>History:<CR>]], {noremap = true})
-  vim.api.nvim_set_keymap('n', '<Leader>f/', [[<Cmd>History/<CR>]], {noremap = true})
+  require('which-key').register {
+    ["<Leader>f"] = {
+      name = "+find",
+      ['.'] = {[[<Cmd>Files .<CR>]],     'Find in current dir'},
+      ['`'] = {[[<Cmd>Files /<CR>]],     'Find in root dir'},
+      ['~'] = {[[<Cmd>Files $HOME<CR>]], 'Find in home dir'},
+      ['%'] = {[[<Cmd>Files %:p:h<CR>]], 'Find in same dir'},
+      
+      ['?'] = {[[<Cmd>History<CR>]],  'Find recent files and open buffers'},
+      [':'] = {[[<Cmd>History:<CR>]], 'Find recent commands'},
+      ['/'] = {[[<Cmd>History/<CR>]], 'Find recent searches'},
 
-  vim.api.nvim_set_keymap('n', '<Leader>fb', [[<Cmd>Buffers<CR>]],  {noremap = true})
-  vim.api.nvim_set_keymap('n', '<Leader>fh', [[<Cmd>Helptags<CR>]], {noremap = true})
-  vim.api.nvim_set_keymap('n', '<Leader>fm', [[<Cmd>Maps<CR>]],     {noremap = true})
-  vim.api.nvim_set_keymap('n', '<Leader>ft', [[<Cmd>Tags<CR>]],     {noremap = true})
+      ['b'] = {[[<Cmd>Buffers<CR>]],  'Find buffers'},
+      ['g'] = {[[<Cmd>GitFiles<CR>]], 'Find git status'},
+      ['h'] = {[[<Cmd>Helptags<CR>]], 'Find help tags'},
+      ['m'] = {[[<Cmd>Maps<CR>]],     'Find key maps'},
+      ['t'] = {[[<Cmd>Tags<CR>]],     'Find tags'}
+    }
+  }
+
 end
 
 return {setup = setup}
