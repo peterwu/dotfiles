@@ -1,0 +1,26 @@
+[pull]
+	rebase = true
+[user]
+	email = peterwu@hotmail.com
+	name  = Peter Wu
+[credential]
+	helper = store
+[core]
+	editor = nvim
+[gui]
+	fontdiff   = -family \"Iosevka Fusion\"  -size 12 -weight normal -slant roman -underline 0 -overstrike 0
+	fontui     = -family \"Liberation Sans\" -size 11 -weight normal -slant roman -underline 0 -overstrike 0
+	recentrepo = /home/peter/Projects/dora/git/test1
+[diff]
+	tool = nvimdiff
+[difftool]
+	prompt = false
+[difftool "nvimdiff"]
+	cmd = nvim -d $LOCAL $REMOTE
+[merge]
+	tool = nvimdiff
+[mergetool]
+	prompt = false
+	keepBackup = false
+[mergetool "nvimdiff"]
+  cmd = nvim -d $MERGED $LOCAL $BASE $REMOTE -c 'wincmd J'

@@ -48,3 +48,8 @@ vim.api.nvim_set_keymap('n', '<C-L>', [[<Cmd>nohlsearch<CR><C-L>]], {noremap = t
 
 -- launch terminal
 vim.api.nvim_set_keymap('n', '<Leader>o', [[<Cmd>below 10sp term://$SHELL<CR>i]], {noremap = true, silent = true})
+
+-- diff / merge
+vim.api.nvim_set_keymap('n', 'gdb', [[<Cmd>diffget BA<CR>]], {noremap = true})
+vim.api.nvim_set_keymap('n', 'gdl', [[<Cmd>diffget LO<CR>]], {noremap = true})
+vim.api.nvim_set_keymap('n', 'gdr', [[<Cmd>diffget RE<CR>]], {noremap = true})
