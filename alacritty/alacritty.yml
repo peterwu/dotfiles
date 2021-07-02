@@ -112,7 +112,6 @@ font:
     #   - (Linux/BSD) monospace
     #   - (Windows) Consolas
     family: Iosevka Fusion
-    # family: Cascadia Code PL
     style: Regular
 
   # Bold font face
@@ -120,16 +119,15 @@ font:
     # Font family
     #
     # family: Iosevka Fusion
-    # family: Cascadia Code PL
     # style: Bold
-    
+
   # Italic font face
   # italic:
     # Font family
     #
     # If the italic family is not specified, it will fall back to the
     # value specified for the normal font.
-    # family: Cascadia Code PL
+    # family: Iosevka Fusion
     # style: Italic
 
   # Bold italic font face
@@ -138,8 +136,7 @@ font:
     #
     # If the bold italic family is not specified, it will fall back to the
     # value specified for the normal font.
-    #family: monospace
-    # family: Cascadia Code PL
+    #family: Iosevka Fusion
     # style: Bold Italic
 
   # Point size

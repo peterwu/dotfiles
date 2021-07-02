@@ -123,7 +123,7 @@ local function get_git_branch()
   git_branch = vim.fn.system(git_cmd)
   git_branch = vim.fn.trim(git_branch)
 
-  if string.len(git_branch) == 0 then
+  if git_branch:len() == 0 then
     highlight('StatusGitBranch', colors.fg_main, colors.bg_main, 'NONE')
     return ''
   end
@@ -131,7 +131,7 @@ local function get_git_branch()
   git_cmd = 'git -C ' .. git_dir .. ' status --porcelain'
   git_status = vim.fn.system(git_cmd)
 
-  if string.len(git_status) == 0 then 
+  if git_status:len() == 0 then 
     git_color = colors.green_active
   else
     git_color = colors.red_active
@@ -147,27 +147,27 @@ local function format_file_size(size)
     return ''
   end
 
-  local _1k = 1024
-  local _1m = 1024 * _1k
-  local _1g = 1024 * _1m
-  local _1t = 1024 * _1g
-  local _1p = 1024 * _1t
-  local _1e = 1024 * _1p
+  local _1K = 1024
+  local _1M = 1024 * _1K
+  local _1G = 1024 * _1M
+  local _1T = 1024 * _1G
+  local _1P = 1024 * _1T
+  local _1E = 1024 * _1P
 
-  if size < _1k then
-    size = string.format('%db', size)
-  elseif size < _1m then
-    size = string.format('%.1fk',size/_1k)
-  elseif size < _1g then
-    size = string.format('%.1fm',size/_1m)
-  elseif size < _1t then
-    size = string.format('%.1fg',size/_1g)
-  elseif size < _1p then
-    size = string.format('%.1ft',size/_1t)
-  elseif size < _1e then
-    size = string.format('%.1fp',size/_1p)
-  else -- math.maxinteger = 2^63 - 1
-    size = string.format('%.1fe',size/_1e)
+  if size < _1K then
+    size = string.format('%dB', size)
+  elseif size < _1M then
+    size = string.format('%.1fK',size/_1K)
+  elseif size < _1G then
+    size = string.format('%.1fM',size/_1M)
+  elseif size < _1T then
+    size = string.format('%.1fG',size/_1G)
+  elseif size < _1P then
+    size = string.format('%.1fT',size/_1T)
+  elseif size < _1E then
+    size = string.format('%.1fP',size/_1P)
+  else -- math.maxinteger = 2^63 -1
+    size = string.format('%.1fE',size/_1E)
   end
 
   return size
@@ -177,7 +177,7 @@ local function get_file_size()
   local file = vim.fn.expand('%:p')
   local size = 0
 
-  if string.len(file) == 0 then -- it's a buffer
+  if file:len() == 0 then -- it's a buffer
     size = vim.fn.wordcount().bytes
   else
     size = vim.fn.getfsize(file)
@@ -254,7 +254,8 @@ vim.opt.statusline = [[%!v:lua.require'statusline'.statusline()]]
 
 vim.cmd [[
 augroup StatusLine | autocmd!
-  autocmd ColorScheme * lua require('statusline').highlights()
+  autocmd ColorScheme,WinEnter,BufEnter,BufWinEnter * lua require('statusline').highlights()
+  autocmd VimResized * redrawstatus
 augroup END
 ]]
 
