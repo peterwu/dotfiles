@@ -1,5 +1,37 @@
 local colors = require('plugins.modus-theme').colors
 
+local modes = { -- :help mode()
+  ['n']    = {alias = 'NORMAL',    color = colors.magenta},
+  ['no']   = {alias = 'O·PENDING', color = colors.yellow},
+  ['nov']  = {alias = 'O·PENDING', color = colors.yellow},
+  ['noV']  = {alias = 'O·PENDING', color = colors.yellow},
+  ['no'] = {alias = 'O·PENDING', color = colors.yellow},
+  ['niI']  = {alias = 'NORMAL',    color = colors.magenta},
+  ['niR']  = {alias = 'NORMAL',    color = colors.magenta},
+  ['niV']  = {alias = 'NORMAL',    color = colors.magenta},
+  ['v']    = {alias = 'VISUAL',    color = colors.cyan},
+  ['V']    = {alias = 'V·LINE',    color = colors.cyan},
+  ['']   = {alias = 'V·BLOCK',   color = colors.cyan},
+  ['s']    = {alias = 'SELECT',    color = colors.blue},
+  ['S']    = {alias = 'S·LINE',    color = colors.blue},
+  ['']   = {alias = 'S·BLOCK',   color = colors.blue},
+  ['i']    = {alias = 'INSERT',    color = colors.green},
+  ['ic']   = {alias = 'INSERT',    color = colors.green},
+  ['ix']   = {alias = 'INSERT',    color = colors.green},
+  ['R']    = {alias = 'REPLACE',   color = colors.red},
+  ['Rc']   = {alias = 'REPLACE',   color = colors.red},
+  ['Rv']   = {alias = 'V·REPLACE', color = colors.red},
+  ['Rx']   = {alias = 'REPLACE',   color = colors.red},
+  ['c']    = {alias = 'COMMAND',   color = colors.yellow},
+  ['cv']   = {alias = 'EX',        color = colors.magenta},
+  ['ce']   = {alias = 'EX',        color = colors.magenta},
+  ['r']    = {alias = 'REPLACE',   color = colors.red},
+  ['rm']   = {alias = 'MORE',      color = colors.purpose_intense},
+  ['r?']   = {alias = 'CONFIRM',   color = colors.purpose_intense},
+  ['t']    = {alias = 'TERM',      color = colors.blue},
+  ['!']    = {alias = 'SHELL',     color = colors.blue}
+}
+
 local function highlight(group, fg, bg, style)
   local cmd = table.concat ({
     'highlight ' .. group,
@@ -11,46 +43,12 @@ local function highlight(group, fg, bg, style)
   vim.cmd(cmd)
 end
 
-local function get_vi_mode()
-  local mode_color = {
-    n      = colors.magenta,
-    i      = colors.green,
-    ic     = colors.green,
-    ix     = colors.green,
-    v      = colors.cyan,
-    [''] = colors.cyan,
-    V      = colors.cyan,
-    c      = colors.yellow,
-    R      = colors.red,
-    Rc     = colors.red,
-    Rv     = colors.red,
-    Rx     = colors.red,
-    t      = colors.blue,
-    ['!']  = colors.blue
-  }
+local function get_vim_mode()
+  local mode = vim.api.nvim_get_mode().mode
 
-  local mode_alias = {
-    n      = 'NORMAL',
-    i      = 'INSERT',
-    ic     = 'INSERT',
-    ix     = 'INSERT',
-    v      = 'VISUAL',
-    [''] = 'V·BLOCK',
-    V      = 'V·LINE',
-    c      = 'COMMAND',
-    R      = 'REPLACE',
-    Rc     = 'REPLACE',
-    Rv     = 'V·REPLACE',
-    Rx     = 'REPLACE',
-    t      = 'TERM',
-    ['!']  = 'SHELL'
-  }
+  highlight('StatusVimMode', modes[mode].color, colors.bg_main, 'bold')
 
-  local mode_code = vim.api.nvim_get_mode().mode
-
-  highlight('StatusViMode', mode_color[mode_code], colors.bg_main, 'bold')
-
-  return mode_alias[mode_code]
+  return modes[mode].alias
 end
 
 local function get_git_branch()
@@ -148,13 +146,13 @@ local function build_status_line()
   local focus = vim.g.statusline_winid == vim.fn.win_getid()
 
   if not focus then 
-    return ' '
+    return ''
   else
     return table.concat {
       '%#StatusBlank#',
       ' ',
-      '%#StatusViMode#',
-      get_vi_mode(),
+      '%#StatusVimMode#',
+      get_vim_mode(),
       '%#StatusBlank#',
       ' ',
       '%#StatusFileName#',
