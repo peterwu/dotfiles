@@ -1,12 +1,17 @@
 local function setup()
-  local opts = {noremap = true, silent = true}
+  local wk = require('which-key')
 
-  vim.api.nvim_set_keymap('n', '<Leader>qc', [[<Cmd>PaqClean<CR>]],    opts)
-  vim.api.nvim_set_keymap('n', '<Leader>qi', [[<Cmd>PaqInstall<CR>]],  opts)
-  vim.api.nvim_set_keymap('n', '<Leader>ql', [[<Cmd>PaqList<CR>]],     opts)
-  vim.api.nvim_set_keymap('n', '<Leader>qo', [[<Cmd>PaqLogOpen<CR>]],  opts)
-  vim.api.nvim_set_keymap('n', '<Leader>qu', [[<Cmd>PaqUpdate<CR>]],   opts)
-  vim.api.nvim_set_keymap('n', '<Leader>qx', [[<Cmd>PaqLogClean<CR>]], opts)
+  wk.register({
+    ["<leader>q"] = {
+      name = "+paq",
+      c = {[[<Cmd>lua require'plugins'.init_paq();require'paq-nvim'.clean()<CR>]],     'PaqClean'   },
+      i = {[[<Cmd>lua require'plugins'.init_paq();require'paq-nvim'.install()<CR>]],   'PaqInstall' },
+      l = {[[<Cmd>lua require'plugins'.init_paq();require'paq-nvim'.list()<CR>]],      'PaqList'    },
+      o = {[[<Cmd>lua require'plugins'.init_paq();require'paq-nvim'.log_open()<CR>]],  'PaqLogOpen' },
+      u = {[[<Cmd>lua require'plugins'.init_paq();require'paq-nvim'.update()<CR>]],    'PaqUpdate'  },
+      x = {[[<Cmd>lua require'plugins'.init_paq();require'paq-nvim'.log_clean()<CR>]], 'PaqLogClean'}
+    }
+  })
 end
 
 return {setup = setup}
