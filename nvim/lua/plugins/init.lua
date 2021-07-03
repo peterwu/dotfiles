@@ -48,7 +48,7 @@ local plugins ={
   }, {
     paq = {'tpope/vim-surround', as = 'surround.vim'}
   }, {
-    paq = {'nvim-treesitter/nvim-treesitter', as = 'tree-sitter.nvim', run = ':TSUpdate'}
+    paq = {'nvim-treesitter/nvim-treesitter', as = 'tree-sitter.nvim', run = function() vim.cmd('TSUpdate') end}
   }, {
     paq = {'tpope/vim-unimpaired', as = 'unimpaired.vim'}
   }, {
