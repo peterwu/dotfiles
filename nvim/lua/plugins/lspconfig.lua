@@ -1,5 +1,8 @@
+local utils = require('utils')
+
 local function setup()
-  local nvim_lsp = require('lspconfig')
+  local nvim_lsp = utils.load('lspconfig')
+  if not nvim_lsp then return end
 
   local on_attach = function(client, bufnr)
     local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end

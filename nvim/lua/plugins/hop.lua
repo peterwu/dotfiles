@@ -1,7 +1,14 @@
-local function setup()
-  require('hop').setup {keys = 'etovxqpdygfblzhckisuran'}
+local utils = require('utils')
 
-  require('which-key').register {
+local function setup()
+  local hop = utils.load('hop')
+  if not hop then return end
+  local wk = utils.load('which-key')
+  if not wk then return end
+
+  hop.setup {keys = 'etovxqpdygfblzhckisuran'}
+
+  wk.register {
     ["<Leader>j"] = {
       name = "+jump",
       ['1'] = {[[<Cmd>HopChar1<CR>]],   'Jump to char 1'},

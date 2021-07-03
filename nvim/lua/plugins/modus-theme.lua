@@ -67,7 +67,11 @@ local function setup()
   vim.g.modus_termtrans_enable   = 1
   vim.g.modus_yellow_comments    = 1
 
-  vim.cmd [[colorscheme modus-operandi]]
+  xpcall(function()
+    vim.cmd [[colorscheme modus-operandi]]
+  end, function(err)
+    vim.cmd [[colorscheme zellner]]
+  end)
 end
 
 return {setup = setup, colors = colors}

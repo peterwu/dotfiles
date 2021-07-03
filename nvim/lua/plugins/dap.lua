@@ -1,5 +1,9 @@
+local utils = require('utils')
+
 local function setup()
-  local dap = require('dap')
+  local dap = utils.load('dap')
+  if not dap then return end
+
   dap.adapters.lldb = {
     type    = 'executable',
     command = '/usr/bin/lldb-vscode',

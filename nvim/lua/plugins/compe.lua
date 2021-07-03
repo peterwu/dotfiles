@@ -1,5 +1,10 @@
+local utils = require('utils')
+
 local function setup()
-  require('compe').setup {
+  local compe = utils.load('compe')
+  if not compe then return end
+
+  compe.setup {
     enabled          = true,
     autocomplete     = true,
     debug            = false,

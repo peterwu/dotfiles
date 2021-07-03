@@ -1,5 +1,10 @@
+local utils = require('utils')
+
 local function setup()
-  require('which-key').setup {
+  local wk = utils.load('which-key')
+  if not wk then return end
+
+  wk.setup {
     plugins = {
       presets = {
         operators    = false,

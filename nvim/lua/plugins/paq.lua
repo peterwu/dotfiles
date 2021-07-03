@@ -1,5 +1,10 @@
+local utils = require('utils')
+
 local function setup()
-  require('which-key').register {
+  local wk = utils.load('which-key')
+  if not wk then return end
+
+  wk.register {
     ["<Leader>q"] = {
       name = "+paq",
       ['c'] = {[[<Cmd>lua require'plugins'.init_paq();require'paq'.clean()<CR>]],     'Remove unlisted plugins'},
