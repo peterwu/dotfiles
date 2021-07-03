@@ -18,7 +18,11 @@ augroup HighlightedYank | autocmd!
   autocmd TextYankPost * silent! lua vim.highlight.on_yank {timeout = 777}
 augroup END
 
-augroup Term | autocmd!
+augroup NoNumberForOldTerm | autocmd!
   autocmd TermOpen * setlocal nonumber norelativenumber
+augroup END
+
+augroup NoTrailingWhitespaces | autocmd!
+  autocmd BufWritePre * :%s/\s\+$//e
 augroup END
 ]]
