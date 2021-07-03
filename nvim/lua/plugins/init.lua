@@ -1,13 +1,15 @@
+local utils = require('utils')
+
 local plugins ={
   {
     paq = {'savq/paq-nvim', as = 'paq.nvim', opt = true},
     setup = require('plugins.paq').setup
   }, {
     paq = {'windwp/nvim-autopairs', as = 'autopairs.nvim'},
-    setup = require('nvim-autopairs').setup
+    setup = utils.load('nvim-autopairs') and require('nvim-autopairs').setup
   }, {
     paq = {'norcalli/nvim-colorizer.lua', as = 'colorizer.nvim'},
-    setup = require('colorizer').setup
+    setup = utils.load('colorizer') and require('colorizer').setup
   }, {
     paq = {'tpope/vim-commentary', as = 'commentary.vim'}
   }, {
@@ -18,29 +20,34 @@ local plugins ={
     setup = require('plugins.dap').setup
   }, {
     paq = {'rcarriga/nvim-dap-ui', as = 'dap-ui.nvim'},
-    setup = require('dapui').setup
+    setup = utils.load('dapui') and require('dapui').setup
   }, {
     paq = {'tommcdo/vim-exchange', as = 'exchange.vim'}
-  }, {
-    paq = {'junegunn/fzf.vim'},
-    setup = require('plugins.fzf').setup
   }, {
     paq = {'phaazon/hop.nvim'},
     setup = require('plugins.hop').setup
   }, {
     paq = {'tommcdo/vim-lion', as = 'lion.vim'},
-    setup = function()
-      vim.g.lion_squeeze_spaces = 1
-    end
+    setup = function() vim.g.lion_squeeze_spaces = 1 end
   }, {
     paq = {'neovim/nvim-lspconfig', as = 'lspconfig.nvim'},
     setup = require('plugins.lspconfig').setup
+  }, {
+    paq = {'nvim-telescope/telescope.nvim'},
+    setup = require('plugins.telescope').setup
+  }, {
+    paq = {'nvim-telescope/telescope-dap.nvim'},
+    setup = require('plugins.telescope-dap').setup
   }, {
     paq = {'ishan9299/modus-theme-vim', as = 'modus-theme.nvim'},
     setup = require('plugins.modus-theme').setup
   }, {
     paq = {'kristijanhusak/orgmode.nvim'},
-    setup = require('orgmode').setup
+    setup = utils.load('orgmode') and require('orgmode').setup
+  }, {
+    paq = {'nvim-lua/plenary.nvim'}
+  }, {
+    paq = {'nvim-lua/popup.nvim'}
   }, {
     paq = {'tpope/vim-repeat', as = 'repeat.vim'}
   }, {
