@@ -1,5 +1,5 @@
-require 'settings'
-require 'mappings'
+require 'options'
+require 'keymaps'
 require 'plugins'
 require 'statusline'
 
@@ -15,6 +15,10 @@ augroup AutoSetList | autocmd!
 augroup END
 
 augroup HighlightedYank | autocmd!
-  autocmd TextYankPost * silent! lua vim.highlight.on_yank {higroup='IncSearch', timeout=777}
+  autocmd TextYankPost * silent! lua vim.highlight.on_yank {timeout = 777}
+augroup END
+
+augroup Term | autocmd!
+  autocmd TermOpen * setlocal nonumber norelativenumber
 augroup END
 ]]

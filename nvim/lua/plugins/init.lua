@@ -1,6 +1,6 @@
 local plugins ={
   {
-    paq = {'savq/paq-nvim', opt = true},
+    paq = {'savq/paq-nvim', as = 'paq.nvim', opt = true},
     setup = require('plugins.paq').setup
   }, {
     paq = {'windwp/nvim-autopairs', as = 'autopairs.nvim'},
@@ -67,8 +67,8 @@ for i,p in ipairs(plugins) do
 end
 
 local function init_paq()
-  vim.cmd [[packadd paq-nvim]]
-  require 'paq-nvim' (paqs)
+  vim.cmd [[packadd paq.nvim]]
+  require 'paq' (paqs)
 end
 
 return {init_paq = init_paq}
