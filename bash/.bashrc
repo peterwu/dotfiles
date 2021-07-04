@@ -10,7 +10,7 @@ if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]; then
   PATH="$HOME/.local/bin:$HOME/bin:$PATH"
 fi
 
-# User specific aliases and functions 
+# User specific aliases and functions
 set -o vi
 alias se='sudoedit'
 
@@ -54,7 +54,7 @@ show_bash_prompt() {
     prompt+=' '
 
     # user@host:pwd
-    prompt+="\001\e[0;94m\002"
+    prompt+="\001\e[0;34m\002"
     prompt+="$(whoami)"
     prompt+="\001\e[0;30m\002"
     prompt+="@"
@@ -67,17 +67,28 @@ show_bash_prompt() {
     prompt+=' '
 
     # show git branch and its status if in a git tree
-    local branch=$(git branch --show-current HEAD 2> /dev/null)
+    local git_status=$(git status --branch --porcelain 2> /dev/null)
+    IFS=$'\n' git_status=($git_status)
 
-    if [[ -n "${branch}" ]]; then
-      if [[ -z $(git status --short) ]]; then
-        # clean -> GREEN
-        prompt+="\001\e[0;32m\002"
-      else
-        # modified -> RED
-        prompt+="\001\e[0;31m\002"
+    if [[ $? -eq 0 ]]; then
+      local git_branch="${git_status[0]}"
+      local git_branch_regex="^##\s(\w*).*$"
+
+      if  [[ ${git_branch} =~ ${git_branch_regex} ]]; then
+        git_branch="${BASH_REMATCH[1]}"
       fi
-      prompt+=" ${branch}"
+
+      if [[ -n "${git_branch}" ]]; then
+        if [[ ${#git_status[@]} -gt 1 ]]; then
+          # modified -> RED
+          prompt+="\001\e[0;31m\002"
+        else
+          # clean -> GREEN
+          prompt+="\001\e[0;32m\002"
+        fi
+
+        prompt+=" ${git_branch}"
+      fi
     fi
 
     # change line
@@ -108,6 +119,3 @@ show_bash_prompt() {
   }
 
 PS1='`show_bash_prompt`'
-
-# fzf
-source /usr/share/fzf/shell/key-bindings.bash
