@@ -91,14 +91,14 @@ local plugins ={
 }
 
 local paqs = {}
-for i,p in ipairs(plugins) do
+for i, p in ipairs(plugins) do
   paqs[i] = p.paq
-  if p.setup then p.setup() end
+  if p.setup then pcall(p.setup) end
 end
 
 local function init_paq()
   vim.cmd [[packadd paq.nvim]]
-  utils.require 'paq' (paqs)
+  utils.require'paq'(paqs)
 end
 
 return {init_paq = init_paq}

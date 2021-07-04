@@ -53,28 +53,24 @@ local function get_vim_mode()
 end
 
 local function get_git_branch()
-  local git_color, git_cmd, git_branch, git_status
+  local git_color, git_cmd, git_branch
   local git_icon = ''
   local git_dir = vim.fn.expand('%:p:h:S')
 
   git_cmd = 'git -C ' .. git_dir .. ' branch --show-current'
 
   git_branch = vim.fn.system(git_cmd)
-  if vim.api.nvim_eval('v:shell_error') ~= 0 then
-    git_branch = ''
-  else
+  if vim.api.nvim_eval('v:shell_error') == 0 then
     git_branch = vim.fn.trim(git_branch)
-  end
-
-  if git_branch:len() == 0 then
+  else
     highlight('StatusGitBranch', colors.fg_main, colors.bg_main, 'NONE')
     return ''
   end
 
   git_cmd = 'git -C ' .. git_dir .. ' status --porcelain'
-  git_status = vim.fn.system(git_cmd)
+  vim.fn.system(git_cmd)
 
-  if git_status:len() == 0 then
+  if vim.api.nvim_eval('v:shell_error') == 0 then
     git_color = colors.green_active
   else
     git_color = colors.red_active
