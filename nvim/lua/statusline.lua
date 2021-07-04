@@ -57,9 +57,14 @@ local function get_git_branch()
   local git_icon = ''
   local git_dir = vim.fn.expand('%:p:h:S')
 
-  git_cmd = 'git -C ' .. git_dir .. ' branch --show-current 2> /dev/null'
+  git_cmd = 'git -C ' .. git_dir .. ' branch --show-current'
+
   git_branch = vim.fn.system(git_cmd)
-  git_branch = vim.fn.trim(git_branch)
+  if vim.api.nvim_eval('v:shell_error') ~= 0 then
+    git_branch = ''
+  else
+    git_branch = vim.fn.trim(git_branch)
+  end
 
   if git_branch:len() == 0 then
     highlight('StatusGitBranch', colors.fg_main, colors.bg_main, 'NONE')
