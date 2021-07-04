@@ -28,14 +28,12 @@ local function setup()
   dap.configurations.cpp = dap.configurations.c
   dap.configurations.rust = dap.configurations.cpp
 
-  local opts = {noremap=true, silent=true}
-
-  vim.api.nvim_set_keymap('n', '<F5>',   [[<Cmd>lua require('dap').continue()<CR>]],          opts)
-  vim.api.nvim_set_keymap('n', '<F8>',   [[<Cmd>lua require('dap').step_over()<CR>]],         opts)
-  vim.api.nvim_set_keymap('n', '<F7>',   [[<Cmd>lua require('dap').into()<CR>]],              opts)
-  vim.api.nvim_set_keymap('n', '<S-F7>', [[<Cmd>lua require('dap').out()<CR>]],               opts)
-  vim.api.nvim_set_keymap('n', '<F6>',   [[<Cmd>lua require('dap').toggle_breakpoint()<CR>]], opts)
-  vim.api.nvim_set_keymap('n', '<F10>',  [[<Cmd>lua require('dap').repl.open()<CR>]],         opts)
+  utils.nmap('<F5>',   [[<Cmd>lua require('dap').continue()<CR>]])
+  utils.nmap('<F8>',   [[<Cmd>lua require('dap').step_over()<CR>]])
+  utils.nmap('<F7>',   [[<Cmd>lua require('dap').into()<CR>]])
+  utils.nmap('<S-F7>', [[<Cmd>lua require('dap').out()<CR>]])
+  utils.nmap('<F6>',   [[<Cmd>lua require('dap').toggle_breakpoint()<CR>]])
+  utils.nmap('<F10>',  [[<Cmd>lua require('dap').repl.open()<CR>]])
 end
 
 return {setup = setup}

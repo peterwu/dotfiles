@@ -16,7 +16,7 @@ local function setup()
 
       ['b'] = {[[<Cmd>Telescope buffers<CR>]],   'Find buffers'},
       ['h'] = {[[<Cmd>Telescope help_tags<CR>]], 'Find help tags'},
-      ['m'] = {[[<Cmd>Telescope keymaps<CR>]],   'Find keymaps'},
+      ['m'] = {[[<Cmd>Telescope keymaps<CR>]],   'Find key maps'},
       ['t'] = {[[<Cmd>Telescope tags<CR>]],      'Find tags'}
     }
   }

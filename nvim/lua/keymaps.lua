@@ -1,59 +1,61 @@
+local utils = require('utils')
+
 -- assign leader keys
 vim.g.mapleader      = ' '
 vim.g.maplocalleader = ','
 
 -- handle $MYVIMRC
-vim.api.nvim_set_keymap('n', '<Leader>ev', [[<Cmd>edit $MYVIMRC<CR>]],   {noremap = true, silent = true})
-vim.api.nvim_set_keymap('n', '<Leader>sv', [[<Cmd>source $MYVIMRC<CR>]], {noremap = true, silent = true})
+utils.nmap('<Leader>ev', [[<Cmd>edit $MYVIMRC<CR>]])
+utils.nmap('<Leader>sv', [[<Cmd>source $MYVIMRC<CR>]])
 
 -- change cwd
-vim.api.nvim_set_keymap('n', '<Leader>cd', [[<Cmd>chdir %:p:h<CR><Cmd>pwd<CR>]], {noremap = true, silent = true})
+utils.nmap('<Leader>cd', [[<Cmd>chdir %:p:h<CR><Cmd>pwd<CR>]])
 
 -- disable arrow keys
-vim.api.nvim_set_keymap('', '<Up>',    [[<Nop>]], {noremap = true, silent = true})
-vim.api.nvim_set_keymap('', '<Down>',  [[<Nop>]], {noremap = true, silent = true})
-vim.api.nvim_set_keymap('', '<Left>',  [[<Nop>]], {noremap = true, silent = true})
-vim.api.nvim_set_keymap('', '<Right>', [[<Nop>]], {noremap = true, silent = true})
+utils.map('<Up>',    [[<Nop>]])
+utils.map('<Down>',  [[<Nop>]])
+utils.map('<Left>',  [[<Nop>]])
+utils.map('<Right>', [[<Nop>]])
 
-vim.api.nvim_set_keymap('i', '<Up>',    [[<Nop>]], {noremap = true, silent = true})
-vim.api.nvim_set_keymap('i', '<Down>',  [[<Nop>]], {noremap = true, silent = true})
-vim.api.nvim_set_keymap('i', '<Left>',  [[<Nop>]], {noremap = true, silent = true})
-vim.api.nvim_set_keymap('i', '<Right>', [[<Nop>]], {noremap = true, silent = true})
+utils.imap('<Up>',    [[<Nop>]])
+utils.imap('<Down>',  [[<Nop>]])
+utils.imap('<Left>',  [[<Nop>]])
+utils.imap('<Right>', [[<Nop>]])
 
 -- swap j/k <-> gj/gk
-vim.api.nvim_set_keymap('n', 'j', [[v:count? 'j' : 'gj']], {noremap = true, expr = true})
-vim.api.nvim_set_keymap('n', 'k', [[v:count? 'k' : 'gk']], {noremap = true, expr = true})
+utils.nmap('j', [[v:count ? 'j' : 'gj']], {expr = true})
+utils.nmap('k', [[v:count ? 'k' : 'gk']], {expr = true})
 
 -- copy to clipboard
-vim.api.nvim_set_keymap('n', 'Y',          [[y$]],   {noremap = true})
-vim.api.nvim_set_keymap('v', '<Leader>y',  [["+y]],  {noremap = true})
-vim.api.nvim_set_keymap('n', '<Leader>y',  [["+y]],  {noremap = true})
-vim.api.nvim_set_keymap('n', '<Leader>Y',  [["+y$]], {noremap = true})
-vim.api.nvim_set_keymap('n', '<Leader>yy', [["+yy]], {noremap = true})
+utils.nmap('Y',          [[y$]])
+utils.vmap('<Leader>y',  [["+y]])
+utils.nmap('<Leader>y',  [["+y]])
+utils.nmap('<Leader>Y',  [["+y$]])
+utils.nmap('<Leader>yy', [["+yy]])
 
 -- paste from clipboard
-vim.api.nvim_set_keymap('n', '<Leader>p', [["+p]], {noremap = true})
-vim.api.nvim_set_keymap('n', '<Leader>P', [["+P]], {noremap = true})
-vim.api.nvim_set_keymap('v', '<Leader>p', [["+p]], {noremap = true})
-vim.api.nvim_set_keymap('v', '<Leader>P', [["+P]], {noremap = true})
+utils.nmap('<Leader>p', [["+p]])
+utils.nmap('<Leader>P', [["+P]])
+utils.vmap('<Leader>p', [["+p]])
+utils.vmap('<Leader>P', [["+P]])
 
 -- manage tabs
-vim.api.nvim_set_keymap('n', '<C-Left>',  [[<Cmd>tabfirst<CR>]],   {noremap = true})
-vim.api.nvim_set_keymap('n', '<C-Right>', [[<Cmd>tablast<CR>]],    {noremap = true})
-vim.api.nvim_set_keymap('n', '<A-Left>',  [[<Cmd>tabmove -1<CR>]], {noremap = true})
-vim.api.nvim_set_keymap('n', '<A-Right>', [[<Cmd>tabmove +1<CR>]], {noremap = true})
+utils.nmap('<C-Left>',  [[<Cmd>tabfirst<CR>]])
+utils.nmap('<C-Right>', [[<Cmd>tablast<CR>]])
+utils.nmap('<A-Left>',  [[<Cmd>tabmove -1<CR>]])
+utils.nmap('<A-Right>', [[<Cmd>tabmove +1<CR>]])
 
 -- <Ctrl-L> redraws the screen and removes any search highlighting
-vim.api.nvim_set_keymap('n', '<C-L>', [[<Cmd>nohlsearch<CR><C-L>]], {noremap = true, silent = true})
+utils.nmap('<C-L>', [[<Cmd>nohlsearch<CR><C-L>]])
 
 -- use tab to select from popup menu
-vim.api.nvim_set_keymap('i', '<Tab>',   [[pumvisible() ? '<C-N>' : '<Tab>']], {noremap=true, silent=true, expr=true})
-vim.api.nvim_set_keymap('i', '<S-Tab>', [[pumvisible() ? '<C-P>' : '<C-H>']], {noremap=true, silent=true, expr=true})
+utils.imap('<Tab>',   [[pumvisible() ? '<C-N>' : '<Tab>']], {expr = true})
+utils.imap('<S-Tab>', [[pumvisible() ? '<C-P>' : '<C-H>']], {expr = true})
 
 -- launch terminal
-vim.api.nvim_set_keymap('n', '<Leader>o', [[<Cmd>below 10sp term://$SHELL<CR>i]], {noremap = true, silent = true})
+utils.nmap('<Leader>o', [[<Cmd>below 10sp term://$SHELL<CR>i]])
 
 -- diff / merge
-vim.api.nvim_set_keymap('n', 'gdb', [[<Cmd>diffget BA<CR>]], {noremap = true})
-vim.api.nvim_set_keymap('n', 'gdl', [[<Cmd>diffget LO<CR>]], {noremap = true})
-vim.api.nvim_set_keymap('n', 'gdr', [[<Cmd>diffget RE<CR>]], {noremap = true})
+utils.nmap('gdb', [[<Cmd>diffget BA<CR>]])
+utils.nmap('gdl', [[<Cmd>diffget LO<CR>]])
+utils.nmap('gdr', [[<Cmd>diffget RE<CR>]])

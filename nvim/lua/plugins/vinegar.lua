@@ -1,3 +1,5 @@
+local utils = require('utils')
+
 local function setup()
   vim.g.netrw_banner       = 0
   vim.g.netrw_browse_split = 4
@@ -7,7 +9,7 @@ local function setup()
   vim.g.netrw_liststyle    = 3
   vim.g.netrw_winsize      = 25
 
-  vim.api.nvim_set_keymap('n', '<F9>', [[<Cmd>Lexplore<CR>]], {noremap = true, silent = true})
+  utils.nmap('<F9>', [[<Cmd>Lexplore<CR>]])
 end
 
 return {setup = setup}
