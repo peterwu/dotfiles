@@ -3,67 +3,90 @@ local utils = require('utils')
 local plugins ={
   {
     paq = {'savq/paq-nvim', as = 'paq.nvim', opt = true},
-    setup = require('plugins.paq').setup
-  }, {
+    setup = utils.require('plugins.paq').setup
+  },
+  {
     paq = {'windwp/nvim-autopairs', as = 'autopairs.nvim'},
-    setup = utils.load('nvim-autopairs') and require('nvim-autopairs').setup
-  }, {
+    setup = utils.require('nvim-autopairs').setup
+  },
+  {
     paq = {'norcalli/nvim-colorizer.lua', as = 'colorizer.nvim'},
-    setup = utils.load('colorizer') and require('colorizer').setup
-  }, {
+    setup = utils.require('colorizer').setup
+  },
+  {
     paq = {'tpope/vim-commentary', as = 'commentary.vim'}
-  }, {
+  },
+  {
     paq = {'hrsh7th/nvim-compe', as = 'compe.nvim'},
-    setup = require('plugins.compe').setup
-  }, {
+    setup = utils.require('plugins.compe').setup
+  },
+  {
     paq = {'mfussenegger/nvim-dap', as = 'dap.nvim'},
-    setup = require('plugins.dap').setup
-  }, {
+    setup = utils.require('plugins.dap').setup
+  },
+  {
     paq = {'rcarriga/nvim-dap-ui', as = 'dap-ui.nvim'},
-    setup = utils.load('dapui') and require('dapui').setup
-  }, {
+    setup = utils.require('dapui').setup
+  },
+  {
     paq = {'tommcdo/vim-exchange', as = 'exchange.vim'}
-  }, {
+  },
+  {
     paq = {'phaazon/hop.nvim'},
-    setup = require('plugins.hop').setup
-  }, {
+    setup = utils.require('plugins.hop').setup
+  },
+  {
     paq = {'tommcdo/vim-lion', as = 'lion.vim'},
     setup = function() vim.g.lion_squeeze_spaces = 1 end
-  }, {
+  },
+  {
     paq = {'neovim/nvim-lspconfig', as = 'lspconfig.nvim'},
-    setup = require('plugins.lspconfig').setup
-  }, {
+    setup = utils.require('plugins.lspconfig').setup
+  },
+  {
     paq = {'nvim-telescope/telescope.nvim'},
-    setup = require('plugins.telescope').setup
-  }, {
+    setup = utils.require('plugins.telescope').setup
+  },
+  {
     paq = {'nvim-telescope/telescope-dap.nvim'},
-    setup = require('plugins.telescope-dap').setup
-  }, {
+    setup = utils.require('plugins.telescope-dap').setup
+  },
+  {
     paq = {'ishan9299/modus-theme-vim', as = 'modus-theme.nvim'},
-    setup = require('plugins.modus-theme').setup
-  }, {
+    setup = utils.require('plugins.modus-theme').setup
+  },
+  {
     paq = {'kristijanhusak/orgmode.nvim'},
-    setup = utils.load('orgmode') and require('orgmode').setup
-  }, {
+    setup = utils.require('orgmode').setup
+  },
+  {
     paq = {'nvim-lua/plenary.nvim'}
-  }, {
+  },
+  {
     paq = {'nvim-lua/popup.nvim'}
-  }, {
+  },
+  {
     paq = {'tpope/vim-repeat', as = 'repeat.vim'}
-  }, {
+  },
+  {
     paq = {'dstein64/nvim-scrollview', as = 'scrollview.nvim'}
-  }, {
+  },
+  {
     paq = {'tpope/vim-surround', as = 'surround.vim'}
-  }, {
+  },
+  {
     paq = {'nvim-treesitter/nvim-treesitter', as = 'tree-sitter.nvim', run = function() vim.cmd('TSUpdate') end}
-  }, {
+  },
+  {
     paq = {'tpope/vim-unimpaired', as = 'unimpaired.vim'}
-  }, {
+  },
+  {
     paq = {'tpope/vim-vinegar', as = 'vinegar.vim'},
-    setup = require('plugins.vinegar').setup
-  }, {
+    setup = utils.require('plugins.vinegar').setup
+  },
+  {
     paq = {'folke/which-key.nvim'},
-    setup = require('plugins.which-key').setup
+    setup = utils.require('plugins.which-key').setup
   }
 }
 
@@ -75,7 +98,7 @@ end
 
 local function init_paq()
   vim.cmd [[packadd paq.nvim]]
-  require 'paq' (paqs)
+  utils.require 'paq' (paqs)
 end
 
 return {init_paq = init_paq}

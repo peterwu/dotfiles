@@ -1,4 +1,5 @@
-local colors = require('plugins.modus-theme').colors
+local utils = require('utils')
+local colors = utils.require('plugins.modus-theme').colors
 
 local modes = { -- :help mode()
   ['n']    = {alias = 'NORMAL',    color = colors.magenta},
@@ -68,7 +69,7 @@ local function get_git_branch()
   git_cmd = 'git -C ' .. git_dir .. ' status --porcelain'
   git_status = vim.fn.system(git_cmd)
 
-  if git_status:len() == 0 then 
+  if git_status:len() == 0 then
     git_color = colors.green_active
   else
     git_color = colors.red_active
@@ -145,7 +146,7 @@ end
 local function build_status_line()
   local focus = vim.g.statusline_winid == vim.fn.win_getid()
 
-  if not focus then 
+  if not focus then
     return ''
   else
     return table.concat {

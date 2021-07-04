@@ -1,13 +1,13 @@
 local utils = require('utils')
 
 local function setup()
-  local telescope = utils.load('telescope')
-  if not telescope then return end
+  local telescope = utils.require('telescope')
+  if next(telescope) == nil then return end
+
+  local wk = utils.require('which-key')
+  if next(wk) == nil then return end
 
   telescope.load_extension('dap')
-
-  local wk = utils.load('which-key')
-  if not wk then return end
 
   wk.register {
     ["<Leader>fd"] = {

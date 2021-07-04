@@ -1,8 +1,8 @@
 local utils = require('utils')
 
 local function setup()
-  local dap = utils.load('dap')
-  if not dap then return end
+  local dap = utils.require('dap')
+  if next(dap) == nil then return end
 
   dap.adapters.lldb = {
     type    = 'executable',

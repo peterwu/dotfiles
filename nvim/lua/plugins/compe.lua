@@ -1,8 +1,8 @@
 local utils = require('utils')
 
 local function setup()
-  local compe = utils.load('compe')
-  if not compe then return end
+  local compe = utils.require('compe')
+  if next(compe) == nil then return end
 
   compe.setup {
     enabled          = true,
@@ -28,11 +28,6 @@ local function setup()
       ultisnips = true
     }
   }
-
-  local opts = {noremap=true, silent=true, expr=true}
-
-  vim.api.nvim_set_keymap('i', '<Tab>',   [[pumvisible() ? '<C-N>' : '<Tab>']], opts)
-  vim.api.nvim_set_keymap('i', '<S-Tab>', [[pumvisible() ? '<C-P>' : '<C-H>']], opts)
 end
 
 return {setup = setup}

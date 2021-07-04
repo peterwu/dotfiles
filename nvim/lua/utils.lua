@@ -1,6 +1,6 @@
-local function load(module)
-  local r, m = pcall(require, module)
-  return r and m or nil
+local function require(module)
+  local r, m = pcall(_G.require, module)
+  return r and m or {}
 end
 
-return {load = load}
+return {require = require}

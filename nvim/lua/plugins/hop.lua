@@ -1,10 +1,11 @@
 local utils = require('utils')
 
 local function setup()
-  local hop = utils.load('hop')
-  if not hop then return end
-  local wk = utils.load('which-key')
-  if not wk then return end
+  local hop = utils.require('hop')
+  if next(hop) == nil then return end
+
+  local wk = utils.require('which-key')
+  if next(wk) == nil then return end
 
   hop.setup {keys = 'etovxqpdygfblzhckisuran'}
 

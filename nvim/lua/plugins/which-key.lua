@@ -1,8 +1,8 @@
 local utils = require('utils')
 
 local function setup()
-  local wk = utils.load('which-key')
-  if not wk then return end
+  local wk = utils.require('which-key')
+  if next(wk) == nil then return end
 
   wk.setup {
     plugins = {

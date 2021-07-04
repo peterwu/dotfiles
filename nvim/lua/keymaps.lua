@@ -46,6 +46,10 @@ vim.api.nvim_set_keymap('n', '<A-Right>', [[<Cmd>tabmove +1<CR>]], {noremap = tr
 -- <Ctrl-L> redraws the screen and removes any search highlighting
 vim.api.nvim_set_keymap('n', '<C-L>', [[<Cmd>nohlsearch<CR><C-L>]], {noremap = true, silent = true})
 
+-- use tab to select from popup menu
+vim.api.nvim_set_keymap('i', '<Tab>',   [[pumvisible() ? '<C-N>' : '<Tab>']], {noremap=true, silent=true, expr=true})
+vim.api.nvim_set_keymap('i', '<S-Tab>', [[pumvisible() ? '<C-P>' : '<C-H>']], {noremap=true, silent=true, expr=true})
+
 -- launch terminal
 vim.api.nvim_set_keymap('n', '<Leader>o', [[<Cmd>below 10sp term://$SHELL<CR>i]], {noremap = true, silent = true})
 
