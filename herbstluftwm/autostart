@@ -2,11 +2,15 @@
 
 # this is a simple config for herbstluftwm
 
+HLWM_HOME=~/.config/herbstluftwm
+
 hc() {
     herbstclient "$@"
 }
 
 hc emit_hook reload
+
+xsetroot -solid '#5A8E3A'
 
 # remove all existing keybindings
 hc keyunbind --all
@@ -17,12 +21,11 @@ Mod=Mod4   # Use the super key as the main modifier
 hc keybind $Mod-Shift-q quit
 hc keybind $Mod-Shift-r reload
 hc keybind $Mod-w close
-hc keybind $Mod-Return spawn alacritty 
-# hc keybind $Mod-Return spawn kitty 
+hc keybind $Mod-Return spawn alacritty
 
 # user custom keybindings
 hc keybind $Mod-d spawn rofi -show
-hc keybind Mod1-Control-Delete spawn ~/.local/bin/scripts/exit_session
+hc keybind Mod1-Control-Delete spawn $HLWM_HOME/exit.sh
 
 hc keybind XF86AudioRaiseVolume spawn pactl set-sink-volume @DEFAULT_SINK@	  +5%
 hc keybind XF86AudioLowerVolume spawn pactl set-sink-volume @DEFAULT_SINK@	  -5%
@@ -63,17 +66,7 @@ hc keybind $Mod-Control-l       resize right +$resizestep
 
 # tags
 tag_keys=( {1..9} 0 )
-tag_names=(
-            󱆃   #1
-            󰖟   #2
-            󰇰   #3
-            󰷉   #4
-            󰊢   #5
-            󱉟   #6
-            󰛊   #7
-            󰢹   #8
-            󰚀   #9
-          )
+tag_names=( {1..9} )
 
 hc rename default "${tag_names[0]}" || true
 for i in ${!tag_names[@]} ; do
@@ -157,19 +150,9 @@ hc unrule --all
 hc rule focus=on switchtag=on # normally focus new clients
 #hc rule focus=off # normally do not focus new clients
 
-# give focus to most common terminals
-hc rule class~'(Alacritty|XTerm)'                tag="${tag_names[0]}"
-hc rule class~'(firefox|Google-chrome|Chromium)' tag="${tag_names[1]}" 
-hc rule class=Thunderbird                        tag="${tag_names[2]}"
-hc rule class~'(Nvim|Gvim|Emacs)'                tag="${tag_names[3]}" 
-hc rule class~'(Code|code-oss|jetbrains-clion)'  tag="${tag_names[4]}"
-hc rule class~'(Soffice|libreoffice|Zathura)'    tag="${tag_names[5]}" 
-hc rule class=mpv                                tag="${tag_names[6]}"
-hc rule class=Virt-manager                       tag="${tag_names[7]}"
-
 hc rule class=Yad floating=on
 
-hc rule windowtype~'_NET_WM_WINDOW_TYPE_(DIALOG|UTILITY|SPLASH)'     pseudotile=on 
+hc rule windowtype~'_NET_WM_WINDOW_TYPE_(DIALOG|UTILITY|SPLASH)'     pseudotile=on
 hc rule windowtype='_NET_WM_WINDOW_TYPE_DIALOG'                      focus=on
 hc rule windowtype~'_NET_WM_WINDOW_TYPE_(NOTIFICATION|DOCK|DESKTOP)' manage=off
 
@@ -185,4 +168,4 @@ hc unlock
 
 
 # initialize the session
-~/.local/bin/scripts/init_session
+$HLWM_HOME/init.sh

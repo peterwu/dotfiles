@@ -1,17 +1,38 @@
 #!/usr/bin/env bash
 
-chosen=$(echo -e "󰌾\tLock\n󰍃\tLogout\n󰜉\tReboot\n󰐥\tShutdown\n󰤄\tSuspend\n󰒲\tHibernate" | rofi -dmenu -i -p "Leaving herbstluftwm ... ")
+choices="\uf30d\tLock"
+choices+="\n"
+choices+="\uf08b\tLogout"
+choices+="\n"
+choices+="\uf01e\tReboot"
+choices+="\n"
+choices+="\uf011\tShutdown"
+choices+="\n"
+choices+="\uf186\tSuspend"
+choices+="\n"
+choices+="\uf880\tHibernate"
 
-if [[ $chosen =~ "Lock" ]]; then
-    light-locker-command --lock
-elif [[ $chosen =~ "Logout" ]]; then
-    herbstclient quit
-elif [[ $chosen =~ "Reboot" ]]; then
-    systemctl reboot
-elif [[ $chosen =~ "Shutdown" ]]; then
-    systemctl poweroff
-elif [[ $chosen =~ "Suspend" ]]; then
-    systemctl suspend
-elif [[ $chosen =~ "Hibernate" ]]; then
-    systemctl hibernate
-fi
+chosen=$(echo -e "$choices" | rofi -dmenu -i -p "Leaving herbstluftwm ... ")
+
+case "${chosen:2}" in
+    Lock)
+        light-locker-command --lock
+        ;;
+    Logout)
+        herbstclient quit
+        ;;
+    Reboot)
+        systemctl reboot
+        ;;
+    Shutdown)
+        systemctl poweroff
+        ;;
+    Suspend)
+        systemctl suspend
+        ;;
+    Hibernate)
+        systemctl hibernate
+        ;;
+    *)
+        ;;
+esac

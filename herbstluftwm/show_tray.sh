@@ -3,7 +3,7 @@
 width=290
 height=120
 posx=-1
-posy=36
+posy=30
 
 PATH_AC="/sys/class/power_supply/AC"
 PATH_BATTERY_0="/sys/class/power_supply/BAT0"
@@ -40,24 +40,24 @@ battery_percent_1=$(("$battery_level_1 * 100 / $battery_max_1"))
 
 
 if [ "$ac" -eq 1 ]; then
-  charging_status=" +++ "
+    charging_status=" +++ "
 else
-  charging_status=" --- "
+    charging_status=" --- "
 fi
 
-yad --list \
-  --width=$width \
-  --height=$height \
-  --posx=$posx \
-  --posy=$posy \
-  --no-buttons \
-  --no-selection \
-  --no-click \
-  --tail \
-  --close-on-unfocus \
-  --column "Battery" \
-  --column "Capacity" \
-  --column "Status" \
+GTK_THEME="Adwaita-dark"                         \
+  yad --list                                     \
+  --width=$width                                 \
+  --height=$height                               \
+  --posx=$posx                                   \
+  --posy=$posy                                   \
+  --no-buttons                                   \
+  --no-selection                                 \
+  --no-click                                     \
+  --tail                                         \
+  --close-on-unfocus                             \
+  --column "Battery"                             \
+  --column "Capacity"                            \
+  --column "Status"                              \
   BAT0 "$battery_percent_0 %" "$charging_status" \
-  BAT1 "$battery_percent_1 %" "$charging_status" 
-
+  BAT1 "$battery_percent_1 %" "$charging_status"
