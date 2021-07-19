@@ -12,6 +12,7 @@ local function setup()
       ['l'] = {[[<Cmd>lua require'plugins'.init_paq();require'paq'.list()<CR>]],      'List installed plugins'},
       ['o'] = {[[<Cmd>lua require'plugins'.init_paq();require'paq'.log_open()<CR>]],  'Open log'},
       ['u'] = {[[<Cmd>lua require'plugins'.init_paq();require'paq'.update()<CR>]],    'Update all installed plugins'},
+      ['s'] = {[[<Cmd>lua require'plugins'.init_paq();require'paq'.sync()<CR>]],      'Sync up plugins'},
       ['x'] = {[[<Cmd>lua require'plugins'.init_paq();require'paq'.log_clean()<CR>]], 'Clear log'}
     }
   }

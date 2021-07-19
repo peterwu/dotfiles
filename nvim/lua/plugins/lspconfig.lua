@@ -28,6 +28,7 @@ local function setup()
     buf_set_keymap('n', '[d',         [[<Cmd>lua vim.lsp.diagnostic.goto_prev()<CR>]],                           opts)
     buf_set_keymap('n', ']d',         [[<Cmd>lua vim.lsp.diagnostic.goto_next()<CR>]],                           opts)
     buf_set_keymap('n', '<Leader>q',  [[<Cmd>lua vim.lsp.diagnostic.set_loclist()<CR>]],                         opts)
+    buf_set_keymap("n", '<Leader>f',  [[<cmd>lua vim.lsp.buf.formatting()<CR>]],                                 opts)
   end
 
   nvim_lsp.clangd.setup {

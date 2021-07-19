@@ -93,7 +93,7 @@ local plugins ={
 local paqs = {}
 for i, p in ipairs(plugins) do
   paqs[i] = p.paq
-  if p.setup then pcall(p.setup) end
+  pcall(p.setup)
 end
 
 local function init_paq()
