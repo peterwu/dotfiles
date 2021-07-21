@@ -100,7 +100,7 @@
          ;;   \"BACKEND?REV\"        if the file is under VC, but is missing
 
          '(:eval (when vc-mode
-                   (let* ((git-logo "")
+                   (let* ((git-logo "\uf126") ; 
                           (git-status (vc-git-mode-line-string (buffer-file-name)))
                           (status (replace-regexp-in-string "^Git" "" git-status))
                           (class (substring-no-properties status 0 1))
@@ -369,6 +369,16 @@
        (dired-vc-rename-file t)
        :bind (:map dired-mode-map
                    ("C-+" . dired-create-empty-file)))
+   #+end_src
+** dired-sidebar
+   #+begin_src emacs-lisp
+     (use-package dired-sidebar
+       :ensure t
+       :after evil
+       :bind ("<f9>" . dired-sidebar-toggle-sidebar)
+       :bind (:map wy:evil-toggle-map
+                   ("t" . dired-sidebar-toggle-sidebar))
+       :commands (dired-sidebar-toggle-sidebar))
    #+end_src
 ** dired-x
    #+begin_src emacs-lisp
@@ -720,27 +730,6 @@
       (cursor-type '(hbar . 3))
       :config
       (blink-cursor-mode +1))
-  #+end_src
-* fzf
-  #+begin_src emacs-lisp
-    (use-package fzf
-      :ensure t
-      :preface
-      (defun wy:fzf-find-file-in-cwd ()
-        (interactive)
-        (let* ((client (frame-parameter nil 'client))
-               (cwd (process-get client 'server-client-directory)))
-          (fzf-find-file-in-dir (expand-file-name cwd))))
-
-      (defun wy:fzf-find-adjacent-file ()
-        (interactive)
-        (fzf-find-file-in-dir (expand-file-name default-directory)))
-      :bind (:map wy:evil-find-map
-                  ("b" . fzf-switch-buffer)
-                  ("d" . fzf-find-file-in-dir)
-                  ("f" . wy:fzf-find-adjacent-file)
-                  ("." . wy:fzf-find-file-in-cwd)
-                  ("?" . fzf-recentf)))
   #+end_src
 * gdb
   #+begin_src emacs-lisp
@@ -1182,14 +1171,6 @@
     (use-package so-long
       :config
       (global-so-long-mode +1))
-  #+end_src
-* sr-speedbar
-  #+begin_src emacs-lisp
-    (use-package sr-speedbar
-      :ensure t
-      :custom (speedbar-use-images nil)
-      :bind (:map wy:evil-toggle-map
-                  ("b" . sr-speedbar-toggle)))
   #+end_src
 * tab-bar
   #+begin_src emacs-lisp
