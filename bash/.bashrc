@@ -16,11 +16,8 @@ alias se='sudoedit'
 
 alias emacs='emacs -mm'
 alias e='emacsclient -t -a ""'
-alias vi='vim'
-alias vim='nvim'
-alias vimdiff='nvim -d'
-
-alias nnn='nnn -C'
+alias vi='e'
+alias vim='vi'
 
 alias ls='ls --color' # use colors
 alias la='ls -Flsa'   # list all files
@@ -35,8 +32,14 @@ alias bc='bc -l'
 HISTSIZE=20000
 HISTFILESIZE=20000
 
-export MANPAGER='nvim +Man!'
+# use emacs as man pager
+man() {
+    local m=$@
+    /usr/bin/man ${m} > /dev/null
+    [[ $? -eq 0 ]] && /usr/bin/emacsclient -nw --eval "(let ((m \"${m}\")) (man m) (delete-window) t)"
+}
 
+# customize bash prompt
 show_bash_prompt() {
   # The entire table of ANSI color codes
   # https://gist.github.com/iamnewton/8754917
@@ -55,12 +58,12 @@ show_bash_prompt() {
 
     # user@host:pwd
     prompt+="\001\e[0;34m\002"
-    prompt+="$(whoami)"
-    prompt+="\001\e[0;30m\002"
-    prompt+="@"
-    prompt+="\001\e[0;30m\002"
-    prompt+="$(hostname)"
-    prompt+="\001\e[0;30m\002"
+    prompt+=$USER
+    prompt+="\001\e[0;38m\002"
+    prompt+='@'
+    prompt+="\001\e[0;38m\002"
+    prompt+=$HOSTNAME
+    prompt+="\001\e[0;38m\002"
     prompt+=':'
     prompt+="\001\e[1;34m\002"
     prompt+="$(dirs +0)"
@@ -87,7 +90,7 @@ show_bash_prompt() {
           prompt+="\001\e[0;32m\002"
         fi
 
-        prompt+=" ${git_branch}"
+        prompt+="\uf126 ${git_branch}" # git icon
       fi
     fi
 
