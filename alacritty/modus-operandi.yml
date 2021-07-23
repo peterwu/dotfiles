@@ -1,0 +1,43 @@
+# Colors (Modus Operandi)
+colors:
+  # Default colors
+  primary:
+    background: '#ffffff'
+    foreground: '#000000'
+
+  cursor:
+    text:       '#ffffff'
+    background: '#000000'
+
+  # Normal colors
+  normal:
+    black:   '#000000'
+    red:     '#a60000'
+    green:   '#005e00'
+    yellow:  '#813e00'
+    blue:    '#0030a6'
+    magenta: '#721045'
+    cyan:    '#00538b'
+    white:   '#eeeeee'
+
+  # Bright colors [all the faint colors in the modus theme]
+  bright:
+    black:   '#555555'
+    red:     '#7f1010'
+    green:   '#104410'
+    yellow:  '#5f4400'
+    blue:    '#003497'
+    magenta: '#752f50'
+    cyan:    '#005077'
+    white:   '#ffffff'
+
+  # dim [all the intense colors in modus theme]
+  dim:
+    black:   '#222222'
+    red:     '#b60000'
+    green:   '#006800'
+    yellow:  '#605b00'
+    blue:    '#1f1fce'
+    magenta: '#a8007f'
+    cyan:    '#005f88'
+    white:   '#dddddd'

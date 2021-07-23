@@ -111,36 +111,36 @@ font:
     #   - (macOS) Menlo
     #   - (Linux/BSD) monospace
     #   - (Windows) Consolas
-    family: Iosevka Fusion
+    family: Input Mono
     style: Regular
 
   # Bold font face
-  # bold:
+  bold:
     # Font family
     #
-    # family: Iosevka Fusion
-    # style: Bold
+    family: Input Mono
+    style: Bold
 
   # Italic font face
-  # italic:
+  italic:
     # Font family
     #
     # If the italic family is not specified, it will fall back to the
     # value specified for the normal font.
-    # family: Iosevka Fusion
-    # style: Italic
+    family: Input Mono
+    style: Italic
 
   # Bold italic font face
-  # bold_italic:
+  bold_italic:
     # Font family
     #
     # If the bold italic family is not specified, it will fall back to the
     # value specified for the normal font.
-    #family: Iosevka Fusion
-    # style: Bold Italic
+    family: Input Mono
+    style: Bold Italic
 
   # Point size
-  size: 13.5
+  size: 13.0
 
   # Offset is the extra space around each character. `offset.y` can be thought
   # of as modifying the line spacing, and `offset.x` as modifying the letter
@@ -165,49 +165,8 @@ font:
 # If `true`, bold text is drawn using the bright color variants.
 draw_bold_text_with_bright_colors: true
 
-# Colors (Modus Operandi)
-colors:
-  # Default colors
-  primary:
-    background: '#ffffff'
-    foreground: '#000000'
-
-  cursor:
-    text:       '#ffffff'
-    background: '#000000'
-
-  # Normal colors
-  normal:
-    black:   '#000000'
-    red:     '#a60000'
-    green:   '#005e00'
-    yellow:  '#813e00'
-    blue:    '#0030a6'
-    magenta: '#721045'
-    cyan:    '#00538b'
-    white:   '#eeeeee'
-
-  # Bright colors [all the faint colors in the modus theme]
-  bright:
-    black:   '#555555'
-    red:     '#7f1010'
-    green:   '#104410'
-    yellow:  '#5f4400'
-    blue:    '#003497'
-    magenta: '#752f50'
-    cyan:    '#005077'
-    white:   '#ffffff'
-
-  # dim [all the intense colors in modus theme]
-  dim:
-    black:   '#222222'
-    red:     '#b60000'
-    green:   '#006800'
-    yellow:  '#605b00'
-    blue:    '#1f1fce'
-    magenta: '#a8007f'
-    cyan:    '#005f88'
-    white:   '#dddddd'
+import:
+  - ~/.config/alacritty/modus-operandi.yml
 
   # Indexed Colors
   #
@@ -331,7 +290,7 @@ shell:
  args:
    - --login
    - -c
-   - "tmux new-session"
+   - "tmux new-session -s $(cat /dev/urandom | tr -dc [:alnum:] | head -c 7)"
 
 # Startup directory
 #
