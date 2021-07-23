@@ -31,11 +31,9 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 (setq vc-follow-symlinks t)
 
-;; (set-face-attribute 'default nil :family "Iosevka Fusion" :height 130 :weight 'normal)
-;; (set-face-attribute 'fixed-pitch nil :family "Iosevka Fusion" :height 130 :weight 'normal)
-(set-face-attribute 'default nil :family "Input" :height 130 :weight 'normal)
-(set-face-attribute 'fixed-pitch nil :family "Input" :height 130 :weight 'normal)
-(set-face-attribute 'variable-pitch nil :font "Carlito" :height 130 :weight 'normal)
+(set-face-attribute 'default nil        :family "Input Mono" :height 130 :weight 'normal)
+(set-face-attribute 'fixed-pitch nil    :family "Input Mono" :height 130 :weight 'normal)
+(set-face-attribute 'variable-pitch nil :family "Carlito"    :height 130 :weight 'normal)
 
 (provide 'early-init)
 ;;; early-init.el ends here

@@ -169,11 +169,11 @@
          '(:eval (let ((p (format-mode-line "%p")))
                    (cond
                     ((string-equal p "All")
-                     (propertize "%%%%%%" 'help-echo p 'mouse-face 'mode-line-highlight))
+                     (propertize "All" 'help-echo p 'mouse-face 'mode-line-highlight))
                     ((string-equal p "Top")
-                     (propertize " 0%%" 'help-echo p 'mouse-face 'mode-line-highlight))
+                     (propertize "Top" 'help-echo p 'mouse-face 'mode-line-highlight))
                     ((string-equal p "Bottom")
-                     (propertize "__%%" 'help-echo p 'mouse-face 'mode-line-highlight))
+                     (propertize "Bot" 'help-echo p 'mouse-face 'mode-line-highlight))
                     (t
                      (propertize (concat p  "%%")
                                  'help-echo "Position"
@@ -375,6 +375,7 @@
      (use-package dired-sidebar
        :ensure t
        :after evil
+       :custom (dired-sidebar-set-width 41)
        :bind ("<f9>" . dired-sidebar-toggle-sidebar)
        :bind (:map wy:evil-toggle-map
                    ("t" . dired-sidebar-toggle-sidebar))
@@ -998,7 +999,7 @@
      (use-package org
        :after evil
        :custom
-       (org-ellipsis " ▾")
+       (org-ellipsis " ▼")
        (org-export-headline-levels 5)
        (org-export-with-tags nil)
        (org-fontify-whole-heading-line t)
@@ -1036,7 +1037,7 @@
        :ensure t
        :hook (org-mode . org-superstar-mode)
        :custom
-       (org-superstar-headline-bullets-list '("◉" "○" "✸" "▷" "◆" "▶"))
+       (org-superstar-headline-bullets-list '("→" "○" "●" "□" "■" "▷" "▶" "✓"))
        (org-superstar-leading-bullet ?\s)
        (org-superstar-prettify-item-bullets t))
    #+end_src
@@ -1304,8 +1305,9 @@
   #+end_src
 * ...
   #+begin_src emacs-lisp
-    (use-package go-mode   :ensure t)
-    (use-package lua-mode  :ensure t)
-    (use-package rust-mode :ensure t)
-    (use-package yaml-mode :ensure t)
+    (use-package go-mode       :ensure t)
+    (use-package lua-mode      :ensure t)
+    (use-package rust-mode     :ensure t)
+    (use-package yaml-mode     :ensure t)
+    (use-package pkgbuild-mode :ensure t)
   #+end_src
