@@ -23,4 +23,4 @@
 	prompt = false
 	keepBackup = false
 [mergetool "nvimdiff"]
-  cmd = nvim -d $MERGED $LOCAL $BASE $REMOTE -c 'wincmd J'
+  cmd = nvim -d $LOCAL $REMOTE $BASE $MERGED -c 'wincmd o' -c 'wincmd s' -c 'buffer 3' -c 'wincmd v' -c 'buffer 4' -c 'wincmd k' -c 'wincmd v' -c 'buffer 2' -c 'wincmd j' -c 'wincmd ='
