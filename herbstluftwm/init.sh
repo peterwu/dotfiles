@@ -7,7 +7,7 @@ xsetroot -cursor_name left_ptr
 xset s 300 5
 picom --daemon --fading --no-fading-openclose
 numlockx on
-# light-locker &
+light-locker &
 
 if [ -f $HOME/.fehbg ]; then
   herbstclient spawn $HOME/.fehbg

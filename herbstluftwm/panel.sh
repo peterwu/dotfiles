@@ -20,18 +20,18 @@ print_date() {
 }
 
 print_vol() {
-    # pamixer --get-volume
-    # pamixer --get-mute
-    # format: vol/mute?/vol
+    # format: vol/muted?/vol
 
-    local muted=0
-    local vol=45
+    local muted=$(pamixer --get-mute)
+    local vol=$(pamixer --get-volume)
+
     echo -e "vol\t${muted}\t${vol}"
 }
 
 print_net() {
     # /proc/net/wireless
-    # format: net/eth?/strenth
+    # format: net/eth?/strength
+
     local strength=$(awk 'NR==3 {printf "%d",$3}' /proc/net/wireless)
 
     # hard code eth=0 for now
@@ -147,7 +147,7 @@ format_vol() {
     local vol=$2
     local icon
 
-    if [ "${muted}" -eq 1 ]; then
+    if [[ "${muted}" == "true" ]]; then
         icon="\uf6a9"
     else
         if [ "${vol}" -gt 66 ]; then
