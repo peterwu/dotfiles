@@ -45,19 +45,19 @@ else
     charging_status=" --- "
 fi
 
-GTK_THEME="Adwaita-dark"                         \
-  yad --list                                     \
-  --width=$width                                 \
-  --height=$height                               \
-  --posx=$posx                                   \
-  --posy=$posy                                   \
-  --no-buttons                                   \
-  --no-selection                                 \
-  --no-click                                     \
-  --tail                                         \
-  --close-on-unfocus                             \
-  --column "Battery"                             \
-  --column "Capacity"                            \
-  --column "Status"                              \
-  BAT0 "$battery_percent_0 %" "$charging_status" \
-  BAT1 "$battery_percent_1 %" "$charging_status"
+GTK_THEME=Adwaita:dark                                  \
+         yad --list                                     \
+         --width=$width                                 \
+         --height=$height                               \
+         --posx=$posx                                   \
+         --posy=$posy                                   \
+         --no-buttons                                   \
+         --no-selection                                 \
+         --no-click                                     \
+         --tail                                         \
+         --close-on-unfocus                             \
+         --column "Battery"                             \
+         --column "Capacity"                            \
+         --column "Status"                              \
+         BAT0 "$battery_percent_0 %" "$charging_status" \
+         BAT1 "$battery_percent_1 %" "$charging_status"

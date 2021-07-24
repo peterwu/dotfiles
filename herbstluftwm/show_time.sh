@@ -17,11 +17,11 @@ posy=30
 posx=$(("($screen_width - $width) / 2"))
 posx=780
 
-GTK_THEME="Adwaita-dark" \
-  yad --calendar         \
-  --show-weeks           \
-  --no-buttons           \
-  --close-on-unfocus     \
-  --width=$width         \
-  --posx=$posx           \
-  --posy=$posy
+GTK_THEME=Adwaita:dark      \
+         yad --calendar     \
+         --show-weeks       \
+         --no-buttons       \
+         --close-on-unfocus \
+         --width=$width     \
+         --posx=$posx       \
+         --posy=$posy

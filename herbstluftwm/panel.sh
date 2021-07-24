@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-# dependencies
-# - inotify
-# - yad
-
 HLWM_HOME=~/.config/herbstluftwm
 SEPARATOR=" "
 
@@ -239,29 +235,31 @@ format_tray() {
     pids[0]=$!
 
     # battery info
-    print_batt
-    inotifywait -m -q \
-                /sys/class/power_supply/AC/uevent \
-                /sys/class/power_supply/BAT{0,1}/capacity \
-                -e close | \
-        while read file event; do
+    while :; do
+        print_batt
+        sleep 15 || break
+    done > >(uniq_linebuffered) &
+    pids[1]=$!
+
+    udevadm monitor --udev --subsystem-match power_supply |
+        while read event; do
             print_batt
         done > >(uniq_linebuffered) &
-    pids[1]=$!
+    pids[2]=$!
 
     # net
     while :; do
         print_net
-        sleep 15 || break
+        sleep 10 || break
     done > >(uniq_linebuffered) &
-    pids[2]=$!
+    pids[3]=$!
 
     # wait for events
     herbstclient --idle
 
     # clean up
     for pid in "${pids[@]}"; do
-        kill $pid
+        kill -9 $pid
     done
 } 2> /dev/null | {
     IFS=$'\t' read -ra tags <<< $(herbstclient tag_status "${monitor}")
