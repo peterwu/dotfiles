@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-HLWM_HOME=~/.config/herbstluftwm
 SEPARATOR=" "
 
 monitor="${1:-0}"
@@ -133,7 +132,7 @@ format_tags() {
 format_date() {
     local now="$@"
 
-    now="%{A1:herbstclient spawn $HLWM_HOME/show_time.sh:}${now}%{A}"
+    now="%{A1:herbstclient spawn ~/.config/herbstluftwm/show_time.sh:}${now}%{A}"
 
     echo -e "${now}"
 }
@@ -217,7 +216,7 @@ format_batt() {
 format_tray() {
     local tray=$1
 
-    tray="%{A1:herbstclient spawn $HLWM_HOME/show_tray.sh:}${tray}%{A}"
+    tray="%{A1:herbstclient spawn ~/.config/herbstluftwm/show_tray.sh:}${tray}%{A}"
 
     echo -e "${tray}"
 }
@@ -237,7 +236,7 @@ format_tray() {
     # battery info
     while :; do
         print_batt
-        sleep 15 || break
+        sleep 17 || break
     done > >(uniq_linebuffered) &
     pids[1]=$!
 
@@ -250,7 +249,7 @@ format_tray() {
     # net
     while :; do
         print_net
-        sleep 10 || break
+        sleep 11 || break
     done > >(uniq_linebuffered) &
     pids[3]=$!
 

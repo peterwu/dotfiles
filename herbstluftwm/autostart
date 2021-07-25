@@ -15,22 +15,22 @@ Mod=Mod4   # Use the super key as the main modifier
 herbstclient keybind $Mod-Shift-q quit
 herbstclient keybind $Mod-Shift-r reload
 herbstclient keybind $Mod-Shift-c close
-herbstclient keybind $Mod-Return spawn alacritty
+herbstclient keybind $Mod-Return  spawn alacritty
 
 # user custom keybindings
 herbstclient keybind $Mod-d spawn rofi -show
 herbstclient keybind Mod1-Control-Delete spawn ~/.config/herbstluftwm/exit.sh
 
+herbstclient keybind XF86AudioMicMute     spawn pactl set-source-mute @DEFAULT_SOURCE@  toggle
+herbstclient keybind XF86AudioMute        chain , spawn pactl set-sink-mute @DEFAULT_SINK@ toggle \
+                                                , spawn ~/.config/herbstluftwm/update_volume.sh
 herbstclient keybind XF86AudioRaiseVolume chain , spawn pactl set-sink-volume @DEFAULT_SINK@ +5%  \
                                                 , spawn ~/.config/herbstluftwm/update_volume.sh
 herbstclient keybind XF86AudioLowerVolume chain , spawn pactl set-sink-volume @DEFAULT_SINK@ -5%  \
                                                 , spawn ~/.config/herbstluftwm/update_volume.sh
-herbstclient keybind XF86AudioMute        chain , spawn pactl set-sink-mute @DEFAULT_SINK@ toggle \
-                                                , spawn ~/.config/herbstluftwm/update_volume.sh
-herbstclient keybind XF86AudioMicMute     spawn pactl set-source-mute @DEFAULT_SOURCE@  toggle
 
-herbstclient keybind XF86MonBrightnessUp   spawn light -A 5
-herbstclient keybind XF86MonBrightnessDown spawn light -U 5
+herbstclient keybind XF86MonBrightnessUp   spawn ~/.config/herbstluftwm/update_brightness.sh +5
+herbstclient keybind XF86MonBrightnessDown spawn ~/.config/herbstluftwm/update_brightness.sh -5
 
 herbstclient keybind Print spawn maim ~/Pictures/Screenshots/maim-$(date +%F_%H%M%S).png
 
