@@ -21,13 +21,10 @@ herbstclient keybind $Mod-Return  spawn alacritty
 herbstclient keybind $Mod-d spawn rofi -show
 herbstclient keybind Mod1-Control-Delete spawn ~/.config/herbstluftwm/exit.sh
 
-herbstclient keybind XF86AudioMicMute     spawn pactl set-source-mute @DEFAULT_SOURCE@  toggle
-herbstclient keybind XF86AudioMute        chain , spawn pactl set-sink-mute @DEFAULT_SINK@ toggle \
-                                                , spawn ~/.config/herbstluftwm/update_volume.sh
-herbstclient keybind XF86AudioRaiseVolume chain , spawn pactl set-sink-volume @DEFAULT_SINK@ +5%  \
-                                                , spawn ~/.config/herbstluftwm/update_volume.sh
-herbstclient keybind XF86AudioLowerVolume chain , spawn pactl set-sink-volume @DEFAULT_SINK@ -5%  \
-                                                , spawn ~/.config/herbstluftwm/update_volume.sh
+herbstclient keybind XF86AudioMicMute     spawn pamixer --default-source --toggle-mute
+herbstclient keybind XF86AudioMute        spawn ~/.config/herbstluftwm/update_volume.sh 1 0
+herbstclient keybind XF86AudioRaiseVolume spawn ~/.config/herbstluftwm/update_volume.sh 0 +5
+herbstclient keybind XF86AudioLowerVolume spawn ~/.config/herbstluftwm/update_volume.sh 0 -5
 
 herbstclient keybind XF86MonBrightnessUp   spawn ~/.config/herbstluftwm/update_brightness.sh +5
 herbstclient keybind XF86MonBrightnessDown spawn ~/.config/herbstluftwm/update_brightness.sh -5
