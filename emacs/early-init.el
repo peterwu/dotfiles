@@ -31,9 +31,9 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 (setq vc-follow-symlinks t)
 
-(set-face-attribute 'default nil        :family "Input Mono" :height 130 :weight 'normal)
-(set-face-attribute 'fixed-pitch nil    :family "Input Mono" :height 130 :weight 'normal)
-(set-face-attribute 'variable-pitch nil :family "Carlito"    :height 130 :weight 'normal)
+(set-face-attribute 'default nil        :family "Fantasque Sans Mono" :height 145 :weight 'normal)
+(set-face-attribute 'fixed-pitch nil    :family "Fantasque Sans Mono" :height 145 :weight 'normal)
+(set-face-attribute 'variable-pitch nil :family "Liberation Sans"     :height 135 :weight 'normal)
 
 (provide 'early-init)
 ;;; early-init.el ends here

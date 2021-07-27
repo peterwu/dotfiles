@@ -385,11 +385,13 @@
    #+begin_src emacs-lisp
      (use-package dired-x
        :after (dired evil)
+       :demand t
        :custom
        (dired-bind-info nil)
        (dired-bind-man nil)
        (dired-clean-confirm-killing-deleted-buffers t)
        (dired-clean-up-buffers-too t)
+       (dired-guess-shell-alist-user '(("\\.pdf$" "xdg-open * &")))
        (dired-x-hands-off-my-keys t)
        :bind (:map wy:evil-dired-map
                    ("j" . dired-jump)
@@ -999,7 +1001,7 @@
      (use-package org
        :after evil
        :custom
-       (org-ellipsis " ▼")
+       (org-ellipsis " ▾")
        (org-export-headline-levels 5)
        (org-export-with-tags nil)
        (org-fontify-whole-heading-line t)
@@ -1037,7 +1039,7 @@
        :ensure t
        :hook (org-mode . org-superstar-mode)
        :custom
-       (org-superstar-headline-bullets-list '("→" "○" "●" "□" "■" "▷" "▶" "✓"))
+       (org-superstar-headline-bullets-list '("◉" "○" "⮞" "☉" "□" "▣" "✓"))
        (org-superstar-leading-bullet ?\s)
        (org-superstar-prettify-item-bullets t))
    #+end_src
