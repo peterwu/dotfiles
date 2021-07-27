@@ -279,37 +279,38 @@
      #+begin_src bash
        pacman -S lightdm lightdm-gtk-greeter light-locker
      #+end_src
-**** create a greeter using Adwait dark theme
+**** prepare the Default gtk theme
      #+begin_src bash
-       cp /usr/share/xgreeters/lightdm-gtk{,-dark}-greeter.desktop
+       touch /usr/share/themes/Default/gtk-3.0/gtk.css
      #+end_src
 **** configure lightdm
      #+begin_example
        # /etc/lightdm/lightdm.conf
 
-       greeter-session=lightdm-gtk-dark-greeter
+       greeter-session=lightdm-gtk-greeter
      #+end_example
 **** configure lightdm-gtk-greeter
      #+begin_example
        # /etc/lightdm/lightdm-gtk-greeter.conf
 
        [greeter]
-       background=/usr/share/backgrounds/archlinux/wild.png
-       #user-background=
-       #theme-name=
+       background = /usr/share/backgrounds/archlinux/geolanes.png
+       theme-name = Default
        icon-theme-name = Adwaita
-       font-name = Cantarell 10
+       font-name = Cantarell 11
        xft-antialias = true
        xft-dpi = 120
        xft-hintstyle = hintful
        xft-rgba = rgb
        indicators = ~session;~spacer;~clock;~spacer;~power
        clock-format = %a %H:%M %Z
-       #keyboard=
-       #reader=
-       #position=
-       #screensaver-timeout=
+       at-spi-enabled = false
      #+end_example
+**** use the lightdm-gtk-greeter.css
+     #+begin_src bash
+       # edit as necessary
+       cp /usr/share/doc/lightdm-gtk-greeter/sample-lightdm-gtk-greeter.css  /usr/share/themes/Default/gtk-3.0/apps/lightdm-gtk-greeter.css
+     #+end_src
 **** enable lightdm.service
      #+begin_src bash
        systemctl enable lightdm.service
@@ -350,6 +351,56 @@
     #+begin_src bash
       yay -S ttf-symbola
     #+end_src
+*** configure fonts
+    #+begin_example
+      # ~/.config/fontconfig/fonts.conf
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+      <fontconfig>
+        <match target="pattern">
+          <edit name="dpi" mode="assign">
+            <double>120</double>
+          </edit>
+        </match>
+        <match target="font">
+          <edit name="antialias" mode="assign">
+            <bool>true</bool>
+          </edit>
+        </match>
+        <match target="font">
+          <test qual="all" name="rgba" compare="eq">
+            <const>unknown</const>
+          </test>
+          <edit name="rgba" mode="assign">
+            <const>rgb</const>
+          </edit>
+        </match>
+        <match target="pattern">
+          <test name="family" qual="any">
+            <string>serif</string>
+          </test>
+          <edit binding="strong" mode="prepend" name="family">
+            <string>Liberation Serif</string>
+          </edit>
+        </match>
+        <match target="pattern">
+          <test name="family" qual="any">
+            <string>sans-serif</string>
+          </test>
+          <edit binding="strong" mode="prepend" name="family">
+            <string>Liberation Sans</string>
+          </edit>
+        </match>
+        <match target="pattern">
+          <test name="family" qual="any">
+            <string>monospace</string>
+          </test>
+          <edit binding="strong" mode="prepend" name="family">
+            <string>Liberation Mono</string>
+          </edit>
+        </match>
+      </fontconfig>
+    #+end_example
 ** configure power management
 *** disable usb wakeup
     #+begin_example
@@ -360,7 +411,7 @@
     #+end_example
 *** suspend system after 10 minutes of inactivity
     #+begin_example
-      # /etc/logind.conf
+      # /etc/systemd/logind.conf
 
       IdleAction=suspend
       IdleActionSec=10min
