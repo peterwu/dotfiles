@@ -1,0 +1,367 @@
+# -*- coding: utf-8 -*-
+#+startup: overview
+#+title: My Arch Linux Setup
+
+* Preparation
+** create bootable USB key
+   #+begin_src bash
+     dd bs=4M if=/path/to/archlinux.iso of=/dev/sdx status=progress && sync
+   #+end_src
+* Installation
+** boot the USB key
+** set larger console font
+   #+begin_src bash
+     setfont latarcyrheb-sun32			#[sun12x22]
+   #+end_src
+** connect to wifi
+   #+begin_src bash
+     iwctl station wlp3s0 connect [SSID]
+   #+end_src
+** update system clock
+   #+begin_src bash
+     timedatectl set-ntp true
+   #+end_src
+** partition ssd
+   #+begin_src bash
+     lsblk              # list all the devices
+     gdisk /dev/nvme0n1 # use GPT
+   #+end_src
+
+   this partition should look like this:
+   #+begin_example
+   /dev/nvme0n1p1 EF00 (as boot) 512M
+   /dev/nvme0n1p2 8300 (as Linux)
+   #+end_example
+** create file systems
+*** make the boot partition as FAT32
+    #+begin_src bash
+      mkfs.vfat -F32 /dev/nvme0n1p1
+    #+end_src
+*** make the rest as BTRFS
+    #+begin_src bash
+      mkfs.btrfs -L btrfs /dev/nvme0n1p2
+    #+end_src
+*** mount the root partition
+    #+begin_src bash
+      mount /dev/nvme0n1p2 /mnt
+    #+end_src
+*** create BTRFS subvolumes
+    #+begin_src bash
+      btrfs subvolume create /mnt/@
+      btrfs subvolume create /mnt/@home
+      btrfs subvolume create /mnt/@var
+      btrfs subvolume create /mnt/@snapshots
+    #+end_src
+*** unmount the BTRFS partition
+    #+begin_src bash
+      unmount /mnt
+    #+end_src
+*** mount all the partitions
+    #+begin_src bash
+      # mount btrfs paritions
+      mount -o relatime,compress-force=zstd,ssd,discard=async,space_cache=v2,subvol=@ /dev/nvme0n1p2 /mnt
+      mkdir -p /mnt/{home,var,.snapshots}
+      mount -o relatime,compress-force=zstd,ssd,discard=async,space_cache=v2,subvol=@home  /dev/nvme0n1p2 /mnt/home
+      mount -o relatime,compress-force=zstd,ssd,discard=async,space_cache=v2,subvol=@var /dev/nvme0n1p2 /mnt/var
+      mount -o relatime,compress-force=zstd,ssd,discard=async,space_cache=v2,subvol=@snapshots /dev/nvme0n1p2 /mnt/.snapshots
+
+      # mount boot partition
+      mkdir -p /mnt/boot
+      mount /dev/nvme0n1p1 /mnt/boot
+    #+end_src
+*** select mirrors if necessary
+    #+begin_src bash
+      vi /etc/pacman.d/mirrorlist
+    #+end_src
+*** install essential packages
+    #+begin_src bash
+      pacstrap -i /mnt base base-devel btrfs-progs vi efibootmgr sudo intel-ucode linux linux-firmware iwd
+    #+end_src
+*** generate an fstab
+    #+begin_src bash
+      genfstab -U /mnt > /mnt/etc/fstab
+    #+end_src
+*** chroot into the new system
+    #+begin_src bash
+      arch-chroot /mnt /bin/bash
+    #+end_src
+*** set the time zone
+    #+begin_src bash
+      ln -sf /usr/share/zoneinfo/America/Toronto /etc/localtime
+      hwclock --systohc --utc
+    #+end_src
+*** localization
+    #+begin_src bash
+      vi /etc/locale.gen   #enable en_US.UTF8
+      locale-gen
+      locale > /etc/locale.conf
+    #+end_src
+*** network configuration
+**** set hostname
+    #+begin_src bash
+      echo mulberry > /etc/hostname
+    #+end_src
+**** edit /etc/hosts
+     #+begin_example
+       127.0.0.1 localhost
+       ::1       localhost
+       127.0.1.1 mulberry.localdomain mulberry
+     #+end_example
+*** generate mkinitcpio
+**** edit /etc/mkinitcpio.conf
+     #+begin_example
+       # enable intel i915
+       MODULES=(i915)
+       ...
+       # remove HOOK "fsck", add "btrfs keymap" before "filesystems":
+       HOOKS="base udev autodetect modconf block btrfs keymap encrypt filesystems keyboard"
+       ...
+       COMPRESSION=”lz4”
+       COMPRESSION_OPTIONS=(-9)
+     #+end_example
+**** create the initramfs image
+     #+begin_src bash
+       mkinitcpio -p linux
+     #+end_src
+*** set root password
+    #+begin_src bash
+      passwd
+    #+end_src
+*** install systemd-boot
+**** install the EFT boot manager
+     #+begin_src bash
+       bootctl --path=/boot install
+     #+end_src
+**** edit loader configuration
+     #+begin_example
+       # /boot/loader/loader.conf
+       default      arch
+       timeout      3
+       editor       0
+       console-mode max
+     #+end_example
+**** add loader
+     #+begin_example
+       # /boot/loader/entries/arch.conf
+       title    Arch Linux
+       linux    /vmlinuz-linux
+       initrd   /intel-ucode.img
+       initrd   /initramfs-linux.img
+       options  root=UUID=<root-uuid> rootflags=subvol=@ rw fbcon=font:TER16x32
+
+       # use the following command in vi to get the <root-uuid>
+       read ! blkid /dev/nvme0n1p2
+     #+end_example
+*** reboot
+    #+begin_src bash
+      exit # exit chroot
+      umount -R /mnt
+      reboot
+    #+end_src
+* Post-installation
+** add regular user
+   #+begin_src bash
+     useradd -m -G wheel -s /bin/bash peter
+     passwd peter
+   #+end_src
+** setup networks
+*** configure iwd
+**** start/enable iwd.service
+     #+begin_src bash
+       systemctl enable --now iwd.service
+     #+end_src
+**** connect to wifi
+     #+begin_src bash
+       iwctl station wlan0 connect [SSID]
+     #+end_src
+**** enable built-in network configuration
+     #+begin_example
+       # /etc/iwd/main.conf
+
+       [General]
+       EnableNetworkConfiguration=true
+     #+end_example
+*** edit systemd-network configurations
+**** wired
+     #+begin_example
+       # /etc/systemd/network/20-wired.network
+
+       [Match]
+       Name=enp1s0
+
+       [Network]
+       DHCP=yes
+     #+end_example
+**** wireless
+     #+begin_example
+       # /etc/systemd/network/25-wireless.network
+
+       [match]
+       Name=wlan0
+
+       [Network]
+       DHCP=yes
+
+       [DHCP]
+       RouteMetric=20
+ #+end_example
+*** enable relevant systemd services
+    #+begin_src bash
+      systemctl enable systemd-networkd.service
+      systemctl enable systemd-resolved.service
+    #+end_src
+** install software
+*** configure pacman
+    #+begin_example
+      # /etc/pacman.conf
+
+      # enable the following options
+      Color
+      VerbosePkgLists
+    #+end_example
+*** install an aur helper
+**** install git
+     #+begin_src bash
+       pacman -S git
+     #+end_src
+**** install yay
+     #+begin_src bash
+       git clone https://aur.archlinux.org/yay.git
+       cd yay
+       makepkg -sfic
+     #+end_src
+*** install xorg
+**** install relevant packages
+     #+begin_src bash
+       pacman -S xorg-server xorg-apps
+     #+end_src
+**** install Bibata cursor
+     #+begin_example
+       go to https://github.com/ful1e5/Bibata_Cursor
+       unzip to ~/.local/share/icons
+     #+end_example
+**** edit ~/.Xresources
+     #+begin_example
+       ! General
+       Xft.dpi       : 120
+       Xft.autohint  : true
+       Xft.lcdfilter : lcddefault
+       Xft.hintstyle : hintfull
+       Xft.hinting   : true
+       Xft.antialias : true
+       Xft.rgba      : rgb
+
+       ! Cursor
+       Xcursor.theme:  Bibata-Modern-Classic
+
+       ! Modus Operandi
+       ,*.background  : #ffffff
+       ,*.foreground  : #000000
+       ,*.color0      : #555555
+       ,*.color8      : #222222
+       ,*.color1      : #7f1010
+       ,*.color9      : #b60000
+       ,*.color2      : #104410
+       ,*.color10     : #006800
+       ,*.color3      : #5f4400
+       ,*.color11     : #605b00
+       ,*.color4      : #003497
+       ,*.color12     : #1f1fce
+       ,*.color5      : #752f50
+       ,*.color13     : #a8007f
+       ,*.color6      : #005077
+       ,*.color14     : #005f88
+       ,*.color7      : #ffffff
+       ,*.color15     : #dddddd
+     #+end_example
+*** install display manager
+**** install relevant packages
+     #+begin_src bash
+       pacman -S lightdm lightdm-gtk-greeter light-locker
+     #+end_src
+**** create a greeter using Adwait dark theme
+     #+begin_src bash
+       cp /usr/share/xgreeters/lightdm-gtk{,-dark}-greeter.desktop
+     #+end_src
+**** configure lightdm
+     #+begin_example
+       # /etc/lightdm/lightdm.conf
+
+       greeter-session=lightdm-gtk-dark-greeter
+     #+end_example
+**** configure lightdm-gtk-greeter
+     #+begin_example
+       # /etc/lightdm/lightdm-gtk-greeter.conf
+
+       [greeter]
+       background=/usr/share/backgrounds/archlinux/wild.png
+       #user-background=
+       #theme-name=
+       icon-theme-name = Adwaita
+       font-name = Cantarell 10
+       xft-antialias = true
+       xft-dpi = 120
+       xft-hintstyle = hintful
+       xft-rgba = rgb
+       indicators = ~session;~spacer;~clock;~spacer;~power
+       clock-format = %a %H:%M %Z
+       #keyboard=
+       #reader=
+       #position=
+       #screensaver-timeout=
+     #+end_example
+**** enable lightdm.service
+     #+begin_src bash
+       systemctl enable lightdm.service
+     #+end_src
+**** boot into graphical interface
+     #+begin_src bash
+       systemctl set-default graphical.target
+     #+end_src
+*** install window manager
+**** install relevant packages
+     #+begin_src bash
+       pacman -S herbstluftwm alacritty yad picom rofi
+       yay -S lemonbar-xft-git
+     #+end_src
+**** use configuration files from dotfiles repo
+*** install emacs
+    #+begin_src bash
+      pacman -S emacs
+    #+end_src
+*** install IME
+    #+begin_src bash
+      pacman -S ibus-libpinyin
+    #+end_src
+*** install other applications
+    #+begin_src bash
+      pacman -S firefox libreoffice
+    #+end_src
+** install fonts
+*** noto fonts
+    #+begin_src bash
+      pacman -S noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra
+    #+end_src
+*** input mono
+    https://input.djr.com/
+*** fantasque sans mono
+    https://github.com/belluzj/fantasque-sans
+*** symbola
+    #+begin_src bash
+      yay -S ttf-symbola
+    #+end_src
+** configure power management
+*** disable usb wakeup
+    #+begin_example
+      # /etc/tmpfiles.d/disable-usb-wakeup.conf
+
+      #    Path                  Mode UID  GID  Age Argument
+      w    /proc/acpi/wakeup     -    -    -    -   XHC
+    #+end_example
+*** suspend system after 10 minutes of inactivity
+    #+begin_example
+      # /etc/logind.conf
+
+      IdleAction=suspend
+      IdleActionSec=10min
+    #+end_example
