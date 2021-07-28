@@ -5,13 +5,10 @@ xrdb ~/.Xresources
 # launch a few programs
 xsetroot -cursor_name left_ptr
 xset s 300 5
-picom --daemon --fading --no-fading-openclose
-numlockx on
-light-locker &
+light-locker --lock-on-suspend --lock-on-lid --idle-hint &
 
-if [ -f $HOME/.fehbg ]; then
-  herbstclient spawn $HOME/.fehbg
-fi
+picom --daemon --fading --no-fading-openclose
+feh --no-fehbg --bg-scale ~/Pictures/Wallpapers/default
 
 # lightdm doesn't source .xprofile
 source ~/.xprofile

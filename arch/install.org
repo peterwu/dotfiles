@@ -319,7 +319,7 @@
      #+begin_src bash
        systemctl set-default graphical.target
      #+end_src
-*** install window manager
+*** install window manager - herbstluftwm
 **** install relevant packages
      #+begin_src bash
        pacman -S herbstluftwm alacritty yad picom rofi
@@ -409,10 +409,10 @@
       #    Path                  Mode UID  GID  Age Argument
       w    /proc/acpi/wakeup     -    -    -    -   XHC
     #+end_example
-*** suspend system after 10 minutes of inactivity
+*** suspend system after 2 minutes of inactivity
     #+begin_example
       # /etc/systemd/logind.conf
 
       IdleAction=suspend
-      IdleActionSec=10min
+      IdleActionSec=2min
     #+end_example
