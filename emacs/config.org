@@ -1249,6 +1249,16 @@
       (uniquify-buffer-name-style 'forward)
       (uniquify-strip-common-suffix t))
   #+end_src
+* vterm
+  #+begin_src emacs-lisp
+    (use-package vterm
+      :unless (eq system-type 'windows-nt)
+      :ensure t
+      :custom
+      (vterm-always-compile-module t)
+      (vterm-enable-manipulate-selection-data-by-osc52 t)
+      (vterm-kill-buffer-on-exit t))
+  #+end_src
 * which-key
   #+begin_src emacs-lisp
     (use-package which-key
