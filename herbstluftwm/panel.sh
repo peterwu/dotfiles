@@ -132,7 +132,7 @@ format_tags() {
 format_date() {
     local now="$@"
 
-    now="%{A1:herbstclient spawn ~/.config/herbstluftwm/show_time.sh:}${now}%{A}"
+    now="%{A1:herbstclient spawn ~/.config/herbstluftwm/show-time.sh:}${now}%{A}"
 
     echo -e "${now}"
 }
@@ -216,7 +216,7 @@ format_batt() {
 format_tray() {
     local tray=$1
 
-    tray="%{A1:herbstclient spawn ~/.config/herbstluftwm/show_tray.sh:}${tray}%{A}"
+    tray="%{A1:herbstclient spawn ~/.config/herbstluftwm/show-tray.sh:}${tray}%{A}"
 
     echo -e "${tray}"
 }
