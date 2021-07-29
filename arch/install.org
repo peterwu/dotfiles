@@ -330,6 +330,22 @@
        yay -S lemonbar-xft-git
      #+end_src
 **** use configuration files from dotfiles repo
+*** install neovim
+**** install relevant packages
+     #+begin_src bash
+       pacman -S neovim
+     #+end_src
+**** create necessary dirs
+     #+begin_src bash
+       git clone https://github.com/savq/paq-nvim.git \
+           "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/pack/paqs/start/paq.nvim
+     #+end_src
+**** use configuration files from dotfiles repo
+**** bootstrap neovim
+     #+begin_example
+       : lua require'plugins'.init_paq()<CR>
+       : PaqSync<CR>
+     #+end_example
 *** install emacs
     #+begin_src bash
       pacman -S emacs
