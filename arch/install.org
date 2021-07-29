@@ -7,6 +7,10 @@
    #+begin_src bash
      dd bs=4M if=/path/to/archlinux.iso of=/dev/sdx status=progress && sync
    #+end_src
+** remove old boot entries in UEFI menu
+   #+begin_src bash
+     efibootmgr -b <boot-number> -B
+   #+end_src
 * Installation
 ** boot the USB key
 ** set larger console font
@@ -159,12 +163,12 @@
       reboot
     #+end_src
 * Post-installation
-** add regular user
+** user management
    #+begin_src bash
      useradd -m -G wheel -s /bin/bash peter
      passwd peter
    #+end_src
-** setup networks
+** networks
 *** configure iwd
 **** start/enable iwd.service
      #+begin_src bash
@@ -210,7 +214,7 @@
       systemctl enable systemd-networkd.service
       systemctl enable systemd-resolved.service
     #+end_src
-** install software
+** software
 *** configure pacman
     #+begin_example
       # /etc/pacman.conf
@@ -338,7 +342,7 @@
     #+begin_src bash
       pacman -S firefox libreoffice
     #+end_src
-** install fonts
+** fonts
 *** noto fonts
     #+begin_src bash
       pacman -S noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra
@@ -401,7 +405,7 @@
         </match>
       </fontconfig>
     #+end_example
-** configure power management
+** power management
 *** disable usb wakeup
     #+begin_example
       # /etc/tmpfiles.d/disable-usb-wakeup.conf
