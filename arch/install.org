@@ -168,6 +168,23 @@
      useradd -m -G wheel -s /bin/bash peter
      passwd peter
    #+end_src
+** swap management
+*** disable zswap
+    append *zswap.enabled=0* to kernel parameters
+*** enable zram
+**** install zram-generator
+     #+begin_src bash
+       pacman -S zram-generator
+     #+end_src
+**** create zram-generator.conf
+     #+begin_example
+       # /etc/systemd/zram-generator.conf
+
+       [zram0]
+       zram-fraction = 0.25
+       max-zram-size = 8192
+     #+end_example
+**** reboot
 ** networks
 *** configure iwd
 **** start/enable iwd.service
