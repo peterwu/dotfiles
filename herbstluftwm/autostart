@@ -146,8 +146,8 @@ herbstclient rule focus=on switchtag=on # normally focus new clients
 
 herbstclient rule class=Yad floating=on
 
-herbstclient rule windowtype~'_NET_WM_WINDOW_TYPE_(DIALOG|UTILITY|SPLASH)'     pseudotile=on
 herbstclient rule windowtype='_NET_WM_WINDOW_TYPE_DIALOG'                      focus=on
+herbstclient rule windowtype~'_NET_WM_WINDOW_TYPE_(DIALOG|UTILITY|SPLASH)'     manage=off
 herbstclient rule windowtype~'_NET_WM_WINDOW_TYPE_(NOTIFICATION|DOCK|DESKTOP)' manage=off
 
 herbstclient set tree_style '╾│ ├└╼─┐'

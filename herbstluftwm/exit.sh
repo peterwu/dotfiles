@@ -8,9 +8,7 @@ choices+="\uf01e\tReboot"
 choices+="\n"
 choices+="\uf011\tShutdown"
 choices+="\n"
-choices+="\uf186\tSuspend"
-choices+="\n"
-choices+="\uf880\tHibernate"
+choices+="\uf755\tSuspend"
 
 chosen=$(echo -e "$choices" | rofi -dmenu -i -p "Leaving herbstluftwm ... ")
 
@@ -29,9 +27,6 @@ case "${chosen:2}" in
         ;;
     Suspend)
         systemctl suspend
-        ;;
-    Hibernate)
-        systemctl hibernate
         ;;
     *)
         ;;
