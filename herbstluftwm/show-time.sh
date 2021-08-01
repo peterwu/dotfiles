@@ -4,7 +4,7 @@ key=$(($RANDOM * 100))
 
 screen_width=$(xdpyinfo | grep dimensions | sed -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/' | cut -dx -f1)
 width=360
-height=330
+height=400
 posy=30
 posx=$((($screen_width - $width) / 2))
 
@@ -65,6 +65,7 @@ cmd=($(format_world_clock_cmd ${cmd[@]}))
 cmd=(
     env GTK_THEME=Adwaita:dark
     yad --paned --key=$key
+    --text="$(date +'%A\n<b><big>%B %_d %Y</big></b>')"
     --close-on-unfocus
     --no-buttons
     --on-top
