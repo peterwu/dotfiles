@@ -29,7 +29,7 @@ herbstclient keybind XF86AudioLowerVolume spawn ~/.config/herbstluftwm/update-vo
 herbstclient keybind XF86MonBrightnessUp   spawn ~/.config/herbstluftwm/update-brightness.sh +5
 herbstclient keybind XF86MonBrightnessDown spawn ~/.config/herbstluftwm/update-brightness.sh -5
 
-herbstclient keybind Print spawn maim ~/Pictures/Screenshots/maim-$(date +%F_%H%M%S).png
+herbstclient keybind Print spawn sh -c 'maim ~/Pictures/Screenshots/maim-$(date +%F_%H%M%S).png'
 
 # basic movement
 # focusing clients
