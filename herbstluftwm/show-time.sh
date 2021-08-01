@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
-key=$(($RANDOM * 100))
+key=$(( $RANDOM * 100 ))
 
 screen_width=$(xdpyinfo | grep dimensions | sed -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/' | cut -dx -f1)
 width=360
 height=400
 posy=30
-posx=$((($screen_width - $width) / 2))
+posx=$(( ($screen_width - $width) / 2 ))
 
 time_zones=(
     America/Toronto
@@ -15,6 +15,9 @@ time_zones=(
 )
 
 get_tz_data() {
+    local data=()
+    local result=()
+
     for tz in "${time_zones[@]}"; do
         data+=($(env TZ="${tz}" date +"${tz##*/} %H:%M <tt>%:::z</tt>"))
     done
@@ -30,10 +33,10 @@ get_tz_data() {
 }
 
 format_world_clock_cmd() {
-    c=($@)
+    local c=($@)
 
     for e in $(get_tz_data); do
-        f="--field=$e:LBL"
+        local f="--field=$e:LBL"
         c+=("${f}")
     done
 
@@ -43,7 +46,6 @@ format_world_clock_cmd() {
 cmd=(
     env GTK_THEME=Adwaita:dark
     yad --plug=$key --tabnum=1
-    --fixed
     --calendar --show-weeks
 )
 
@@ -75,4 +77,4 @@ cmd=(
     --height=$height
 )
 
-"${cmd[@]}" &
+"${cmd[@]}"

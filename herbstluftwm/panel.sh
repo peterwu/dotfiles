@@ -143,16 +143,16 @@ format_vol() {
     local icon
 
     if [[ "${muted}" == "true" ]]; then
-        icon="\uf6a9"
+        icon=""
     else
         if [ "${vol}" -gt 66 ]; then
-            icon="\uf028"
+            icon=""
         elif [ "${vol}" -gt 33 ]; then
-            icon="\uf6a8"
+            icon=""
         elif [ "${vol}" -gt 0 ]; then
-            icon="\uf027"
+            icon=""
         else
-            icon="\uf026"
+            icon=""
         fi
     fi
 
@@ -165,14 +165,14 @@ format_net() {
     local icon
 
     if [ "${eth}" -eq 1 ]; then
-        icon="\uf6ff"
+        icon=""
     else
         if [ "${strength}" -gt 66 ]; then
-            icon="\uf1eb"
+            icon=""
         elif [ "${strength}" -gt 33 ]; then
-            icon="\uf6ab"
+            icon=""
         else
-            icon="\uf6aa"
+            icon=""
         fi
     fi
 
@@ -184,19 +184,20 @@ format_batt() {
     local cap=$2
     local icon, batt
 
+
     if [ "${ac}" -eq 1 ]; then
-        icon+="\uf376" # charging
+        icon+="" # charging
     else
-        if [ "${cap}" -ge 95 ]; then
-            icon+="\uf240" # full
-        elif [ "${cap}" -ge 75 ]; then
-            icon+="\uf241" # 3/4
-        elif [ "${cap}" -ge 50 ]; then
-            icon+="\uf242" # 1/2
-        elif [ "${cap}" -ge 25 ]; then
-            icon+="\uf243" # 1/4
+        if [ "${battery_percent}" -ge 95 ]; then
+            icon+="" # full
+        elif [ "${battery_percent}" -ge 75 ]; then
+            icon+="" # 3/4
+        elif [ "${battery_percent}" -ge 50 ]; then
+            icon+="" # 1/2
+        elif [ "${battery_percent}" -ge 25 ]; then
+            icon+="" # 1/4
         else
-            icon+="\uf244" # empty
+            icon+="" # empty
         fi
     fi
 

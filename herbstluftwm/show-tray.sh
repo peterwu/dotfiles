@@ -10,75 +10,42 @@ PATH_AC="/sys/class/power_supply/AC"
 PATH_BATTERY_0="/sys/class/power_supply/BAT0"
 PATH_BATTERY_1="/sys/class/power_supply/BAT1"
 
-print_batt() {
-    local ac=0
-    local battery_level_0=0
-    local battery_level_1=0
-    local battery_max_0=0
-    local battery_max_1=0
+format_batx() {
+    local battery_percent=$2
+    local ac=$3
 
-    if [ -f "${PATH_AC}/online" ]; then
-        ac=$(cat "${PATH_AC}/online")
-    fi
-
-    if [ -f "${PATH_BATTERY_0}/energy_now" ]; then
-        battery_level_0=$(cat "${PATH_BATTERY_0}/energy_now")
-    fi
-
-    if [ -f "${PATH_BATTERY_0}/energy_full" ]; then
-        battery_max_0=$(cat "${PATH_BATTERY_0}/energy_full")
-    fi
-
-    if [ -f "${PATH_BATTERY_1}/energy_now" ]; then
-        battery_level_1=$(cat "${PATH_BATTERY_1}/energy_now")
-    fi
-
-    if [ -f "${PATH_BATTERY_1}/energy_full" ]; then
-        battery_max_1=$(cat "${PATH_BATTERY_1}/energy_full")
-    fi
-
-    local battery_level=$((${battery_level_0} + ${battery_level_1}))
-    local battery_max=$((${battery_max_0} + ${battery_max_1}))
-    local battery_percent=$((${battery_level} * 100 / ${battery_max}))
-
-    echo -e "${ac} ${battery_percent}"
-}
-
-format_batt() {
-    local ac=$1
-    local cap=$2
-    local batt
+    local icon
 
     if [ "${ac}" -eq 1 ]; then
-        icon+="\uf376" # charging
+        icon+="" # charging
     else
-        if [ "${cap}" -ge 95 ]; then
-            icon+="\uf240" # full
-        elif [ "${cap}" -ge 75 ]; then
-            icon+="\uf241" # 3/4
-        elif [ "${cap}" -ge 50 ]; then
-            icon+="\uf242" # 1/2
-        elif [ "${cap}" -ge 25 ]; then
-            icon+="\uf243" # 1/4
+        if [ "${battery_percent}" -ge 95 ]; then
+            icon+="" # full
+        elif [ "${battery_percent}" -ge 75 ]; then
+            icon+="" # 3/4
+        elif [ "${battery_percent}" -ge 50 ]; then
+            icon+="" # 1/2
+        elif [ "${battery_percent}" -ge 25 ]; then
+            icon+="" # 1/4
         else
-            icon+="\uf244" # empty
+            icon+="" # empty
         fi
     fi
 
-    batt="${icon}  ${cap}%"
+    local batt="${icon}  ${battery_percent}%"
 
-    if [[ "${ac}" -eq 0 && "${cap}" -le 9 ]]; then
+    if [[ "${ac}" -eq 0 && "${battery_percent}" -le 9 ]]; then
         batt="<span foreground='#ff0000'>${batt}</span>"
     fi
 
-    if [[ "${ac}" -eq 1 && "${cap}" -ge 95 ]]; then
+    if [[ "${ac}" -eq 1 && "${battery_percent}" -ge 95 ]]; then
         batt="<span foreground='#00ff00'>${batt}</span>"
     fi
 
     echo -e "${batt}"
 }
 
-format_batt_details() {
+get_batt_details() {
     local ac=0
     local battery_level_0=0
     local battery_level_1=0
@@ -105,8 +72,12 @@ format_batt_details() {
         battery_max_1=$(cat "$PATH_BATTERY_1/energy_full")
     fi
 
-    battery_percent_0=$(("$battery_level_0 * 100 / $battery_max_0"))
-    battery_percent_1=$(("$battery_level_1 * 100 / $battery_max_1"))
+    local battery_percent_0=$(("$battery_level_0 * 100 / $battery_max_0"))
+    local battery_percent_1=$(("$battery_level_1 * 100 / $battery_max_1"))
+
+    local battery_level=$(( ${battery_level_0} + ${battery_level_1} ))
+    local battery_max=$(( ${battery_max_0} + ${battery_max_1} ))
+    local battery_percent=$(( ${battery_level} * 100 / ${battery_max} ))
 
     if [ "$ac" -eq 1 ]; then
         charging_status=""
@@ -121,6 +92,9 @@ format_batt_details() {
         BAT1
         $battery_percent_1
         $charging_status
+        BATx
+        $battery_percent
+        $ac
     )
 
     echo "${result[@]}"
@@ -146,10 +120,10 @@ export -f confirm_action
 brightness=$(( $(cat $BACKLIGHT_BRIGHTNESS) / 12 ))
 vol=$(pamixer --get-volume)
 essid=$(iwctl station wlan0 show|grep 'Connected network'|awk '{print $3}')
-batt=$(format_batt $(print_batt))
-batt_details=($(format_batt_details))
+batt_details=($(get_batt_details))
 bat0_details=$(printf "\t🞂 %7s <tt>%11d%%</tt> %13s " ${batt_details[@]:0:3})
 bat1_details=$(printf "\t🞂 %7s <tt>%11d%%</tt> %13s " ${batt_details[@]:3:3})
+batx_details=$(format_batx ${batt_details[@]:6:3})
 
 cmd=(
     env GTK_THEME=Adwaita:dark
@@ -159,7 +133,7 @@ cmd=(
     --field="  ":SCL "${vol}"
     --field="":LBL ""
     --field="    ${essid}":LBL ""
-    --field="  ${batt}":LBL ""
+    --field="  ${batx_details}":LBL ""
     --field="  ${bat0_details}":LBL ""
     --field="  ${bat1_details}":LBL ""
     --field="":LBL ""
