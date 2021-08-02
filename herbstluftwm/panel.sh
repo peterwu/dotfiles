@@ -181,7 +181,7 @@ format_net() {
 
 format_batt() {
     local ac=$1
-    local cap=$2
+    local battery_percent=$2
     local icon, batt
 
 
@@ -201,13 +201,13 @@ format_batt() {
         fi
     fi
 
-    batt="${icon} ${cap}%%"
+    batt="${icon} ${battery_percent}%%"
 
-    if [[ "${ac}" -eq 0 && "${cap}" -le 9 ]]; then
+    if [[ "${ac}" -eq 0 && "${battery_percent}" -le 9 ]]; then
         batt="%{F#ff0000}${batt}%{F-}"
     fi
 
-    if [[ "${ac}" -eq 1 && "${cap}" -ge 95 ]]; then
+    if [[ "${ac}" -eq 1 && "${battery_percent}" -ge 95 ]]; then
         batt="%{F#00ff00}${batt}%{F-}"
     fi
 
