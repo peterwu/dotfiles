@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 
 xrdb ~/.Xresources
 
@@ -25,7 +25,7 @@ while pgrep -u $UID -x lemonbar >/dev/null; do sleep 1; done
 herbstclient detect_monitors
 
 # find the panel
-panel=~/.config/herbstluftwm/panel.sh
+panel=~/.config/herbstluftwm/show-panel
 [ -x "$panel" ] || panel=/etc/xdg/herbstluftwm/panel.sh
 for monitor in $(herbstclient list_monitors | cut -d: -f1) ; do
     # start it on each monitor

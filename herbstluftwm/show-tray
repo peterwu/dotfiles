@@ -107,9 +107,12 @@ confirm_action() {
     local cmd=(
         env GTK_THEME=Adwaita:dark
         yad --center --on-top --fixed
+        --borders=20
+        --form
         --title="Are you sure?"
         --image=dialog-question
         --text="\tAre you sure you want to $1 your computer now?\t"
+        --field=" ":LBL
     )
 
     "${cmd[@]}" && $2
