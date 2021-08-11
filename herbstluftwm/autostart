@@ -4,7 +4,7 @@
 
 herbstclient emit_hook reload
 
-xsetroot -solid '#5A8E3A'
+xsetroot -solid '#000000'
 
 # remove all existing keybindings
 herbstclient keyunbind --all
@@ -29,7 +29,12 @@ herbstclient keybind XF86AudioLowerVolume spawn ~/.config/herbstluftwm/update-vo
 herbstclient keybind XF86MonBrightnessUp   spawn ~/.config/herbstluftwm/update-brightness +5
 herbstclient keybind XF86MonBrightnessDown spawn ~/.config/herbstluftwm/update-brightness -5
 
-herbstclient keybind Print spawn sh -c 'maim ~/Pictures/Screenshots/maim-$(date +%F_%H%M%S).png'
+herbstclient keybind Print      chain \
+             , spawn canberra-gtk-play -i screen-capture \
+             , spawn scrot '%F_%H%M%S.png' --exec 'mv $f ~/Pictures/Screenshots/'
+herbstclient keybind Mod1-Print chain \
+             , spawn canberra-gtk-play -i screen-capture \
+             , spawn scrot --focused '%F_%H%M%S.png' --exec 'mv $f ~/Pictures/Screenshots/'
 
 # basic movement
 # focusing clients
@@ -110,13 +115,13 @@ herbstclient keybind $Mod-i            jumpto      urgent
 herbstclient attr theme.tiling.reset          1
 herbstclient attr theme.floating.reset        1
 
-herbstclient attr theme.normal.color          '#545753'
-herbstclient attr theme.active.color          '#74507a'
-herbstclient attr theme.urgent.color          '#cc0000'
+herbstclient attr theme.normal.color          '#505050'
+herbstclient attr theme.active.color          '#721045'
+herbstclient attr theme.urgent.color          '#a60000'
 herbstclient attr theme.inner_color           '#000000'
 herbstclient attr theme.floating.outer_color  '#000000'
-herbstclient attr theme.active.inner_color    '#fce94e'
-herbstclient attr theme.active.outer_color    '#fce94e'
+herbstclient attr theme.active.inner_color    '#813e00'
+herbstclient attr theme.active.outer_color    '#813e00'
 herbstclient attr theme.background_color      '#000000'
 herbstclient attr theme.inner_width           1
 herbstclient attr theme.border_width          1
@@ -129,9 +134,9 @@ herbstclient set frame_bg_transparent      1
 herbstclient set frame_transparent_width   1
 herbstclient set frame_gap                 1
 herbstclient set frame_border_normal_color '#ffffff'
-herbstclient set frame_border_active_color '#4e9a05'
-herbstclient set frame_bg_normal_color     '#ededec'
-herbstclient set frame_bg_active_color     '#8ae234'
+herbstclient set frame_border_active_color '#005e00'
+herbstclient set frame_bg_normal_color     '#f8f8f8'
+herbstclient set frame_bg_active_color     '#315b00'
 
 herbstclient set window_gap                1
 herbstclient set frame_padding             1
@@ -144,10 +149,11 @@ herbstclient unrule --all
 herbstclient rule focus=on switchtag=on # normally focus new clients
 # herbstclient rule focus=off # normally do not focus new clients
 
-herbstclient rule class=Yad floating=on
+herbstclient rule class=Yad                     floating=on
+herbstclient rule class~'hlwm-show-(time|tray)' floating=on
 
-herbstclient rule windowtype='_NET_WM_WINDOW_TYPE_DIALOG'                      focus=on
-herbstclient rule windowtype~'_NET_WM_WINDOW_TYPE_(DIALOG|UTILITY|SPLASH)'     manage=off
+herbstclient rule windowtype~'_NET_WM_WINDOW_TYPE_(DIALOG|UTILITY|SPLASH)' floating=on
+herbstclient rule windowtype='_NET_WM_WINDOW_TYPE_DIALOG' focus=on
 herbstclient rule windowtype~'_NET_WM_WINDOW_TYPE_(NOTIFICATION|DOCK|DESKTOP)' manage=off
 
 herbstclient set tree_style '╾│ ├└╼─┐'
