@@ -1,12 +1,6 @@
 #export GDK_SCALE=1
 #export GDK_DPI_SCALE=1.25
 
-# export GTK_IM_MODULE=fcitx
-# export XMODIFIERS=@im=fcitx
-# export QT_IM_MODULE=fcitx
-
 export GTK_IM_MODULE=ibus
 export XMODIFIERS=@im=ibus
 export QT_IM_MODULE=ibus
-
-ibus-daemon -drx
