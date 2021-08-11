@@ -343,7 +343,7 @@
 *** install window manager - herbstluftwm
 **** install relevant packages
      #+begin_src bash
-       pacman -S herbstluftwm alacritty yad picom rofi
+       pacman -S herbstluftwm alacritty yad picom rofi scrot
        yay -S lemonbar-xft-git
      #+end_src
 **** use configuration files from dotfiles repo
@@ -369,7 +369,7 @@
     #+end_src
 *** install IME
     #+begin_src bash
-      pacman -S ibus-libpinyin
+      pacman -S ibus ibus-libpinyin
     #+end_src
 *** install other applications
     #+begin_src bash
@@ -391,6 +391,7 @@
 *** configure fonts
     #+begin_example
       # ~/.config/fontconfig/fonts.conf
+
       <?xml version="1.0" encoding="UTF-8"?>
       <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
       <fontconfig>
@@ -412,6 +413,7 @@
             <const>rgb</const>
           </edit>
         </match>
+
         <match target="pattern">
           <test name="family" qual="any">
             <string>serif</string>
@@ -436,6 +438,31 @@
             <string>Liberation Mono</string>
           </edit>
         </match>
+
+        <alias>
+          <family>serif</family>
+          <prefer>
+            <family>Noto Serif CJK SC</family>
+            <family>Noto Serif CJK TC</family>
+            <family>Noto Serif CJK JP</family>
+          </prefer>
+        </alias>
+        <alias>
+          <family>sans-serif</family>
+          <prefer>
+            <family>Noto Sans CJK SC</family>
+            <family>Noto Sans CJK TC</family>
+            <family>Noto Sans CJK JP</family>
+          </prefer>
+        </alias>
+        <alias>
+          <family>monospace</family>
+          <prefer>
+            <family>Noto Sans Mono CJK SC</family>
+            <family>Noto Sans Mono CJK TC</family>
+            <family>Noto Sans Mono CJK JP</family>
+          </prefer>
+        </alias>
       </fontconfig>
     #+end_example
 ** power management
