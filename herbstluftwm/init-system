@@ -4,19 +4,30 @@ xrdb ~/.Xresources
 
 # launch a few programs
 xsetroot -cursor_name left_ptr
+
+# lock after 5 min / suspend after 2 min
 xset s 300 5
 light-locker --lock-on-suspend --lock-on-lid --idle-hint &
 
-picom --daemon --fading --no-fading-openclose
+# workaround a java bug for jetbrain products
+herbstclient cycle_value wmname herbstluftwm LG3D
+
+# compositor
+picom --daemon
+
+# set wallpaper
 feh --no-fehbg --bg-scale ~/Pictures/Wallpapers/default
 
 # lightdm doesn't source .xprofile
 source ~/.xprofile
 
-# Terminate already running bar instances
+# start ibus daemon
+ibus-daemon -drx &
+
+# terminate already running bar instances
 killall -q lemonbar
 
-# Wait until the processes have been shut down
+# wait until the processes have been shut down
 while pgrep -u $UID -x lemonbar >/dev/null; do sleep 1; done
 
 # do multi monitor setup here, e.g.:
