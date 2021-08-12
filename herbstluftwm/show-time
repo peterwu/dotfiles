@@ -1,80 +1,104 @@
-#!/usr/bin/env bash
+#!/usr/bin/env python
 
-key=$(( $RANDOM * 100 ))
+import os
+from datetime import datetime
+from zoneinfo import ZoneInfo
+import gi
 
-screen_width=$(xdpyinfo | grep dimensions | sed -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/' | cut -dx -f1)
-width=360
-height=400
-posy=30
-posx=$(( ($screen_width - $width) / 2 ))
+os.environ["GTK_THEME"] = "Adwaita:dark"
 
-time_zones=(
-    America/Toronto
-    America/Vancouver
-    Asia/Shanghai
-)
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, Gdk
 
-get_tz_data() {
-    local data=()
-    local result=()
+screen_width = 1920
+width = 360
+height = 360
+posy = 30
+posx = (screen_width - width) / 2
 
-    for tz in "${time_zones[@]}"; do
-        data+=($(env TZ="${tz}" date +"${tz##*/} %H:%M <tt>%:::z</tt>"))
-    done
+clocks = [
+    "America/Toronto",
+    "America/Vancouver",
+    "Asia/Shanghai"
+]
 
-    number_of_zones=$(( ${#data[@]} / ${#time_zones[@]} ))
-    for ((i=0; i < $number_of_zones; i++)); do
-        for ((j=0; j < 3; j++)); do
-            result+=("${data[i+3*j]}")
-        done
-    done
+class ShowTimeWindow(Gtk.Window):
+    def __init__(self):
+        super().__init__(title="Show Time")
 
-    echo "${result[@]}"
-}
+        self.set_type_hint(Gdk.WindowTypeHint.NORMAL)
+        self.set_default_size(width, height)
+        self.move(posx, posy)
+        self.connect("focus-out-event", Gtk.main_quit)
 
-format_world_clock_cmd() {
-    local c=($@)
+        vbox = Gtk.Box.new(Gtk.Orientation.VERTICAL, 3)
+        self.add(vbox)
 
-    for e in $(get_tz_data); do
-        local f="--field=$e:LBL"
-        c+=("${f}")
-    done
+        # banner
+        today = datetime.today()
 
-    echo "${c[@]}"
-}
+        label = Gtk.Label.new()
+        label.set_text(today.strftime("%A"))
+        label.set_xalign(0.03)
+        vbox.add(label)
 
-cmd=(
-    env GTK_THEME=Adwaita:dark
-    yad --plug=$key --tabnum=1
-    --calendar --show-weeks
-)
+        label = Gtk.Label.new()
+        label.set_markup(today.strftime("<big><b>%B %e %Y</b></big>"))
+        label.set_xalign(0.03)
+        vbox.add(label)
 
-"${cmd[@]}" &
+        # separator
+        vbox.add(Gtk.Separator.new(Gtk.Orientation.HORIZONTAL))
 
-cmd=(
-    env GTK_THEME=Adwaita:dark
-    yad --plug=$key --tabnum=2
-    --form
-    --text="<b>Clocks</b>"
-    --columns=3
-    --align=right
-)
+        # calendar
+        calendar = Gtk.Calendar.new()
+        calendar.set_display_options(Gtk.CalendarDisplayOptions.SHOW_HEADING
+                                     | Gtk.CalendarDisplayOptions.SHOW_DAY_NAMES
+                                     |Gtk.CalendarDisplayOptions.SHOW_WEEK_NUMBERS)
+        vbox.add(calendar)
 
-cmd=($(format_world_clock_cmd ${cmd[@]}))
+        # separator
+        vbox.add(Gtk.Separator.new(Gtk.Orientation.HORIZONTAL))
 
-"${cmd[@]}" &
+        label = Gtk.Label.new(None)
+        label.set_markup("<b>World Clocks</b>")
+        label.set_xalign(0.03)
 
-cmd=(
-    env GTK_THEME=Adwaita:dark
-    yad --paned --key=$key
-    --text="$(date +'%A\n<b><big>%B %_d %Y</big></b>')"
-    --close-on-unfocus
-    --no-buttons
-    --on-top
-    --posx=$posx
-    --posy=$posy
-    --width=$width
-    --height=$height
-)
+        vbox.add(label)
 
-"${cmd[@]}"
+        # separator
+        vbox.add(Gtk.Separator.new(Gtk.Orientation.HORIZONTAL))
+
+        grid = Gtk.Grid.new()
+        vbox.add(grid)
+        for i, c in enumerate(clocks):
+            dt = datetime.now(ZoneInfo(c))
+
+            # timezone
+            text = " {0:23s}".format(c.split("/")[1])
+            label = Gtk.Label.new(None)
+            label.set_text(text)
+            label.set_xalign(0.0)
+            grid.attach(label, 0, i, 1, 1)
+
+            # time
+            text = "{0:9d}:{1:02d}".format(dt.hour, dt.minute)
+            label = Gtk.Label.new(None)
+            label.set_text(text)
+            label.set_xalign(1.0)
+            grid.attach(label, 1, i, 1, 1)
+
+            # utc offset
+            text = "{0:+19.1f}".format(dt.tzinfo.utcoffset(dt).total_seconds() / 3600)
+            label = Gtk.Label.new(None)
+            label.set_text(text)
+            label.set_xalign(1.0)
+            grid.attach(label, 2, i, 1, 1)
+
+if __name__ == "__main__":
+    Gdk.set_program_class("hlwm-show-time")
+
+    win = ShowTimeWindow()
+    win.show_all()
+
+    Gtk.main()
