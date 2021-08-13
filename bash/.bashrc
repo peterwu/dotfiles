@@ -22,7 +22,7 @@ HISTSIZE=20000
 HISTFILESIZE=20000
 
 # Default editor
-if pgrep -x emacs > /dev/null; then
+if pgrep --exact emacs > /dev/null; then
     export VISUAL="/usr/bin/emacsclient --create-frame"
     export EDITOR="/usr/bin/emacsclient --tty"
 elif [ -x /usr/bin/nvim ]; then
@@ -33,7 +33,7 @@ fi
 # User specific aliases and functions
 set -o vi
 
-if pgrep -x emacs > /dev/null; then
+if pgrep --exact emacs > /dev/null; then
     alias emacs="emacs --maximized"
     alias e="emacsclient --tty"
     alias magit="emacsclient --tty --eval '(magit-status)'"
@@ -49,11 +49,11 @@ alias E="sudo --edit"
 
 alias ls="ls --color=auto --group-directories-first --indicator-style=slash -v"
 alias ll="ls -l --classify --size"
-alias la="ls -l --classify --size --almost-all"
+alias la="ls -l --classify --size --all"
 
-alias rm="rm --interactive --verbose"
-alias cp="cp --interactive --verbose"
-alias mv="mv --interactive --verbose"
+alias rm="rm --interactive"
+alias cp="cp --interactive"
+alias mv="mv --interactive"
 
 alias bc="bc --mathlib"
 
@@ -92,24 +92,37 @@ man() {
 
 # Customize bash prompt
 show_bash_prompt() {
+    # The entire table of ANSI color codes
+    # https://gist.github.com/iamnewton/8754917
+    # \### format must be used in functions
+    # \001 == \[
+    # \002 == \]
+    # \033 == \e
+
     local last_command_status=$?
     local prompt=""
 
     # current time
+    prompt+="\001"
     prompt+=$(tput setaf 5)
+    prompt+="\002"
     prompt+=$(date +%R)
     prompt+=" "
 
     # user@host:pwd
+    prompt+="\001"
     prompt+=$(tput setaf 4)
+    prompt+="\002"
     prompt+=$USER
+    prompt+="\001"
     prompt+=$(tput setaf 0)
+    prompt+="\002"
     prompt+="@"
-    prompt+=$(tput setaf 0)
     prompt+=$HOSTNAME
-    prompt+=$(tput setaf 0)
     prompt+=":"
+    prompt+="\001"
     prompt+=$(tput bold; tput setaf 4)
+    prompt+="\002"
     prompt+=$(dirs +0)
     prompt+=" "
 
@@ -128,10 +141,14 @@ show_bash_prompt() {
         if [ -n "${git_branch}" ]; then
             if [[ ${#git_status[@]} -gt 1 ]]; then
                 # modified -> RED
+                prompt+="\001"
                 prompt+=$(tput setaf 1)
+                prompt+="\002"
             else
                 # clean -> GREEN
+                prompt+="\001"
                 prompt+=$(tput setaf 2)
+                prompt+="\002"
             fi
 
             prompt+="\uf126 ${git_branch}" # git icon
@@ -144,10 +161,14 @@ show_bash_prompt() {
     # change the prompt to indicate the status of last executed command
     if [ ${last_command_status} -eq 0 ]; then
         # success -> GREEN
-        prompt+=$(tput setaf 2)
+        prompt+="\001"
+        prompt+=$(tput bold; tput setaf 2)
+        prompt+="\002"
     else
         # error -> RED
-        prompt+=$(tput setaf 1)
+        prompt+="\001"
+        prompt+=$(tput bold; tput setaf 1)
+        prompt+="\002"
     fi
 
     # use appropriate prompt to reflect effective uid
@@ -159,11 +180,14 @@ show_bash_prompt() {
         prompt+="λ"
     fi
 
-    # change line + reset colors
+    # reset colors
+    prompt+="\001"
     prompt+=$(tput sgr0)
+    prompt+="\002"
     prompt+=" "
 
     echo -e "${prompt}"
 }
 
-PS1='`show_bash_prompt`'
+# no double quotes here
+PS1='$(show_bash_prompt)'
