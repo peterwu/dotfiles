@@ -199,7 +199,7 @@ show_bash_prompt() {
     prompt+="\002"
     prompt+=" "
 
-    echo -e "${prompt}"
+    printf "${prompt}"
 }
 
 # no double quotes here
