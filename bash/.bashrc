@@ -100,7 +100,10 @@ show_bash_prompt() {
     # \033 == \e
 
     local last_command_status=$?
-    local prompt=""
+    local prompt
+
+    # begin box drawing
+    prompt="\001$(tput sgr0)\002╭ "
 
     # current time
     prompt+="\001"
@@ -151,12 +154,15 @@ show_bash_prompt() {
                 prompt+="\002"
             fi
 
-            prompt+="\uf126 ${git_branch}" # git icon
+            prompt+=" ${git_branch}" # git icon
         fi
     fi
 
     # change line
     prompt+="\n"
+
+    # end box drawing
+    prompt+="\001$(tput sgr0)\002╰ "
 
     # change the prompt to indicate the status of last executed command
     if [ ${last_command_status} -eq 0 ]; then
@@ -170,6 +176,7 @@ show_bash_prompt() {
         prompt+=$(tput bold; tput setaf 1)
         prompt+="\002"
     fi
+
 
     # use appropriate prompt to reflect effective uid
     if [ $(id -u) -eq 0 ]; then
