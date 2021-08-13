@@ -103,28 +103,31 @@ show_bash_prompt() {
     local prompt
 
     # begin box drawing
-    prompt="\001$(tput sgr0)\002╭ "
+    prompt+="\001"
+    prompt+=$(tput sgr0)
+    prompt+="\002"
+    prompt+="╭ "
 
     # current time
     prompt+="\001"
-    prompt+=$(tput setaf 5)
+    prompt+=$(tput sgr0; tput setaf 5)
     prompt+="\002"
     prompt+=$(date +%R)
     prompt+=" "
 
     # user@host:pwd
     prompt+="\001"
-    prompt+=$(tput setaf 4)
+    prompt+=$(tput sgr0; tput setaf 4)
     prompt+="\002"
     prompt+=$USER
     prompt+="\001"
-    prompt+=$(tput setaf 0)
+    prompt+=$(tput sgr0; tput setaf 0)
     prompt+="\002"
     prompt+="@"
     prompt+=$HOSTNAME
     prompt+=":"
     prompt+="\001"
-    prompt+=$(tput bold; tput setaf 4)
+    prompt+=$(tput sgr0; tput bold; tput setaf 4)
     prompt+="\002"
     prompt+=$(dirs +0)
     prompt+=" "
@@ -145,12 +148,12 @@ show_bash_prompt() {
             if [[ ${#git_status[@]} -gt 1 ]]; then
                 # modified -> RED
                 prompt+="\001"
-                prompt+=$(tput setaf 1)
+                prompt+=$(tput sgr0; tput setaf 1)
                 prompt+="\002"
             else
                 # clean -> GREEN
                 prompt+="\001"
-                prompt+=$(tput setaf 2)
+                prompt+=$(tput sgr0; tput setaf 2)
                 prompt+="\002"
             fi
 
@@ -162,18 +165,21 @@ show_bash_prompt() {
     prompt+="\n"
 
     # end box drawing
-    prompt+="\001$(tput sgr0)\002╰ "
+    prompt+="\001"
+    prompt+=$(tput sgr0)
+    prompt+="\002"
+    prompt+="╰ "
 
     # change the prompt to indicate the status of last executed command
     if [ ${last_command_status} -eq 0 ]; then
         # success -> GREEN
         prompt+="\001"
-        prompt+=$(tput bold; tput setaf 2)
+        prompt+=$(tput sgr0; tput bold; tput setaf 2)
         prompt+="\002"
     else
         # error -> RED
         prompt+="\001"
-        prompt+=$(tput bold; tput setaf 1)
+        prompt+=$(tput sgr0; tput bold; tput setaf 1)
         prompt+="\002"
     fi
 
