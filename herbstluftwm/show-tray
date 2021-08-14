@@ -12,12 +12,15 @@ from gi.repository import Gtk, Gdk
 
 gap = 2
 screen_width = 1920
-width = 300
+width = 305
 height = 50
 posy = 30 + gap
 posx = screen_width - width - gap
 
 BACKLIGHT_BRIGHTNESS = "/sys/class/backlight/intel_backlight/brightness"
+PATH_AC="/sys/class/power_supply/AC"
+PATH_BATTERY_0="/sys/class/power_supply/BAT0"
+PATH_BATTERY_1="/sys/class/power_supply/BAT1"
 
 class Actions(enum.IntEnum):
     Lock = 1
@@ -34,17 +37,28 @@ actions = {
     Actions.Suspend  : ["", "Suspend",   "systemctl suspend"]
 }
 
-def get_brightness():
-    f = open(BACKLIGHT_BRIGHTNESS,"r")
-    brightness = int(f.read()) / 12
+def read_file(file):
+    f = open(file,"r")
+    data = f.read()
     f.close()
+
+    return data
+
+def write_file(file, data):
+    f = open(file,"w")
+    f.write(data)
+    f.close()
+
+
+def get_brightness():
+    brightness = read_file(BACKLIGHT_BRIGHTNESS)
+    brightness = int(brightness) / 12
 
     return brightness
 
 def set_brightness(brightness):
-    f = open(BACKLIGHT_BRIGHTNESS,"w")
-    f.write(str(int(brightness * 12)))
-    f.close()
+    brightness = str(int(brightness * 12))
+    write_file(BACKLIGHT_BRIGHTNESS, brightness )
 
 def get_volume():
     return int(subprocess.Popen(["pactl get-sink-volume @DEFAULT_SINK@ | awk '{print $5}'| grep -m 1 % | sed 's/[%|,]//g'"], shell=True,
@@ -65,6 +79,45 @@ def get_essid():
     return subprocess.Popen(["iwctl station wlan0 show | grep 'Connected network' | awk '{print $3}'"], shell=True,
                               stdout=subprocess.PIPE,
                               universal_newlines=True).stdout.read().strip()
+
+def get_battery_status_icon(percent, ac):
+    if ac == 1:
+        return ""
+
+    if percent >= 95:
+        return ""
+
+    if percent >= 75:
+        return ""
+
+    if percent >= 50:
+        return ""
+
+    if percent >= 25:
+        return ""
+
+    return ""
+
+def get_battery_details():
+    ac = int(read_file(PATH_AC + "/online"))
+
+    battery_level_0 = int(read_file(PATH_BATTERY_0 + "/energy_now"))
+    battery_max_0   = int(read_file(PATH_BATTERY_0 + "/energy_full"))
+    battery_level_1 = int(read_file(PATH_BATTERY_1 + "/energy_now"))
+    battery_max_1   = int(read_file(PATH_BATTERY_1 + "/energy_full"))
+
+    battery_percent_0 = int(battery_level_0 * 100 / battery_max_0)
+    battery_percent_1 = int(battery_level_1 * 100 / battery_max_1)
+
+    battery_level = battery_level_0 + battery_level_1
+    battery_max = battery_max_0 + battery_max_1
+    battery_percent = int(battery_level * 100 / battery_max)
+
+    return [
+        (battery_percent_0, ac), # BAT0
+        (battery_percent_1, ac), # BAT0
+        (battery_percent,   ac)  # BATx
+    ]
 
 class ActionDialog(Gtk.Dialog):
     def __init__(self, parent, a):
@@ -116,15 +169,15 @@ class ShowTrayWindow(Gtk.Window):
 
         label = Gtk.Label.new()
         label.set_text("{0:2s}".format(""))
-        label.set_xalign(0.03)
+        label.set_xalign(0.0)
         hbox.add(label)
 
-        self.brightnessScale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, 0, 100, 5)
-        self.brightnessScale.set_value(get_brightness())
-        self.brightnessScale.set_draw_value(False)
-        self.brightnessScale.set_size_request(260, 0)
-        self.brightnessScale.connect("value-changed", self.on_change_brightness)
-        hbox.add(self.brightnessScale)
+        brightness_scale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, 0, 100, 5)
+        brightness_scale.set_value(get_brightness())
+        brightness_scale.set_draw_value(False)
+        brightness_scale.set_size_request(260, 0)
+        brightness_scale.connect("value-changed", self.on_change_brightness)
+        hbox.add(brightness_scale)
 
         # volume
         hbox = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 3)
@@ -132,16 +185,16 @@ class ShowTrayWindow(Gtk.Window):
 
         label = Gtk.Label.new()
         label.set_text("{0:2s}".format(""))
-        label.set_xalign(0.03)
+        label.set_xalign(0.0)
         hbox.add(label)
 
-        self.volumeScale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, 0, 150, 5)
-        self.volumeScale.set_value(get_volume())
-        self.volumeScale.set_draw_value(False)
-        self.volumeScale.set_size_request(260, 0)
-        self.volumeScale.add_mark(100, Gtk.PositionType.TOP, None)
-        self.volumeScale.connect("value-changed", self.on_change_volume)
-        hbox.add(self.volumeScale)
+        volume_scale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, 0, 150, 5)
+        volume_scale.set_value(get_volume())
+        volume_scale.set_draw_value(False)
+        volume_scale.set_size_request(260, 0)
+        volume_scale.add_mark(100, Gtk.PositionType.TOP, None)
+        volume_scale.connect("value-changed", self.on_change_volume)
+        hbox.add(volume_scale)
 
         # separator
         vbox.add(Gtk.Separator.new(Gtk.Orientation.HORIZONTAL))
@@ -152,36 +205,69 @@ class ShowTrayWindow(Gtk.Window):
 
         label = Gtk.Label.new()
         label.set_text("{0:2s}".format(""))
-        label.set_xalign(0.03)
+        label.set_xalign(0.0)
         hbox.add(label)
 
-        self.essidLabel = Gtk.Label.new()
-        self.essidLabel.set_text(get_essid())
-        self.essidLabel.set_xalign(0.03)
-        self.essidLabel.set_size_request(260, 0)
-        hbox.add(self.essidLabel)
+        essid_label = Gtk.Label.new()
+        essid_label.set_text(get_essid())
+        essid_label.set_xalign(0.05)
+        essid_label.set_size_request(260, 0)
+        hbox.add(essid_label)
+
+        # separator
+        vbox.add(Gtk.Separator.new(Gtk.Orientation.HORIZONTAL))
 
         # power supply
+        batt_details = get_battery_details()
+
+        # batx
         hbox = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 3)
         vbox.add(hbox)
 
         label = Gtk.Label.new()
-        label.set_text("{0:2s}".format(""))
-        label.set_xalign(0.03)
+        label.set_text("{0:2s}".format(get_battery_status_icon(batt_details[2][0], batt_details[2][1])))
+        label.set_xalign(0.0)
         hbox.add(label)
 
-        self.batxExpander = Gtk.Expander.new()
-        self.batxExpander.set_label("55%")
-        self.batxExpander.set_label_fill(True)
-        hbox.add(self.batxExpander)
+        label = Gtk.Label.new()
+        label.set_text(str(batt_details[2][0]) + "%")
+        label.set_xalign(0.04)
+        label.set_size_request(260, 0)
+        hbox.add(label)
 
-        # bat0 = Gtk.Label.new()
-        # label.set_text("BAT0")
-        # # self.batxExpander.add(bat0)
+        hbox = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 3)
+        vbox.add(hbox)
 
-        # bat1 = Gtk.Label.new()
-        # label.set_text("BAT1")
-        # self.batxExpander.add(bat1)
+        # bat0/1
+        i = 0
+        while i < 2:
+            hbox = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 3)
+            vbox.add(hbox)
+
+            label = Gtk.Label.new()
+            label.set_text("\t{0:2s}".format("🞂"))
+            label.set_xalign(0.0)
+            hbox.add(label)
+
+            label = Gtk.Label.new()
+            label.set_text("BAT{0:d}".format(i)),
+            label.set_xalign(0.0)
+            label.set_size_request(60, 0)
+            hbox.add(label)
+
+            label = Gtk.Label.new()
+            label.set_text("{0:3d}%".format(batt_details[i][0])),
+            label.set_xalign(1.0)
+            label.set_size_request(100, 0)
+            hbox.add(label)
+
+            label = Gtk.Label.new()
+            label.set_text("↗↗" if batt_details[i][1] == 1 else "↘↘"),
+            label.set_xalign(1.0)
+            label.set_size_request(60, 0)
+            hbox.add(label)
+
+            i += 1
 
         # separator
         vbox.add(Gtk.Separator.new(Gtk.Orientation.HORIZONTAL))
@@ -193,7 +279,7 @@ class ShowTrayWindow(Gtk.Window):
 
             label = Gtk.Label.new()
             label.set_text("{0:2s}".format(actions[a][0]))
-            label.set_xalign(0.03)
+            label.set_xalign(0.0)
             hbox.add(label)
 
             button = Gtk.Button.new()
