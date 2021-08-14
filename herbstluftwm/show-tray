@@ -300,6 +300,7 @@ class ShowTrayWindow(Gtk.Window):
         dialog.destroy()
 
         if response == Gtk.ResponseType.YES:
+            subprocess.Popen("canberra-gtk-play --id service-logout", shell=True, stdout=subprocess.PIPE)
             subprocess.Popen(actions[a][2], shell=True, stdout=subprocess.PIPE)
 
 

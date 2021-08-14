@@ -3,9 +3,18 @@
 # ensure to add user to the video group
 # $1 : delta in brightness (0-100)
 
+msgid=246135
 BACKLIGHT_BRIGHTNESS=/sys/class/backlight/intel_backlight/brightness
 
 delta=$(( $1 * 12 )) # adjust to (0-1200)
-brightness=$(cat $BACKLIGHT_BRIGHTNESS)
+brightness=$(( $(cat $BACKLIGHT_BRIGHTNESS) + ${delta} ))
 
-echo $(( "${brightness}" + "${delta}" )) > $BACKLIGHT_BRIGHTNESS
+echo $brightness > $BACKLIGHT_BRIGHTNESS
+
+brightness=$(( $brightness / 12 ))
+dunstify --appname "hlwm-update-brightness" \
+         --timeout 1500                     \
+         --urgency low                      \
+         --icon dialog-information          \
+         --replace "${msgid}"               \
+         --hints int:value:"${brightness}" "Brightness: ${brightness}%"

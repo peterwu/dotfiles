@@ -3,6 +3,7 @@
 # $1: press mute button
 # $2: delta in volume
 
+msgid=123456
 delta=$2
 [[ "$1" -eq 1 ]] && pactl set-sink-mute @DEFAULT_SINK@ toggle
 muted=$(pactl get-sink-mute @DEFAULT_SINK@ | cut -d ' ' -f 2)
@@ -15,3 +16,30 @@ muted=$(pactl get-sink-mute @DEFAULT_SINK@ | cut -d ' ' -f 2)
 vol=$(pactl get-sink-volume @DEFAULT_SINK@ | awk '{print $5}'| grep -m 1 % | sed 's/[%|,]//g')
 
 herbstclient emit_hook vol "${muted}" "${vol}"
+
+if [ $muted -eq 1 ]; then
+    dunstify --appname "hlwm-update-volume" \
+             --timeout 1500                 \
+             --urgency low                  \
+             --icon audio-volume-muted      \
+             --replace "$msgid" "Volume muted"
+else
+    if [ "${vol}" -gt 66 ]; then
+        icon="audio-volume-high"
+    elif [ "${vol}" -gt 33 ]; then
+        icon="audio-volume-medium"
+    elif [ "${vol}" -gt 0 ]; then
+        icon="audio-volume-low"
+    else
+        icon="audio-volume-muted"
+    fi
+
+    dunstify --appname "hlwm-update-volume" \
+             --timeout 1500                 \
+             --urgency low                  \
+             --icon "$icon"                 \
+             --replace "$msgid"             \
+             --hints int:value:"$vol" "Volume: ${vol}%"
+
+    canberra-gtk-play --id audio-volume-change --description "hlwm-update-volume"
+fi
