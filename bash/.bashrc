@@ -134,7 +134,7 @@ show_bash_prompt() {
 
     # show git branch and its status if in a git tree
     local git_status=$(git status --branch --porcelain 2> /dev/null)
-    IFS=$"\n" git_status=($git_status)
+    IFS=$'\n' git_status=($git_status)
 
     if [ $? -eq 0 ]; then
         local git_branch="${git_status[0]}"
@@ -182,7 +182,6 @@ show_bash_prompt() {
         prompt+=$(tput sgr0; tput bold; tput setaf 1)
         prompt+="\002"
     fi
-
 
     # use appropriate prompt to reflect effective uid
     if [ $(id -u) -eq 0 ]; then
