@@ -147,7 +147,9 @@ format_vol() {
     if [ "${muted}" -eq 1 ]; then
         icon=""
     else
-        if [ "${vol}" -gt 66 ]; then
+        if [ "${vol}" -gt 100 ]; then
+            icon="%{F#ff0000}%{F-}"
+        elif [ "${vol}" -gt 66 ]; then
             icon=""
         elif [ "${vol}" -gt 33 ]; then
             icon=""
