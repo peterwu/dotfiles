@@ -49,17 +49,17 @@ class ExitSystemDialog(Gtk.Dialog):
         text = "What do you want your computer to do?"
         label.set_text(text)
 
-        actionsStore = Gtk.ListStore(int, str)
+        actions_store = Gtk.ListStore(int, str)
         for a in actions:
-            actionsStore.append([a, actions[a][0] + "\t" + actions[a][1]])
+            actions_store.append([a, actions[a][0] + "\t" + actions[a][1]])
 
-        self.actionsCombo = Gtk.ComboBox.new()
-        self.actionsCombo.set_model(actionsStore)
-        self.actionsCombo.set_entry_text_column(1)
+        self.actions_combo = Gtk.ComboBox.new()
+        self.actions_combo.set_model(actions_store)
+        self.actions_combo.set_entry_text_column(1)
         renderer_text = Gtk.CellRendererText()
-        self.actionsCombo.pack_start(renderer_text, True)
-        self.actionsCombo.add_attribute(renderer_text, "text", 1)
-        self.actionsCombo.set_active(0)
+        self.actions_combo.pack_start(renderer_text, True)
+        self.actions_combo.add_attribute(renderer_text, "text", 1)
+        self.actions_combo.set_active(0)
 
         grid = Gtk.Grid.new()
         grid.set_row_spacing(13)
@@ -70,20 +70,19 @@ class ExitSystemDialog(Gtk.Dialog):
 
         grid.attach(image, 0, 0, 1, 2)
         grid.attach(label, 1, 0, 1, 1)
-        grid.attach(self.actionsCombo, 1, 1, 1, 2)
+        grid.attach(self.actions_combo, 1, 1, 1, 2)
 
         self.show_all()
 
     def get_action(self):
-        iter = self.actionsCombo.get_active_iter()
+        iter = self.actions_combo.get_active_iter()
         if iter is not None:
-            model = self.actionsCombo.get_model()
+            model = self.actions_combo.get_model()
             row_id, name = model[iter][:2]
             return row_id
 
 if __name__ == "__main__":
     Gdk.set_program_class("hlwm-exit-system")
-
 
     dialog = ExitSystemDialog(None)
     response = dialog.run()
