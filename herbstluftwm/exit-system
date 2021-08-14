@@ -1,36 +1,94 @@
-#!/usr/bin/env bash
+#!/usr/bin/env python
 
-cmd=(
-  env GTK_THEME=Adwaita:dark
-  yad --center --fixed --on-top
-  --borders=20
-  --form
-  --title="Are you sure?"
-  --image=computer
-  --text="\tWhat do you want your computer to do?\t\n"
-  --field="\t\t  ":CB
-  " \tLock! \tLog Out! \tReboot! \tPower Off! \tSuspend"
-  --field=" ":LBL
-)
+import os
+import subprocess
+import enum
+import gi
 
-read _ choice <<< $("${cmd[@]}" | cut -d '|' -f1)
+os.environ["GTK_THEME"] = "Adwaita:dark"
 
-case "${choice}" in
-    'Lock')
-        light-locker-command --lock
-        ;;
-    'Log Out')
-        herbstclient quit
-        ;;
-    'Reboot')
-        systemctl reboot
-        ;;
-    'Power Off')
-        systemctl poweroff
-        ;;
-    'Suspend')
-        systemctl suspend
-        ;;
-    *)
-        ;;
-esac
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, Gdk
+
+class Actions(enum.IntEnum):
+    Lock = 1
+    LogOut = 2
+    Reboot = 3
+    PowerOff = 4
+    Suspend = 5
+
+actions = {
+    Actions.Lock     : ["", "Lock",      "light-locker-command --lock"],
+    Actions.LogOut   : ["", "Log Out",   "herbstclient quit"],
+    Actions.Reboot   : ["", "Reboot",    "systemctl reboot"],
+    Actions.PowerOff : ["", "Power Off", "systemctl poweroff"],
+    Actions.Suspend  : ["", "Suspend",   "systemctl suspend"]
+}
+
+class ExitSystemDialog(Gtk.Dialog):
+    def __init__(self, parent):
+        super().__init__(title="What do you want to do?", transient_for=parent, flags=0)
+        self.action = 10
+
+        self.set_border_width(20)
+        self.set_default_size(150, 200)
+        self.set_position(Gtk.WindowPosition.CENTER_ALWAYS)
+
+        button = self.add_button(Gtk.STOCK_OK, Gtk.ResponseType.OK)
+        button.set_always_show_image(True)
+        button.grab_focus()
+
+        button = self.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
+        button.set_always_show_image(True)
+
+        image = Gtk.Image()
+        image.set_from_icon_name("computer", Gtk.IconSize.DIALOG)
+        image.show()
+
+        label = Gtk.Label.new()
+        text = "What do you want your computer to do?"
+        label.set_text(text)
+
+        actionsStore = Gtk.ListStore(int, str)
+        for a in actions:
+            actionsStore.append([a, actions[a][0] + "\t" + actions[a][1]])
+
+        self.actionsCombo = Gtk.ComboBox.new()
+        self.actionsCombo.set_model(actionsStore)
+        self.actionsCombo.set_entry_text_column(1)
+        renderer_text = Gtk.CellRendererText()
+        self.actionsCombo.pack_start(renderer_text, True)
+        self.actionsCombo.add_attribute(renderer_text, "text", 1)
+        self.actionsCombo.set_active(0)
+
+        grid = Gtk.Grid.new()
+        grid.set_row_spacing(13)
+        grid.set_column_spacing(30)
+
+        ca = self.get_content_area()
+        ca.add(grid)
+
+        grid.attach(image, 0, 0, 1, 2)
+        grid.attach(label, 1, 0, 1, 1)
+        grid.attach(self.actionsCombo, 1, 1, 1, 2)
+
+        self.show_all()
+
+    def get_action(self):
+        iter = self.actionsCombo.get_active_iter()
+        if iter is not None:
+            model = self.actionsCombo.get_model()
+            row_id, name = model[iter][:2]
+            return row_id
+
+if __name__ == "__main__":
+    Gdk.set_program_class("hlwm-exit-system")
+
+
+    dialog = ExitSystemDialog(None)
+    response = dialog.run()
+    action = dialog.get_action()
+    dialog.destroy()
+
+    if response == Gtk.ResponseType.OK:
+        subprocess.Popen(actions[action][2], shell=True, stdout=subprocess.PIPE)

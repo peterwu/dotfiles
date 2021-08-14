@@ -10,10 +10,11 @@ os.environ["GTK_THEME"] = "Adwaita:dark"
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk
 
+gap = 2
 screen_width = 1920
 width = 360
 height = 360
-posy = 30
+posy = 30 + gap
 posx = (screen_width - width) / 2
 
 clocks = [
@@ -28,6 +29,7 @@ class ShowTimeWindow(Gtk.Window):
 
         self.set_type_hint(Gdk.WindowTypeHint.NORMAL)
         self.set_default_size(width, height)
+        self.set_border_width(7)
         self.move(posx, posy)
         self.connect("focus-out-event", Gtk.main_quit)
 
@@ -39,12 +41,12 @@ class ShowTimeWindow(Gtk.Window):
 
         label = Gtk.Label.new()
         label.set_text(today.strftime("%A"))
-        label.set_xalign(0.03)
+        label.set_xalign(0.0)
         vbox.add(label)
 
         label = Gtk.Label.new()
         label.set_markup(today.strftime("<big><b>%B %e %Y</b></big>"))
-        label.set_xalign(0.03)
+        label.set_xalign(0.0)
         vbox.add(label)
 
         # separator
@@ -62,7 +64,7 @@ class ShowTimeWindow(Gtk.Window):
 
         label = Gtk.Label.new(None)
         label.set_markup("<b>World Clocks</b>")
-        label.set_xalign(0.03)
+        label.set_xalign(0.0)
 
         vbox.add(label)
 
@@ -75,7 +77,7 @@ class ShowTimeWindow(Gtk.Window):
             dt = datetime.now(ZoneInfo(c))
 
             # timezone
-            text = " {0:23s}".format(c.split("/")[1])
+            text = "{0:23s}".format(c.split("/")[1])
             label = Gtk.Label.new(None)
             label.set_text(text)
             label.set_xalign(0.0)
