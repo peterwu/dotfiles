@@ -4,16 +4,14 @@
 # $2: delta in volume
 
 delta=$2
+[[ "$1" -eq 1 ]] && pactl set-sink-mute @DEFAULT_SINK@ toggle
+muted=$(pactl get-sink-mute @DEFAULT_SINK@ | cut -d ' ' -f 2)
 
-[[ "$1" -eq 1 ]] && pamixer --toggle-mute
-muted=$(pamixer --get-mute)
+[[ "${muted}" == "yes" ]] && muted=1
+[[ "${muted}" == "no" ]] && muted=0
 
-if [ "${delta}" -ge 0 ]; then
-    pamixer --allow-boost --increase "${delta}"
-else
-    pamixer --allow-boost --decrease "${delta:1}"
-fi
+[[ "${delta}" -ne 0 ]] && pactl set-sink-volume @DEFAULT_SINK@ "${delta}%"
 
-vol=$(pamixer --get-volume)
+vol=$(pactl get-sink-volume @DEFAULT_SINK@ | awk '{print $5}'| grep -m 1 % | sed 's/[%|,]//g')
 
 herbstclient emit_hook vol "${muted}" "${vol}"
