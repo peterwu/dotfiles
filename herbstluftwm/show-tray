@@ -160,7 +160,7 @@ class ShowTrayWindow(Gtk.Window):
         self.move(posx, posy)
         self.connect("focus-out-event", Gtk.main_quit)
 
-        vbox = Gtk.Box.new(Gtk.Orientation.VERTICAL, 3)
+        vbox = Gtk.Box.new(Gtk.Orientation.VERTICAL, 7)
         self.add(vbox)
 
         # brightness
@@ -214,9 +214,6 @@ class ShowTrayWindow(Gtk.Window):
         essid_label.set_size_request(260, 0)
         hbox.add(essid_label)
 
-        # separator
-        vbox.add(Gtk.Separator.new(Gtk.Orientation.HORIZONTAL))
-
         # power supply
         batt_details = get_battery_details()
 
@@ -230,13 +227,9 @@ class ShowTrayWindow(Gtk.Window):
         hbox.add(label)
 
         label = Gtk.Label.new()
-        label.set_text(str(batt_details[2][0]) + "%")
+        label.set_text("{0:3d}%".format(batt_details[2][0]))
         label.set_xalign(0.04)
-        label.set_size_request(260, 0)
         hbox.add(label)
-
-        hbox = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 3)
-        vbox.add(hbox)
 
         # bat0/1
         i = 0
@@ -282,11 +275,18 @@ class ShowTrayWindow(Gtk.Window):
             label.set_xalign(0.0)
             hbox.add(label)
 
-            button = Gtk.Button.new()
-            button.set_label(actions[a][1])
-            button.set_relief(Gtk.ReliefStyle.NONE)
-            button.connect("clicked", self.on_click_action, a)
-            hbox.add(button)
+            label = Gtk.Label.new()
+            label.set_text(actions[a][1])
+            label.set_xalign(0.05)
+            label.set_size_request(260, 0)
+            label.set_has_window(True)
+            label.set_events(Gdk.EventMask.BUTTON_PRESS_MASK
+                             | Gdk.EventMask.ENTER_NOTIFY_MASK
+                             | Gdk.EventMask.LEAVE_NOTIFY_MASK)
+            label.connect("button-press-event", self.on_click_action, a)
+            label.connect("enter-notify-event", self.on_enter_notify)
+            label.connect("leave-notify-event", self.on_leave_notify)
+            hbox.add(label)
 
     def on_change_brightness(self, scale):
         set_brightness(scale.get_value())
@@ -294,7 +294,7 @@ class ShowTrayWindow(Gtk.Window):
     def on_change_volume(self, scale):
         set_volume(scale.get_value())
 
-    def on_click_action(self, button, a):
+    def on_click_action(self, label, event, a):
         dialog = ActionDialog(self, a)
         response = dialog.run()
         dialog.destroy()
@@ -303,6 +303,12 @@ class ShowTrayWindow(Gtk.Window):
             subprocess.Popen("canberra-gtk-play --id service-logout", shell=True, stdout=subprocess.PIPE)
             subprocess.Popen(actions[a][2], shell=True, stdout=subprocess.PIPE)
 
+    def on_enter_notify(self, label, event):
+        markup = "<b>{0}</b>".format(label.get_text())
+        label.set_markup(markup)
+
+    def on_leave_notify(self, label, event):
+        label.set_text(label.get_text())
 
 if __name__ == "__main__":
     Gdk.set_program_class("hlwm-show-tray")

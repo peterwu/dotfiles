@@ -29,12 +29,10 @@ herbstclient keybind XF86AudioLowerVolume spawn ~/.config/herbstluftwm/update-vo
 herbstclient keybind XF86MonBrightnessUp   spawn ~/.config/herbstluftwm/update-brightness +5
 herbstclient keybind XF86MonBrightnessDown spawn ~/.config/herbstluftwm/update-brightness -5
 
-herbstclient keybind Print      chain \
-             , spawn canberra-gtk-play -i screen-capture \
-             , spawn scrot '%F_%H%M%S.png' --exec 'mv $f ~/Pictures/Screenshots/'
-herbstclient keybind Mod1-Print chain \
-             , spawn canberra-gtk-play -i screen-capture \
-             , spawn scrot --focused '%F_%H%M%S.png' --exec 'mv $f ~/Pictures/Screenshots/'
+herbstclient keybind Print      chain , spawn canberra-gtk-play --id screen-capture \
+                                      , spawn scrot '%F_%H%M%S.png' --exec 'mv $f ~/Pictures/Screenshots/'
+herbstclient keybind Mod1-Print chain , spawn canberra-gtk-play --id screen-capture \
+                                      , spawn scrot --focused '%F_%H%M%S.png' --exec 'mv $f ~/Pictures/Screenshots/'
 
 # basic movement
 # focusing clients
