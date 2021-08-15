@@ -1,26 +1,28 @@
-[pull]
-	rebase = true
 [user]
-	email = peterwu@hotmail.com
-	name  = Peter Wu
+  name  = Peter Wu
+  email = peterwu@hotmail.com
 [credential]
-	helper = store
+  helper = store
 [core]
-	editor = nvim
+  editor = nvim
+[pull]
+  rebase = true
 [gui]
-	fontdiff   = -family \"Iosevka Fusion\"  -size 12 -weight normal -slant roman -underline 0 -overstrike 0
-	fontui     = -family \"Liberation Sans\" -size 11 -weight normal -slant roman -underline 0 -overstrike 0
-	recentrepo = /home/peter/Projects/dora/git/test1
+  fontui   = -family \"Liberation Sans\" -size 12 -weight normal -slant roman -underline 0 -overstrike 0
+  fontdiff = -family \"Liberation Mono\" -size 12 -weight normal -slant roman -underline 0 -overstrike 0
 [diff]
 	tool = nvimdiff
 [difftool]
 	prompt = false
+	trustExitCode = true
+	keepBackup = false
 [difftool "nvimdiff"]
-	cmd = nvim -d $LOCAL $REMOTE
+  cmd = nvim -d $LOCAL $REMOTE
 [merge]
 	tool = nvimdiff
 [mergetool]
 	prompt = false
 	keepBackup = false
+	trustExitCode = true
 [mergetool "nvimdiff"]
-  cmd = nvim -d $LOCAL $REMOTE $BASE $MERGED -c 'wincmd o' -c 'wincmd s' -c 'buffer 3' -c 'wincmd v' -c 'buffer 4' -c 'wincmd k' -c 'wincmd v' -c 'buffer 2' -c 'wincmd j' -c 'wincmd ='
+  cmd = nvim -d $MERGED $LOCAL $BASE $REMOTE -c 'wincmd J'
