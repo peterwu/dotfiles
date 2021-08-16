@@ -300,8 +300,8 @@ class ShowTrayWindow(Gtk.Window):
         dialog.destroy()
 
         if response == Gtk.ResponseType.YES:
-            subprocess.Popen("canberra-gtk-play --id service-logout", shell=True, stdout=subprocess.PIPE)
-            subprocess.Popen(actions[a][2], shell=True, stdout=subprocess.PIPE)
+            cmd="{0};{1}".format("canberra-gtk-play --id desktop-logout", actions[a][2])
+            subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
 
     def on_enter_notify(self, label, event):
         markup = "<b>{0}</b>".format(label.get_text())

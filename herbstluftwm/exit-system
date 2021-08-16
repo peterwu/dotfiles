@@ -90,5 +90,5 @@ if __name__ == "__main__":
     dialog.destroy()
 
     if response == Gtk.ResponseType.OK:
-        subprocess.Popen("canberra-gtk-play --id service-logout", shell=True, stdout=subprocess.PIPE)
-        subprocess.Popen(actions[action][2], shell=True, stdout=subprocess.PIPE)
+        cmd="{0};{1}".format("canberra-gtk-play --id desktop-logout", actions[action][2])
+        subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)

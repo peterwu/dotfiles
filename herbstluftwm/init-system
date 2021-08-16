@@ -43,4 +43,5 @@ for monitor in $(herbstclient list_monitors | cut -d: -f1) ; do
     "$panel" "$monitor" &
 done
 
-canberra-gtk-play --id service-login &
+canberra-gtk-play --id desktop-login
+
