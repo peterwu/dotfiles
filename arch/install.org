@@ -491,3 +491,20 @@
       IdleAction=suspend
       IdleActionSec=2min
     #+end_example
+*** lock system before suspend
+    #+begin_example
+      # /etc/systemd/system/light-locker@.service
+
+      [Unit]
+      Description=Lock X session using light-locker for user %i
+      Before=sleep.target
+
+      [Service]
+      User=%i
+      Environment=DISPLAY=:0
+      ExecStartPre=/usr/bin/xset dpms force suspend
+      ExecStart=/usr/bin/light-locker-command --lock
+
+      [Install]
+      WantedBy=sleep.target
+    #+end_example
