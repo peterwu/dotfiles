@@ -23,11 +23,9 @@ HISTFILESIZE=20000
 
 # Default editor
 if pgrep --exact emacs > /dev/null; then
-    export VISUAL="/usr/bin/emacsclient --create-frame"
     export EDITOR="/usr/bin/emacsclient --tty"
 elif [ -x /usr/bin/nvim ]; then
-    export VISUAL="/usr/bin/nvim"
-    export EDITOR=$VISUAL
+    export EDITOR="/usr/bin/nvim"
 fi
 
 # User specific aliases and functions
@@ -100,7 +98,7 @@ show_bash_prompt() {
     # \033 == \e
 
     local last_command_status=$?
-    local prompt
+    local prompt="\n"
 
     # begin box drawing
     prompt+="\001"
