@@ -36,6 +36,7 @@
        (scroll-margin 1)
        (scroll-preserve-screen-position t)
        (scroll-step 1)
+       (tab-always-indent 'complete)
        (tab-width 4)
        (visible-bell t)
        :bind (:map mode-specific-map
@@ -73,7 +74,7 @@
 
        (defvar-local wy:evil-mode-line-tag
          '(:eval (propertize evil-mode-line-tag
-                             'face 'bold)))
+                             'face '(:foreground "#7f10d0" :weight bold))))
        (put 'wy:evil-mode-line-tag 'risky-local-variable t)
 
        (defvar-local wy:mode-line-buffer-identification
@@ -445,27 +446,34 @@
   #+begin_src emacs-lisp
     (use-package electric
       :custom
-      (electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
       (electric-pair-pairs
        '((8216 . 8217)
          (8220 . 8221)
          (171 . 187)))
       (electric-pair-preserve-balance t)
-      (electric-pair-skip-self 'electric-pair-default-skip-self)
+      (electric-pair-skip-whitespace nil)
       (electric-pair-skip-whitespace-chars
        '(9
          10
          32))
-      (electric-pair-skip-whitespace nil)
 
       (electric-quote-context-sensitive t)
       (electric-quote-paragraph t)
-      (electric-quote-string nil)
       (electric-quote-replace-double t)
+      (electric-quote-string nil)
       :config
       (electric-indent-mode +1)
       (electric-pair-mode +1)
       (electric-quote-mode +1))
+  #+end_src
+* erc
+  #+begin_src emacs-lisp
+    (use-package erc
+      :custom
+      (erc-nick "ixlxi")
+      (erc-user-full-name "iExcel")
+      (erc-server "irc.libera.chat")
+      (erc-port "6697"))
   #+end_src
 * evil, /et al./
 ** evil
@@ -916,10 +924,7 @@
        :ensure t
        :custom (lsp-session-file (expand-file-name "cache/lsp-session" user-emacs-directory))
        :hook ((c-mode
-               c++-mode
-               objc-mode
-               go-mode
-               rust-mode) . lsp)
+               c++-mode) . lsp)
        :hook (lsp-mode . lsp-enable-which-key-integration)
        :commands lsp)
    #+end_src
@@ -938,18 +943,6 @@
                   ("j" . magit-dispatch)
                   ("J" . magit-file-dispatch)
                   ("r" . vc-refresh-state)))
-  #+end_src
-* man
-  #+begin_src emacs-lisp
-    (use-package man
-      :preface
-      (defun wy:exit-man ()
-        (interactive)
-        (if (> (length (window-list)) 1)
-            (quit-window)
-          (delete-frame)))
-      :bind (:map Man-mode-map
-                  ("Q" . wy:exit-man)))
   #+end_src
 * minibuffer
   #+begin_src emacs-lisp
@@ -1270,11 +1263,12 @@
     (use-package vterm
       :unless (eq system-type 'windows-nt)
       :ensure t
+      :bind ("<f12>" . vterm)
       :custom
       (vterm-always-compile-module t)
       (vterm-enable-manipulate-selection-data-by-osc52 t)
       (vterm-kill-buffer-on-exit t)
-      (vterm-shell "/usr/bin/tmux"))
+      (vterm-shell "/usr/bin/tmux new-session -s $(cat /dev/urandom | tr -dc [:alnum:] | head -c 7)"))
   #+end_src
 * which-key
   #+begin_src emacs-lisp
