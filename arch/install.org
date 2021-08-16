@@ -343,7 +343,7 @@
 *** install window manager - herbstluftwm
 **** install relevant packages
      #+begin_src bash
-       pacman -S herbstluftwm alacritty yad picom rofi scrot
+       pacman -S herbstluftwm alacritty picom rofi scrot
        yay -S lemonbar-xft-git
      #+end_src
 **** use configuration files from dotfiles repo
@@ -465,6 +465,17 @@
         </alias>
       </fontconfig>
     #+end_example
+** sound
+*** available sound themes
+    - linux-a11y-sound-theme
+    - yaru-sound-theme
+*** create own sound theme
+    #+begin_src bash
+      mkdir -p ~/.local/share/sounds/mine/stereo/
+      ffmpeg -i desktop-login.og{a,g}
+      cp desktop-login.ogg ~/.local/share/sounds/mine/stereo/
+      sed -i -e "/gtk-sound-theme-name/c gtk-sound-theme-name=mine" ~/.config/gtk-3.0/settings.ini
+    #+end_src
 ** power management
 *** disable usb wakeup
     #+begin_example
