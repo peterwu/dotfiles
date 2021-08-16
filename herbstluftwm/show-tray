@@ -120,7 +120,7 @@ def get_battery_details():
     ]
 
 class ActionDialog(Gtk.Dialog):
-    def __init__(self, parent, a):
+    def __init__(self, parent, action):
         super().__init__(title="Are you sure?", transient_for=parent, flags=0)
 
         self.set_border_width(20)
@@ -136,7 +136,7 @@ class ActionDialog(Gtk.Dialog):
         hbox = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 30)
 
         label = Gtk.Label.new()
-        text = "Are you sure you want to " + actions[a][1].lower() + " your computer now?"
+        text = "Are you sure you want to " + actions[action][1].lower() + " your computer now?"
         label.set_text(text)
 
         image = Gtk.Image()
@@ -266,24 +266,24 @@ class ShowTrayWindow(Gtk.Window):
         vbox.add(Gtk.Separator.new(Gtk.Orientation.HORIZONTAL))
 
         # actions
-        for a in actions:
+        for action in actions:
             hbox = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 3)
             vbox.add(hbox)
 
             label = Gtk.Label.new()
-            label.set_text("{0:2s}".format(actions[a][0]))
+            label.set_text("{0:2s}".format(actions[action][0]))
             label.set_xalign(0.0)
             hbox.add(label)
 
             label = Gtk.Label.new()
-            label.set_text(actions[a][1])
+            label.set_text(actions[action][1])
             label.set_xalign(0.05)
             label.set_size_request(260, 0)
             label.set_has_window(True)
             label.set_events(Gdk.EventMask.BUTTON_PRESS_MASK
                              | Gdk.EventMask.ENTER_NOTIFY_MASK
                              | Gdk.EventMask.LEAVE_NOTIFY_MASK)
-            label.connect("button-press-event", self.on_click_action, a)
+            label.connect("button-press-event", self.on_click_action, action)
             label.connect("enter-notify-event", self.on_enter_notify)
             label.connect("leave-notify-event", self.on_leave_notify)
             hbox.add(label)
@@ -294,13 +294,13 @@ class ShowTrayWindow(Gtk.Window):
     def on_change_volume(self, scale):
         set_volume(scale.get_value())
 
-    def on_click_action(self, label, event, a):
-        dialog = ActionDialog(self, a)
+    def on_click_action(self, label, event, action):
+        dialog = ActionDialog(self, action)
         response = dialog.run()
         dialog.destroy()
 
         if response == Gtk.ResponseType.YES:
-            cmd="{0};{1}".format("canberra-gtk-play --id desktop-logout", actions[a][2])
+            cmd="{0};{1}".format("canberra-gtk-play --id desktop-logout", actions[action][2])
             subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
 
     def on_enter_notify(self, label, event):

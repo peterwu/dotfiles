@@ -44,4 +44,3 @@ for monitor in $(herbstclient list_monitors | cut -d: -f1) ; do
 done
 
 canberra-gtk-play --id desktop-login
-
