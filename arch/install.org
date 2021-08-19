@@ -371,6 +371,13 @@
     #+begin_src bash
       pacman -S ibus ibus-libpinyin
     #+end_src
+*** set feh as default image viewer
+    #+begin_src bash
+      xdg-mime default feh.desktop image/gif
+      xdg-mime default feh.desktop image/jpeg
+      xdg-mime default feh.desktop image/png
+      xdg-mime default feh.desktop image/webp
+    #+end_src
 *** install other applications
     #+begin_src bash
       pacman -S firefox libreoffice
