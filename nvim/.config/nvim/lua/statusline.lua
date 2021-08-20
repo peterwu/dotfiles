@@ -54,7 +54,7 @@ end
 
 local function get_git_branch()
   local git_color, git_branch, git_status, git_status_cmd
-  local git_icon = ''
+  local git_icon = ''
   local git_dir = vim.fn.expand('%:p:h:S')
 
   git_status_cmd = 'git -C ' .. git_dir .. ' status --branch --porcelain'
