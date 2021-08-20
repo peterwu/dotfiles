@@ -147,15 +147,21 @@ herbstclient unrule --all
 herbstclient rule focus=on switchtag=on # normally focus new clients
 # herbstclient rule focus=off # normally do not focus new clients
 
-herbstclient rule class=Yad                     floating=on
-herbstclient rule class~'hlwm-show-(time|tray)' floating=on
-
 herbstclient rule windowtype~'_NET_WM_WINDOW_TYPE_(DIALOG|UTILITY|SPLASH)' floating=on
 herbstclient rule windowtype='_NET_WM_WINDOW_TYPE_DIALOG' focus=on
 herbstclient rule windowtype~'_NET_WM_WINDOW_TYPE_(NOTIFICATION|DOCK|DESKTOP)' manage=off
 
+# home made applications
+herbstclient rule class~'hlwm-show-(time|tray)' floating=on
+
+# firefox
 herbstclient rule windowrole='About' class='firefox' focus=on floating=on floatplacement=center
+
+# gtk
 herbstclient rule windowrole~'Gtk(App|Color|File|Font|Recent)ChooserDialog' floatplacement=center floating_geometry=1024x768
+
+# jetbrains
+herbstclient rule class='jetbrains-clion' focus=on floating=on floatplacement=center
 
 herbstclient set tree_style '╾│ ├└╼─┐'
 
