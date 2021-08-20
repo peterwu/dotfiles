@@ -1,4 +1,0 @@
-1. mkdir ~/Projects/slstatus
-2. cd ~/Projects/slstatus
-3. ln -sf {all files} 
-4. makepkg -sfi
