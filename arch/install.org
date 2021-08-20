@@ -380,7 +380,7 @@
     #+end_src
 *** install other applications
     #+begin_src bash
-      pacman -S firefox libreoffice
+      pacman -S firefox libreoffice stow
     #+end_src
 ** fonts
 *** noto fonts
