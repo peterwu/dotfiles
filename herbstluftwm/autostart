@@ -154,6 +154,8 @@ herbstclient rule windowtype~'_NET_WM_WINDOW_TYPE_(DIALOG|UTILITY|SPLASH)' float
 herbstclient rule windowtype='_NET_WM_WINDOW_TYPE_DIALOG' focus=on
 herbstclient rule windowtype~'_NET_WM_WINDOW_TYPE_(NOTIFICATION|DOCK|DESKTOP)' manage=off
 
+herbstclient rule windowrole~'Gtk(App|Color|File|Font|Recent)ChooserDialog' floatplacement=center floating_geometry=1024x768
+
 herbstclient set tree_style '╾│ ├└╼─┐'
 
 # unlock, just to be sure
