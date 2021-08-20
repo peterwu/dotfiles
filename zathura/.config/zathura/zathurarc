@@ -1,0 +1,38 @@
+set selection-clipboard clipboard
+set font "Fantasque Sans Mono 14"
+set guioptions ""
+
+# Modus Vivendi
+
+set default-bg                  "#000000"
+set default-fg                  "#ffffff"
+
+set statusbar-fg                "#2fafff"
+set statusbar-bg                "#191a1b"
+
+set inputbar-bg                 "#323232"
+set inputbar-fg                 "#f4f4f4"
+
+set notification-bg             "#323232"
+set notification-fg             "#f4f4f4"
+
+set notification-error-bg       "#323232"
+set notification-error-fg       "#fe6060"
+
+set notification-warning-bg     "#323232"
+set notification-warning-fg     "#fe6060"
+
+set highlight-color             "#4fe42f"
+set highlight-active-color      "#4fafff"
+
+set completion-bg               "#100f10"
+set completion-fg               "#4fafff"
+
+set completion-highlight-fg     "#f4f4f4"
+set completion-highlight-bg     "#4fafff"
+
+set recolor-lightcolor          "#323232"
+set recolor-darkcolor           "#e0e6f0"
+
+set recolor                     "false"
+set recolor-keephue             "false"
