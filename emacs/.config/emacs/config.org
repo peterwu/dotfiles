@@ -921,6 +921,7 @@
 ** lsp-mode
    #+begin_src emacs-lisp
      (use-package lsp-mode
+       :disabled
        :ensure t
        :custom (lsp-session-file (expand-file-name "cache/lsp-session" user-emacs-directory))
        :hook ((c-mode
@@ -931,6 +932,7 @@
 ** lsp-ui
    #+begin_src emacs-lisp
      (use-package lsp-ui
+       :disabled
        :ensure t
        :commands lsp-ui-mode)
    #+end_src

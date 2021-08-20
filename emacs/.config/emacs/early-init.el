@@ -16,6 +16,9 @@
 ;; Do not resize the frame at this early stage.
 (setq frame-inhibit-implied-resize t)
 
+(unless (file-directory-p (expand-file-name "cache" user-emacs-directory))
+  (make-directory (expand-file-name "cache" user-emacs-directory)))
+
 (setq package-quickstart t
       package-quickstart-file (expand-file-name "cache/package-quickstart.el" user-emacs-directory))
 
