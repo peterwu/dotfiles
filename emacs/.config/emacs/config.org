@@ -224,7 +224,7 @@
        ;; Load the theme files before enabling a theme
        (modus-themes-load-themes)
        :custom
-       (modus-themes-syntax 'yellow-comments-green-strings)
+       (modus-themes-syntax '(green-strings yellow-comments))
        :config
        ;; Load the theme of my choice: operandi
        (modus-themes-load-operandi))
