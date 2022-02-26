@@ -218,16 +218,12 @@
    #+end_src
 ** theme
    #+begin_src emacs-lisp
-     (use-package modus-themes
-       :ensure t
-       :init
-       ;; Load the theme files before enabling a theme
-       (modus-themes-load-themes)
+     (use-package emacs
        :custom
        (modus-themes-syntax '(green-strings yellow-comments))
        :config
        ;; Load the theme of my choice: operandi
-       (modus-themes-load-operandi))
+       (load-theme 'modus-operandi))
    #+end_src
 * autorevert
   #+begin_src emacs-lisp
@@ -1334,5 +1330,4 @@
     (use-package lua-mode      :ensure t)
     (use-package rust-mode     :ensure t)
     (use-package yaml-mode     :ensure t)
-    (use-package pkgbuild-mode :ensure t)
   #+end_src
