@@ -48,45 +48,101 @@
       #+begin_src bash
         # systemctl reboot
       #+end_src
+** replace NetworkManager with systemd + iwd
+      #+begin_src bash
+        # dnf remove NetworkManager
+        # dnf install iwd
+      #+end_src
+
+      #+begin_src conf
+        /etc/systemd/network/20-wired.network
+
+        [Match]
+        Name=enp0s31f6
+
+        [Network]
+        DHCP=yes
+
+        [DHCPv4]
+        RouteMetric=10
+      #+end_src
+      #+begin_src conf
+        /etc/systemd/network/25-wireless.network
+
+        [Match]
+        Name=wlp4s0
+
+        [Network]
+        DHCP=yes
+
+        [DHCPv4]
+        RouteMetric=20
+      #+end_src
+
+      #+begin_src bash
+        # systemctl enable iwd
+        $ iwctl --passphrase {passphrase} station {device} connect {SSID}
+      #+end_src
+
+      #+begin_src bash
+        # systemctl enable systemd-networkd
+      #+end_src
 ** install Xorg
    #+begin_src bash
      # dnf install xorg-x11-server-Xorg
      # dnf install xorg-x11-xinit
-     # dnf install xorg-x11-drv-{evdev,fbdev,vmmouse,synaptics}
-     # dnf install mesa-dri-drivers
+     # dnf install xorg-x11-drv-{evdev,fbdev,libinput}
+     # dnf install mesa-{dri,vulkan}-drivers
    #+end_src
-** install emptty display manager
-   1. enable copr repo
-      #+begin_src bash
-        # dnf copr enable peterwu/rendezvous
-      #+end_src
-   2. install emptty (make emptty depend on dbus-x11)
-      #+begin_src bash
-        # dnf install emptty
-      #+end_src
-   3. enable emptty service on startup
-      #+begin_src bash
-        # systemctl enable emptty.service
-      #+end_src
+** install window manager
+    #+begin_src bash
+      # dnf install jwm
+    #+end_src
+** install terminal emulator
+    #+begin_src bash
+      # dnf install xterm
+    #+end_src
 ** start graphical interface on boot
     #+begin_src bash
       # systemctl set-default graphical.target
-      # systemctl isolate graphical.target
     #+end_src
 ** install software
-   1. window manager
-      #+begin_src bash
-        # dnf install jwm
-      #+end_src
-   2. terminal emulator
-      #+begin_src bash
-        # dnf install alacritty
-      #+end_src
-   3. browsers
-      #+begin_src bash
-        # dnf install firefox chromium
-      #+end_src
-   4. editors
-      #+begin_src bash
-        # dnf install vim emacs
-      #+end_src
+   - browsers
+    #+begin_src bash
+      # dnf install firefox chromium
+
+      # cat > /etc/yum.repos.d/google-chrome.repo << EOF
+      [google-chrome]
+      name=google-chrome
+      baseurl=https://dl.google.com/linux/chrome/rpm/stable/x86_64
+      enabled=1
+      gpgcheck=1
+      gpgkey=https://dl.google.com/linux/linux_signing_key.pub
+      EOF
+      # dnf install google-chrome-stable
+
+      # cat > /etc/yum.repos.d/microsoft-edge.rep << EOF
+      [microsoft-edge]
+      name=microsoft-edge
+      baseurl=https://packages.microsoft.com/yumrepos/edge/
+      enabled=1
+      gpgcheck=1
+      gpgkey=https://packages.microsoft.com/keys/microsoft.asc
+      EOF
+      # rpm --import https://packages.microsoft.com/keys/microsoft.asc
+      # dnf install microsoft-edge-stable
+
+    #+end_src
+
+   - editors
+    #+begin_src bash
+      # dnf install vim emacs
+    #+end_src
+   - input methods
+    #+begin_src bash
+      # dnf install ibus ibus-libpinyin
+    #+end_src
+   - file manager
+    #+begin_src bash
+      # dnf install pcmanfm
+    #+end_src
