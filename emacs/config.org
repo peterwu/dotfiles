@@ -101,8 +101,7 @@
          ;;   \"BACKEND?REV\"        if the file is under VC, but is missing
 
          '(:eval (when vc-mode
-                   (let* ((git-logo "\uf126") ; 
-                          (git-status (vc-git-mode-line-string (buffer-file-name)))
+                   (let* ((git-status (vc-git-mode-line-string (buffer-file-name)))
                           (status (replace-regexp-in-string "^Git" "" git-status))
                           (class (substring-no-properties status 0 1))
                           (locked? (string-match
@@ -114,7 +113,7 @@
                           (branch
                            (if locked?  (match-string 1 status)
                              (substring status 1)))
-                          (git-mode-line-status (concat git-logo " " branch)))
+                          (git-mode-line-status (concat "(" branch ")")))
                      (cond
                       ;; up-to-date
                       ((string-equal "-" class)

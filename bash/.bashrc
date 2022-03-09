@@ -163,7 +163,7 @@ show_bash_prompt() {
                 prompt+="\002"
             fi
 
-            prompt+=" ${git_branch}" # git icon
+            prompt+="(${git_branch})" # git icon
         fi
     fi
 
