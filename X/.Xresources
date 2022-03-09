@@ -85,4 +85,24 @@ XTerm*translations       : #override \n\
     Ctrl <Key> plus      : larger-vt-font() \n\
     Ctrl <Key> 0         : set-vt-font(d)
 
-#include ".config/xterm/modus_operandi.Xcolors"
+! Theme: modus-operandi
+! Description: XTerm port of modus-operandi (Modus themes for Emacs)
+! Author: Protesilaos Stavrou, <https://protesilaos.com>
+XTerm*background         : #FFFFFF
+XTerm*foreground         : #000000
+XTerm*color0             : #000000
+XTerm*color1             : #A60000
+XTerm*color2             : #005E00
+XTerm*color3             : #813E00
+XTerm*color4             : #0031A9
+XTerm*color5             : #721045
+XTerm*color6             : #00538B
+XTerm*color7             : #BFBFBF
+XTerm*color8             : #595959
+XTerm*color9             : #972500
+XTerm*color10            : #315B00
+XTerm*color11            : #70480F
+XTerm*color12            : #2544BB
+XTerm*color13            : #5317AC
+XTerm*color14            : #005A5F
+XTerm*color15            : #FFFFFF
