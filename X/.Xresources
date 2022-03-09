@@ -1,4 +1,5 @@
 ! General
+! =======
 Xft.dpi       : 120
 Xft.autohint  : true
 Xft.lcdfilter : lcddefault
@@ -8,24 +9,80 @@ Xft.antialias : true
 Xft.rgba      : rgb
 
 ! Cursor
-Xcursor.theme : Bibata-Modern-Classic
+!Xcursor.theme : Bibata-Modern-Classic
 
-! Modus Operandi
-*.background  : #ffffff
-*.foreground  : #000000
-*.color0      : #555555
-*.color8      : #222222
-*.color1      : #7f1010
-*.color9      : #b60000
-*.color2      : #104410
-*.color10     : #006800
-*.color3      : #5f4400
-*.color11     : #605b00
-*.color4      : #003497
-*.color12     : #1f1fce
-*.color5      : #752f50
-*.color13     : #a8007f
-*.color6      : #005077
-*.color14     : #005f88
-*.color7      : #ffffff
-*.color15     : #dddddd
+! XTerm
+! =====
+
+! Basic settings
+XTerm*termName           : xterm-256color
+XTerm*locale             : true
+XTerm*utf8               : true
+XTerm*utf8Fonts          : always
+XTerm*dynamicColors      : true
+
+! UI components
+XTerm*scrollBar          : false
+XTerm*toolBar            : false
+XTerm*geometry           : 80x24
+XTerm*internalBorder     : 0
+
+! Cursor
+XTerm*cursorColor        : reverse
+XTerm*cursorBlink        : true
+XTerm*cursorOffTime      : 300
+XTerm*cursorOnTime       : 800
+XTerm*cursorUnderLine    : false
+XTerm*pointerShape       : XTerm
+
+! Bell
+XTerm*bellIsUrgent       : false
+XTerm*bellSupressTime    : 100
+XTerm*marginBell         : false
+XTerm*visualBell         : true
+
+! Text highlighting
+XTerm*highlightColor     : XtDefaultForeground
+XTerm*highlightReverse   : true
+XTerm*highlightSelection : true
+XTerm*highlightTextColor : XtDefaultBackground
+
+! Font settings
+XTerm*faceName           : Victor Mono:Medium
+XTerm*faceSize           : 13
+XTerm*renderFont         : true
+XTerm*boldColors         : false
+XTerm*faceSize1          : 6
+XTerm*faceSize2          : 8
+XTerm*faceSize3          : 10
+XTerm*faceSize4          : 14
+XTerm*faceSize5          : 20
+XTerm*faceSize6          : 24
+XTerm*forceBoxChars      : false
+XTerm*limitFontsets      : 5
+XTerm*scaleHeight        : 1.0
+
+! Scroll and output
+XTerm*jumpScroll         : true
+XTerm*multiScroll        : true
+XTerm*saveLines          : 9999
+XTerm*scrollKey          : true
+XTerm*scrollTtyKeypress  : true
+XTerm*scrollTtyOutput    : false
+
+! Backspace behaviour
+XTerm*backarrowKey       : false
+XTerm*metaSendsEscape    : true
+XTerm*ttyModes           : erase ^?
+
+! Key bindings
+XTerm*selectToClipboard  : true
+XTerm*omitTranslation    : popup-menu
+XTerm*translations       : #override \n\
+    Ctrl Shift <Key>C    : copy-selection(CLIPBOARD) \n\
+    Ctrl Shift <Key>V    : insert-selection(CLIPBOARD) \n\
+    Ctrl <Key> minus     : smaller-vt-font() \n\
+    Ctrl <Key> plus      : larger-vt-font() \n\
+    Ctrl <Key> 0         : set-vt-font(d)
+
+#include ".config/xterm/modus_operandi.Xcolors"
