@@ -163,9 +163,15 @@ show_bash_prompt() {
                 prompt+="\002"
             fi
 
-            prompt+="(${git_branch})" # git icon
+            prompt+="(${git_branch})"
         fi
     fi
+
+    # reset colors
+    prompt+="\001"
+    prompt+=$(tput sgr0)
+    prompt+="\002"
+    prompt+=" "
 
     # change line
     prompt+="\n"
