@@ -12,7 +12,8 @@ export CDPATH=".:$HOME"
 export LESSHISTFILE=-
 export LESS='-R --mouse --wheel-lines=3'
 
-# go & rust
-export GOPATH=$HOME/.local/share/go
-export CARGO_HOME=$HOME/.local/share/cargo
+# startx
+read -e -p "Do you want to startx? (Y/n) " ANSWER
+ANSWER=${ANSWER^}
 
+[[ ${ANSWER:=Y} == "Y" ]] && exec startx
