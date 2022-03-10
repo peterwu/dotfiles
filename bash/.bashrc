@@ -127,7 +127,7 @@ show_bash_prompt() {
     prompt+="\002"
     prompt+=$USER
     prompt+="\001"
-    prompt+=$(tput sgr0; tput setaf 0)
+    prompt+=$(tput sgr0; tput setaf 3)
     prompt+="\002"
     prompt+="@"
     prompt+=$HOSTNAME
