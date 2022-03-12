@@ -112,7 +112,7 @@ show_bash_prompt() {
     prompt+="\001"
     prompt+=$(tput sgr0)
     prompt+="\002"
-    prompt+="╭ "
+    prompt+="┌ "
 
     # current time
     prompt+="\001"
@@ -180,7 +180,7 @@ show_bash_prompt() {
     prompt+="\001"
     prompt+=$(tput sgr0)
     prompt+="\002"
-    prompt+="╰ "
+    prompt+="└ "
 
     # change the prompt to indicate the status of last executed command
     if [ ${last_command_status} -eq 0 ]; then
