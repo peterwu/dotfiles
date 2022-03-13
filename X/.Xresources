@@ -9,7 +9,7 @@ Xft.antialias : true
 Xft.rgba      : rgb
 
 ! Cursor
-!Xcursor.theme : Bibata-Modern-Classic
+Xcursor.theme : Bibata-Modern-Classic
 
 ! XTerm
 ! =====
@@ -26,6 +26,7 @@ XTerm*scrollBar          : false
 XTerm*toolBar            : false
 XTerm*geometry           : 80x24
 XTerm*internalBorder     : 0
+XTerm*fullscreen         : never
 
 ! Cursor
 XTerm*cursorColor        : reverse
@@ -65,7 +66,7 @@ XTerm*scaleHeight        : 1.0
 ! Scroll and output
 XTerm*jumpScroll         : true
 XTerm*multiScroll        : true
-XTerm*saveLines          : 9999
+XTerm*saveLines          : 4096
 XTerm*scrollKey          : true
 XTerm*scrollTtyKeypress  : true
 XTerm*scrollTtyOutput    : false
@@ -106,3 +107,18 @@ XTerm*color12            : #2544BB
 XTerm*color13            : #5317AC
 XTerm*color14            : #005A5F
 XTerm*color15            : #FFFFFF
+
+! termbar
+termbar*faceName         : Liberation Mono:style=Regular
+termbar*faceSize         : 10
+termbar*foreground       : white
+termbar*background       : black
+termbar*geometry         : 140x1+0+0
+termbar*title            : termbar
+termbar*termName         : termbar
+termbar*internalBorder   : 6
+termbar*saveLines        : 0
+termbar*scrollBar        : false
+termbar*title            : termbar
+termbar*pointerShape     : left_ptr
+

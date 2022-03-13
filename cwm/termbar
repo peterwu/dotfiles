@@ -1,0 +1,89 @@
+#! /bin/bash
+
+now() {
+    printf "$(date '+%a %d %b %H:%M')"
+}
+
+groups() {
+    desktops=({0..9})
+    active_desktop=$(wmctrl -d|awk '{if($2=="*"){print $1}}')
+    occupied_desktops=($(wmctrl -l|awk '{if($2>0){print $2}}'|sort|uniq))
+
+    result=""
+
+    for d in ${desktops[@]}; do
+        desktops[$d]="$(tput dim)$d$(tput sgr0)"
+    done
+
+    for d in ${occupied_desktops[@]}; do
+        if [[ $d -eq $active_desktop ]]; then
+            desktops[$d]="$(tput bold)$(tput smul)$d$(tput sgr0)"
+        else
+            desktops[$d]="$(tput sgr0)$d$(tput sgr0)"
+        fi
+    done
+
+    for i in ${!desktops[@]}; do
+        [[ $i -ne 0 ]] && result+="${desktops[$i]} "
+    done
+
+    printf "$result"
+}
+
+ime() {
+    result=""
+
+    ime=$(ibus engine 2> /dev/null)
+    [[ $ime == "xkb:us::eng" ]] && result+="[en]"
+    [[ $ime == "libpinyin" ]] && result+="[zh]"
+
+    printf "$result"
+}
+
+network() {
+    result=$(ip -4 route|grep default|awk '{print $5}')
+
+    printf "$result"
+}
+
+volume() {
+    # 🔇🔈🔉🔊
+    result="$(tput bold)🔉$(tput sgr0)"
+    printf "$result"
+}
+
+power() {
+    # 🔋🔌
+    result="$(tput bold)🔋$(tput sgr0)92%%"
+    printf "$result"
+}
+
+printl() {
+    tput cup 0 0
+    printf "$1"
+}
+
+printc() {
+    tput cup 0 42
+    printf "$1"
+}
+
+printr() {
+    tput cup 0 58
+    printf "%67s" "$1"
+}
+
+
+tput civis
+
+while true; do
+    left="$(groups)"
+    centre="$(now)"
+    right="$(ime) $(network) $(volume)$(power)"
+
+    printl "$left"
+    printc "$centre"
+    printr "$right"
+    
+    sleep 1
+done
