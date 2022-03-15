@@ -17,6 +17,10 @@
    2. choose *Minimal Installation*
    3. set hostname to *mulberry*
 * configuration
+** remove bloatwarez
+#+begin_src bash
+  # sudo dnf remove sssd*
+#+end_src
 ** replace grub with systemd-boot
    1. make sure that Fedora is loaded in UEFI mode
       #+begin_src bash
