@@ -109,7 +109,7 @@ XTerm*color14            : #005A5F
 XTerm*color15            : #FFFFFF
 
 ! termbar
-termbar*faceName         : Liberation Mono:style=Regular
+termbar*faceName         : Liberation Mono:style=Regular;Font Awesome 6 Free
 termbar*faceSize         : 10
 termbar*foreground       : white
 termbar*background       : black
