@@ -19,7 +19,7 @@
 * configuration
 ** remove bloatwarez
 #+begin_src bash
-  # sudo dnf remove sssd*
+  # sudo dnf remove sssd* yum
 #+end_src
 ** replace grub with systemd-boot
    1. make sure that Fedora is loaded in UEFI mode
