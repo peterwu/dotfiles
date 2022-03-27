@@ -20,12 +20,13 @@ XTerm*locale             : true
 XTerm*utf8               : true
 XTerm*utf8Fonts          : always
 XTerm*dynamicColors      : true
+XTerm*allowWindowOps     : true
 
 ! UI components
 XTerm*scrollBar          : false
 XTerm*toolBar            : false
 XTerm*geometry           : 80x24
-XTerm*internalBorder     : 0
+XTerm*internalBorder     : 8
 XTerm*fullscreen         : never
 
 ! Cursor
@@ -49,7 +50,7 @@ XTerm*highlightSelection : true
 XTerm*highlightTextColor : XtDefaultBackground
 
 ! Font settings
-XTerm*faceName           : Victor Mono:Medium
+XTerm*faceName           : Victor Mono:style=Medium
 XTerm*faceSize           : 13
 XTerm*renderFont         : true
 XTerm*boldColors         : false
@@ -66,7 +67,7 @@ XTerm*scaleHeight        : 1.0
 ! Scroll and output
 XTerm*jumpScroll         : true
 XTerm*multiScroll        : true
-XTerm*saveLines          : 4096
+XTerm*saveLines          : 8192
 XTerm*scrollKey          : true
 XTerm*scrollTtyKeypress  : true
 XTerm*scrollTtyOutput    : false
@@ -89,36 +90,47 @@ XTerm*translations       : #override \n\
 ! Theme: modus-operandi
 ! Description: XTerm port of modus-operandi (Modus themes for Emacs)
 ! Author: Protesilaos Stavrou, <https://protesilaos.com>
-XTerm*background         : #FFFFFF
-XTerm*foreground         : #000000
-XTerm*color0             : #000000
-XTerm*color1             : #A60000
-XTerm*color2             : #005E00
-XTerm*color3             : #813E00
-XTerm*color4             : #0031A9
-XTerm*color5             : #721045
-XTerm*color6             : #00538B
-XTerm*color7             : #BFBFBF
-XTerm*color8             : #595959
-XTerm*color9             : #972500
-XTerm*color10            : #315B00
-XTerm*color11            : #70480F
-XTerm*color12            : #2544BB
-XTerm*color13            : #5317AC
-XTerm*color14            : #005A5F
-XTerm*color15            : #FFFFFF
+*background         : #FFFFFF
+*foreground         : #000000
+*color0             : #000000
+*color1             : #A60000
+*color2             : #005E00
+*color3             : #813E00
+*color4             : #0031A9
+*color5             : #721045
+*color6             : #00538B
+*color7             : #BFBFBF
+*color8             : #595959
+*color9             : #972500
+*color10            : #315B00
+*color11            : #70480F
+*color12            : #2544BB
+*color13            : #5317AC
+*color14            : #005A5F
+*color15            : #FFFFFF
 
 ! termbar
-termbar*faceName         : Liberation Mono:style=Regular;Font Awesome 6 Free
-termbar*faceSize         : 10
-termbar*foreground       : white
-termbar*background       : black
-termbar*geometry         : 140x1+0+0
-termbar*title            : termbar
-termbar*termName         : termbar
-termbar*internalBorder   : 6
-termbar*saveLines        : 0
-termbar*scrollBar        : false
-termbar*title            : termbar
-termbar*pointerShape     : left_ptr
+termbar*faceName           : Liberation Mono:style=Regular
+termbar*faceSize           : 10
+termbar*foreground         : white
+termbar*background         : black
+termbar*geometry           : 140x1+0+0
+termbar*title              : termbar
+termbar*termName           : termbar
+termbar*internalBorder     : 6
+termbar*saveLines          : 0
+termbar*scrollBar          : false
+termbar*pointerShape       : left_ptr
+termbar*highlightSelection : true
 
+! Zutty
+Zutty.geometry:                120x45
+Zutty.altScroll:               true
+Zutty.saveLines:               4096
+Zutty.boldColors:              true
+Zutty.font:                    VictorMono-Medium
+Zutty.fontsize:                22
+!Zutty.fontpath:                /home/peter/.local/share/fonts:/usr/share/fonts
+Zutty.fg:                      #000000
+Zutty.bg:                      #ffffff
+!Zutty.cr:                      #0f0

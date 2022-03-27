@@ -15,7 +15,7 @@ Mod=Mod4   # Use the super key as the main modifier
 herbstclient keybind $Mod-Shift-q quit
 herbstclient keybind $Mod-Shift-r reload
 herbstclient keybind $Mod-Shift-c close
-herbstclient keybind $Mod-Return  spawn alacritty
+herbstclient keybind $Mod-Return  spawn xterm
 
 # user custom keybindings
 herbstclient keybind $Mod-d spawn rofi -show
@@ -88,7 +88,7 @@ herbstclient keybind $Mod-p pseudotile toggle
 # The following cycles through the available layouts within a frame, but skips
 # layouts, if the layout change wouldn't affect the actual window positions.
 # I.e. if there are two windows within a frame, the grid layout is skipped.
-herbstclient keybind $Mod-space                                      \
+herbstclient keybind $Mod-Shift-space                                      \
              or , and . compare tags.focus.curframe_wcount = 2       \
              . cycle_layout +1 vertical horizontal max vertical grid \
              , cycle_layout +1
@@ -126,6 +126,7 @@ herbstclient attr theme.border_width          1
 herbstclient attr theme.floating.border_width 1
 herbstclient attr theme.floating.outer_width  1
 
+
 herbstclient set always_show_frame         1
 herbstclient set frame_border_width        1
 herbstclient set frame_bg_transparent      1
@@ -152,6 +153,8 @@ herbstclient rule windowtype='_NET_WM_WINDOW_TYPE_DIALOG' focus=on
 herbstclient rule windowtype~'_NET_WM_WINDOW_TYPE_(NOTIFICATION|DOCK|DESKTOP)' manage=off
 
 # home made applications
+herbstclient rule class~'termbar' manage=off focus=off
+
 herbstclient rule class~'hlwm-show-(time|tray)' floating=on
 
 # firefox
