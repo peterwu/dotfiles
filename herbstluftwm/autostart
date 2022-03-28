@@ -19,15 +19,15 @@ herbstclient keybind $Mod-Return  spawn xterm
 
 # user custom keybindings
 herbstclient keybind $Mod-d spawn rofi -show
-herbstclient keybind Mod1-Control-Delete spawn ~/.config/herbstluftwm/exit-system
+herbstclient keybind Mod1-Control-Delete spawn ~/.config/herbstluftwm/exit
 
 herbstclient keybind XF86AudioMicMute     spawn pactl set-source-mute @DEFAULT_SOURCE@  toggle
-herbstclient keybind XF86AudioMute        spawn ~/.config/herbstluftwm/update-volume 1 0
-herbstclient keybind XF86AudioRaiseVolume spawn ~/.config/herbstluftwm/update-volume 0 +5
-herbstclient keybind XF86AudioLowerVolume spawn ~/.config/herbstluftwm/update-volume 0 -5
+herbstclient keybind XF86AudioMute        spawn ~/.config/herbstluftwm/volume 1 0
+herbstclient keybind XF86AudioRaiseVolume spawn ~/.config/herbstluftwm/volume 0 +5
+herbstclient keybind XF86AudioLowerVolume spawn ~/.config/herbstluftwm/volume 0 -5
 
-herbstclient keybind XF86MonBrightnessUp   spawn ~/.config/herbstluftwm/update-brightness +5
-herbstclient keybind XF86MonBrightnessDown spawn ~/.config/herbstluftwm/update-brightness -5
+herbstclient keybind XF86MonBrightnessUp   spawn ~/.config/herbstluftwm/brightness +5
+herbstclient keybind XF86MonBrightnessDown spawn ~/.config/herbstluftwm/brightness -5
 
 herbstclient keybind Print      chain , spawn canberra-gtk-play --id screen-capture \
                                       , spawn scrot '%F_%H%M%S.png' --exec 'mv $f ~/Pictures/Screenshots/'
@@ -172,4 +172,4 @@ herbstclient set tree_style '╾│ ├└╼─┐'
 herbstclient unlock
 
 # initialize the session
-~/.config/herbstluftwm/init-system
+~/.config/herbstluftwm/init

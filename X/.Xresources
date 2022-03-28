@@ -111,10 +111,10 @@ XTerm*translations       : #override \n\
 
 ! termbar
 termbar*faceName           : Liberation Mono:style=Regular
-termbar*faceSize           : 10
+termbar*faceSize           : 11
 termbar*foreground         : white
 termbar*background         : black
-termbar*geometry           : 140x1+0+0
+termbar*geometry           : 174x1+0+0
 termbar*title              : termbar
 termbar*termName           : termbar
 termbar*internalBorder     : 6

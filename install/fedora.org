@@ -98,9 +98,13 @@
      # dnf install xorg-x11-drv-{evdev,fbdev,libinput}
      # dnf install mesa-{dri,vulkan}-drivers
    #+end_src
-** install window manager
+** install window manager and relevant utils
     #+begin_src bash
-      # dnf install jwm
+      # dnf install herbstluftwm
+      # dnf install gdouros-symbola-fonts
+      # dnf install wireplumber pipewire pipewire-utils
+      # dnf install jq feh picom dunst
+      # dnf install xss-lock xsecurelock
     #+end_src
 ** install terminal emulator
     #+begin_src bash
@@ -135,9 +139,7 @@
       EOF
       # rpm --import https://packages.microsoft.com/keys/microsoft.asc
       # dnf install microsoft-edge-stable
-
     #+end_src
-
    - editors
     #+begin_src bash
       # dnf install vim emacs
@@ -149,4 +151,14 @@
    - file manager
     #+begin_src bash
       # dnf install pcmanfm
+    #+end_src
+
+** setup udev rules
+    #+begin_src bash
+      # cat > /etc/udev/rules.d/90-backlight.rules << EOF
+      SUBSYSTEM=="backlight", ACTION=="add",
+      RUN+="/bin/chgrp video /sys/class/backlight/intel_backlight/brightness",
+      RUN+="/bin/chmod g+w   /sys/class/backlight/intel_backlight/brightness"
+      EOF
+      # usermod -a -G video `whoami`
     #+end_src

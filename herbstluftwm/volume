@@ -5,19 +5,37 @@
 
 msgid=123456
 delta=$2
-[[ "$1" -eq 1 ]] && pactl set-sink-mute @DEFAULT_SINK@ toggle
-muted=$(pactl get-sink-mute @DEFAULT_SINK@ | cut -d ' ' -f 2)
 
-[[ "${muted}" == "yes" ]] && muted=1
-[[ "${muted}" == "no" ]] && muted=0
+# get default node name
+default_node_name=$(wpctl status|grep -A2 Default|tail -1|awk '{print $3}')
 
-[[ "${delta}" -ne 0 ]] && pactl set-sink-volume @DEFAULT_SINK@ "${delta}%"
+# get its node_id
+node_id=$(pw-dump|jq --arg default_node_name $default_node_name '.[]|select(.info.props["node.name"] == $default_node_name)|.id')
 
-vol=$(pactl get-sink-volume @DEFAULT_SINK@ | awk '{print $5}'| grep -m 1 % | sed 's/[%|,]//g')
+[[ "$1" -eq 1 ]] && wpctl set-mute "$node_id" toggle 
+
+# true - false
+muted=$(wpctl status|grep ${node_id}[.]|awk -F '[][]' '{print $2}'|awk '{print $3}')
+echo $muted
+if [[ $muted == "MUTED" ]]; then
+    muted=true
+else
+    muted=false
+fi
+
+# vol -> (0.00, 1.00)
+vol=$(wpctl status|grep ${node_id}[.]|awk -F '[][]' '{print $2}'|awk '{print $2}')
+
+delta=$(printf "%d" $delta)
+if [[ "${delta}" -ne 0 ]]; then
+    vol=$(echo "$delta / 100 + $vol"|bc -l)
+    wpctl set-volume $node_id $vol
+fi
+vol=$(printf "%.0f" $(echo "${vol} * 100"|bc -l))
 
 herbstclient emit_hook vol "${muted}" "${vol}"
 
-if [ $muted -eq 1 ]; then
+if [ $muted == true ]; then
     dunstify --appname "hlwm-update-volume" \
              --timeout 1500                 \
              --urgency low                  \

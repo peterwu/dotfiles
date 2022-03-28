@@ -1,6 +1,15 @@
 #!/usr/bin/env bash
 
 # ensure to add user to the video group
+# sudo usermod -a -G video `whoami`
+
+# add the following udev rules
+# /etc/udev/rules/90-backlight.rules
+
+# SUBSYSTEM=="backlight", ACTION=="add",
+# RUN+="/bin/chgrp video /sys/class/backlight/intel_backlight/brightness",
+# RUN+="/bin/chmod g+w   /sys/class/backlight/intel_backlight/brightness"
+
 # $1 : delta in brightness (0-100)
 
 msgid=246135

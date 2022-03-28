@@ -1,17 +1,12 @@
 #!/usr/bin/env bash
 
 SEPARATOR=" "
-
-monitor="${1:-0}"
+COLS=$(tput cols)
+MONITOR="${1:-0}"
 
 # helpers
 uniq_linebuffered() {
     awk '$0 != l {print; l=$0; fflush();}' "$@"
-}
-
-get_literal_length() {
-    local str=$(sed 's|[[:cntrl:]][[[:digit:]]\+m||g' <<< "${1}")
-    echo -n ${#str}
 }
 
 printl() {
@@ -20,21 +15,17 @@ printl() {
 }
 
 printc() {
-    local cols=$(tput cols)
-    local len=$(get_literal_length "$1")
-    local pos=$(( ($cols - $len) / 2 ))
-    local delta=20
-    pos=$(( $pos - $delta ))
+    local len=${#1}
+    local pos=$(( ($COLS - $len) / 2 ))
 
     tput cup 0 $pos
     echo -n "$1"
 }
 
 printr() {
-    local cols=$(tput cols)
-    local len=$(get_literal_length "$1")
-    local delta=37
-    local pos=$(( $cols - $len - $delta ))
+    local str=$(sed -e 's|[[:cntrl:]]\[[[:digit:]]\+m||g' <<< "${1}")
+    local len=${#str}
+    local pos=$(( $COLS - $len - 2 ))
 
     tput cup 0 $pos
     echo -n "$1"
@@ -63,15 +54,24 @@ print_vol() {
     # use pipewire
     # pw-cli list-objects Node
     # pw-cli enum-params <node-id> Props
-    # pw-cli set-params <node-id> Props '{ mute: false, channelVolumes: [ 0.5, 0.5 ], save: true }'
+    # pw-cli set-param <node-id> Props '{ mute: false, channelVolumes: [ 0.5, 0.5 ], save: true }'
 
-    local node_id=$(pw-cli list-objects Node|grep -B11 Audio/Sink|head -1|cut -d ',' -f1|cut -d ' ' -f2)
-    
+    # get default node name
+    local default_node_name=$(wpctl status|grep -A2 Default|tail -1|awk '{print $3}')
+
+    # get its node_id
+    local node_id=$(pw-dump|jq --arg default_node_name $default_node_name '.[]|select(.info.props["node.name"] == $default_node_name)|.id')
+
     # true - false
-    local muted=$(pw-cli enum-params "${node_id}" Props|grep -A1 mute|tail -1|awk '{print $2}')
+    local muted=$(wpctl status|grep ${node_id}[.]|awk -F '[][]' '{print $2}'|awk '{print $3}')
+    if [[ $muted == "MUTED" ]]; then
+        muted=true
+    else
+        muted=false
+    fi
 
     # vol -> (0.00, 1.00)
-    local vol=$(pw-cli enum-params "${node_id}" Props|grep -A2 channelVolumes|tail -1|awk '{print $2}')
+    local vol=$(wpctl status|grep ${node_id}[.]|awk -F '[][]' '{print $2}'|awk '{print $2}')
     vol=$(printf "%.0f" $(echo "${vol} * 100"|bc -l))
 
     echo -e "vol\t${muted}\t${vol}"
@@ -89,45 +89,41 @@ print_net() {
 }
 
 print_batt() {
+    local PATH_AC="/sys/class/power_supply/AC"
+    local PATH_BATTERY_0="/sys/class/power_supply/BAT0"
+    local PATH_BATTERY_1="/sys/class/power_supply/BAT1"
 
-    # local PATH_AC="/sys/class/power_supply/AC"
-    # local PATH_BATTERY_0="/sys/class/power_supply/BAT0"
-    # local PATH_BATTERY_1="/sys/class/power_supply/BAT1"
+    local ac=0
+    local battery_level_0=0
+    local battery_level_1=0
+    local battery_max_0=0
+    local battery_max_1=0
 
-    # local ac=0
-    # local battery_level_0=0
-    # local battery_level_1=0
-    # local battery_max_0=0
-    # local battery_max_1=0
+    if [ -f "${PATH_AC}/online" ]; then
+        ac=$(cat "${PATH_AC}/online")
+    fi
 
-    # if [ -f "${PATH_AC}/online" ]; then
-    #     ac=$(cat "${PATH_AC}/online")
-    # fi
+    if [ -f "${PATH_BATTERY_0}/energy_now" ]; then
+        battery_level_0=$(cat "${PATH_BATTERY_0}/energy_now")
+    fi
 
-    # if [ -f "${PATH_BATTERY_0}/energy_now" ]; then
-    #     battery_level_0=$(cat "${PATH_BATTERY_0}/energy_now")
-    # fi
+    if [ -f "${PATH_BATTERY_0}/energy_full" ]; then
+        battery_max_0=$(cat "${PATH_BATTERY_0}/energy_full")
+    fi
 
-    # if [ -f "${PATH_BATTERY_0}/energy_full" ]; then
-    #     battery_max_0=$(cat "${PATH_BATTERY_0}/energy_full")
-    # fi
+    if [ -f "${PATH_BATTERY_1}/energy_now" ]; then
+        battery_level_1=$(cat "${PATH_BATTERY_1}/energy_now")
+    fi
 
-    # if [ -f "${PATH_BATTERY_1}/energy_now" ]; then
-    #     battery_level_1=$(cat "${PATH_BATTERY_1}/energy_now")
-    # fi
+    if [ -f "${PATH_BATTERY_1}/energy_full" ]; then
+        battery_max_1=$(cat "${PATH_BATTERY_1}/energy_full")
+    fi
 
-    # if [ -f "${PATH_BATTERY_1}/energy_full" ]; then
-    #     battery_max_1=$(cat "${PATH_BATTERY_1}/energy_full")
-    # fi
+    local battery_level=$((${battery_level_0} + ${battery_level_1}))
+    local battery_max=$((${battery_max_0} + ${battery_max_1}))
+    local battery_percent=$((${battery_level} * 100 / ${battery_max}))
 
-    # local battery_level=$((${battery_level_0} + ${battery_level_1}))
-    # local battery_max=$((${battery_max_0} + ${battery_max_1}))
-    # local battery_percent=$((${battery_level} * 100 / ${battery_max}))
-
-    # echo -e "batt\t${ac}\t${battery_percent}"
-
-    echo -e "batt\t1\t98"
-    # echo -e "batt\t0\t3"
+    echo -e "batt\t${ac}\t${battery_percent}"
 }
 
 # formatters
@@ -253,32 +249,28 @@ format_batt() {
     local battery_percent=$2
     local icon, batt
 
-    ac=0
-    # ac=1
-    battery_percent=59
-
-    [[  "${ac}" -eq 1 ]] && icon="$(tput smul)" 
+    [[ "${ac}" -eq 1 ]] && icon="$(tput smul)"
 
     if [ "${battery_percent}" -ge 95 ]; then
-        icon+="◼◼◼" 
+        icon+="◼◼◼"
     elif [ "${battery_percent}" -ge 66 ]; then
-        icon+="◼◼◻" 
+        icon+="◼◼◻"
     elif [ "${battery_percent}" -ge 33 ]; then
-        icon+="◼◻◻" 
+        icon+="◼◻◻"
     else
-        icon+="◻◻◻" 
+        icon+="◻◻◻"
     fi
 
-    icon+="$(tput sgr0)"
+    [[ "${ac}" -eq 1 ]] && icon+="$(tput rmul)"
 
     batt="${icon} ${battery_percent}%"
 
     if [[ "${ac}" -eq 0 && "${battery_percent}" -le 9 ]]; then
-        batt="$(tput bold)${batt}$(tput sgr0)"
+        batt="$(tput bold)${batt}"
     fi
 
     if [[ "${ac}" -eq 1 && "${battery_percent}" -ge 95 ]]; then
-        batt="$(tput bold)${batt}$(tput sgr0)"
+        batt="$(tput bold)${batt}"
     fi
 
     echo -n "${batt}"
@@ -327,14 +319,14 @@ tput civis
         kill -9 $pid
     done
 } 2> /dev/null | {
-    IFS=$'\t' read -ra tags <<< $(herbstclient tag_status "${monitor}")
+    IFS=$'\t' read -ra tags <<< $(herbstclient tag_status "${MONITOR}")
     ws=$(format_tags "${tags[@]}")
 
     while :; do
         IFS=$'\t' read -ra cmd || break
         case "${cmd[0]}" in
             tag*)
-                IFS=$'\t' read -ra tags <<< $(herbstclient tag_status "${monitor}")
+                IFS=$'\t' read -ra tags <<< $(herbstclient tag_status "${MONITOR}")
                 ws=$(format_tags "${tags[@]}")
                 ;;
             date)
