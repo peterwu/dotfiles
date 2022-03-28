@@ -40,13 +40,9 @@ print_date() {
 }
 
 print_ime() {
-    local result=""
-
     local ime=$(ibus engine 2> /dev/null)
-    [[ $ime == "xkb:us::eng" ]] && result+="[en]"
-    [[ $ime == "libpinyin" ]] && result+="[zh]"
 
-    echo -n "$result"
+    echo -e "ime\t$ime"
 }
 
 print_vol() {
@@ -188,6 +184,15 @@ format_date() {
     echo -n "${now}"
 }
 
+format_ime() {
+    local ime=""
+
+    [[ $1 == "xkb:us::eng" ]] && ime="[en]"
+    [[ $1 == "libpinyin" ]] && ime="[zh]"
+
+    echo -n "${ime}"
+}
+
 format_vol() {
     # unmuted "——|——"
     # muted   "——X——"
@@ -243,7 +248,6 @@ format_net() {
 }
 
 format_batt() {
-    # ◼◼◼ 92%
     # 🔋🔌▱▰ ◽ ◾ ◼◻
 
     local ac=$1
@@ -267,11 +271,7 @@ format_batt() {
     batt="${icon} ${battery_percent}%"
 
     if [[ "${ac}" -eq 0 && "${battery_percent}" -le 9 ]]; then
-        batt="$(tput bold)${batt}"
-    fi
-
-    if [[ "${ac}" -eq 1 && "${battery_percent}" -ge 95 ]]; then
-        batt="$(tput bold)${batt}"
+        batt="$(tput setaf 1)${batt}"
     fi
 
     echo -n "${batt}"
@@ -284,6 +284,9 @@ tput civis
 {
     # volume
     print_vol
+
+    # ime
+    print_ime
 
     # time
     while :; do
@@ -311,6 +314,13 @@ tput civis
         sleep 11 || break
     done > >(uniq_linebuffered) &
     pids[3]=$!
+
+    # ime
+    dbus-monitor --address `ibus address` --profile "type='signal',member='GlobalEngineChanged'" |
+        while read event; do
+            print_ime
+        done > >(uniq_linebuffered) &
+    pids[4]=$!
 
     # wait for events
     herbstclient --idle
@@ -342,6 +352,9 @@ tput civis
             batt)
                 batt=$(format_batt "${cmd[@]:1}")
                 ;;
+            ime)
+                ime=$(format_ime "${cmd[@]:1}")
+                ;;
             reload)
                 exit
                 ;;
@@ -356,10 +369,9 @@ tput civis
         # print the final result
         LEFT="${ws}"
         CENTER="${date}"
-        ime=$(print_ime)
         RIGHT="${ime}${SEPARATOR}${vol}${SEPARATOR}${net}${SEPARATOR}${batt}"
 
-        printl "${ws}"
+        printl "${LEFT}"
         printc "${CENTER}"
         printr "${RIGHT}"
     done
