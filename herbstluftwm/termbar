@@ -25,10 +25,11 @@ printc() {
 printr() {
     local str=$(sed -e 's|[[:cntrl:]]\[[[:digit:]]\+m||g' <<< "${1}")
     local len=${#str}
-    local pos=$(( $COLS - $len - 2 ))
+    local spacer="  " #2 spaces
+    local pos=$(( $COLS - $len - ${#spacer} - 2 ))
 
     tput cup 0 $pos
-    echo -n "$1"
+    echo -n "${spacer}$1"
 
     tput el
 }
