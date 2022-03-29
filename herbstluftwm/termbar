@@ -129,11 +129,11 @@ format_focused_tag() {
 }
 
 format_occupied_tag() {
-    echo -n "$(tput sgr0)$1$(tput sgr0)"
+    echo -n "$1$(tput sgr0)"
 }
 
 format_unoccupied_tag() {
-    echo -n "$(tput dim)$1$(tput sgr0)"
+    echo -n "$(tput setaf 7)$1$(tput sgr0)"
 }
 
 format_urgent_tag() {
@@ -203,7 +203,7 @@ format_vol() {
     local icon
 
     if [[ "${muted}" == true ]]; then
-        icon="X"
+        icon="x"
     else
         icon="|"
     fi
@@ -322,6 +322,9 @@ tput civis
         done > >(uniq_linebuffered) &
     pids[4]=$!
 
+    # initialize tags
+    echo -n "tags init"
+
     # wait for events
     herbstclient --idle
 
@@ -330,9 +333,6 @@ tput civis
         kill -9 $pid
     done
 } 2> /dev/null | {
-    IFS=$'\t' read -ra tags <<< $(herbstclient tag_status "${MONITOR}")
-    ws=$(format_tags "${tags[@]}")
-
     while :; do
         IFS=$'\t' read -ra cmd || break
         case "${cmd[0]}" in
@@ -371,8 +371,10 @@ tput civis
         CENTER="${date}"
         RIGHT="${ime}${SEPARATOR}${vol}${SEPARATOR}${net}${SEPARATOR}${batt}"
 
+        echo -n $(tput sgr0)
         printl "${LEFT}"
         printc "${CENTER}"
         printr "${RIGHT}"
+        echo -n $(tput sgr0)
     done
 } 2> /dev/null
