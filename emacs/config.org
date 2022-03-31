@@ -38,6 +38,7 @@
        (scroll-step 1)
        (tab-always-indent 'complete)
        (tab-width 4)
+       (use-short-answers t)
        (visible-bell t)
        :bind (:map mode-specific-map
                    ([return] . pp-macroexpand-last-sexp))

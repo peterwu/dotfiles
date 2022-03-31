@@ -31,7 +31,6 @@
 (if (fboundp 'horizontal-scroll-bar-mode)
     (horizontal-scroll-bar-mode -1))
 
-(fset 'yes-or-no-p 'y-or-n-p)
 (setq vc-follow-symlinks t)
 
 (set-face-attribute 'default nil        :family "Victor Mono"     :height 110 :weight 'medium)
