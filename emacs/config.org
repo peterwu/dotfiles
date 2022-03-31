@@ -347,6 +347,7 @@
 ** dired
    #+begin_src emacs-lisp
      (use-package dired
+       :after evil
        :custom
        (delete-by-moving-to-trash t)
        (dired-dwim-target t)
@@ -355,7 +356,10 @@
        (dired-recursive-copies 'always)
        (dired-recursive-deletes 'always)
        :hook ((dired-mode . dired-hide-details-mode)
-              (dired-mode . hl-line-mode)))
+              (dired-mode . hl-line-mode))
+       :bind (:map wy:evil-dired-map
+                   ("j" . dired-jump)
+                   ("J" . dired-jump-other-window)))
    #+end_src
 ** dired-aux
    #+begin_src emacs-lisp
@@ -382,7 +386,6 @@
 ** dired-x
    #+begin_src emacs-lisp
      (use-package dired-x
-       :after (dired evil)
        :demand t
        :custom
        (dired-bind-info nil)
@@ -391,9 +394,6 @@
        (dired-clean-up-buffers-too t)
        (dired-guess-shell-alist-user '(("\\.pdf$" "xdg-open * &")))
        (dired-x-hands-off-my-keys t)
-       :bind (:map wy:evil-dired-map
-                   ("j" . dired-jump)
-                   ("J" . dired-jump-other-window))
        :bind (:map dired-mode-map
                    ("I" . dired-info)))
    #+end_src
