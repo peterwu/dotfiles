@@ -430,6 +430,13 @@
     (use-package doc-view
       :custom (doc-view-resolution 192))
   #+end_src
+* eglot
+  #+begin_src emacs-lisp
+    (use-package eglot
+      :ensure t
+      :hook ((c-mode
+              c++-mode) . eglot-ensure))
+  #+end_src
 * eldoc
   #+begin_src emacs-lisp
     (use-package eldoc
@@ -912,25 +919,6 @@
                   ("C-g" . isearch-cancel)       ; instead of `isearch-abort'
                   ("M-/" . isearch-complete)))
   #+end_src
-* lsp, /et al./
-** lsp-mode
-   #+begin_src emacs-lisp
-     (use-package lsp-mode
-       :disabled
-       :ensure t
-       :custom (lsp-session-file (expand-file-name "cache/lsp-session" user-emacs-directory))
-       :hook ((c-mode
-               c++-mode) . lsp)
-       :hook (lsp-mode . lsp-enable-which-key-integration)
-       :commands lsp)
-   #+end_src
-** lsp-ui
-   #+begin_src emacs-lisp
-     (use-package lsp-ui
-       :disabled
-       :ensure t
-       :commands lsp-ui-mode)
-   #+end_src
 * magit
   #+begin_src emacs-lisp
     (use-package magit
