@@ -30,8 +30,8 @@
     (scroll-bar-mode -1))
 (if (fboundp 'horizontal-scroll-bar-mode)
     (horizontal-scroll-bar-mode -1))
-
-(setq vc-follow-symlinks t)
+(if (fboundp 'context-menu-mode)
+    (context-menu-mode +1))
 
 (set-face-attribute 'default nil        :family "Victor Mono"     :height 110 :weight 'medium)
 (set-face-attribute 'fixed-pitch nil    :family "Victor Mono"     :height 110 :weight 'medium)

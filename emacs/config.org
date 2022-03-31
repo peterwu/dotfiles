@@ -39,6 +39,7 @@
        (tab-always-indent 'complete)
        (tab-width 4)
        (use-short-answers t)
+       (vc-follow-symlinks t)
        (visible-bell t)
        :bind (:map mode-specific-map
                    ([return] . pp-macroexpand-last-sexp))
