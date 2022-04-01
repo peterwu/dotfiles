@@ -1023,15 +1023,6 @@
        (org-superstar-leading-bullet ?\s)
        (org-superstar-prettify-item-bullets t))
    #+end_src
-* osc52
-  #+begin_src emacs-lisp
-    ;; osc52 support under supporting terminals and tmux
-    (use-package osc52
-      :unless window-system
-      :load-path "mine"
-      :config
-      (osc52-set-cut-function))
-  #+end_src
 * paren
   #+begin_src emacs-lisp
     (use-package paren
@@ -1244,18 +1235,6 @@
       (uniquify-after-kill-buffer-p t)
       (uniquify-buffer-name-style 'forward)
       (uniquify-strip-common-suffix t))
-  #+end_src
-* vterm
-  #+begin_src emacs-lisp
-    (use-package vterm
-      :unless (eq system-type 'windows-nt)
-      :ensure t
-      :bind ("<f12>" . vterm)
-      :custom
-      (vterm-always-compile-module t)
-      (vterm-enable-manipulate-selection-data-by-osc52 t)
-      (vterm-kill-buffer-on-exit t)
-      (vterm-shell "/usr/bin/tmux new-session -s $(cat /dev/urandom | tr -dc [:alnum:] | head -c 7)"))
   #+end_src
 * which-key
   #+begin_src emacs-lisp
