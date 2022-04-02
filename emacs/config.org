@@ -479,6 +479,34 @@
       (erc-server "irc.libera.chat")
       (erc-port "6697"))
   #+end_src
+* eshell
+  #+begin_src emacs-lisp
+    (use-package eshell
+      :preface
+      (defun wy:eshell-prompt-function ()
+        (concat
+         "┌ "
+         (propertize (format-time-string "%H:%M" (current-time)) 'face `(:foreground "#721045"))
+         " "
+         (propertize (user-login-name)  'face `(:foreground "#0031a9"))
+         (propertize (concat  "@" (system-name) ":") 'face `(:foreground "#813e00"))
+         (propertize (abbreviate-file-name (eshell/pwd)) 'face `(:foreground "#0031a9" :weight bold))
+         "\n"
+         "└ "
+         (let ((prompt (if (= (user-uid) 0) "#" "$")))
+           (if (= eshell-last-command-status 0)
+               (propertize prompt 'face `(:foreground "#005e00"))
+             (propertize prompt 'face `(:foreground "#a60000"))))
+         " "))
+
+      (defun wy:turn-off-hl-line-in-eshell ()
+        (setq-local global-hl-line-mode nil))
+      :bind ("<f12>" . eshell)
+      :hook (eshell-mode . wy:turn-off-hl-line-in-eshell)
+      :custom
+      (eshell-highlight-prompt nil)
+      (eshell-prompt-function 'wy:eshell-prompt-function))
+  #+end_src
 * evil, /et al./
 ** evil
    #+begin_src emacs-lisp
@@ -1122,14 +1150,6 @@
   #+begin_src emacs-lisp
     (use-package select
       :custom (select-enable-clipboard nil))
-  #+end_src
-* shell
-  #+begin_src emacs-lisp
-    (use-package shell
-      :commands shell-command
-      :custom
-      (ansi-color-for-comint-mode t)
-      (shell-command-prompt-show-cwd t))
   #+end_src
 * simple
   #+begin_src emacs-lisp
