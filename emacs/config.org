@@ -27,7 +27,6 @@
        (inhibit-startup-buffer-menu t)
        (inhibit-startup-echo-area-message t)
        (inhibit-startup-screen t)
-       (initial-buffer-choice t)
        (initial-major-mode 'org-mode)
        (initial-scratch-message nil)
        (make-backup-files nil)
