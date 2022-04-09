@@ -303,13 +303,6 @@
        :config
        (company-tng-mode +1))
    #+end_src
-** company-box
-   #+begin_src emacs-lisp
-     (use-package company-box
-       :ensure t
-       :after company
-       :hook (company-mode . company-box-mode))
-   #+end_src
 * custom
   #+begin_src emacs-lisp
     (use-package custom
@@ -1104,17 +1097,17 @@
   #+end_src
 * project
   #+begin_src emacs-lisp
-    ;; (use-package project
-    ;;   :custom (project-switch-commands
-    ;;            '((?f "File" project-find-file)
-    ;;              (?g "Grep" project-find-regexp)
-    ;;              (?d "Dired" project-dired)
-    ;;              (?b "Buffer" project-switch-to-buffer)
-    ;;              (?q "Query replace" project-query-replace-regexp)
-    ;;              (?v "VC dir" project-vc-dir)
-    ;;              (?e "Eshell" project-eshell)))
-    ;;   :bind (:map project-prefix-map
-    ;;               ("q" . project-query-replace-regexp)))
+    (use-package project
+      :custom
+      (project-list-file (expand-file-name "cache/projects" user-emacs-directory))
+      (project-switch-commands
+       '((?f "File" project-find-file)
+         (?g "Grep" project-find-regexp)
+         (?D "Dired" project-dired)
+         (?b "Buffer" project-switch-to-buffer)
+         (?r "Query replace" project-query-replace-regexp)
+         (?m "Magit" magit-project-status)
+         (?e "Eshell" project-eshell))))
   #+end_src
 * rainbow, /et al./
 ** rainbow-mode
