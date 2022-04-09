@@ -22,10 +22,18 @@ HISTSIZE=20000
 HISTFILESIZE=20000
 
 # Default editor
-export EDITOR="/usr/bin/vim"
+export EDITOR="/usr/bin/emacsclient --tty"
 
 # User specific aliases and functions
 set -o vi
+
+[[ -x /usr/bin/vim ]] && alias vi="vim"
+
+alias emacs="emacs --maximized"
+alias e="emacsclient --tty"
+alias magit="emacsclient --tty --eval '(magit-status)'"
+
+alias E="sudo --edit"
 
 alias ls="ls --color=auto --group-directories-first --indicator-style=slash -v"
 alias ll="ls -l --classify --size"
@@ -49,7 +57,36 @@ alias egrep="egrep --color=auto"
 alias rsync="rsync --progress"
 
 # Colourize man pages
-export MANPAGER="vim -c 'set nonu nornu' -M +MANPAGER --not-a-term -"
+if pgrep --exact emacs > /dev/null; then
+    man() {
+        local m=$@
+        /usr/bin/man ${m} > /dev/null
+        [[ $? -eq 0 ]] && /usr/bin/emacsclient -nw --eval "(let ((m \"${m}\")) (man m) (delete-window) t)"
+    }
+elif [[ -x /usr/bin/vim ]]; then
+    export MANPAGER="vim -c 'set nonu nornu' -M +MANPAGER --not-a-term -"
+else
+    man() {
+        local cmd=(
+            env
+            LESS_TERMCAP_mb=$(tput bold; tput setaf 6)
+            LESS_TERMCAP_md=$(tput bold; tput setaf 6)
+            LESS_TERMCAP_me=$(tput sgr0)
+            LESS_TERMCAP_se=$(tput rmso; tput sgr0)
+            LESS_TERMCAP_ue=$(tput rmul; tput sgr0)
+            LESS_TERMCAP_us=$(tput smul; tput bold; tput setaf 4)
+            LESS_TERMCAP_mr=$(tput rev)
+            LESS_TERMCAP_mh=$(tput dim)
+            LESS_TERMCAP_ZN=$(tput ssubm)
+            LESS_TERMCAP_ZV=$(tput rsubm)
+            LESS_TERMCAP_ZO=$(tput ssupm)
+            LESS_TERMCAP_ZW=$(tput rsupm)
+            man "$@"
+        )
+
+    "${cmd[@]}"
+    }
+fi
 
 # Customize bash prompt
 show_bash_prompt() {
