@@ -33,11 +33,9 @@
 (if (fboundp 'context-menu-mode)
     (context-menu-mode +1))
 
-(set-face-attribute 'default nil        :family "Victor Mono"     :height 110 :weight 'medium)
-(set-face-attribute 'fixed-pitch nil    :family "Victor Mono"     :height 110 :weight 'medium)
-(set-face-attribute 'variable-pitch nil :family "Liberation Sans" :height 110 :weight 'normal)
-
-; (add-to-list 'default-frame-alist '(background-color . "white"))
+(set-face-attribute 'default nil        :family "Victor Mono"     :height 130 :weight 'medium)
+(set-face-attribute 'fixed-pitch nil    :family "Victor Mono"     :height 130 :weight 'medium)
+(set-face-attribute 'variable-pitch nil :family "Liberation Sans" :height 130 :weight 'normal)
 
 (provide 'early-init)
 ;;; early-init.el ends here
