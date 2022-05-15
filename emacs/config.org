@@ -1075,6 +1075,15 @@
        (org-superstar-leading-bullet ?\s)
        (org-superstar-prettify-item-bullets t))
    #+end_src
+* osc52
+  #+begin_src emacs-lisp
+    ;; osc52 support under supporting terminals and tmux
+    (use-package osc52
+      :unless window-system
+      :load-path "mine"
+      :config
+      (osc52-set-cut-function))
+  #+end_src
 * paren
   #+begin_src emacs-lisp
     (use-package paren
