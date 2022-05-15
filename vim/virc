@@ -3,7 +3,7 @@ source $VIMRUNTIME/defaults.vim
 
 " options
 set number relativenumber
-set smartindent expandtab tabstop=2 shiftwidth=2 softtabstop=2
+"set smartindent expandtab tabstop=2 shiftwidth=2 softtabstop=2
 set shortmess+=I laststatus=2
 set listchars=trail:·,tab:»·
 
