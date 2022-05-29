@@ -2,25 +2,25 @@
 #+title: Fedora Installation Guide
 
 * preparation
-   1. download the Everything iso from https://alt.fedoraproject.org/
-   2. burn the iso to usb key
-      #+begin_src bash
-        # dd bs=4M if=/path/to/Fedora-Everything-netinst-x86_64-XYZ.iso of=/dev/sdx status=progress && sync
-      #+end_src
-   3. turn off Secure Boot in BIOS
+  1. download the Everything iso from https://alt.fedoraproject.org/
+  2. burn the iso to usb key
+     #+begin_src bash
+       # dd bs=4M if=/path/to/Fedora-Everything-netinst-x86_64-XYZ.iso of=/dev/sdx status=progress && sync
+     #+end_src
+  3. turn off Secure Boot in BIOS
 * installation
-   1. disk partition
-      | size | mount point              | type  |
-      |------+--------------------------+-------|
-      | 512M | /boot/efi                | vfat  |
-      | REST | /{ROOT, home, var}       | btrfs |
-   2. choose *Minimal Installation*
-   3. set hostname to *mulberry*
+  1. disk partition
+     | size | mount point              | type  |
+     |------+--------------------------+-------|
+     | 512M | /boot/efi                | vfat  |
+     | REST | /{ROOT, home, var}       | btrfs |
+  2. choose *Minimal Installation*
+  3. set hostname to *mulberry*
 * configuration
 ** remove bloatwarez
-#+begin_src bash
-  # sudo dnf remove sssd* yum nano
-#+end_src
+   #+begin_src bash
+     # sudo dnf remove sssd* yum nano
+   #+end_src
 ** install plymouth system theme
    #+begin_src bash
      # dnf install plymouth-system-theme
@@ -66,14 +66,14 @@
         # bootctl install
       #+end_src
    10. initialize initrd rebuild and generate new config files
-      #+begin_src bash
-        # kernel-install add $(uname -r) /lib/modules/$(uname -r)/vmlinuz
-        # dnf reinstall kernel-core
-      #+end_src
+       #+begin_src bash
+         # kernel-install add $(uname -r) /lib/modules/$(uname -r)/vmlinuz
+         # dnf reinstall kernel-core
+       #+end_src
    11. reboot
-      #+begin_src bash
-        # systemctl reboot
-      #+end_src
+       #+begin_src bash
+         # systemctl reboot
+       #+end_src
 ** replace NetworkManager with systemd + iwd
    #+begin_src bash
      # dnf remove NetworkManager
@@ -132,6 +132,11 @@
    #+begin_src bash
      # dnf install xterm
    #+end_src
+** install emptty as display manager
+   #+begin_src bash
+     # dnf install emptty
+     # systemctl enable emptty.service
+   #+end_src
 ** start graphical interface on boot
    #+begin_src bash
      # systemctl set-default graphical.target
@@ -174,7 +179,6 @@
      #+begin_src bash
        # dnf install pcmanfm
      #+end_src
-
 ** setup udev rules
    #+begin_src bash
      # cat > /etc/udev/rules.d/90-backlight.rules << EOF
@@ -184,3 +188,18 @@
      EOF
      # usermod -a -G video `whoami`
    #+end_src
+** suspend settings
+   - after idle
+     #+begin_src bash
+       # cat > /etc/systemd/logind.conf << EOF
+       IdleAction=suspend
+       IdleActionSec=2min
+       EOF
+     #+end_src
+   - disable usb wakeup
+     #+begin_src bash
+       # cat > /etc/tmpfiles.d/disable-usb-wakeup.conf << EOF
+       #    Path                  Mode UID  GID  Age Argument
+       w    /proc/acpi/wakeup
+       EOF
+     #+end_src
