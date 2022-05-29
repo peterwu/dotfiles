@@ -48,28 +48,16 @@ print_ime() {
 print_vol() {
     # format: vol/muted?/vol
 
-    # use pipewire
-    # pw-cli list-objects Node
-    # pw-cli enum-params <node-id> Props
-    # pw-cli set-param <node-id> Props '{ mute: false, channelVolumes: [ 0.5, 0.5 ], save: true }'
-
-    # get default node name
-    local default_node_name=$(wpctl status|grep -A2 Default|tail -1|awk '{print $3}')
-
-    # get its node_id
-    local node_id=$(pw-dump|jq --arg default_node_name $default_node_name '.[]|select(.info.props["node.name"] == $default_node_name)|.id')
-
     # true - false
-    local muted=$(wpctl status|grep ${node_id}[.]|awk -F '[][]' '{print $2}'|awk '{print $3}')
-    if [[ $muted == "MUTED" ]]; then
+    muted=$(pactl get-sink-mute @DEFAULT_SINK@ | cut -d ' ' -f 2)
+
+    if [[ $muted == "yes" ]]; then
         muted=true
     else
         muted=false
     fi
 
-    # vol -> (0.00, 1.00)
-    local vol=$(wpctl status|grep ${node_id}[.]|awk -F '[][]' '{print $2}'|awk '{print $2}')
-    vol=$(printf "%.0f" $(echo "${vol} * 100"|bc -l))
+    vol=$(pactl get-sink-volume @DEFAULT_SINK@ | awk '{print $5}'| grep -m 1 % | sed 's/[%|,]//g')
 
     echo -e "vol\t${muted}\t${vol}"
 }
@@ -125,15 +113,15 @@ print_batt() {
 
 # formatters
 format_focused_tag() {
-    echo -n "$(tput bold)$(tput smul)$1$(tput sgr0)"
+    echo -n "$(tput bold)$(tput setaf 2)$1$(tput sgr0)"
 }
 
 format_occupied_tag() {
-    echo -n "$1$(tput sgr0)"
+    echo -n "$(tput setaf 3)$1$(tput sgr0)"
 }
 
 format_unoccupied_tag() {
-    echo -n "$(tput setaf 7)$1$(tput sgr0)"
+    echo -n "$(tput dim)$(tput setaf 7)$1$(tput sgr0)"
 }
 
 format_urgent_tag() {
@@ -248,27 +236,14 @@ format_net() {
 }
 
 format_batt() {
-    # 🔋🔌▱▰ ◽ ◾ ◼◻
-
     local ac=$1
     local battery_percent=$2
     local icon, batt
 
-    [[ "${ac}" -eq 1 ]] && icon="$(tput smul)"
+    [[ "${ac}" -eq 1 ]] && icon="🔌"
+    [[ "${ac}" -eq 0 ]] && icon="🔋"
 
-    if [ "${battery_percent}" -ge 95 ]; then
-        icon+="◼◼◼"
-    elif [ "${battery_percent}" -ge 66 ]; then
-        icon+="◼◼◻"
-    elif [ "${battery_percent}" -ge 33 ]; then
-        icon+="◼◻◻"
-    else
-        icon+="◻◻◻"
-    fi
-
-    [[ "${ac}" -eq 1 ]] && icon+="$(tput rmul)"
-
-    batt="${icon} ${battery_percent}%"
+    batt="${icon}${battery_percent}%%"
 
     if [[ "${ac}" -eq 0 && "${battery_percent}" -le 9 ]]; then
         batt="$(tput setaf 1)${batt}"
@@ -289,6 +264,7 @@ tput civis
     print_ime
 
     # time
+    print_date
     while :; do
         print_date
         sleep 1 || break

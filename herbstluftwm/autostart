@@ -15,7 +15,7 @@ Mod=Mod4   # Use the super key as the main modifier
 herbstclient keybind $Mod-Shift-q quit
 herbstclient keybind $Mod-Shift-r reload
 herbstclient keybind $Mod-Shift-c close
-herbstclient keybind $Mod-Return  spawn xterm
+herbstclient keybind $Mod-Return  spawn xterm -e 'tmux new-session -s $(cat /dev/urandom | tr -dc [:alnum:] | head -c 7)'
 
 # user custom keybindings
 herbstclient keybind $Mod-d spawn rofi -show
@@ -125,7 +125,6 @@ herbstclient attr theme.inner_width           1
 herbstclient attr theme.border_width          1
 herbstclient attr theme.floating.border_width 1
 herbstclient attr theme.floating.outer_width  1
-
 
 herbstclient set always_show_frame         1
 herbstclient set frame_border_width        1

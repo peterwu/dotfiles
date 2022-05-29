@@ -13,7 +13,7 @@ export LESSHISTFILE=-
 export LESS='-R --mouse --wheel-lines=3'
 
 # startx
-read -e -p "Do you want to startx? (Y/n) " ANSWER
-ANSWER=${ANSWER^}
+#read -e -p "Do you want to startx? (Y/n) " ANSWER
+#ANSWER=${ANSWER^}
 
-[[ ${ANSWER:=Y} == "Y" ]] && exec startx
+#[[ ${ANSWER:=Y} == "Y" ]] && exec startx

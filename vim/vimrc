@@ -207,7 +207,7 @@ if exists('g:loaded_minpac')
   call minpac#add('chrisbra/colorizer',    {'name': 'vim-colorizer'})
   call minpac#add('itchyny/lightline.vim', {'name': 'vim-lightline'})
 
-  call minpac#add('ajh17/VimCompletesMe', {'name': 'vim-vcm'})
+  call minpac#add('ackyshake/VimCompletesMe', {'name': 'vim-vcm'})
 
   call minpac#add('prabirshrestha/vim-lsp')
   call minpac#add('mattn/vim-lsp-settings')

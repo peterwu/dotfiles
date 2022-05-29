@@ -18,7 +18,7 @@ herbstclient cycle_value wmname herbstluftwm LG3D
 picom --daemon
 
 # set wallpaper
-feh --no-fehbg --bg-scale /usr/share/backgrounds/f35/default/f35.png
+feh --no-fehbg --bg-fill ~/Pictures/Wallpapers/default.png
 
 # source .xprofile
 source ~/.xprofile
@@ -40,7 +40,7 @@ herbstclient detect_monitors
 # launch termbar
 for monitor in $(herbstclient list_monitors | cut -d: -f1) ; do
     # start it on each monitor
-    herbstclient pad $monitor 36
+    herbstclient pad $monitor 34
     exec -a termbar xterm -class termbar -e ~/.config/herbstluftwm/termbar $monitor &
 done
 

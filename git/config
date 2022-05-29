@@ -4,25 +4,25 @@
 [credential]
   helper = store
 [core]
-  editor = nvim
+  editor = vim
 [pull]
   rebase = true
 [gui]
   fontui   = -family \"Liberation Sans\" -size 12 -weight normal -slant roman -underline 0 -overstrike 0
   fontdiff = -family \"Liberation Mono\" -size 12 -weight normal -slant roman -underline 0 -overstrike 0
 [diff]
-	tool = nvimdiff
+	tool = vimdiff
 [difftool]
 	prompt = false
 	trustExitCode = true
 	keepBackup = false
 [difftool "nvimdiff"]
-  cmd = nvim -d $LOCAL $REMOTE
+  cmd = vimdiff $LOCAL $REMOTE
 [merge]
-	tool = nvimdiff
+	tool = vimdiff
 [mergetool]
 	prompt = false
 	keepBackup = false
 	trustExitCode = true
 [mergetool "nvimdiff"]
-  cmd = nvim -d $MERGED $LOCAL $BASE $REMOTE -c 'wincmd J'
+  cmd = vimdiff $MERGED $LOCAL $BASE $REMOTE -c 'wincmd J'
