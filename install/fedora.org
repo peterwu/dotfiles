@@ -10,16 +10,21 @@
   3. turn off Secure Boot in BIOS
 * installation
   1. disk partition
-     | size | mount point              | type  |
-     |------+--------------------------+-------|
-     | 512M | /boot/efi                | vfat  |
-     | REST | /{ROOT, home, var}       | btrfs |
+     | size | mount point       | type  |
+     |------+-------------------+-------|
+     | 512M | /boot/efi         | vfat  |
+     | REST | /{@, @home, @var} | btrfs |
   2. choose *Minimal Installation*
   3. set hostname to *mulberry*
 * configuration
 ** remove bloatwarez
    #+begin_src bash
      # sudo dnf remove sssd* yum nano
+   #+end_src
+** enable personal and rpmfusion repos
+   #+begin_src bash
+     # dnf copr enable peterwu/rendezvous
+     # dnf install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
    #+end_src
 ** install plymouth system theme
    #+begin_src bash
