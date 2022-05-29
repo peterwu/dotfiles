@@ -19,12 +19,19 @@
 * configuration
 ** remove bloatwarez
    #+begin_src bash
-     # sudo dnf remove sssd* yum nano
+     # dnf remove sssd* yum nano
    #+end_src
 ** enable personal and rpmfusion repos
    #+begin_src bash
      # dnf copr enable peterwu/rendezvous
      # dnf install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+   #+end_src
+** acquire iwlwifi8265 firmware
+   #+begin_src bash
+     # dnf install iwl7260-firmware
+     # cp /usr/lib/firmware/iwlwifi-8265-36.ucode.xz /tmp
+     # dnf remove iwl7260-firmware
+     # cp /tmp/iwlwifi-8265-36.ucode.xz /usr/lib/firmware
    #+end_src
 ** install plymouth system theme
    #+begin_src bash
