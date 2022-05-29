@@ -28,7 +28,7 @@ if [ $muted == true ]; then
              --timeout 1500                 \
              --urgency low                  \
              --icon audio-volume-muted      \
-             --replace "$msgid" "Volume muted"
+             --replace "$msgid" "Volume: MUTED"
 else
     if [ "${vol}" -gt 66 ]; then
         icon="audio-volume-high"

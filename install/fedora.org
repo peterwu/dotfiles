@@ -118,7 +118,7 @@
    #+end_src
 
    #+begin_src bash
-     # systemctl enable iwd
+     # systemctl enable --now iwd
      $ iwctl --passphrase {passphrase} station {device} connect {SSID}
    #+end_src
 

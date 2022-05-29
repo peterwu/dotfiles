@@ -18,7 +18,7 @@ herbstclient cycle_value wmname herbstluftwm LG3D
 picom --daemon
 
 # set wallpaper
-feh --no-fehbg --bg-fill ~/Pictures/Wallpapers/default.png
+feh --no-fehbg --image-bg "#282A36" --bg-center /usr/share/pixmaps/fedora-logo.png
 
 # source .xprofile
 source ~/.xprofile
