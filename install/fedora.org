@@ -12,153 +12,175 @@
    1. disk partition
       | size | mount point              | type  |
       |------+--------------------------+-------|
-      | 256M | /boot/efi                | vfat  |
-      | REST | /{ROOT, boot, home, var} | btrfs |
+      | 512M | /boot/efi                | vfat  |
+      | REST | /{ROOT, home, var}       | btrfs |
    2. choose *Minimal Installation*
    3. set hostname to *mulberry*
 * configuration
 ** remove bloatwarez
 #+begin_src bash
-  # sudo dnf remove sssd* yum
+  # sudo dnf remove sssd* yum nano
 #+end_src
+** install plymouth system theme
+   #+begin_src bash
+     # dnf install plymouth-system-theme
+     # plymouth-set-default-theme -R bgrt
+   #+end_src
 ** replace grub with systemd-boot
    1. make sure that Fedora is loaded in UEFI mode
       #+begin_src bash
         # test -d /sys/firmware/efi && echo EFI || echo Legacy
       #+end_src
-   2. remove grub from dnf protected packages
+   2. create ESP directory
+      #+begin_src bash
+        # mkdir /efi
+      #+end_src
+   3. update /etc/fstab
+      #+begin_src bash
+        sed -i 's|/boot/efi|/efi|g' /etc/fstab
+      #+end_src
+   4. change to /efi
+      #+begin_src bash
+        # umount /boot/efi
+        # mount /efi
+      #+end_src
+   5. create a folder in the ESP directory with the machine-id in the name
+      #+begin_src bash
+        # mkdir /efi/$(cat /etc/machine-id)
+      #+end_src
+   6. remove grub from dnf protected packages
       #+begin_src bash
         # rm /etc/dnf/protected.d/{grub*,shim}.conf
       #+end_src
-   3. remove grub
+   7. remove grub
       #+begin_src bash
         # dnf remove grubby grub2* shim* memtest86
         # rm -rf /boot/{grub2,loader}
       #+end_src
-   4. save boot options to /etc/kernel/cmdline
+   8. save boot options to /etc/kernel/cmdline
       #+begin_src bash
         # cat /proc/cmdline | cut -d ' ' -f 2- | tee /etc/kernel/cmdline
       #+end_src
-   5. install systemd-boot
+   9. install systemd-boot
       #+begin_src bash
-        # bootctl --path=/boot/efi install
+        # bootctl install
       #+end_src
-   6. initialize initrd rebuild and generate new config files
+   10. initialize initrd rebuild and generate new config files
       #+begin_src bash
         # kernel-install add $(uname -r) /lib/modules/$(uname -r)/vmlinuz
         # dnf reinstall kernel-core
       #+end_src
-   7. reboot
+   11. reboot
       #+begin_src bash
         # systemctl reboot
       #+end_src
 ** replace NetworkManager with systemd + iwd
-      #+begin_src bash
-        # dnf remove NetworkManager
-        # dnf install iwd
-      #+end_src
+   #+begin_src bash
+     # dnf remove NetworkManager
+     # dnf install iwd
+   #+end_src
 
-      #+begin_src conf
-        /etc/systemd/network/20-wired.network
+   #+begin_src conf
+     /etc/systemd/network/20-wired.network
 
-        [Match]
-        Name=enp0s31f6
+     [Match]
+     Name=enp0s31f6
 
-        [Network]
-        DHCP=yes
+     [Network]
+     DHCP=yes
 
-        [DHCPv4]
-        RouteMetric=10
-      #+end_src
-      #+begin_src conf
-        /etc/systemd/network/25-wireless.network
+     [DHCPv4]
+     RouteMetric=10
+   #+end_src
+   #+begin_src conf
+     /etc/systemd/network/25-wireless.network
 
-        [Match]
-        Name=wlp4s0
+     [Match]
+     Name=wlp4s0
 
-        [Network]
-        DHCP=yes
+     [Network]
+     DHCP=yes
 
-        [DHCPv4]
-        RouteMetric=20
-      #+end_src
+     [DHCPv4]
+     RouteMetric=20
+   #+end_src
 
-      #+begin_src bash
-        # systemctl enable iwd
-        $ iwctl --passphrase {passphrase} station {device} connect {SSID}
-      #+end_src
+   #+begin_src bash
+     # systemctl enable iwd
+     $ iwctl --passphrase {passphrase} station {device} connect {SSID}
+   #+end_src
 
-      #+begin_src bash
-        # systemctl enable systemd-networkd
-      #+end_src
+   #+begin_src bash
+     # systemctl enable systemd-networkd
+   #+end_src
 ** install Xorg
    #+begin_src bash
      # dnf install xorg-x11-server-Xorg
      # dnf install xorg-x11-xinit
-     # dnf install xorg-x11-drv-{evdev,fbdev,libinput}
+     # dnf install xorg-x11-drv-{evdev,libinput}
      # dnf install mesa-{dri,vulkan}-drivers
    #+end_src
 ** install window manager and relevant utils
-    #+begin_src bash
-      # dnf install herbstluftwm
-      # dnf install gdouros-symbola-fonts
-      # dnf install wireplumber pipewire pipewire-utils
-      # dnf install jq feh picom dunst
-      # dnf install xss-lock xsecurelock
-    #+end_src
+   #+begin_src bash
+     # dnf install herbstluftwm
+     # dnf install feh picom dunst
+     # dnf install xss-lock xsecurelock
+     # dnf install wireplumber pipewire pipewire-utils
+     # dnf install pipewire-pulseaudio pulseaudio-utils
+   #+end_src
 ** install terminal emulator
-    #+begin_src bash
-      # dnf install xterm
-    #+end_src
+   #+begin_src bash
+     # dnf install xterm
+   #+end_src
 ** start graphical interface on boot
-    #+begin_src bash
-      # systemctl set-default graphical.target
-    #+end_src
+   #+begin_src bash
+     # systemctl set-default graphical.target
+   #+end_src
 ** install software
    - browsers
-    #+begin_src bash
-      # dnf install firefox chromium
+     #+begin_src bash
+       # dnf install firefox chromium
 
-      # cat > /etc/yum.repos.d/google-chrome.repo << EOF
-      [google-chrome]
-      name=google-chrome
-      baseurl=https://dl.google.com/linux/chrome/rpm/stable/x86_64
-      enabled=1
-      gpgcheck=1
-      gpgkey=https://dl.google.com/linux/linux_signing_key.pub
-      EOF
-      # dnf install google-chrome-stable
+       # cat > /etc/yum.repos.d/google-chrome.repo << EOF
+       [google-chrome]
+       name=google-chrome
+       baseurl=https://dl.google.com/linux/chrome/rpm/stable/x86_64
+       enabled=1
+       gpgcheck=1
+       gpgkey=https://dl.google.com/linux/linux_signing_key.pub
+       EOF
+       # dnf install google-chrome-stable
 
-      # cat > /etc/yum.repos.d/microsoft-edge.rep << EOF
-      [microsoft-edge]
-      name=microsoft-edge
-      baseurl=https://packages.microsoft.com/yumrepos/edge/
-      enabled=1
-      gpgcheck=1
-      gpgkey=https://packages.microsoft.com/keys/microsoft.asc
-      EOF
-      # rpm --import https://packages.microsoft.com/keys/microsoft.asc
-      # dnf install microsoft-edge-stable
-    #+end_src
+       # cat > /etc/yum.repos.d/microsoft-edge.repo << EOF
+       [microsoft-edge]
+       name=microsoft-edge
+       baseurl=https://packages.microsoft.com/yumrepos/edge/
+       enabled=1
+       gpgcheck=1
+       gpgkey=https://packages.microsoft.com/keys/microsoft.asc
+       EOF
+       # rpm --import https://packages.microsoft.com/keys/microsoft.asc
+       # dnf install microsoft-edge-stable
+     #+end_src
    - editors
-    #+begin_src bash
-      # dnf install vim emacs
-    #+end_src
+     #+begin_src bash
+       # dnf install vim emacs
+     #+end_src
    - input methods
-    #+begin_src bash
-      # dnf install ibus ibus-libpinyin
-    #+end_src
+     #+begin_src bash
+       # dnf install ibus ibus-libpinyin
+     #+end_src
    - file manager
-    #+begin_src bash
-      # dnf install pcmanfm
-    #+end_src
+     #+begin_src bash
+       # dnf install pcmanfm
+     #+end_src
 
 ** setup udev rules
-    #+begin_src bash
-      # cat > /etc/udev/rules.d/90-backlight.rules << EOF
-      SUBSYSTEM=="backlight", ACTION=="add",
-      RUN+="/bin/chgrp video /sys/class/backlight/intel_backlight/brightness",
-      RUN+="/bin/chmod g+w   /sys/class/backlight/intel_backlight/brightness"
-      EOF
-      # usermod -a -G video `whoami`
-    #+end_src
+   #+begin_src bash
+     # cat > /etc/udev/rules.d/90-backlight.rules << EOF
+     SUBSYSTEM=="backlight", ACTION=="add",
+     RUN+="/bin/chgrp video /sys/class/backlight/intel_backlight/brightness",
+     RUN+="/bin/chmod g+w   /sys/class/backlight/intel_backlight/brightness"
+     EOF
+     # usermod -a -G video `whoami`
+   #+end_src
