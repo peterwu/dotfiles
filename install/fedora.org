@@ -135,7 +135,7 @@
 ** install window manager and relevant utils
    #+begin_src bash
      # dnf install herbstluftwm
-     # dnf install feh picom dunst
+     # dnf install feh picom dunst xset
      # dnf install xss-lock xsecurelock
      # dnf install wireplumber pipewire pipewire-utils
      # dnf install pipewire-pulseaudio pulseaudio-utils
