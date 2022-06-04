@@ -86,10 +86,17 @@
        #+begin_src bash
          # systemctl reboot
        #+end_src
-** replace NetworkManager with systemd + iwd
+** replace NetworkManager + dhcp-client with systemd-networkd + iwd
    #+begin_src bash
-     # dnf remove NetworkManager
+     # dnf remove NetworkManager dhcp-client
      # dnf install iwd
+   #+end_src
+
+   #+begin_src conf
+     /etc/iwd/main.conf
+
+     [General]
+     EnableNetworkConfiguration=true
    #+end_src
 
    #+begin_src conf
