@@ -326,20 +326,17 @@
       :hook ((c-mode c++-mode) . (lambda ()
                                    (wy:clang-format-buffer-on-save))))
   #+end_src
-* company, /et al./
-** company
-   #+begin_src emacs-lisp
-     (use-package company
-       :ensure t
-       :init
-       (global-company-mode +1)
-       :custom
-       (company-idle-delay 0)
-       (company-minimum-prefix-length 1)
-       (company-selection-wrap-around t)
-       :config
-       (company-tng-mode +1))
-   #+end_src
+* corfu
+  #+begin_src emacs-lisp
+    (use-package corfu
+      :ensure t
+      :custom
+      (corfu-auto t)
+      (corfu-cycle t)
+      (corfu-scroll-margin 5)
+      :config
+      (global-corfu-mode +1))
+  #+end_src
 * custom
   #+begin_src emacs-lisp
     (use-package custom
@@ -1023,7 +1020,7 @@
   #+begin_src emacs-lisp
     (use-package minibuffer
       :custom
-      (completion-cycle-threshold 12)
+      (completion-cycle-threshold 3)
       (completions-detailed t)
       (completions-format 'one-column)
       (completion-ignore-case t)
@@ -1197,7 +1194,7 @@
   #+end_src
 * savehist
   #+begin_src emacs-lisp
-    (use-package saveplace
+    (use-package savehist
       :custom
       (history-delete-duplicates t)
       (history-length 1000)
