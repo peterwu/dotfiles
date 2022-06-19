@@ -307,6 +307,25 @@
       (bookmark-default-file
        (expand-file-name "cache/bookmarks" user-emacs-directory)))
   #+end_src
+* clang-format
+  #+begin_src emacs-lisp
+    (use-package clang-format
+      :preface
+      (defvar wy:clang-format-style "file")
+      (defvar wy:clang-format-fallback-style
+        "{BasedOnStyle: Google, IndentWidth: 4, BreakBeforeBraces: WebKit}")
+      (defun wy:clang-format-buffer-on-save ()
+        (add-hook 'before-save-hook
+                  (lambda ()
+                    (if (locate-dominating-file "." ".clang-format")
+                        (clang-format-buffer wy:clang-format-style)
+                      (clang-format-buffer wy:clang-format-fallback-style))
+                    nil)
+                  nil
+                  t))
+      :hook ((c-mode c++-mode) . (lambda ()
+                                   (wy:clang-format-buffer-on-save))))
+  #+end_src
 * company, /et al./
 ** company
    #+begin_src emacs-lisp
@@ -465,8 +484,7 @@
   #+begin_src emacs-lisp
     (use-package eglot
       :ensure t
-      :hook ((c-mode
-              c++-mode) . eglot-ensure))
+      :hook ((c-mode c++-mode) . eglot-ensure))
   #+end_src
 * eldoc
   #+begin_src emacs-lisp
