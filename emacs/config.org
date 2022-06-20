@@ -916,7 +916,6 @@
       :custom
       (icomplete-hide-common-prefix nil)
       (icomplete-in-buffer t)
-      (icomplete-prospects-height 1)
       (icomplete-separator (propertize " · " 'face 'shadow))
       (icomplete-show-matches-on-no-input t)
       (icomplete-tidy-shadowed-file-names t)
@@ -927,7 +926,7 @@
                   ([up]    . icomplete-backward-completions)
                   ([down]  . icomplete-forward-completions))
       :config
-      (fido-mode +1))
+      (fido-vertical-mode +1))
   #+end_src
 * ido
   #+begin_src emacs-lisp
@@ -935,12 +934,18 @@
       :demand t
       :preface
       (defun wy:customize-ido-decorations ()
+        (setf (nth 0 ido-decorations) "\n")
+        (setf (nth 1 ido-decorations) "")
         (setf (nth 2 ido-decorations)
-              (propertize " · " 'face 'shadow))
+              (propertize "\n" 'face 'shadow))
         (setf (nth 3 ido-decorations)
               (propertize
-               (concat " · " (if (char-displayable-p ?…) "…" "..."))
-               'face 'shadow)))
+               (concat "\n" (if (char-displayable-p ?…) "…" "..."))
+               'face 'shadow))
+        (setf (nth 4 ido-decorations)
+             (propertize "\n" 'face 'shadow))
+        (setf (nth 5 ido-decorations)
+             (propertize "" 'face 'shadow)))
       :custom
       (ido-default-buffer-method 'selected-window)
       (ido-default-file-method 'selected-window)
