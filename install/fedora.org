@@ -219,6 +219,6 @@
      #+begin_src bash
        # cat > /etc/tmpfiles.d/disable-usb-wakeup.conf << EOF
        #    Path                  Mode UID  GID  Age Argument
-       w    /proc/acpi/wakeup
+       w    /proc/acpi/wakeup     -    -    -    -   XHC
        EOF
      #+end_src
