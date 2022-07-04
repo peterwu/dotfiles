@@ -18,11 +18,11 @@ class Actions(enum.IntEnum):
     Suspend = 5
 
 actions = {
-    Actions.Lock     : ["🔒", "Lock",      "env XSECURELOCK_COMPOSITE_OBSCURER=0 xsecurelock"],
-    Actions.LogOut   : ["⎆",  "Log Out",   "herbstclient quit"],
-    Actions.Reboot   : ["↻",  "Reboot",    "systemctl reboot"],
-    Actions.PowerOff : ["⏻",  "Power Off", "systemctl poweroff"],
-    Actions.Suspend  : ["⏾",  "Suspend",   "systemctl suspend"]
+    Actions.Lock     : ["", "Lock",      "env XSECURELOCK_COMPOSITE_OBSCURER=0 xsecurelock"],
+    Actions.LogOut   : ["✋", "Log Out",   "herbstclient quit"],
+    Actions.Reboot   : ["", "Reboot",    "systemctl reboot"],
+    Actions.PowerOff : ["", "Power Off", "systemctl poweroff"],
+    Actions.Suspend  : ["", "Suspend",   "systemctl suspend"]
 }
 
 class ExitSystemDialog(Gtk.Dialog):
