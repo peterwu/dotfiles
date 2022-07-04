@@ -63,13 +63,26 @@ print_vol() {
 }
 
 print_net() {
-    # /proc/net/wireless
     # format: net/eth?/strength
 
-    local strength=$(awk 'NR==3 {printf "%d",$3}' /proc/net/wireless)
+    local default_dev=$(ip route show|grep ^default|cut -d ' ' -f 5)
+    local eth=0
+    local strength=0
+
+    case ${default_dev} in
+        "enp0s31f6") # wired
+            eth=1
+            ;;
+        "wla0") # wireless
+            eth=0
+            strength=$(awk 'NR==3 {printf "%d",$3}' /proc/net/wireless)
+            ;;
+        "") # disconnected
+            eth=-1
+            ;;
+    esac
 
     # hard code eth=0 for now
-    local eth=0
     echo -e "net\t${eth}\t${strength}"
 }
 
@@ -220,16 +233,15 @@ format_net() {
     local strength=$((${2:-0} * 100 / 70))
     local icon
 
-    if [ "${eth}" -eq 1 ]; then
+    if [ "${eth}" -eq -1 ]; then
+        # disconnected
+        icon="🌐"
+    elif [ "${eth}" -eq 1 ]; then
+        # wired
         icon="🔗"
     else
-        if [ "${strength}" -gt 66 ]; then
-            icon="📶"
-        elif [ "${strength}" -gt 33 ]; then
-            icon="📶"
-        else
-            icon="📶"
-        fi
+        # wirless
+        icon="📶"
     fi
 
     echo -n "${icon}"
