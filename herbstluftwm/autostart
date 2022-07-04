@@ -132,9 +132,9 @@ herbstclient set frame_bg_transparent      1
 herbstclient set frame_transparent_width   1
 herbstclient set frame_gap                 1
 herbstclient set frame_border_normal_color '#ffffff'
-herbstclient set frame_border_active_color '#005e00'
+herbstclient set frame_border_active_color '#ffffff'
 herbstclient set frame_bg_normal_color     '#f8f8f8'
-herbstclient set frame_bg_active_color     '#315b00'
+herbstclient set frame_bg_active_color     '#f8f8f8'
 
 herbstclient set window_gap                1
 herbstclient set frame_padding             1
@@ -145,10 +145,9 @@ herbstclient set mouse_recenter_gap        0
 # rules
 herbstclient unrule --all
 herbstclient rule focus=on switchtag=on # normally focus new clients
-# herbstclient rule focus=off # normally do not focus new clients
 
 herbstclient rule windowtype~'_NET_WM_WINDOW_TYPE_(DIALOG|UTILITY|SPLASH)' floating=on
-herbstclient rule windowtype='_NET_WM_WINDOW_TYPE_DIALOG' focus=on
+herbstclient rule windowtype='_NET_WM_WINDOW_TYPE_DIALOG' focus=on floatplacement=center
 herbstclient rule windowtype~'_NET_WM_WINDOW_TYPE_(NOTIFICATION|DOCK|DESKTOP)' manage=off
 
 # home made applications
@@ -163,7 +162,7 @@ herbstclient rule windowrole='About' class='firefox' focus=on floating=on floatp
 herbstclient rule windowrole~'Gtk(App|Color|File|Font|Recent)ChooserDialog' floatplacement=center floating_geometry=1024x768
 
 # jetbrains
-herbstclient rule class='jetbrains-clion' focus=on floating=on floatplacement=center
+herbstclient rule class='jetbrains-clion' focus=on pseudotile=on floatplacement=center
 
 herbstclient set tree_style '╾│ ├└╼─┐'
 

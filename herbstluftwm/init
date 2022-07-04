@@ -44,4 +44,4 @@ for monitor in $(herbstclient list_monitors | cut -d: -f1) ; do
     exec -a termbar xterm -class termbar -e ~/.config/herbstluftwm/termbar $monitor &
 done
 
-# canberra-gtk-play --id desktop-login
+canberra-gtk-play --id desktop-login
