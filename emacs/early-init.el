@@ -33,9 +33,11 @@
 (if (fboundp 'context-menu-mode)
     (context-menu-mode +1))
 
-(set-face-attribute 'default nil        :family "Victor Mono"     :height 130 :weight 'medium)
-(set-face-attribute 'fixed-pitch nil    :family "Victor Mono"     :height 130 :weight 'medium)
-(set-face-attribute 'variable-pitch nil :family "Liberation Sans" :height 130 :weight 'normal)
+(setq native-comp-async-report-warnings-errors 'silent)
+
+(set-face-attribute 'default nil        :family "Iosevka Fusion"  :height 140 :weight 'normal)
+(set-face-attribute 'fixed-pitch nil    :family "Iosevka Fusion"  :height 140 :weight 'normal)
+(set-face-attribute 'variable-pitch nil :family "Liberation Sans" :height 140 :weight 'normal)
 
 (provide 'early-init)
 ;;; early-init.el ends here
