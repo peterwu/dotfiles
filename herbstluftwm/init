@@ -40,8 +40,10 @@ herbstclient detect_monitors
 # launch termbar
 for monitor in $(herbstclient list_monitors | cut -d: -f1) ; do
     # start it on each monitor
-    herbstclient pad $monitor 34
-    exec -a termbar xterm -class termbar -e ~/.config/herbstluftwm/termbar $monitor &
+    herbstclient pad $monitor 26
+    exec -a termbar alacritty                     \
+    --config-file ~/.config/alacritty/termbar.yml \
+    --command ~/.config/herbstluftwm/termbar $monitor &
 done
 
 canberra-gtk-play --id desktop-login

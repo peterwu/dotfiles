@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+LOGO=""
 SEPARATOR=" "
 COLS=$(tput cols)
 MONITOR="${1:-0}"
@@ -82,7 +83,6 @@ print_net() {
             ;;
     esac
 
-    # hard code eth=0 for now
     echo -e "net\t${eth}\t${strength}"
 }
 
@@ -125,6 +125,10 @@ print_batt() {
 }
 
 # formatters
+format_logo() {
+    LOGO="$(tput bold)$(tput setaf 6)${LOGO}$(tput sgr0)"
+}
+
 format_focused_tag() {
     echo -n "$(tput bold)$(tput setaf 2)$1$(tput sgr0)"
 }
@@ -195,39 +199,23 @@ format_ime() {
 }
 
 format_vol() {
-    # unmuted "——|——"
-    # muted   "——X——"
-    # | or X indicates the volume level
-
     local muted=$1
     local vol=$2
     local icon
 
     if [[ "${muted}" == true ]]; then
-        icon="x"
+        icon=""
     else
-        icon="|"
-    fi
-
-    if [[ "${vol}" -ge 100 ]]; then
-        icon="————${icon}"
-    elif [[ "${vol}" -ge 75 ]]; then
-        icon="———${icon}—"
-    elif [[ "${vol}" -ge 50 ]]; then
-        icon="——${icon}——"
-    elif [[ "${vol}" -ge 25 ]]; then
-        icon="—${icon}———"
-    else
-        icon="${icon}————"
+        icon=""
     fi
 
     echo -n "${icon}"
 }
 
 format_net() {
-    # 🔗 lan
-    # 📶 wifi
-    # 🌐 disconnected
+    #  lan
+    #  wifi
+    #  disconnected
 
     local eth=$1
     local strength=$((${2:-0} * 100 / 70))
@@ -235,13 +223,13 @@ format_net() {
 
     if [ "${eth}" -eq -1 ]; then
         # disconnected
-        icon="🌐"
+        icon=""
     elif [ "${eth}" -eq 1 ]; then
         # wired
-        icon="🔗"
+        icon=""
     else
         # wirless
-        icon="📶"
+        icon=""
     fi
 
     echo -n "${icon}"
@@ -252,10 +240,10 @@ format_batt() {
     local battery_percent=$2
     local icon, batt
 
-    [[ "${ac}" -eq 1 ]] && icon="🔌"
-    [[ "${ac}" -eq 0 ]] && icon="🔋"
+    [[ "${ac}" -eq 1 ]] && icon=""
+    [[ "${ac}" -eq 0 ]] && icon=""
 
-    batt="${icon}${battery_percent}%%"
+    batt="${icon} ${battery_percent}%"
 
     if [[ "${ac}" -eq 0 && "${battery_percent}" -le 9 ]]; then
         batt="$(tput setaf 1)${batt}"
@@ -266,6 +254,9 @@ format_batt() {
 
 # hide the cursor
 tput civis
+
+# format the logo
+format_logo
 
 # the fun begins
 {
@@ -355,9 +346,9 @@ tput civis
         esac
 
         # print the final result
-        LEFT="${ws}"
+        LEFT="${LOGO}${SEPARATOR}${SEPARATOR}${ws}"
         CENTER="${date}"
-        RIGHT="${ime}${SEPARATOR}${vol}${SEPARATOR}${net}${SEPARATOR}${batt}"
+        RIGHT="${ime}${SEPARATOR}${vol}${SEPARATOR}${SEPARATOR}${net}${SEPARATOR}${SEPARATOR}${batt}"
 
         echo -n $(tput sgr0)
         printl "${LEFT}"

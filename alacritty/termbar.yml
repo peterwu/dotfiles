@@ -1,0 +1,56 @@
+# Configuration for Alacritty, the GPU enhanced terminal emulator.
+
+env:
+  TERM: alacritty
+
+window:
+  dimensions:
+   columns: 175
+   lines: 1
+
+  position:
+    x: 0
+    y: 0
+
+  padding:
+   x: 2
+   y: 2
+
+  dynamic_padding: true
+
+  class:
+    instance: termbar
+    general: termbar
+
+scrolling:
+  history: 0
+
+font:
+  normal:
+    family: Liberation Mono
+    style: Regular
+
+  bold:
+    family: Liberation Mono
+    style: Bold
+
+  italic:
+    family: Liberation Mono
+    style: Italic
+
+  bold_italic:
+    family: Liberation Mono
+    style: Bold Italic
+
+  size: 11.0
+
+draw_bold_text_with_bright_colors: true
+
+import:
+  - ~/.config/alacritty/dracula.yml
+
+selection:
+  save_to_clipboard: true
+
+mouse:
+  hide_when_typing: true
