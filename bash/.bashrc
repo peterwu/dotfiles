@@ -32,6 +32,7 @@ set -o vi
 alias emacs="emacs --maximized"
 alias e="emacsclient --tty"
 alias magit="emacsclient --tty --eval '(magit-status)'"
+alias vi="e"
 
 alias E="sudo --edit"
 
@@ -58,10 +59,21 @@ alias rsync="rsync --progress"
 
 # Colourize man pages
 if pgrep --exact emacs > /dev/null; then
+    ediff() {
+        local files
+        for f in "$@"; do
+            files+=\"${f}\"
+            files+=" "
+        done
+
+        [[ $# -eq 2 ]] && emacsclient --tty --eval "(ediff-files ${files})"
+        [[ $# -eq 3 ]] && emacsclient --tty --eval "(ediff-files3 ${files})"
+    }
+
     man() {
-        local m=$@
+        local m="$@"
         /usr/bin/man ${m} > /dev/null
-        [[ $? -eq 0 ]] && /usr/bin/emacsclient -nw --eval "(let ((m \"${m}\")) (man m) (delete-window) t)"
+        [[ $? -eq 0 ]] && /usr/bin/emacsclient --tty --eval "(let ((m \"${m}\")) (man m) (delete-window) t)"
     }
 elif [[ -x /usr/bin/vim ]]; then
     export MANPAGER="vim -c 'set nonu nornu' -M +MANPAGER --not-a-term -"
@@ -84,7 +96,7 @@ else
             man "$@"
         )
 
-    "${cmd[@]}"
+        "${cmd[@]}"
     }
 fi
 

@@ -477,6 +477,13 @@
     (use-package doc-view
       :custom (doc-view-resolution 192))
   #+end_src
+* ediff
+  #+begin_src emacs-lisp
+    (use-package ediff
+      :custom
+      (ediff-split-window-function 'split-window-horizontally)
+      (ediff-window-setup-function 'ediff-setup-windows-plain))
+  #+end_src
 * eglot
   #+begin_src emacs-lisp
     (use-package eglot
