@@ -240,8 +240,21 @@ format_batt() {
     local battery_percent=$2
     local icon, batt
 
-    [[ "${ac}" -eq 1 ]] && icon=""
-    [[ "${ac}" -eq 0 ]] && icon=""
+    if [[ "${ac}" -eq 1 ]]; then
+        icon=""
+    else
+        if [ "${battery_percent}" -ge 95 ]; then
+            icon+="" # full
+        elif [ "${battery_percent}" -ge 75 ]; then
+            icon+="" # 3/4
+        elif [ "${battery_percent}" -ge 50 ]; then
+            icon+="" # 1/2
+        elif [ "${battery_percent}" -ge 25 ]; then
+            icon+="" # 1/4
+        else
+            icon+="" # empty
+        fi
+    fi
 
     batt="${icon} ${battery_percent}%"
 
