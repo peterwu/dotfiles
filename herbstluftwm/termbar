@@ -126,11 +126,11 @@ print_batt() {
 
 # formatters
 format_logo() {
-    LOGO="$(tput bold)$(tput setaf 6)${LOGO}$(tput sgr0)"
+    LOGO="$(tput setaf 6)${LOGO}$(tput sgr0)"
 }
 
 format_focused_tag() {
-    echo -n "$(tput bold)$(tput setaf 2)$1$(tput sgr0)"
+    echo -n "$(tput smul)$(tput setaf 2)$1$(tput sgr0)"
 }
 
 format_occupied_tag() {

@@ -40,7 +40,7 @@ herbstclient detect_monitors
 # launch termbar
 for monitor in $(herbstclient list_monitors | cut -d: -f1) ; do
     # start it on each monitor
-    herbstclient pad $monitor 26
+    herbstclient pad $monitor 35
     exec -a termbar alacritty                     \
     --config-file ~/.config/alacritty/termbar.yml \
     --command ~/.config/herbstluftwm/termbar $monitor &
