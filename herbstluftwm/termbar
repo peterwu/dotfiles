@@ -125,6 +125,10 @@ print_batt() {
 
 # formatters
 format_logo() {
+    # # OSC 8 ; params ; URI ST <name> OSC 8 ;; ST
+    # escape_mask = '\033]8;{};{}\033\\{}\033]8;;\033\\'
+
+    LOGO=$(echo -e "\033]8;;tbp://hlwm/bye\033\\${LOGO}\033]8;;\033\\")
     LOGO="$(tput setaf 4)${LOGO}$(tput sgr0)"
 }
 
@@ -151,6 +155,9 @@ format_tags() {
     for i in "${tags[@]}"; do
         tag_name="${i:1}"
         tag_status="${i:0:1}"
+
+        # format tag_name to support tbp:: protocol
+        tag_name="\033]8;;tbp://hlwm/tag/${tag_name}\033\\\\${tag_name}\033]8;;\033\\"
 
         case ${tag_status} in
             ".") # unoccupied
@@ -179,7 +186,7 @@ format_tags() {
         ws+="${SEPARATOR}"
     done
 
-    echo -n "${ws}"
+    echo -e "${ws}"
 }
 
 format_date() {
