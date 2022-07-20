@@ -26,7 +26,8 @@ printc() {
 printr() {
     local str=$(sed -e 's|[[:cntrl:]]\[[[:digit:]]\+m||g' <<< "${1}")
     local len=${#str}
-    local pos=$(( $COLS - $len ))
+    local spacer="  " #2 spaces
+    local pos=$(( $COLS - $len - ${#spacer} ))
 
     tput cup 0 $pos
     echo -n "${spacer}$1"
