@@ -11,6 +11,7 @@ set viewoptions=folds,cursor
 set sessionoptions=folds
 set viminfo+=n~/.vim/cache/viminfo
 
+colorscheme zellner
 highlight CursorLine   cterm=NONE ctermbg=NONE ctermfg=NONE
 highlight CursorLineNr cterm=NONE ctermbg=NONE ctermfg=NONE
 
@@ -47,21 +48,76 @@ nnoremap <expr> j (v:count? 'j' : 'gj')
 nnoremap <expr> k (v:count? 'k' : 'gk')
 
 " copy to clipboard
-nnoremap Y          y$
-vnoremap <Leader>y  "+y
-nnoremap <Leader>y  "+y
-nnoremap <Leader>Y  "+y$
-nnoremap <Leader>yy "+yy
+nnoremap Y yg_
+
+if has('clipboard')
+    vnoremap <Leader>y  "+y
+    nnoremap <Leader>y  "+y
+    nnoremap <Leader>Y  "+yg_
+    nnoremap <Leader>yy "+y_
+elseif executable('/usr/bin/xsel')
+    vnoremap <silent> <Leader>y  <Cmd>set opfunc=CopyToClipboard<CR>g@
+    nnoremap <silent> <Leader>y  <Cmd>set opfunc=CopyToClipboard<CR>g@
+    nnoremap <silent> <Leader>Y  <Cmd>set opfunc=CopyToClipboard<CR>g@g_
+    nnoremap <silent> <Leader>yy <Cmd>set opfunc=CopyToClipboard<CR>g@_
+
+    function! CopyToClipboard(type, ...) abort
+        let reg = '"'
+        let sel_save = &selection
+        let &selection = "inclusive"
+        let cb_save  = &clipboard
+        let reg_save = getreg(reg)
+        let reg_type = getregtype(reg)
+        let type = a:type
+        if a:type == "char"
+            silent execute 'normal! v`[o`]"'.reg.'y'
+            let type = 'v'
+        elseif a:type == "line"
+            silent execute 'normal! `[V`]"'.reg.'y'
+            let type = 'V'
+        elseif a:type ==# "v" || a:type ==# "V" || a:type ==# "\<C-V>" || a:type == "block"
+            let &selection = sel_save
+            let ve = &virtualedit
+            if !(a:0 && a:1)
+                set virtualedit=
+            endif
+            silent execute 'normal! gv"'.reg.'y'
+            let &virtualedit = ve
+        elseif a:type =~ '^\d\+$'
+            let type = 'v'
+            silent execute 'normal! ^v'.a:type.'$h"'.reg.'y'
+            if mode() ==# 'v'
+                normal! v
+            endif
+        else
+            let &selection = sel_save
+            let &clipboard = cb_save
+        endif
+
+        call system('/usr/bin/xsel -i -b', getreg(reg))
+
+        call setreg(reg,reg_save,reg_type)
+        let &selection = sel_save
+        let &clipboard = cb_save
+    endfunction
+endif
 
 " paste from clipboard
-nnoremap <Leader>p "+p
-nnoremap <Leader>P "+P
-vnoremap <Leader>p "+p
-vnoremap <Leader>P "+P
+if has('clipboard')
+    nnoremap <Leader>p "+p
+    nnoremap <Leader>P "+P
+    vnoremap <Leader>p "+p
+    vnoremap <Leader>P "+P
+elseif executable('/usr/bin/xsel')
+    nnoremap <silent> <Leader>p <Cmd>let @"=system('xsel -o -b')<CR>""p
+    nnoremap <silent> <Leader>P <Cmd>let @"=system('xsel -o -b')<CR>""P
+    vnoremap <silent> <Leader>p <Cmd>let @"=system('xsel -o -b')<CR>""p
+    vnoremap <silent> <Leader>P <Cmd>let @"=system('xsel -o -b')<CR>""P
+endif
 
 " use <C-L> to clear the highlighting of :set hlsearch.
 if maparg('<C-L>', 'n') ==# ''
-  nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
+    nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
 endif
 
 " terminal
@@ -73,8 +129,8 @@ nnoremap <silent> <Leader>o :below 10sp term://$SHELL<CR>i
 autocmd InsertEnter,InsertLeave * set list!
 
 augroup AutoSaveFolds | autocmd!
-  autocmd BufWinLeave,BufLeave,BufWritePost ?* nested silent! mkview!
-  autocmd BufWinEnter ?* silent! loadview
+    autocmd BufWinLeave,BufLeave,BufWritePost ?* nested silent! mkview!
+    autocmd BufWinEnter ?* silent! loadview
 augroup END
 
 " plugin settings
@@ -91,11 +147,11 @@ nmap <silent> <F9> :Lexplore<CR>
 
 " remap cd to be global
 augroup NetrwGroup | autocmd!
-  autocmd filetype netrw call s:NetrwMapping()
+    autocmd filetype netrw call s:NetrwMapping()
 augroup END
 
 function! s:NetrwMapping()
-  nmap <buffer> <silent> <nowait> <LocalLeader>cd  :execute "cd ".b:netrw_curdir<CR>:pwd<CR>
+    nmap <buffer> <silent> <nowait> <LocalLeader>cd  :execute "cd ".b:netrw_curdir<CR>:pwd<CR>
 endfunction
 
 " sneak
@@ -111,15 +167,15 @@ map T <Plug>Sneak_T
 
 " lightline
 let g:lightline = {
-      \   'colorscheme': 'solarized',
-      \   'active': {
-      \     'left': [ [ 'mode', 'paste' ],
-      \               [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
-      \   },
-      \   'component_function': {
-      \     'gitbranch': 'FugitiveHead'
-      \   },
-      \ }
+            \   'colorscheme': 'solarized',
+            \   'active': {
+            \     'left': [ [ 'mode', 'paste' ],
+            \               [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
+            \   },
+            \   'component_function': {
+            \     'gitbranch': 'FugitiveHead'
+            \   },
+            \ }
 
 " ctrlp
 nnoremap <Leader>. :CtrlP .<CR>
@@ -146,11 +202,11 @@ noremap - k^
 let g:lsp_diagnostics_echo_cursor = 1
 
 augroup lsp_clangd | autocmd!
-  autocmd User lsp_setup call lsp#register_server({
-                    \ 'name': 'clangd',
-                    \ 'cmd': {server_info->['clangd']},
-                    \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp'],
-                    \ })
+    autocmd User lsp_setup call lsp#register_server({
+                \ 'name': 'clangd',
+                \ 'cmd': {server_info->['clangd']},
+                \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp'],
+                \ })
 augroup END
 
 function! s:on_lsp_buffer_enabled() abort
@@ -168,16 +224,16 @@ augroup lsp_install | autocmd!
 augroup END
 
 function! s:lsp_mappings()
-  nmap <buffer> gd <plug>(lsp-definition)
-  nmap <buffer> gr <plug>(lsp-references)
-  nmap <buffer> gi <plug>(lsp-implementation)
-  nmap <buffer> gt <plug>(lsp-type-definition)
-  nmap <buffer> <leader>rn <plug>(lsp-rename)
-  nmap <buffer> [g <plug>(lsp-previous-diagnostic)
-  nmap <buffer> ]g <plug>(lsp-next-diagnostic)
-  nmap <buffer> K <plug>(lsp-hover)
+    nmap <buffer> gd <plug>(lsp-definition)
+    nmap <buffer> gr <plug>(lsp-references)
+    nmap <buffer> gi <plug>(lsp-implementation)
+    nmap <buffer> gt <plug>(lsp-type-definition)
+    nmap <buffer> <leader>rn <plug>(lsp-rename)
+    nmap <buffer> [g <plug>(lsp-previous-diagnostic)
+    nmap <buffer> ]g <plug>(lsp-next-diagnostic)
+    nmap <buffer> K <plug>(lsp-hover)
 
-  " refer to doc to add more commands
+    " refer to doc to add more commands
 endfunction
 
 " termdebug
@@ -185,35 +241,35 @@ let g:termdebug_wide = 1
 
 " minpac plugins
 if exists('g:loaded_minpac')
-  call minpac#init()
-  call minpac#add('k-takata/minpac', {'type': 'opt'})
+    call minpac#init()
+    call minpac#add('k-takata/minpac', {'type': 'opt'})
 
-  call minpac#add('jiangmiao/auto-pairs',          {'name': 'vim-auto-pairs'})
-  call minpac#add('tpope/vim-commentary')
-  call minpac#add('machakann/vim-highlightedyank', {'name': 'vim-highlighted-yank'})
-  call minpac#add('tpope/vim-repeat')
-  call minpac#add('tpope/vim-surround')
-  call minpac#add('tpope/vim-unimpaired')
-  call minpac#add('justinmk/vim-sneak')
-  call minpac#add('tommcdo/vim-exchange')
-  call minpac#add('tommcdo/vim-lion')
+    call minpac#add('jiangmiao/auto-pairs',          {'name': 'vim-auto-pairs'})
+    call minpac#add('tpope/vim-commentary')
+    call minpac#add('machakann/vim-highlightedyank', {'name': 'vim-highlighted-yank'})
+    call minpac#add('tpope/vim-repeat')
+    call minpac#add('tpope/vim-surround')
+    call minpac#add('tpope/vim-unimpaired')
+    call minpac#add('justinmk/vim-sneak')
+    call minpac#add('tommcdo/vim-exchange')
+    call minpac#add('tommcdo/vim-lion')
 
-  call minpac#add('tpope/vim-fugitive')
-  call minpac#add('tpope/vim-eunuch')
-  call minpac#add('tpope/vim-vinegar')
-  call minpac#add('mattn/emmet-vim',  {'name': 'vim-emmet'})
-  call minpac#add('ctrlpvim/ctrlp.vim', {'name': 'vim-ctrlp'})
+    call minpac#add('tpope/vim-fugitive')
+    call minpac#add('tpope/vim-eunuch')
+    call minpac#add('tpope/vim-vinegar')
+    call minpac#add('mattn/emmet-vim',  {'name': 'vim-emmet'})
+    call minpac#add('ctrlpvim/ctrlp.vim', {'name': 'vim-ctrlp'})
 
-  call minpac#add('chrisbra/colorizer',    {'name': 'vim-colorizer'})
-  call minpac#add('itchyny/lightline.vim', {'name': 'vim-lightline'})
+    call minpac#add('chrisbra/colorizer',    {'name': 'vim-colorizer'})
+    call minpac#add('itchyny/lightline.vim', {'name': 'vim-lightline'})
 
-  call minpac#add('ackyshake/VimCompletesMe', {'name': 'vim-vcm'})
+    call minpac#add('ackyshake/VimCompletesMe', {'name': 'vim-vcm'})
 
-  call minpac#add('prabirshrestha/vim-lsp')
-  call minpac#add('mattn/vim-lsp-settings')
+    call minpac#add('prabirshrestha/vim-lsp')
+    call minpac#add('mattn/vim-lsp-settings')
 
-  call minpac#add('prabirshrestha/asyncomplete.vim',     {'name': 'vim-asyncomplete'})
-  call minpac#add('prabirshrestha/asyncomplete-lsp.vim', {'name': 'vim-asyncomplete-lsp'})
+    call minpac#add('prabirshrestha/asyncomplete.vim',     {'name': 'vim-asyncomplete'})
+    call minpac#add('prabirshrestha/asyncomplete-lsp.vim', {'name': 'vim-asyncomplete-lsp'})
 endif
 
 " Define user commands for updating/cleaning the plugins.

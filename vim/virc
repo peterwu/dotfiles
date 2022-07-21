@@ -3,7 +3,7 @@ source $VIMRUNTIME/defaults.vim
 
 " options
 set number relativenumber
-"set smartindent expandtab tabstop=2 shiftwidth=2 softtabstop=2
+set smartindent expandtab tabstop=8 shiftwidth=4 softtabstop=0
 set shortmess+=I laststatus=2
 set listchars=trail:·,tab:»·
 
@@ -23,9 +23,73 @@ imap <Right> <Nop>
 nnoremap <expr> j (v:count? 'j' : 'gj')
 nnoremap <expr> k (v:count? 'k' : 'gk')
 
-" copy
-nnoremap Y y$
+" copy to clipboard
+nnoremap Y yg_
+
+if has('clipboard')
+    vnoremap <Leader>y  "+y
+    nnoremap <Leader>y  "+y
+    nnoremap <Leader>Y  "+yg_
+    nnoremap <Leader>yy "+y_
+elseif executable('/usr/bin/xsel')
+    vnoremap <silent> <Leader>y  <Cmd>set opfunc=CopyToClipboard<CR>g@
+    nnoremap <silent> <Leader>y  <Cmd>set opfunc=CopyToClipboard<CR>g@
+    nnoremap <silent> <Leader>Y  <Cmd>set opfunc=CopyToClipboard<CR>g@g_
+    nnoremap <silent> <Leader>yy <Cmd>set opfunc=CopyToClipboard<CR>g@_
+
+    function! CopyToClipboard(type, ...) abort
+        let reg = '"'
+        let sel_save = &selection
+        let &selection = "inclusive"
+        let cb_save  = &clipboard
+        let reg_save = getreg(reg)
+        let reg_type = getregtype(reg)
+        let type = a:type
+        if a:type == "char"
+            silent execute 'normal! v`[o`]"'.reg.'y'
+            let type = 'v'
+        elseif a:type == "line"
+            silent execute 'normal! `[V`]"'.reg.'y'
+            let type = 'V'
+        elseif a:type ==# "v" || a:type ==# "V" || a:type ==# "\<C-V>" || a:type == "block"
+            let &selection = sel_save
+            let ve = &virtualedit
+            if !(a:0 && a:1)
+                set virtualedit=
+            endif
+            silent execute 'normal! gv"'.reg.'y'
+            let &virtualedit = ve
+        elseif a:type =~ '^\d\+$'
+            let type = 'v'
+            silent execute 'normal! ^v'.a:type.'$h"'.reg.'y'
+            if mode() ==# 'v'
+                normal! v
+            endif
+        else
+            let &selection = sel_save
+            let &clipboard = cb_save
+        endif
+
+        call system('/usr/bin/xsel -i -b', getreg(reg))
+
+        call setreg(reg,reg_save,reg_type)
+        let &selection = sel_save
+        let &clipboard = cb_save
+    endfunction
+endif
+
+" paste from clipboard
+if has('clipboard')
+    nnoremap <Leader>p "+p
+    nnoremap <Leader>P "+P
+    vnoremap <Leader>p "+p
+    vnoremap <Leader>P "+P
+elseif executable('/usr/bin/xsel')
+    nnoremap <silent> <Leader>p <Cmd>let @"=system('xsel -o -b')<CR>""p
+    nnoremap <silent> <Leader>P <Cmd>let @"=system('xsel -o -b')<CR>""P
+    vnoremap <silent> <Leader>p <Cmd>let @"=system('xsel -o -b')<CR>""p
+    vnoremap <silent> <Leader>P <Cmd>let @"=system('xsel -o -b')<CR>""P
+endif
 
 " set list when in insert mode
 autocmd InsertEnter,InsertLeave * set list!
-
