@@ -55,50 +55,11 @@ alias grep="grep --color=auto"
 alias fgrep="fgrep --color=auto"
 alias egrep="egrep --color=auto"
 
+alias less="less -FX"
 alias rsync="rsync --progress"
+alias xsel="xsel --logfile /dev/null"
 
-# Colourize man pages
-if pgrep --exact emacs > /dev/null; then
-    ediff() {
-        local files
-        for f in "$@"; do
-            files+=\"${f}\"
-            files+=" "
-        done
-
-        [[ $# -eq 2 ]] && emacsclient --tty --eval "(ediff-files ${files})"
-        [[ $# -eq 3 ]] && emacsclient --tty --eval "(ediff-files3 ${files})"
-    }
-
-    man() {
-        local m="$@"
-        /usr/bin/man ${m} > /dev/null
-        [[ $? -eq 0 ]] && /usr/bin/emacsclient --tty --eval "(let ((m \"${m}\")) (man m) (delete-window) t)"
-    }
-elif [[ -x /usr/bin/vim ]]; then
-    export MANPAGER="vim -c 'set nonu nornu' -M +MANPAGER --not-a-term -"
-else
-    man() {
-        local cmd=(
-            env
-            LESS_TERMCAP_mb=$(tput bold; tput setaf 6)
-            LESS_TERMCAP_md=$(tput bold; tput setaf 6)
-            LESS_TERMCAP_me=$(tput sgr0)
-            LESS_TERMCAP_se=$(tput rmso; tput sgr0)
-            LESS_TERMCAP_ue=$(tput rmul; tput sgr0)
-            LESS_TERMCAP_us=$(tput smul; tput bold; tput setaf 4)
-            LESS_TERMCAP_mr=$(tput rev)
-            LESS_TERMCAP_mh=$(tput dim)
-            LESS_TERMCAP_ZN=$(tput ssubm)
-            LESS_TERMCAP_ZV=$(tput rsubm)
-            LESS_TERMCAP_ZO=$(tput ssupm)
-            LESS_TERMCAP_ZW=$(tput rsupm)
-            man "$@"
-        )
-
-        "${cmd[@]}"
-    }
-fi
+export MANPAGER="vim -c 'set laststatus=0' -M +MANPAGER --not-a-term -"
 
 # Customize bash prompt
 show_bash_prompt() {
