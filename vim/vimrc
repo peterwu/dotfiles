@@ -5,8 +5,9 @@ source $VIMRUNTIME/defaults.vim
 set number relativenumber lazyredraw showmatch hidden hlsearch
 set smartindent expandtab tabstop=8 shiftwidth=4 softtabstop=0
 set smartcase ignorecase shortmess+=I title mouse=a laststatus=2
-set noshowmode listchars=trail:·,tab:»·
+set noshowmode nolist listchars=trail:·,tab:»·
 set cursorline termguicolors path+=**
+set completeopt=menu,menuone,noinsert,noselect
 set viewoptions=folds,cursor
 set sessionoptions=folds
 set viminfo+=n~/.vim/cache/viminfo
@@ -52,10 +53,10 @@ vnoremap <expr> k (v:count? 'k' : 'gk')
 nnoremap Y yg_
 
 if has('clipboard')
-    vnoremap <Leader>y  "+y
-    nnoremap <Leader>y  "+y
-    nnoremap <Leader>Y  "+yg_
-    nnoremap <Leader>yy "+y_
+    vnoremap <silent> <Leader>y  "+y
+    nnoremap <silent> <Leader>y  "+y
+    nnoremap <silent> <Leader>Y  "+yg_
+    nnoremap <silent> <Leader>yy "+y_
 elseif executable('/usr/bin/xsel')
     vnoremap <silent> <Leader>y  <Cmd>set opfunc=CopyToClipboard<CR>g@
     nnoremap <silent> <Leader>y  <Cmd>set opfunc=CopyToClipboard<CR>g@
@@ -105,10 +106,10 @@ endif
 
 " paste from clipboard
 if has('clipboard')
-    nnoremap <Leader>p "+p
-    nnoremap <Leader>P "+P
-    vnoremap <Leader>p "+p
-    vnoremap <Leader>P "+P
+    nnoremap <silent> <Leader>p "+p
+    nnoremap <silent> <Leader>P "+P
+    vnoremap <silent> <Leader>p "+p
+    vnoremap <silent> <Leader>P "+P
 elseif executable('/usr/bin/xsel')
     nnoremap <silent> <Leader>p <Cmd>let @"=system('xsel -o -b -l /dev/null')<CR>""p
     nnoremap <silent> <Leader>P <Cmd>let @"=system('xsel -o -b -l /dev/null')<CR>""P
@@ -129,12 +130,14 @@ nnoremap <silent> <Leader>tT <Cmd>botright terminal<CR>
 nnoremap <silent> <Leader>tV <Cmd>botright vertical terminal<CR>
 
 " initialization
-" set list when in insert mode
-autocmd InsertEnter,InsertLeave * set list!
-
 augroup AutoSaveFolds | autocmd!
     autocmd BufWinLeave,BufLeave,BufWritePost ?* nested silent! mkview!
     autocmd BufWinEnter ?* silent! loadview
+augroup END
+
+augroup AutoSetList | autocmd!
+  autocmd InsertEnter * set list
+  autocmd InsertLeave * set nolist
 augroup END
 
 augroup NoNumberForOldTerm | autocmd!
