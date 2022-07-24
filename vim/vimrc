@@ -95,7 +95,7 @@ elseif executable('/usr/bin/xsel')
             let &clipboard = cb_save
         endif
 
-        call system('/usr/bin/xsel -i -b', getreg(reg))
+        call system('/usr/bin/xsel -i -b -l /dev/null', getreg(reg))
 
         call setreg(reg,reg_save,reg_type)
         let &selection = sel_save
@@ -110,10 +110,10 @@ if has('clipboard')
     vnoremap <Leader>p "+p
     vnoremap <Leader>P "+P
 elseif executable('/usr/bin/xsel')
-    nnoremap <silent> <Leader>p <Cmd>let @"=system('xsel -o -b')<CR>""p
-    nnoremap <silent> <Leader>P <Cmd>let @"=system('xsel -o -b')<CR>""P
-    vnoremap <silent> <Leader>p <Cmd>let @"=system('xsel -o -b')<CR>""p
-    vnoremap <silent> <Leader>P <Cmd>let @"=system('xsel -o -b')<CR>""P
+    nnoremap <silent> <Leader>p <Cmd>let @"=system('xsel -o -b -l /dev/null')<CR>""p
+    nnoremap <silent> <Leader>P <Cmd>let @"=system('xsel -o -b -l /dev/null')<CR>""P
+    vnoremap <silent> <Leader>p <Cmd>let @"=system('xsel -o -b -l /dev/null')<CR>""p
+    vnoremap <silent> <Leader>P <Cmd>let @"=system('xsel -o -b -l /dev/null')<CR>""P
 endif
 
 " use <C-L> to clear the highlighting of :set hlsearch.
