@@ -141,6 +141,10 @@ augroup NoNumberForOldTerm | autocmd!
   autocmd TerminalWinOpen * setlocal nonumber norelativenumber
 augroup END
 
+augroup NoTrailingWhitespaces | autocmd!
+  autocmd BufWritePre * :%s/\s\+$//e
+augroup END
+
 " plugin settings
 " netrw
 let g:netrw_dirhistmax   = 0
