@@ -3,16 +3,16 @@
 env:
   TERM: alacritty
 
-window:
-  dimensions:
-   columns: 128
-   lines: 32
+# window:
+#   dimensions:
+#    columns: 128
+#    lines: 32
 
-  padding:
-   x: 5
-   y: 5
+  # padding:
+  #  x: 2
+  #  y: 2
 
-  dynamic_padding: true
+  # dynamic_padding: true
 
 font:
   normal:

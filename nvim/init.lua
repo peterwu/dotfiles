@@ -3,26 +3,62 @@ require 'keymaps'
 require 'plugins'
 require 'statusline'
 
-vim.cmd [[
-augroup AutoSaveFolds | autocmd!
-  autocmd BufWinLeave,BufLeave,BufWritePost ?* nested silent! mkview!
-  autocmd BufWinEnter ?* silent! loadview
-augroup END
+-- AutoSaveFolds
+vim.api.nvim_create_augroup('AutoSaveFolds', {})
 
-augroup AutoSetList | autocmd!
-  autocmd InsertEnter * set list
-  autocmd InsertLeave * set nolist
-augroup END
+vim.api.nvim_create_autocmd({'BufWinLeave',
+                             'BufLeave',
+                             'BufWritePost'}, {
+    group='AutoSaveFolds',
+    pattern='?*',
+    command='silent! mkview!',
+    nested=true
+})
 
-augroup HighlightedYank | autocmd!
-  autocmd TextYankPost * silent! lua vim.highlight.on_yank {timeout = 777}
-augroup END
+vim.api.nvim_create_autocmd('BufWinEnter', {
+    group='AutoSaveFolds',
+    pattern='?*',
+    command='silent! loadview'
+})
 
-augroup NoNumberForOldTerm | autocmd!
-  autocmd TermOpen * setlocal nonumber norelativenumber
-augroup END
+-- AutoSetList
+vim.api.nvim_create_augroup('AutoSetList', {})
 
-augroup NoTrailingWhitespaces | autocmd!
-  autocmd BufWritePre * :%s/\s\+$//e
-augroup END
-]]
+vim.api.nvim_create_autocmd('InsertEnter', {
+    group='AutoSetList',
+    pattern='*',
+    command='set list'
+})
+
+vim.api.nvim_create_autocmd('InsertLeave', {
+    group='AutoSetList',
+    pattern='*',
+    command='set nolist'
+})
+
+-- AutoSetList
+vim.api.nvim_create_augroup('HighlightedYank', {})
+
+vim.api.nvim_create_autocmd('TextYankPost', {
+    group='HighlightedYank',
+    pattern='*',
+    command='silent! lua vim.highlight.on_yank {timeout = 777}'
+})
+
+-- NoNumberForOldTerm
+vim.api.nvim_create_augroup('NoNumberForOldTerm', {})
+
+vim.api.nvim_create_autocmd('TermOpen', {
+    group='NoNumberForOldTerm',
+    pattern='*',
+    command='setlocal nonumber norelativenumber'
+})
+
+-- NoTrailingWhitespaces
+vim.api.nvim_create_augroup('NoTrailingWhitespaces', {})
+
+vim.api.nvim_create_autocmd('BufWritePre', {
+    group='NoTrailingWhitespaces',
+    pattern='*',
+    command=[[keeppatterns %s/\s\+$//e]]
+})

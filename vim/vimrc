@@ -11,7 +11,6 @@ set viewoptions=folds,cursor
 set sessionoptions=folds
 set viminfo+=n~/.vim/cache/viminfo
 
-colorscheme zellner
 highlight CursorLine   cterm=NONE ctermbg=NONE ctermfg=NONE
 highlight CursorLineNr cterm=NONE ctermbg=NONE ctermfg=NONE
 
@@ -46,6 +45,8 @@ imap <Right> <Nop>
 " swap j/k <-> gj/gk
 nnoremap <expr> j (v:count? 'j' : 'gj')
 nnoremap <expr> k (v:count? 'k' : 'gk')
+vnoremap <expr> j (v:count? 'j' : 'gj')
+vnoremap <expr> k (v:count? 'k' : 'gk')
 
 " copy to clipboard
 nnoremap Y yg_

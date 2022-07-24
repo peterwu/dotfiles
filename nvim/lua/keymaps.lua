@@ -25,13 +25,15 @@ utils.imap('<Right>', [[<Nop>]])
 -- swap j/k <-> gj/gk
 utils.nmap('j', [[v:count ? 'j' : 'gj']], {expr = true})
 utils.nmap('k', [[v:count ? 'k' : 'gk']], {expr = true})
+utils.vmap('j', [[v:count ? 'j' : 'gj']], {expr = true})
+utils.vmap('k', [[v:count ? 'k' : 'gk']], {expr = true})
 
 -- copy to clipboard
 utils.nmap('Y',          [[yg_]])
 utils.vmap('<Leader>y',  [["+y]])
 utils.nmap('<Leader>y',  [["+y]])
 utils.nmap('<Leader>Y',  [["+yg_]])
-utils.nmap('<Leader>yy', [["+yy]])
+utils.nmap('<Leader>yy', [["+y_]])
 
 -- paste from clipboard
 utils.nmap('<Leader>p', [["+p]])
