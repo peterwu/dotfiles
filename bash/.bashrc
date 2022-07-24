@@ -22,19 +22,20 @@ HISTSIZE=20000
 HISTFILESIZE=20000
 
 # Default editor
-export EDITOR="/usr/bin/emacsclient --tty"
+export VISUAL="/usr/bin/vim"
+export EDITOR="$VISUAL"
 
 # User specific aliases and functions
 set -o vi
-
 [[ -x /usr/bin/vim ]] && alias vi="vim"
 
 alias emacs="emacs --maximized"
 alias e="emacsclient --tty"
-alias magit="emacsclient --tty --eval '(magit-status)'"
-alias vi="e"
-
 alias E="sudo --edit"
+alias magit="emacsclient --tty --eval '(magit-status)'"
+
+
+[[ "$TERM" == "xterm-kitty" ]] && alias ssh="kitty +kitten ssh"
 
 alias ls="ls --color=auto --group-directories-first --indicator-style=slash -v"
 alias ll="ls -l --classify --size"
