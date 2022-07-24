@@ -122,8 +122,11 @@ if maparg('<C-L>', 'n') ==# ''
 endif
 
 " terminal
-" tnoremap <Esc> <C-\><C-N>
-nnoremap <silent> <Leader>o :below 10sp term://$SHELL<CR>i
+tnoremap <Esc> <C-\><C-N>
+nnoremap <silent> <Leader>tt <Cmd>belowright terminal<CR>
+nnoremap <silent> <Leader>tv <Cmd>belowright vertical terminal<CR>
+nnoremap <silent> <Leader>tT <Cmd>botright terminal<CR>
+nnoremap <silent> <Leader>tV <Cmd>botright vertical terminal<CR>
 
 " initialization
 " set list when in insert mode
