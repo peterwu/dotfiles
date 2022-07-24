@@ -137,6 +137,10 @@ augroup AutoSaveFolds | autocmd!
     autocmd BufWinEnter ?* silent! loadview
 augroup END
 
+augroup NoNumberForOldTerm | autocmd!
+  autocmd TerminalWinOpen * setlocal nonumber norelativenumber
+augroup END
+
 " plugin settings
 " netrw
 let g:netrw_dirhistmax   = 0
