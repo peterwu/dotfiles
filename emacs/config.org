@@ -580,47 +580,44 @@
                                :background (face-background face))))
 
        (defun wy:define-evil-commands ()
-         (evil-define-operator wy:evil-yank-to-clipboard (beg end type register yank-handler)
-           :move-point nil
-           :repeat nil
-           (interactive "<R><x><y>")
-           (evil-yank beg end type ?\" yank-handler)
+         (defun wy:smart-copy-to-clipboard ()
            (if window-system
                (evil-set-register ?+ (evil-get-register ?\"))
              (with-temp-buffer
                (insert (evil-get-register ?\"))
                (call-process-region (point-min) (point-max) "/usr/bin/xsel" nil 0 nil  "-i" "-b" "-l" "/dev/null"))))
+
+         (evil-define-operator wy:evil-yank-to-clipboard (beg end type register yank-handler)
+           :move-point nil
+           :repeat nil
+           (interactive "<R><x><y>")
+           (evil-yank beg end type ?\" yank-handler)
+           (wy:smart-copy-to-clipboard))
 
          (evil-define-operator wy:evil-yank-line-to-clipboard (beg end type register)
            :motion evil-line-or-visual-line
            :move-point nil
            (interactive "<R><x>")
            (evil-yank-line beg end type ?\")
-           (if window-system
-               (evil-set-register ?+ (evil-get-register ?\"))
-             (with-temp-buffer
-               (insert (evil-get-register ?\"))
-               (call-process-region (point-min) (point-max) "/usr/bin/xsel" nil 0 nil  "-i" "-b" "-l" "/dev/null"))))
+           (wy:smart-copy-to-clipboard))
 
-         (evil-define-command wy:evil-paste-before-from-clipboard (count &optional register yank-handler)
-           :suppress-operator t
-           (interactive "*P<x>")
-           (if window-system
-               (evil-set-register ?\" (evil-get-register ?+))
-             (with-temp-buffer
-               (call-process "/usr/bin/xsel" nil t nil "-o" "-b")
-               (evil-set-register ?\" (buffer-string))))
-           (evil-paste-before count ?\" yank-handler))
+         (defmacro wy:evil-paste-from-clipboard (position)
+           (let ((wy:evil-paste-command (intern (concat "wy:evil-paste-" (symbol-name position) "-from-clipboard")))
+                 (evil-paste-command (intern (concat "evil-paste-" (symbol-name position)))))
+             `(evil-define-command ,wy:evil-paste-command (count &optional register yank-handler)
+                :suppress-operator t
+                (interactive "*P<x>")
+                (if window-system
+                    (evil-set-register ?\" (evil-get-register ?+))
+                  (with-temp-buffer
+                    (call-process "/usr/bin/xsel" nil t nil "-o" "-b")
+                    (evil-set-register ?\" (buffer-string))))
+                (,evil-paste-command count ?\" yank-handler))))
 
-         (evil-define-command wy:evil-paste-after-from-clipboard (count &optional register yank-handler)
-           :suppress-operator t
-           (interactive "*P<x>")
-           (if window-system
-               (evil-set-register ?\" (evil-get-register ?+))
-             (with-temp-buffer
-               (call-process "/usr/bin/xsel" nil t nil "-o" "-b")
-               (evil-set-register ?\" (buffer-string))))
-           (evil-paste-after count ?\" yank-handler)))
+         ; wy:evil-paste-before-from-clipboard
+         (wy:evil-paste-from-clipboard before)
+         ; wy:evil-paste-after-from-clipboard
+         (wy:evil-paste-from-clipboard after))
 
        (defun wy:ignore-some-evil-functions ()
          (fset 'evil-visual-update-x-selection 'ignore))
