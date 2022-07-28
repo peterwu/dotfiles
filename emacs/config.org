@@ -584,45 +584,43 @@
            :move-point nil
            :repeat nil
            (interactive "<R><x><y>")
+           (evil-yank beg end type ?\" yank-handler)
            (if window-system
-               (evil-yank beg end type ?+ yank-handler)
-             (progn
-               (evil-yank beg end type ?\" yank-handler)
-               (with-temp-buffer
-                 (let* ((text (evil-get-register ?\")))
-                   (insert text)
-                   (call-process-region (point-min) (point-max) "/usr/bin/xsel" nil 0 nil  "-i" "-b" "-l" "/dev/null"))))))
+               (evil-set-register ?+ (evil-get-register ?\"))
+             (with-temp-buffer
+               (insert (evil-get-register ?\"))
+               (call-process-region (point-min) (point-max) "/usr/bin/xsel" nil 0 nil  "-i" "-b" "-l" "/dev/null"))))
 
          (evil-define-operator wy:evil-yank-line-to-clipboard (beg end type register)
            :motion evil-line-or-visual-line
            :move-point nil
            (interactive "<R><x>")
+           (evil-yank-line beg end type ?\")
            (if window-system
-               (evil-yank-line beg end type ?+ yank-handler)
-             (progn
-               (evil-yank-line beg end type ?\" yank-handler)
-               (with-temp-buffer
-                 (let* ((text (evil-get-register ?\")))
-                   (insert text)
-                   (call-process-region (point-min) (point-max) "/usr/bin/xsel" nil 0 nil  "-i" "-b" "-l" "/dev/null"))))))
+               (evil-set-register ?+ (evil-get-register ?\"))
+             (with-temp-buffer
+               (insert (evil-get-register ?\"))
+               (call-process-region (point-min) (point-max) "/usr/bin/xsel" nil 0 nil  "-i" "-b" "-l" "/dev/null"))))
 
          (evil-define-command wy:evil-paste-before-from-clipboard (count &optional register yank-handler)
            :suppress-operator t
            (interactive "*P<x>")
            (if window-system
-               (evil-paste-before count ?+ yank-handler)
-             (let* ((text (shell-command-to-string "xsel -o -b")))
-               (evil-set-register ?\" text)
-               (evil-paste-before count ?\" yank-handler))))
+               (evil-set-register ?\" (evil-get-register ?+))
+             (with-temp-buffer
+               (call-process "/usr/bin/xsel" nil t nil "-o" "-b")
+               (evil-set-register ?\" (buffer-string))))
+           (evil-paste-before count ?\" yank-handler))
 
          (evil-define-command wy:evil-paste-after-from-clipboard (count &optional register yank-handler)
            :suppress-operator t
            (interactive "*P<x>")
            (if window-system
-               (evil-paste-after count ?+ yank-handler)
-             (let* ((text (shell-command-to-string "xsel -o -b")))
-               (evil-set-register ?\" text)
-               (evil-paste-after count ?\" yank-handler)))))
+               (evil-set-register ?\" (evil-get-register ?+))
+             (with-temp-buffer
+               (call-process "/usr/bin/xsel" nil t nil "-o" "-b")
+               (evil-set-register ?\" (buffer-string))))
+           (evil-paste-after count ?\" yank-handler)))
 
        (defun wy:ignore-some-evil-functions ()
          (fset 'evil-visual-update-x-selection 'ignore))
