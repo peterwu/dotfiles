@@ -1,6 +1,14 @@
+$include /etc/inputrc
+
 # Set vi mode
 set editing-mode vi
 set keymap vi
+
+set show-mode-in-prompt on
+# non-blinking block cursor
+set vi-cmd-mode-string \1\e[2 q\2
+# blinking block cursor
+set vi-ins-mode-string \1\e[1 q\2
 
 # Reduce tab completion key presses and show suggestions
 set show-all-if-ambiguous on
