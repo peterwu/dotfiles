@@ -1052,6 +1052,15 @@
                   ("J" . magit-file-dispatch)
                   ("r" . vc-refresh-state)))
   #+end_src
+* man
+  #+begin_src emacs-lisp
+    (use-package man
+      :custom (Man-notify-method 'bully)
+      :bind (:map Man-mode-map
+                  ("Q" . (lambda () (interactive)
+                           (delete-other-frames)
+                           (delete-frame)))))
+  #+end_src
 * minibuffer
   #+begin_src emacs-lisp
     (use-package minibuffer
