@@ -92,7 +92,7 @@
 
        (defvar-local wy:mode-line-evil-tag
          '(:eval (propertize evil-mode-line-tag
-                             'face '(:foreground "#7f10d0" :weight bold))))
+                             'face '(:foreground "dark violet" :weight bold))))
        (put 'wy:mode-line-evil-tag 'risky-local-variable t)
 
        (defvar-local wy:mode-line-tab-bar-indicator
@@ -565,17 +565,17 @@
       (defun wy:eshell-prompt-function ()
         (concat
          "┌ "
-         (propertize (format-time-string "%H:%M" (current-time)) 'face `(:foreground "#721045"))
+         (propertize (format-time-string "%H:%M" (current-time)) 'face `(:foreground "dark magenta"))
          " "
-         (propertize (user-login-name)  'face `(:foreground "#0031a9"))
-         (propertize (concat  "@" (system-name) ":") 'face `(:foreground "#813e00"))
-         (propertize (abbreviate-file-name (eshell/pwd)) 'face `(:foreground "#0031a9" :weight bold))
+         (propertize (user-login-name)  'face `(:foreground "dark blue"))
+         (propertize (concat  "@" (system-name) ":") 'face `(:foreground "sienna"))
+         (propertize (abbreviate-file-name (eshell/pwd)) 'face `(:foreground "dark blue" :weight bold))
          "\n"
          "└ "
          (let ((prompt (if (= (user-uid) 0) "#" "$")))
            (if (= eshell-last-command-status 0)
-               (propertize prompt 'face `(:foreground "#005e00"))
-             (propertize prompt 'face `(:foreground "#a60000"))))
+               (propertize prompt 'face `(:foreground "dark green"))
+             (propertize prompt 'face `(:foreground "dark red"))))
          " "))
 
       (defun wy:turn-off-hl-line-in-eshell ()
