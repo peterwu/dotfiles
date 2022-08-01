@@ -1298,6 +1298,20 @@
       (tab-bar-mode -1)
       (tab-bar-history-mode -1))
   #+end_src
+* tab-line
+    #+begin_src emacs-lisp
+      (use-package tab-line
+        :custom
+        (tab-line-new-button-show nil)
+        (tab-line-close-button-show nil)
+        (tab-line-exclude-modes '(completion-list-mode
+                                  dired-sidebar-mode
+                                  help-mode))
+        :bind (:map wy:evil-toggle-map
+                    ("t" . global-tab-line-mode))
+        :config
+        (global-tab-line-mode -1))
+    #+end_src
 * time
   #+begin_src emacs-lisp
     (use-package time
