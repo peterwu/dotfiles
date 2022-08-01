@@ -609,7 +609,7 @@
 
        (defun wy:define-evil-commands ()
          (defun wy:smart-copy-to-clipboard ()
-           (if window-system
+           (if (display-graphic-p)
                (evil-set-register ?+ (evil-get-register ?\"))
              (with-temp-buffer
                (insert (evil-get-register ?\"))
@@ -635,7 +635,7 @@
              `(evil-define-command ,wy:evil-paste-command (count &optional register yank-handler)
                 :suppress-operator t
                 (interactive "*P<x>")
-                (if window-system
+                (if (display-graphic-p)
                     (evil-set-register ?\" (evil-get-register ?+))
                   (with-temp-buffer
                     (call-process "/usr/bin/xsel" nil t nil "-o" "-b")
@@ -1114,7 +1114,7 @@
 * mouse
   #+begin_src emacs-lisp
     (use-package mouse
-      :when window-system
+      :when (display-graphic-p)
       :custom
       (make-pointer-invisible t)
       (mouse-drag-copy-region nil)
@@ -1444,7 +1444,7 @@
 * xt-mouse
   #+begin_src emacs-lisp
     (use-package xt-mouse
-      :unless window-system
+      :unless (display-graphic-p)
       :demand t
       :bind(([mouse-4] . scroll-down-line)
             ([mouse-5] . scroll-up-line))
