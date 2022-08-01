@@ -170,9 +170,9 @@
        (put 'wy:mode-line-centre-placeholder 'risky-local-variable t)
 
        (defvar-local wy:mode-line-position
-           '(:propertize "(%l,%C)"
-                         help-echo "(Line,Column)"
-                         mouse-face mode-line-highlight))
+         '(:propertize "(%l,%C)"
+                       help-echo "(Line,Column)"
+                       mouse-face mode-line-highlight))
        (put 'wy:mode-line-position 'risky-local-variable t)
 
        (defvar-local wy:mode-line-modes
@@ -224,6 +224,8 @@
 
            ;; right hand side
            (list
+            wy:mode-line-position
+            " "
             wy:mode-line-buffer-size
             " "
             wy:mode-line-modes
