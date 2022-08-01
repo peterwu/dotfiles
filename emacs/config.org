@@ -131,7 +131,6 @@
                             (branch
                              (if locked?  (match-string 1 status)
                                (substring status 1)))
-                            (git-mode-line-status (concat " " branch)))
                        (cond
                         ;; up-to-date
                         ((string-equal "-" class)
@@ -164,6 +163,7 @@
                                      'face '(:inherit vc-missing-state :weight bold)
                                      'mouse-face 'mode-line-highlight))
                         ((t git-mode-line-status)))))))
+                          (git-mode-line-status (concat " " branch)))
        (put 'wy:mode-line-git-status 'risky-local-variable t)
 
        (defvar-local wy:mode-line-centre-placeholder "")

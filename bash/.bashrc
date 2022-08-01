@@ -33,7 +33,7 @@ alias E="sudo --edit"
 
 alias e="emacsclient --tty"
 alias emacs="emacs --maximized"
-alias magit="emacsclient --tty --eval '(magit-status)'"
+alias magit="emacsclient --tty --suppress-output --eval '(magit-status)'"
 
 [[ "$TERM" == "xterm-kitty" ]] && alias ssh="kitty +kitten ssh"
 
@@ -170,7 +170,7 @@ show_bash_prompt() {
                 prompt+="\002"
             fi
 
-            prompt+=" ${git_branch}"
+            prompt+=" ${git_branch}"
         fi
     fi
 
