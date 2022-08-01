@@ -90,80 +90,90 @@
                    (list (format (format "%%%ds" available-width-right) ""))
                    right)))
 
-       (defvar-local wy:evil-mode-line-tag
-           '(:eval (propertize evil-mode-line-tag
-                               'face '(:foreground "#7f10d0" :weight bold))))
-       (put 'wy:evil-mode-line-tag 'risky-local-variable t)
+       (defvar-local wy:mode-line-evil-tag
+         '(:eval (propertize evil-mode-line-tag
+                             'face '(:foreground "#7f10d0" :weight bold))))
+       (put 'wy:mode-line-evil-tag 'risky-local-variable t)
+
+       (defvar-local wy:mode-line-tab-bar-indicator
+         '(:eval
+           (let ((tab-name (alist-get 'name (assq 'current-tab (funcall tab-bar-tabs-function)))))
+             (propertize
+              tab-name
+              'help-echo "Tab name"
+              'face '(:inherit mode-line-buffer-id)
+              'mouse-face 'mode-line-highlight))))
+       (put 'wy:mode-line-tab-bar-indicator 'risky-local-variable t)
 
        (defvar-local wy:mode-line-buffer-identification
-           '(:eval (if (buffer-file-name)
-                       (propertize (wy:ellipsize-file-name
-                                    (file-name-nondirectory (buffer-file-name))
-                                    36)
-                                   'help-echo (abbreviate-file-name (buffer-file-name))
-                                   'face '(:inherit mode-line-emphasis)
-                                   'mouse-face 'mode-line-highlight)
-                     (propertize (buffer-name)
-                                 'help-echo "Buffer name"
-                                 'face '(:inherit mode-line-buffer-id)
-                                 'mouse-face 'mode-line-highlight))))
+         '(:eval (if (buffer-file-name)
+                     (propertize (wy:ellipsize-file-name
+                                  (file-name-nondirectory (buffer-file-name))
+                                  36)
+                                 'help-echo (abbreviate-file-name (buffer-file-name))
+                                 'face '(:inherit mode-line-emphasis)
+                                 'mouse-face 'mode-line-highlight)
+                   (propertize (buffer-name)
+                               'help-echo "Buffer name"
+                               'face '(:inherit mode-line-buffer-id)
+                               'mouse-face 'mode-line-highlight))))
        (put 'wy:mode-line-buffer-identification 'risky-local-variable t)
 
        (defvar-local wy:mode-line-git-status
-           ;; Format: (defun vc-default-mode-line-string (backend file) in vc-hooks.el
-           ;;   \"BACKEND-REV\"        if the file is up-to-date
-           ;;   \"BACKEND:REV\"        if the file is edited (or locked by the calling user)
-           ;;   \"BACKEND:LOCKER:REV\" if the file is locked by somebody else
-           ;;   \"BACKEND@REV\"        if the file was locally added
-           ;;   \"BACKEND!REV\"        if the file contains conflicts or was removed
-           ;;   \"BACKEND?REV\"        if the file is under VC, but is missing
+         ;; Format: (defun vc-default-mode-line-string (backend file) in vc-hooks.el
+         ;;   \"BACKEND-REV\"        if the file is up-to-date
+         ;;   \"BACKEND:REV\"        if the file is edited (or locked by the calling user)
+         ;;   \"BACKEND:LOCKER:REV\" if the file is locked by somebody else
+         ;;   \"BACKEND@REV\"        if the file was locally added
+         ;;   \"BACKEND!REV\"        if the file contains conflicts or was removed
+         ;;   \"BACKEND?REV\"        if the file is under VC, but is missing
 
-           '(:eval (when vc-mode
-                     (let* ((git-status (vc-git-mode-line-string (buffer-file-name)))
-                            (status (replace-regexp-in-string "^Git" "" git-status))
-                            (class (substring-no-properties status 0 1))
-                            (locked? (string-match
-                                      (rx (and
-                                           line-start ":"
-                                           (one-or-more alnum) ":"
-                                           (group (one-or-more alnum))))
-                                      status))
-                            (branch
-                             (if locked?  (match-string 1 status)
-                               (substring status 1)))
-                       (cond
-                        ;; up-to-date
-                        ((string-equal "-" class)
-                         (propertize git-mode-line-status
-                                     'face '(:inherit vc-up-to-date-state :weight bold)
-                                     'mouse-face 'mode-line-highlight))
-                        ;; locked
-                        (locked?
-                         (propertize git-mode-line-status
-                                     'face '(:inherit vc-locked-state :weight bold)
-                                     'mouse-face 'mode-line-highlight))
-                        ;; edited
-                        ((string-equal ":" class)
-                         (propertize git-mode-line-status
-                                     'face '(:inherit vc-edited-state :weight bold)
-                                     'mouse-face 'mode-line-highlight))
-                        ;; locally added
-                        ((string-equal "@" class)
-                         (propertize git-mode-line-status
-                                     'face '(:inherit vc-locally-added-state :weight bold)
-                                     'mouse-face 'mode-line-highlight))
-                        ;; removed or conflicting
-                        ((string-equal "!" class)
-                         (propertize git-mode-line-status
-                                     'face '(:inherit vc-removed-state :weight bold)
-                                     'mouse-face 'mode-line-highlight))
-                        ;; missing
-                        ((string-equal "?" class)
-                         (propertize git-mode-line-status
-                                     'face '(:inherit vc-missing-state :weight bold)
-                                     'mouse-face 'mode-line-highlight))
-                        ((t git-mode-line-status)))))))
+         '(:eval (when vc-mode
+                   (let* ((git-status (vc-git-mode-line-string (buffer-file-name)))
+                          (status (replace-regexp-in-string "^Git" "" git-status))
+                          (class (substring-no-properties status 0 1))
+                          (locked? (string-match
+                                    (rx (and
+                                         line-start ":"
+                                         (one-or-more alnum) ":"
+                                         (group (one-or-more alnum))))
+                                    status))
+                          (branch
+                           (if locked?  (match-string 1 status)
+                             (substring status 1)))
                           (git-mode-line-status (concat " " branch)))
+                     (cond
+                      ;; up-to-date
+                      ((string-equal "-" class)
+                       (propertize git-mode-line-status
+                                   'face '(:inherit vc-up-to-date-state :weight bold)
+                                   'mouse-face 'mode-line-highlight))
+                      ;; locked
+                      (locked?
+                       (propertize git-mode-line-status
+                                   'face '(:inherit vc-locked-state :weight bold)
+                                   'mouse-face 'mode-line-highlight))
+                      ;; edited
+                      ((string-equal ":" class)
+                       (propertize git-mode-line-status
+                                   'face '(:inherit vc-edited-state :weight bold)
+                                   'mouse-face 'mode-line-highlight))
+                      ;; locally added
+                      ((string-equal "@" class)
+                       (propertize git-mode-line-status
+                                   'face '(:inherit vc-locally-added-state :weight bold)
+                                   'mouse-face 'mode-line-highlight))
+                      ;; removed or conflicting
+                      ((string-equal "!" class)
+                       (propertize git-mode-line-status
+                                   'face '(:inherit vc-removed-state :weight bold)
+                                   'mouse-face 'mode-line-highlight))
+                      ;; missing
+                      ((string-equal "?" class)
+                       (propertize git-mode-line-status
+                                   'face '(:inherit vc-missing-state :weight bold)
+                                   'mouse-face 'mode-line-highlight))
+                      ((t git-mode-line-status)))))))
        (put 'wy:mode-line-git-status 'risky-local-variable t)
 
        (defvar-local wy:mode-line-centre-placeholder "")
@@ -175,37 +185,37 @@
                        mouse-face mode-line-highlight))
        (put 'wy:mode-line-position 'risky-local-variable t)
 
+       (defvar-local wy:mode-line-buffer-size
+         '(:propertize "%I"
+                       help-echo "Size"
+                       mouse-face mode-line-highlight))
+       (put 'wy:mode-line-buffer-size 'risky-local-variable t)
+
        (defvar-local wy:mode-line-modes
-           '(:eval (and (or (and (consp mode-name)
-                                 (setcar mode-name
-                                         (propertize (car mode-name)
-                                                     'face '(:inherit mode-line-emphasis))))
-                            (setq mode-name
-                                  (propertize mode-name
-                                              'face '(:inherit mode-line-emphasis))))
-                        minions-mode-line-modes)))
+         '(:eval (and (or (and (consp mode-name)
+                               (setcar mode-name
+                                       (propertize (car mode-name)
+                                                   'face '(:inherit mode-line-emphasis))))
+                          (setq mode-name
+                                (propertize mode-name
+                                            'face '(:inherit mode-line-emphasis))))
+                      minions-mode-line-modes)))
        (put 'wy:mode-line-modes 'risky-local-variable t)
 
        (defvar-local wy:mode-line-percent-position
-           '(:eval (let ((p (format-mode-line "%p")))
-                     (cond
-                      ((string-equal p "All")
-                       (propertize "All" 'help-echo p 'mouse-face 'mode-line-highlight))
-                      ((string-equal p "Top")
-                       (propertize "Top" 'help-echo p 'mouse-face 'mode-line-highlight))
-                      ((string-equal p "Bottom")
-                       (propertize "Bot" 'help-echo p 'mouse-face 'mode-line-highlight))
-                      (t
-                       (propertize (concat p  "%%")
-                                   'help-echo "Position"
-                                   'mouse-face 'mode-line-highlight))))))
+         '(:eval (let ((p (format-mode-line "%p")))
+                   (cond
+                    ((string-equal p "All")
+                     (propertize "All" 'help-echo p 'mouse-face 'mode-line-highlight))
+                    ((string-equal p "Top")
+                     (propertize "Top" 'help-echo p 'mouse-face 'mode-line-highlight))
+                    ((string-equal p "Bottom")
+                     (propertize "Bot" 'help-echo p 'mouse-face 'mode-line-highlight))
+                    (t
+                     (propertize (concat p  "%%")
+                                 'help-echo "Position"
+                                 'mouse-face 'mode-line-highlight))))))
        (put 'wy:mode-line-percent-position 'risky-local-variable t)
-
-       (defvar-local wy:mode-line-buffer-size
-           '(:propertize "%I"
-                         help-echo "Size"
-                         mouse-face mode-line-highlight))
-       (put 'wy:mode-line-buffer-size 'risky-local-variable t)
        :custom
        (mode-line-format
         '(:eval
@@ -213,7 +223,9 @@
            ;; left hand side
            (list
             "%e"
-            wy:evil-mode-line-tag
+            wy:mode-line-evil-tag
+            wy:mode-line-tab-bar-indicator
+            "꞉"
             wy:mode-line-buffer-identification
             " "
             wy:mode-line-git-status)
@@ -442,8 +454,6 @@
        :after evil
        :custom (dired-sidebar-set-width 41)
        :bind ("<f9>" . dired-sidebar-toggle-sidebar)
-       :bind (:map wy:evil-toggle-map
-                   ("t" . dired-sidebar-toggle-sidebar))
        :commands (dired-sidebar-toggle-sidebar))
    #+end_src
 ** dired-x
@@ -1285,18 +1295,18 @@
   #+begin_src emacs-lisp
     (use-package tab-bar
       :custom
-      (tab-bar-close-button-show t)
-      (tab-bar-close-last-tab-choice 'tab-bar-mode-disable)
+      (tab-bar-close-button-show nil)
       (tab-bar-close-tab-select 'recent)
       (tab-bar-new-tab-choice t)
       (tab-bar-new-tab-to 'right)
       (tab-bar-position nil)
-      (tab-bar-show t)
+      (tab-bar-show nil)
       (tab-bar-tab-hints nil)
       (tab-bar-tab-name-function 'tab-bar-tab-name-all)
+      :hook (server-after-make-frame . (lambda () (tab-bar-rename-tab "main")))
       :config
-      (tab-bar-mode -1)
-      (tab-bar-history-mode -1))
+      (tab-bar-mode +1)
+      (tab-bar-history-mode +1))
   #+end_src
 * tab-line
     #+begin_src emacs-lisp
