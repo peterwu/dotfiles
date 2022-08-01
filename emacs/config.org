@@ -310,10 +310,26 @@
 * clang-format
   #+begin_src emacs-lisp
     (use-package clang-format
+      :when (file-executable-p "/usr/bin/clang-format")
       :preface
       (defvar wy:clang-format-style "file")
       (defvar wy:clang-format-fallback-style
-        "{BasedOnStyle: Google, IndentWidth: 4, BreakBeforeBraces: WebKit}")
+        (concat "{"
+                "BasedOnStyle: LLVM,"
+                "Language: Cpp,"
+
+                "AccessModifierOffset: -4,"
+                "IndentWidth: 4,"
+                "UseTab: Never,"
+
+                "AllowShortFunctionsOnASingleLine: Empty,"
+                "AllowShortLambdasOnASingleLine: Empty,"
+                "AlwaysBreakTemplateDeclarations: Yes,"
+                "BreakBeforeBraces: Stroustrup,"
+                "BreakConstructorInitializers: BeforeComma,"
+                "IndentPPDirectives: AfterHash,"
+                "PointerAlignment: Left"
+                "}"))
       (defun wy:clang-format-buffer-on-save ()
         (add-hook 'before-save-hook
                   (lambda ()
