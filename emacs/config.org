@@ -587,45 +587,46 @@
        :ensure t
        :preface
        (defun wy:propertize-evil-state-tags ()
-         (setq evil-normal-state-tag
-               (propertize " N "
-                           'face '(:foreground "white" :background "dark blue" :weight bold)))
+         (let ((white "#FFFFFF"))
+           (setq evil-normal-state-tag
+                 (propertize " N "
+                             'face `(:foreground ,white :background "dark blue" :weight bold)))
 
-         (setq evil-insert-state-tag
-               (propertize " I "
-                           'face '(:foreground "white" :background "dark green" :weight bold)))
+           (setq evil-insert-state-tag
+                 (propertize " I "
+                             'face `(:foreground ,white :background "dark green" :weight bold)))
 
-         (setq evil-visual-char-tag
-               (propertize " V "
-                           'face '(:foreground "white" :background "dark cyan" :weight bold)))
+           (setq evil-visual-char-tag
+                 (propertize " V "
+                             'face `(:foreground ,white :background "dark cyan" :weight bold)))
 
-         (setq evil-visual-line-tag
-               (propertize " Vl "
-                           'face '(:foreground "white" :background "dark cyan" :weight bold)))
+           (setq evil-visual-line-tag
+                 (propertize " Vl "
+                             'face `(:foreground ,white :background "dark cyan" :weight bold)))
 
-         (setq evil-visual-screen-line-tag
-               (propertize " Vs "
-                           'face '(:foreground "white" :background "dark cyan" :weight bold)))
+           (setq evil-visual-screen-line-tag
+                 (propertize " Vs "
+                             'face `(:foreground ,white :background "dark cyan" :weight bold)))
 
-         (setq evil-visual-block-tag
-               (propertize " Vb "
-                           'face '(:foreground "white" :background "dark cyan" :weight bold)))
+           (setq evil-visual-block-tag
+                 (propertize " Vb "
+                             'face `(:foreground ,white :background "dark cyan" :weight bold)))
 
-         (setq evil-operator-state-tag
-               (propertize " O "
-                           'face '(:foreground "white" :background "dark orange" :weight bold)))
+           (setq evil-operator-state-tag
+                 (propertize " O "
+                             'face `(:foreground ,white :background "dark orange" :weight bold)))
 
-         (setq evil-replace-state-tag
-               (propertize " R "
-                           'face '(:foreground "white" :background "dark red" :weight bold)))
+           (setq evil-replace-state-tag
+                 (propertize " R "
+                             'face `(:foreground ,white :background "dark red" :weight bold)))
 
-         (setq evil-motion-state-tag
-               (propertize " M "
-                           'face '(:foreground "white" :background "black" :weight bold)))
+           (setq evil-motion-state-tag
+                 (propertize " M "
+                             'face `(:foreground ,white :background "black" :weight bold)))
 
-         (setq evil-emacs-state-tag
-               (propertize " E "
-                           'face '(:foreground "white" :background "dark magenta" :weight bold))))
+           (setq evil-emacs-state-tag
+                 (propertize " E "
+                             'face `(:foreground ,white :background "dark magenta" :weight bold)))))
 
        (defun wy:define-evil-commands ()
          (defun wy:smart-copy-to-clipboard ()
@@ -722,7 +723,7 @@
                    :prefix "t" :prefix-map wy:evil-toggle-map)
        :bind-keymap ("C-c t" . wy:evil-toggle-map)
 
-       :hook ((evil-after-load . wy:define-evil-commands)
+       :hook ((server-after-make-frame . wy:propertize-evil-state-tags)
               (evil-after-load . wy:ignore-some-evil-functions)
               (evil-after-load . wy:propertize-evil-state-tags))
        :config
