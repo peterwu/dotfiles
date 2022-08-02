@@ -90,11 +90,6 @@
                    (list (format (format "%%%ds" available-width-right) ""))
                    right)))
 
-       (defvar-local wy:mode-line-evil-tag
-         '(:eval (propertize evil-mode-line-tag
-                             'face '(:foreground "dark violet" :weight bold))))
-       (put 'wy:mode-line-evil-tag 'risky-local-variable t)
-
        (defvar-local wy:mode-line-tab-bar-indicator
          '(:eval
            (let ((tab-name (alist-get 'name (assq 'current-tab (funcall tab-bar-tabs-function)))))
@@ -223,9 +218,8 @@
            ;; left hand side
            (list
             "%e"
-            wy:mode-line-evil-tag
-            wy:mode-line-tab-bar-indicator
-            "꞉"
+            evil-mode-line-tag
+            " "
             wy:mode-line-buffer-identification
             " "
             wy:mode-line-git-status)
@@ -236,8 +230,8 @@
 
            ;; right hand side
            (list
-            wy:mode-line-position
-            " "
+            ;; wy:mode-line-position
+            ;; " "
             wy:mode-line-buffer-size
             " "
             wy:mode-line-modes
@@ -592,20 +586,46 @@
      (use-package evil
        :ensure t
        :preface
-       (defun wy:colorize-mode-line-on-evil-state ()
-         (let* ((default 'modus-themes-intense-neutral)
-                (face (cond ((minibufferp) default)
-                            ((evil-emacs-state-p) 'modus-themes-subtle-magenta)
-                            ((evil-insert-state-p) 'modus-themes-subtle-green)
-                            ((evil-motion-state-p) 'modus-themes-subtle-blue)
-                            ((evil-normal-state-p) default)
-                            ((evil-operator-state-p) 'modus-themes-subtle-yellow)
-                            ((evil-replace-state-p) 'modus-themes-subtle-red)
-                            ((evil-visual-state-p)  'modus-themes-subtle-cyan)
-                            (t default))))
-           (set-face-attribute 'mode-line nil
-                               :foreground (face-foreground face)
-                               :background (face-background face))))
+       (defun wy:propertize-evil-state-tags ()
+         (setq evil-normal-state-tag
+               (propertize " N "
+                           'face '(:foreground "white" :background "dark blue" :weight bold)))
+
+         (setq evil-insert-state-tag
+               (propertize " I "
+                           'face '(:foreground "white" :background "dark green" :weight bold)))
+
+         (setq evil-visual-char-tag
+               (propertize " V "
+                           'face '(:foreground "white" :background "dark cyan" :weight bold)))
+
+         (setq evil-visual-line-tag
+               (propertize " Vl "
+                           'face '(:foreground "white" :background "dark cyan" :weight bold)))
+
+         (setq evil-visual-screen-line-tag
+               (propertize " Vs "
+                           'face '(:foreground "white" :background "dark cyan" :weight bold)))
+
+         (setq evil-visual-block-tag
+               (propertize " Vb "
+                           'face '(:foreground "white" :background "dark cyan" :weight bold)))
+
+         (setq evil-operator-state-tag
+               (propertize " O "
+                           'face '(:foreground "white" :background "dark orange" :weight bold)))
+
+         (setq evil-replace-state-tag
+               (propertize " R "
+                           'face '(:foreground "white" :background "dark red" :weight bold)))
+
+         (setq evil-motion-state-tag
+               (propertize " M "
+                           'face '(:foreground "white" :background "black" :weight bold)))
+
+         (setq evil-emacs-state-tag
+               (propertize " E "
+                           'face '(:foreground "white" :background "dark magenta" :weight bold))))
 
        (defun wy:define-evil-commands ()
          (defun wy:smart-copy-to-clipboard ()
@@ -642,9 +662,9 @@
                     (evil-set-register ?\" (buffer-string))))
                 (,evil-paste-command count ?\" yank-handler))))
 
-         ; wy:evil-paste-before-from-clipboard
+         ;; wy:evil-paste-before-from-clipboard
          (wy:evil-paste-from-clipboard before)
-         ; wy:evil-paste-after-from-clipboard
+         ;; wy:evil-paste-after-from-clipboard
          (wy:evil-paste-from-clipboard after))
 
        (defun wy:ignore-some-evil-functions ()
@@ -702,9 +722,9 @@
                    :prefix "t" :prefix-map wy:evil-toggle-map)
        :bind-keymap ("C-c t" . wy:evil-toggle-map)
 
-       :hook ((post-command    . wy:colorize-mode-line-on-evil-state)
-              (evil-after-load . wy:define-evil-commands)
-              (evil-after-load . wy:ignore-some-evil-functions))
+       :hook ((evil-after-load . wy:define-evil-commands)
+              (evil-after-load . wy:ignore-some-evil-functions)
+              (evil-after-load . wy:propertize-evil-state-tags))
        :config
        (evil-mode +1))
    #+end_src
@@ -1305,8 +1325,8 @@
       (tab-bar-tab-name-function 'tab-bar-tab-name-all)
       :hook (server-after-make-frame . (lambda () (tab-bar-rename-tab "main")))
       :config
-      (tab-bar-mode +1)
-      (tab-bar-history-mode +1))
+      (tab-bar-mode -1)
+      (tab-bar-history-mode -1))
   #+end_src
 * tab-line
     #+begin_src emacs-lisp
