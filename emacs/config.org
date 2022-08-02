@@ -723,7 +723,7 @@
                    :prefix "t" :prefix-map wy:evil-toggle-map)
        :bind-keymap ("C-c t" . wy:evil-toggle-map)
 
-       :hook ((server-after-make-frame . wy:propertize-evil-state-tags)
+       :hook ((evil-after-load . wy:define-evil-commands)
               (evil-after-load . wy:ignore-some-evil-functions)
               (evil-after-load . wy:propertize-evil-state-tags))
        :config
@@ -911,6 +911,18 @@
       (gnus-directory (expand-file-name "news" gnus-home-directory))
       (message-directory (expand-file-name "mail" gnus-home-directory))
 
+      (auth-sources `(,(expand-file-name ".authinfo" gnus-home-directory)))
+      (mail-signature (with-temp-buffer
+                        (open-line 1)
+                        (insert user-full-name)
+                        (next-line)
+                        (insert "Powered by ")
+                        (call-process "/usr/bin/uname"  nil t nil "-o")
+                        (join-line)
+                        (insert " ")
+                        (call-process "/usr/bin/uname"  nil t nil "-r")
+                        (buffer-string)))
+
       (gnus-always-read-dribble-file nil)
       (gnus-asynchronous t)
       (gnus-blocked-images nil)
@@ -920,17 +932,19 @@
       (gnus-show-threads t)
       (gnus-use-dribble-file nil)
 
-      (gnus-select-method '(nntp "news.gmane.io"))
+      (gnus-select-method '(nnimap "hotmail"
+                                   (nnimap-address "outlook.office365.com")
+                                   (nnimap-server-port 993)
+                                   (nnimap-stream ssl)
+                                   (nnimap-authenticator login)))
+
       (gnus-secondary-select-methods
-       '((nnimap "hotmail"
-                 (nnimap-address "outlook.office365.com")
-                 (nnimap-server-port 993)
-                 (nnimap-stream ssl)
-                 (nnimap-authenticator login))))
+       '((nntp "news.gmane.io")))
 
       (send-mail-function 'smtpmail-send-it)
       (smtpmail-smtp-server "smtp.office365.com")
       (smtpmail-smtp-service 587)
+
       :hook (gnus-group-mode . gnus-topic-mode))
   #+end_src
 * help
