@@ -1,8 +1,8 @@
 ;;; early-init.el -*- lexical-binding: t; -*-
 (defvar file-name-handler-alist-original file-name-handler-alist)
-(setq gc-cons-threshold most-positive-fixnum
-      gc-cons-percentage 0.6
-      file-name-handler-alist nil)
+(setq gc-cons-threshold most-positive-fixnum)
+(setq gc-cons-percentage 0.6)
+(setq file-name-handler-alist nil)
 
 ;; tune gc for better performance
 (add-hook 'after-init-hook
@@ -19,8 +19,8 @@
 (unless (file-directory-p (expand-file-name "cache" user-emacs-directory))
   (make-directory (expand-file-name "cache" user-emacs-directory)))
 
-(setq package-quickstart t
-      package-quickstart-file (expand-file-name "cache/package-quickstart.el" user-emacs-directory))
+(setq package-quickstart t)
+(setq package-quickstart-file (expand-file-name "cache/package-quickstart.el" user-emacs-directory))
 
 (if (fboundp 'menu-bar-mode)
     (menu-bar-mode -1))
