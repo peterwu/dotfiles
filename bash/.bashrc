@@ -151,7 +151,7 @@ show_bash_prompt() {
 
     if [ $? -eq 0 ]; then
         local git_branch="${git_status[0]}"
-        local git_branch_regex="^##\s(\w*).*$"
+        local git_branch_regex="^##\s((\w|\/|-)*).*$"
 
         if  [[ ${git_branch} =~ ${git_branch_regex} ]]; then
             git_branch="${BASH_REMATCH[1]}"
