@@ -11,9 +11,12 @@
 
 (setq auth-sources `(,(expand-file-name ".authinfo" gnus-home-directory)))
 (setq mail-signature-file (expand-file-name ".signature" gnus-home-directory))
+(setq mail-user-agent 'gnus-user-agent)
 
 (setq message-citation-line-function 'message-insert-formatted-citation-line)
 (setq message-citation-line-format "On %a %d %b %Y at %R %z, %N wrote:")
+
+(setq mm-discouraged-alternatives '("text/html" "text/richtext"))
 
 (setq gnus-always-read-dribble-file nil)
 (setq gnus-asynchronous t)
