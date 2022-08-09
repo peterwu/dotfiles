@@ -328,6 +328,8 @@
     (define-key my-evil-toggle-map (kbd "k") #'keycast-mode)))
 
 (with-package 'magit
+  (global-set-key (kbd "C-x g") #'magit-status)
+
   (define-key my-evil-magit-map (kbd "g") #'magit-status)
   (define-key my-evil-magit-map (kbd "j") #'magit-dispatch)
   (define-key my-evil-magit-map (kbd "J") #'magit-file-dispatch)
