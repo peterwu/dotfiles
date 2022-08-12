@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+for f in "$@"; do
+    files+=\"${f}\"
+    files+=" "
+done
+
+if [[ $# -eq 2 ]]; then
+    /usr/bin/emacsclient  \
+        --tty             \
+        --suppress-output \
+        --eval "(ediff-files ${files})"
+
+    exit 0
+fi
+
+if [[ $# -eq 3 ]]; then
+    /usr/bin/emacsclient  \
+        --tty             \
+        --suppress-output \
+        --eval "(ediff-files3 ${files})"
+
+    exit 0
+fi
+
+exit 1

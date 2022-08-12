@@ -1,28 +1,31 @@
 [user]
-  name  = Peter Wu
-  email = peterwu@hotmail.com
+    name  = Peter Wu
+    email = peterwu@hotmail.com
 [credential]
-  helper = store
+    helper = store
 [core]
-  editor = vim
+    editor = emacsclient -nw
+[init]
+    defaultBranch = main
 [pull]
-  rebase = true
+    rebase = true
 [gui]
-  fontui   = -family \"Liberation Sans\" -size 12 -weight normal -slant roman -underline 0 -overstrike 0
-  fontdiff = -family \"Liberation Mono\" -size 12 -weight normal -slant roman -underline 0 -overstrike 0
+    fontui   = -family \"Liberation Sans\" -size 12 -weight normal -slant roman -underline 0 -overstrike 0
+    fontdiff = -family \"Liberation Mono\" -size 12 -weight normal -slant roman -underline 0 -overstrike 0
 [diff]
-	tool = vimdiff
+    tool = ediff
 [difftool]
-	prompt = false
-	trustExitCode = true
-	keepBackup = false
-[difftool "nvimdiff"]
-  cmd = vimdiff $LOCAL $REMOTE
+    keepBackup = false
+    prompt = false
+    trustExitCode = true
+[difftool "ediff"]
+    cmd = ediff $LOCAL $REMOTE
 [merge]
-	tool = vimdiff
+    conflictStyle = diff3
+    tool = ediff
 [mergetool]
-	prompt = false
-	keepBackup = false
-	trustExitCode = true
-[mergetool "nvimdiff"]
-  cmd = vimdiff $MERGED $LOCAL $BASE $REMOTE -c 'wincmd J'
+    prompt = false
+    keepBackup = false
+    trustExitCode = true
+[mergetool "ediff"]
+    cmd = emerge $LOCAL $REMOTE $MERGED $BASE

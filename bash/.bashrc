@@ -22,7 +22,7 @@ HISTSIZE=20000
 HISTFILESIZE=20000
 
 # Default editor
-export VISUAL="/usr/bin/emacsclient --tty"
+export VISUAL="/usr/bin/emacsclient -nw"
 export EDITOR="$VISUAL"
 
 # User specific aliases and functions
@@ -31,9 +31,9 @@ set -o vi
 
 alias E="sudo --edit"
 
-alias e="emacsclient --tty"
+alias e="emacsclient -nw"
 alias emacs="emacs --maximized"
-alias magit="emacsclient --tty --suppress-output --eval '(magit-status)'"
+alias magit="emacsclient -nw --suppress-output --eval '(magit-status)'"
 
 [[ "$TERM" == "xterm-kitty" ]] && alias ssh="kitty +kitten ssh"
 
@@ -62,21 +62,10 @@ alias xsel="xsel --logfile /dev/null"
 
 # Colourize man pages
 if pgrep --exact emacs > /dev/null; then
-    ediff() {
-        local files
-        for f in "$@"; do
-            files+=\"${f}\"
-            files+=" "
-        done
-
-        [[ $# -eq 2 ]] && /usr/bin/emacsclient --tty --eval "(ediff-files ${files})"
-        [[ $# -eq 3 ]] && /usr/bin/emacsclient --tty --eval "(ediff-files3 ${files})"
-    }
-
     man() {
         local m="$@"
         /usr/bin/man ${m} > /dev/null
-        [[ $? -eq 0 ]] && /usr/bin/emacsclient --tty --quiet --suppress-output --eval "(man \"${m}\")"
+        [[ $? -eq 0 ]] && /usr/bin/emacsclient -nw --quiet --suppress-output --eval "(man \"${m}\")"
     }
 elif [[ -x /usr/bin/vim ]]; then
     export MANPAGER="vim -c 'set laststatus=0' -M +MANPAGER --not-a-term -"
