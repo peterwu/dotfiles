@@ -137,6 +137,10 @@ format_focused_tag() {
     echo -n "$(tput smul)$(tput setaf 2)$1$(tput sgr0)"
 }
 
+format_unfocused_tag() {
+    echo -n "$(tput dim)$(tput setaf 5)$1$(tput sgr0)"
+}
+
 format_occupied_tag() {
     echo -n "$(tput setaf 3)$1$(tput sgr0)"
 }
@@ -168,13 +172,13 @@ format_tags() {
                 ws+=$(format_occupied_tag "${tag_name}")
                 ;;
             "+") # unfocused on specified monitor
-                ws+="${tag_name}"
+                ws+=$(format_unfocused_tag "${tag_name}")
                 ;;
             "#") # focused on specified monitor
                 ws+=$(format_focused_tag "${tag_name}")
                 ;;
             "-") # unfocused on different monitor
-                ws+="${tag_name}"
+                ws+=$(format_unfocused_tag "${tag_name}")
                 ;;
             "%") # focused on different monitor
                 ws+=$(format_focused_tag "${tag_name}")

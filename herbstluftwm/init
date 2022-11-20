@@ -37,14 +37,24 @@ while pgrep -u $UID -f termbar >/dev/null; do sleep 1; done
 # or simply:
 herbstclient detect_monitors
 
-# launch termbar
-for monitor in $(herbstclient list_monitors | cut -d: -f1) ; do
-    # start it on each monitor
-    herbstclient pad $monitor 35
-    exec -a termbar kitty                      \
-         --class termbar                       \
-         --config ~/.config/kitty/termbar.conf \
-         ~/.config/herbstluftwm/termbar $monitor &
-done
+# launch termbar on primary monitor
+herbstclient pad 0 35
+exec -a termbar kitty                      \
+     --class termbar                       \
+     --config ~/.config/kitty/termbar.conf \
+     --single-instance                     \
+     --instance-group=termbar              \
+     ~/.config/herbstluftwm/termbar 0 &
+
+if [[ $(herbstclient get_attr monitors.count) > 1 ]]; then
+    # put the external monitor on the right
+    xrandr --output eDP-1 --primary --auto --output HDMI-2 --auto --right-of eDP-1
+
+    herbstclient focus_monitor 1
+    herbstclient use 0
+    herbstclient lock_tag 1
+
+    herbstclient focus_monitor 0
+fi
 
 canberra-gtk-play --id desktop-login

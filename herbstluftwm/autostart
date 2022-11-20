@@ -15,10 +15,10 @@ Mod=Mod4   # Use the super key as the main modifier
 herbstclient keybind $Mod-Shift-q quit
 herbstclient keybind $Mod-Shift-r reload
 herbstclient keybind $Mod-Shift-c close
-herbstclient keybind $Mod-Return  spawn kitty
+herbstclient keybind $Mod-Return  spawn kitty --single-instance --instance-group=main
 
 # user custom keybindings
-herbstclient keybind $Mod-d spawn rofi -show
+herbstclient keybind $Mod-d              spawn rofi -show
 herbstclient keybind Mod1-Control-Delete spawn ~/.config/herbstluftwm/exit
 
 herbstclient keybind XF86AudioMicMute     spawn pactl set-source-mute @DEFAULT_SOURCE@  toggle
@@ -56,14 +56,14 @@ herbstclient keybind $Mod-Control-space split explode
 
 # resizing frames
 resizestep=0.05
-herbstclient keybind $Mod-Control-h       resize left +$resizestep
-herbstclient keybind $Mod-Control-j       resize down +$resizestep
-herbstclient keybind $Mod-Control-k       resize up +$resizestep
-herbstclient keybind $Mod-Control-l       resize right +$resizestep
+herbstclient keybind $Mod-Control-h  resize left  +$resizestep
+herbstclient keybind $Mod-Control-j  resize down  +$resizestep
+herbstclient keybind $Mod-Control-k  resize up    +$resizestep
+herbstclient keybind $Mod-Control-l  resize right +$resizestep
 
 # tags
 tag_keys=( {1..9} 0 )
-tag_names=( {1..9} )
+tag_names=( {1..9} 0 ) # 0 for external monitor
 
 herbstclient rename default "${tag_names[0]}" || true
 for i in ${!tag_names[@]} ; do
@@ -85,13 +85,14 @@ herbstclient keybind $Mod-r remove
 herbstclient keybind $Mod-s floating toggle
 herbstclient keybind $Mod-f fullscreen toggle
 herbstclient keybind $Mod-p pseudotile toggle
+
 # The following cycles through the available layouts within a frame, but skips
 # layouts, if the layout change wouldn't affect the actual window positions.
 # I.e. if there are two windows within a frame, the grid layout is skipped.
-herbstclient keybind $Mod-Shift-space                                      \
-             or , and . compare tags.focus.curframe_wcount = 2       \
-             . cycle_layout +1 vertical horizontal max vertical grid \
-             , cycle_layout +1
+herbstclient keybind $Mod-Shift-space                                         \
+             or , and . compare tags.focus.curframe_wcount = 2                \
+                      . cycle_layout +1 vertical horizontal max vertical grid \
+                , cycle_layout +1
 
 #  mouse
 herbstclient mouseunbind --all
@@ -100,7 +101,9 @@ herbstclient mousebind $Mod-Button2 zoom
 herbstclient mousebind $Mod-Button3 resize
 
 #  focus
-herbstclient keybind $Mod-BackSpace    cycle_monitor
+herbstclient keybind $Mod-BackSpace chain , cycle_monitor \
+                                          , spawn ~/.config/herbstluftwm/monitor
+
 herbstclient keybind $Mod-bracketright cycle_all   +1
 herbstclient keybind $Mod-bracketleft  cycle_all   -1
 herbstclient keybind $Mod-braceright   cycle_frame +1
@@ -162,7 +165,7 @@ herbstclient rule windowrole='About' class='firefox' focus=on floating=on floatp
 herbstclient rule windowrole~'Gtk(App|Color|File|Font|Recent)ChooserDialog' floatplacement=center floating_geometry=1024x768
 
 # jetbrains
-herbstclient rule class='jetbrains-clion' focus=on pseudotile=on floatplacement=center
+herbstclient rule class='jetbrains-clion' title='splash' focus=on pseudotile=on floatplacement=center
 
 herbstclient set tree_style '╾│ ├└╼─┐'
 
