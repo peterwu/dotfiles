@@ -43,46 +43,29 @@
       #+begin_src bash
         # test -d /sys/firmware/efi && echo EFI || echo Legacy
       #+end_src
-   2. create ESP directory
-      #+begin_src bash
-        # mkdir /efi
-      #+end_src
-   3. update /etc/fstab
-      #+begin_src bash
-        sed -i 's|/boot/efi|/efi|g' /etc/fstab
-      #+end_src
-   4. change to /efi
-      #+begin_src bash
-        # umount /boot/efi
-        # mount /efi
-      #+end_src
-   5. create a folder in the ESP directory with the machine-id in the name
-      #+begin_src bash
-        # mkdir /efi/$(cat /etc/machine-id)
-      #+end_src
-   6. remove grub from dnf protected packages
+   2. remove grub from dnf protected packages
       #+begin_src bash
         # rm /etc/dnf/protected.d/{grub*,shim}.conf
       #+end_src
-   7. remove grub
+   3. remove grub
       #+begin_src bash
         # dnf remove grubby grub2* shim* memtest86
         # rm -rf /boot/{grub2,loader}
       #+end_src
-   8. save boot options to /etc/kernel/cmdline
+   4. save boot options to /etc/kernel/cmdline
       #+begin_src bash
         # cat /proc/cmdline | cut -d ' ' -f 2- | tee /etc/kernel/cmdline
       #+end_src
-   9. install systemd-boot
+   5. install systemd-boot
       #+begin_src bash
         # bootctl install
       #+end_src
-   10. initialize initrd rebuild and generate new config files
+   6. initialize initrd rebuild and generate new config files
        #+begin_src bash
          # kernel-install add $(uname -r) /lib/modules/$(uname -r)/vmlinuz
          # dnf reinstall kernel-core
        #+end_src
-   11. reboot
+   7. reboot
        #+begin_src bash
          # systemctl reboot
        #+end_src
