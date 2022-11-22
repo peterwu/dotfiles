@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 host_name=$(hostname)
 real_name=$(getent passwd `whoami`|cut -d: -f5)
