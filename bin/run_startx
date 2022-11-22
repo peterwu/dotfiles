@@ -8,4 +8,8 @@ echo ""
 read -e -p "${real_name}, do you want to startx? (Y/n) " ANSWER
 ANSWER=${ANSWER^}
 
-[[ ${ANSWER:=Y} == "Y" ]] && exec startx &> /dev/null
+if [[ ${ANSWER:=Y} == "Y" ]]; then
+    exec startx &> /dev/null
+else
+    exec /bin/bash
+fi

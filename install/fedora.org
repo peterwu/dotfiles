@@ -29,9 +29,10 @@
 ** acquire iwlwifi8265 firmware
    #+begin_src bash
      # dnf install iwl7260-firmware
-     # cp /usr/lib/firmware/iwlwifi-8265-36.ucode.xz /tmp
+     # cp /usr/lib/firmware/iwlwifi-8265-36.ucode.xz /usr/local/lib/firmware/
      # dnf remove iwl7260-firmware
-     # cp /tmp/iwlwifi-8265-36.ucode.xz /usr/lib/firmware
+     # cd /usr/lib/firmware
+     # ln -sf /usr/local/lib/firmware/iwlwifi-8265-36.ucode.xz
    #+end_src
 ** install plymouth system theme
    #+begin_src bash
@@ -132,12 +133,31 @@
    #+end_src
 ** install terminal emulator
    #+begin_src bash
-     # dnf install xterm
+     # dnf install kitty
    #+end_src
-** install emptty as display manager
+** install greetd as display manager
    #+begin_src bash
-     # dnf install emptty
-     # systemctl enable emptty.service
+     # dnf install greetd
+     # systemctl enable greetd.service
+   #+end_src
+
+   /usr/local/bin/run_startx
+   #+begin_src bash
+     #!/bin/bash
+
+     host_name=$(hostname)
+     real_name=$(getent passwd `whoami`|cut -d: -f5)
+
+     echo "Welcome to ${host_name}!"
+     echo ""
+     read -e -p "${real_name}, do you want to startx? (Y/n) " ANSWER
+     ANSWER=${ANSWER^}
+
+     if [[ ${ANSWER:=Y} == "Y" ]]; then
+         exec startx &> /dev/null
+     else
+         exec /bin/bash
+     fi
    #+end_src
 ** start graphical interface on boot
    #+begin_src bash
