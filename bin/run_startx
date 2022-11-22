@@ -1,0 +1,11 @@
+#!/bin/bash
+
+host_name=$(hostname)
+real_name=$(getent passwd `whoami`|cut -d: -f5)
+
+echo "Welcome to ${host_name}!"
+echo ""
+read -e -p "${real_name}, do you want to startx? (Y/n) " ANSWER
+ANSWER=${ANSWER^}
+
+[[ ${ANSWER:=Y} == "Y" ]] && exec startx &> /dev/null
