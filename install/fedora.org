@@ -225,3 +225,13 @@
        w    /proc/acpi/wakeup     -    -    -    -   XHC
        EOF
      #+end_src
+
+** pair bluetooth devices
+   #+begin_src conf
+         $ bluetoothctl
+         [bluetooth#] scan on
+         [bluetooth#] pair {BT_MAC_ADDRESS}
+         [bluetooth#] connect {BT_MAC_ADDRESS}
+         [bluetooth#] trust {BT_MAC_ADDRESS}
+         [bluetooth#] quit
+   #+end_src
