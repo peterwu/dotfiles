@@ -141,20 +141,23 @@
      # systemctl enable greetd.service
    #+end_src
 
-   /usr/local/bin/run_startx
+   /usr/local/bin/welcome
    #+begin_src bash
-     #!/bin/bash
+     #!/usr/bin/env bash
 
      host_name=$(hostname)
      real_name=$(getent passwd `whoami`|cut -d: -f5)
 
+     export LESSHISTFILE=-
+     export XAUTHORITY=$HOME/.config/X11/Xauthority
+
      echo "Welcome to ${host_name}!"
      echo ""
      read -e -p "${real_name}, do you want to startx? (Y/n) " ANSWER
-     ANSWER=${ANSWER^}
+     ANSWER=${ANSWER:=Y}
 
-     if [[ ${ANSWER:=Y} == "Y" ]]; then
-         exec startx &> /dev/null
+     if [[ ${ANSWER^} == "Y" ]]; then
+         exec /usr/bin/startx $HOME/.config/X11/xinitrc &> /dev/null
      else
          exec /bin/bash
      fi
@@ -162,6 +165,10 @@
 ** start graphical interface on boot
    #+begin_src bash
      # systemctl set-default graphical.target
+   #+end_src
+** disable raid-check.timer
+   #+begin_src bash
+     # systemctl disable --now raid-check.timer
    #+end_src
 ** install software
    - browsers
@@ -197,9 +204,9 @@
      #+begin_src bash
        # dnf install ibus ibus-libpinyin
      #+end_src
-   - file manager
+   - dbus
      #+begin_src bash
-       # dnf install pcmanfm
+       # dnf install dbus-daemon
      #+end_src
 ** setup udev rules
    #+begin_src bash

@@ -6,20 +6,18 @@
 msgid=123456
 delta=$2
 
-[[ "$1" -eq 1 ]] && pactl set-sink-mute @DEFAULT_SINK@ toggle
+[[ "$1" -eq 1 ]] && wpctl set-mute @DEFAULT_SINK@ toggle
 
-# true - false
-muted=$(pactl get-sink-mute @DEFAULT_SINK@ | cut -d ' ' -f 2)
+[[ "${delta}" != "0" ]] && wpctl set-volume @DEFAULT_SINK@ ${delta}
 
-if [[ $muted == "yes" ]]; then
+vol_info=$(wpctl get-volume @DEFAULT_SINK@)
+vol=$(bc <<< "$(cut -d' ' -f2 <<< ${vol_info}) * 100" | cut -d. -f1)
+muted=$(echo $vol_info | cut -d' ' -f3)
+if [[ $muted == "[MUTED]" ]]; then
     muted=true
 else
     muted=false
 fi
-
-[[ "${delta}" -ne 0 ]] && pactl set-sink-volume @DEFAULT_SINK@ "${delta}%"
-
-vol=$(pactl get-sink-volume @DEFAULT_SINK@ | awk '{print $5}'| grep -m 1 % | sed 's/[%|,]//g')
 
 herbstclient emit_hook vol "${muted}" "${vol}"
 

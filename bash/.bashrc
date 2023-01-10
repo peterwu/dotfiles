@@ -22,18 +22,19 @@ HISTSIZE=20000
 HISTFILESIZE=20000
 
 # Default editor
-export VISUAL="/usr/bin/emacsclient -nw"
+export VISUAL="vim"
 export EDITOR="$VISUAL"
 
 # User specific aliases and functions
 set -o vi
-[[ -x /usr/bin/vim ]] && alias vi="vim"
+if [[ -x /usr/bin/nvim ]]; then
+    alias vi="vim"
+    alias vim="nvim"
+    alias vimdiff="nvim -d"
+fi
 
 alias E="sudo --edit"
-
-alias e="emacsclient -nw"
-alias emacs="emacs --maximized"
-alias magit="emacsclient -nw --suppress-output --eval '(magit-status)'"
+alias sudo="sudo "
 
 [[ "$TERM" == "xterm-kitty" ]] && alias ssh="kitty +kitten ssh"
 
@@ -56,41 +57,14 @@ alias grep="grep --color=auto"
 alias fgrep="fgrep --color=auto"
 alias egrep="egrep --color=auto"
 
-alias less="less -FX"
+alias less="LESSHISTFILE=- less -FXR --mouse --wheel-lines=3"
 alias rsync="rsync --progress"
-alias xsel="xsel --logfile /dev/null"
+
+# herstluftwm
+[[ -x /usr/bin/herbstclient ]] && alias hc="herbstclient"
 
 # Colourize man pages
-if pgrep --exact emacs > /dev/null; then
-    man() {
-        local m="$@"
-        /usr/bin/man ${m} > /dev/null
-        [[ $? -eq 0 ]] && /usr/bin/emacsclient -nw --quiet --suppress-output --eval "(man \"${m}\")"
-    }
-elif [[ -x /usr/bin/vim ]]; then
-    export MANPAGER="vim -c 'set laststatus=0' -M +MANPAGER --not-a-term -"
-else
-    man() {
-        local cmd=(
-            env
-            LESS_TERMCAP_mb=$(tput bold; tput setaf 6)
-            LESS_TERMCAP_md=$(tput bold; tput setaf 6)
-            LESS_TERMCAP_me=$(tput sgr0)
-            LESS_TERMCAP_se=$(tput rmso; tput sgr0)
-            LESS_TERMCAP_ue=$(tput rmul; tput sgr0)
-            LESS_TERMCAP_us=$(tput smul; tput bold; tput setaf 4)
-            LESS_TERMCAP_mr=$(tput rev)
-            LESS_TERMCAP_mh=$(tput dim)
-            LESS_TERMCAP_ZN=$(tput ssubm)
-            LESS_TERMCAP_ZV=$(tput rsubm)
-            LESS_TERMCAP_ZO=$(tput ssupm)
-            LESS_TERMCAP_ZW=$(tput rsupm)
-            man "$@"
-        )
-
-        "${cmd[@]}"
-    }
-fi
+[[ -x /usr/bin/nvim ]] && export MANPAGER='nvim +Man!'
 
 # Customize bash prompt
 show_bash_prompt() {
@@ -138,7 +112,7 @@ show_bash_prompt() {
     local git_status=$(git status --branch --porcelain 2> /dev/null)
     IFS=$'\n' git_status=($git_status)
 
-    if [ $? -eq 0 ]; then
+    if [[ $? -eq 0 ]]; then
         local git_branch="${git_status[0]}"
         local git_branch_regex="^##\s((\w|\/|-)*).*$"
 
@@ -146,7 +120,7 @@ show_bash_prompt() {
             git_branch="${BASH_REMATCH[1]}"
         fi
 
-        if [ -n "${git_branch}" ]; then
+        if [[ -n "${git_branch}" ]]; then
             if [[ ${#git_status[@]} -gt 1 ]]; then
                 # modified -> RED
                 prompt+="\001"
@@ -179,7 +153,7 @@ show_bash_prompt() {
     prompt+="└ "
 
     # change the prompt to indicate the status of last executed command
-    if [ ${last_command_status} -eq 0 ]; then
+    if [[ ${last_command_status} -eq 0 ]]; then
         # success -> GREEN
         prompt+="\001"
         prompt+=$(tput sgr0; tput bold; tput setaf 2)
@@ -192,7 +166,7 @@ show_bash_prompt() {
     fi
 
     # use appropriate prompt to reflect effective uid
-    if [ $(id -u) -eq 0 ]; then
+    if [[ $(id -u) -eq 0 ]]; then
         # root
         prompt+="Λ"
     else

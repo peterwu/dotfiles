@@ -1,10 +1,5 @@
 #!/usr/bin/env bash
 
-xrdb ~/.Xresources
-
-# launch a few programs
-xsetroot -cursor_name left_ptr
-
 # lock after 5 min / suspend after 2 min
 xset s 300 5
 xss-lock --notifier=/usr/libexec/xsecurelock/dimmer \
@@ -19,9 +14,6 @@ picom --daemon
 
 # set wallpaper
 feh --no-fehbg --image-bg "#000000" --bg-center /usr/share/pixmaps/fedora-logo.png
-
-# source .xprofile
-source ~/.xprofile
 
 # start ibus daemon
 ibus-daemon -drx &
@@ -56,5 +48,8 @@ if [[ $(herbstclient get_attr monitors.count) > 1 ]]; then
 
     herbstclient focus_monitor 0
 fi
+
+# install battery monitor
+battery-monitor &
 
 canberra-gtk-play --id desktop-login

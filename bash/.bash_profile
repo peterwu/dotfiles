@@ -8,12 +8,15 @@
 # User specific environment and startup programs
 export CDPATH=".:$HOME"
 
+# readline
+export INPUTRC=$HOME/.config/readline/inputrc
+
 # less
 export LESSHISTFILE=-
-export LESS='-R --mouse --wheel-lines=3'
 
-# startx
-#read -e -p "Do you want to startx? (Y/n) " ANSWER
-#ANSWER=${ANSWER^}
+# python
+export PYTHONSTARTUP=$HOME/.config/python/pythonrc
 
-#[[ ${ANSWER:=Y} == "Y" ]] && exec startx
+# fzf
+export FZF_DEFAULT_COMMAND='find .'
+export FZF_DEFAULT_OPTS='--height 100% --reverse --border --multi'

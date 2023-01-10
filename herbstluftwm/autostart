@@ -2,175 +2,195 @@
 
 # this is a simple config for herbstluftwm
 
-herbstclient emit_hook reload
+hc() {
+    herbstclient "$@"
+}
 
-xsetroot -solid '#000000'
+# let the fun begin
+hc emit_hook reload
 
 # remove all existing keybindings
-herbstclient keyunbind --all
+hc keyunbind --all
 
 # keybindings
 Mod=Mod4   # Use the super key as the main modifier
 
-herbstclient keybind $Mod-Shift-q quit
-herbstclient keybind $Mod-Shift-r reload
-herbstclient keybind $Mod-Shift-c close
-herbstclient keybind $Mod-Return  spawn kitty --single-instance --instance-group=main
+hc keybind $Mod-Shift-q quit
+hc keybind $Mod-Shift-r reload
+hc keybind $Mod-Shift-c close
+hc keybind $Mod-Return  spawn kitty --single-instance --instance-group=main
 
 # user custom keybindings
-herbstclient keybind $Mod-d              spawn rofi -show
-herbstclient keybind Mod1-Control-Delete spawn ~/.config/herbstluftwm/exit
+hc keybind $Mod-d                \
+    spawn kitty --class fzmenu --override font_family="Liberation Mono" --override fontsize=18 fzmenu
+hc keybind Mod1-Control-Delete   \
+    spawn kitty --class fzmenu --override font_family="Liberation Mono" --override fontsize=18 ~/.config/herbstluftwm/exit
+    # spawn ~/.config/herbstluftwm/exit
 
-herbstclient keybind XF86AudioMicMute     spawn pactl set-source-mute @DEFAULT_SOURCE@  toggle
-herbstclient keybind XF86AudioMute        spawn ~/.config/herbstluftwm/volume 1 0
-herbstclient keybind XF86AudioRaiseVolume spawn ~/.config/herbstluftwm/volume 0 +5
-herbstclient keybind XF86AudioLowerVolume spawn ~/.config/herbstluftwm/volume 0 -5
+hc keybind XF86AudioMicMute      \
+   spawn wpctl set-mute @DEFAULT_SOURCE@  toggle
+hc keybind XF86AudioMute         \
+   spawn ~/.config/herbstluftwm/volume 1 0
+hc keybind XF86AudioRaiseVolume  \
+   spawn ~/.config/herbstluftwm/volume 0 5%+
+hc keybind XF86AudioLowerVolume  \
+   spawn ~/.config/herbstluftwm/volume 0 5%-
 
-herbstclient keybind XF86MonBrightnessUp   spawn ~/.config/herbstluftwm/brightness +5
-herbstclient keybind XF86MonBrightnessDown spawn ~/.config/herbstluftwm/brightness -5
+hc keybind XF86MonBrightnessUp   \
+   spawn ~/.config/herbstluftwm/brightness +5
+hc keybind XF86MonBrightnessDown \
+   spawn ~/.config/herbstluftwm/brightness -5
 
-herbstclient keybind Print      chain , spawn canberra-gtk-play --id screen-capture \
-                                      , spawn scrot '%F_%H%M%S.png' --exec 'mv $f ~/Pictures/Screenshots/'
-herbstclient keybind Mod1-Print chain , spawn canberra-gtk-play --id screen-capture \
-                                      , spawn scrot --focused '%F_%H%M%S.png' --exec 'mv $f ~/Pictures/Screenshots/'
+hc keybind Print                                       \
+   chain , spawn canberra-gtk-play --id screen-capture \
+         , spawn scrot '%F_%H%M%S.png' --exec 'mv $f ~/Pictures/Screenshots/'
+hc keybind Mod1-Print                                  \
+   chain , spawn canberra-gtk-play --id screen-capture \
+         , spawn scrot --focused '%F_%H%M%S.png' --exec 'mv $f ~/Pictures/Screenshots/'
 
 # basic movement
 # focusing clients
-herbstclient keybind $Mod-h     focus left
-herbstclient keybind $Mod-j     focus down
-herbstclient keybind $Mod-k     focus up
-herbstclient keybind $Mod-l     focus right
+hc keybind $Mod-h     focus left
+hc keybind $Mod-j     focus down
+hc keybind $Mod-k     focus up
+hc keybind $Mod-l     focus right
 
 # moving clients
-herbstclient keybind $Mod-Shift-h     shift left
-herbstclient keybind $Mod-Shift-j     shift down
-herbstclient keybind $Mod-Shift-k     shift up
-herbstclient keybind $Mod-Shift-l     shift right
+hc keybind $Mod-Shift-h     shift left
+hc keybind $Mod-Shift-j     shift down
+hc keybind $Mod-Shift-k     shift up
+hc keybind $Mod-Shift-l     shift right
+
+# maximize clients
+hc keybind $Mod-Up set_layout max
 
 # splitting frames
 # create an empty frame at the specified direction
-herbstclient keybind $Mod-u       split   bottom  0.5
-herbstclient keybind $Mod-o       split   right   0.5
+hc keybind $Mod-u       split   bottom  0.5
+hc keybind $Mod-o       split   right   0.5
 # let the current frame explode into subframes
-herbstclient keybind $Mod-Control-space split explode
+hc keybind $Mod-Control-space split explode
 
 # resizing frames
 resizestep=0.05
-herbstclient keybind $Mod-Control-h  resize left  +$resizestep
-herbstclient keybind $Mod-Control-j  resize down  +$resizestep
-herbstclient keybind $Mod-Control-k  resize up    +$resizestep
-herbstclient keybind $Mod-Control-l  resize right +$resizestep
+hc keybind $Mod-Control-h  resize left  +$resizestep
+hc keybind $Mod-Control-j  resize down  +$resizestep
+hc keybind $Mod-Control-k  resize up    +$resizestep
+hc keybind $Mod-Control-l  resize right +$resizestep
 
 # tags
 tag_keys=( {1..9} 0 )
 tag_names=( {1..9} 0 ) # 0 for external monitor
 
-herbstclient rename default "${tag_names[0]}" || true
+hc rename default "${tag_names[0]}" || true
 for i in ${!tag_names[@]} ; do
-    herbstclient add "${tag_names[$i]}"
+    hc add "${tag_names[$i]}"
     key="${tag_keys[$i]}"
     if ! [ -z "$key" ] ; then
-        herbstclient keybind "$Mod-$key" use_index "$i"
-        herbstclient keybind "$Mod-Shift-$key" move_index "$i"
+        hc keybind "$Mod-$key" use_index "$i"
+        hc keybind "$Mod-Shift-$key" move_index "$i"
     fi
 done
 
 #  cycle through tags
-herbstclient keybind $Mod-period use_index +1 --skip-visible
-herbstclient keybind $Mod-comma  use_index -1 --skip-visible
-herbstclient keybind $Mod-Tab    use_previous
+hc keybind $Mod-period use_index +1 --skip-visible
+hc keybind $Mod-comma  use_index -1 --skip-visible
+hc keybind $Mod-Tab    use_previous
 
 #  layouting
-herbstclient keybind $Mod-r remove
-herbstclient keybind $Mod-s floating toggle
-herbstclient keybind $Mod-f fullscreen toggle
-herbstclient keybind $Mod-p pseudotile toggle
+hc keybind $Mod-r remove
+hc keybind $Mod-s floating toggle
+hc keybind $Mod-f fullscreen toggle
+hc keybind $Mod-p pseudotile toggle
 
 # The following cycles through the available layouts within a frame, but skips
 # layouts, if the layout change wouldn't affect the actual window positions.
 # I.e. if there are two windows within a frame, the grid layout is skipped.
-herbstclient keybind $Mod-Shift-space                                         \
+hc keybind $Mod-Shift-space                                                   \
              or , and . compare tags.focus.curframe_wcount = 2                \
                       . cycle_layout +1 vertical horizontal max vertical grid \
                 , cycle_layout +1
 
 #  mouse
-herbstclient mouseunbind --all
-herbstclient mousebind $Mod-Button1 move
-herbstclient mousebind $Mod-Button2 zoom
-herbstclient mousebind $Mod-Button3 resize
+hc mouseunbind --all
+hc mousebind $Mod-Button1 move
+hc mousebind $Mod-Button2 zoom
+hc mousebind $Mod-Button3 resize
 
 #  focus
-herbstclient keybind $Mod-BackSpace chain , cycle_monitor \
-                                          , spawn ~/.config/herbstluftwm/monitor
+hc keybind $Mod-BackSpace chain , cycle_monitor \
+                                , spawn ~/.config/herbstluftwm/monitor
 
-herbstclient keybind $Mod-bracketright cycle_all   +1
-herbstclient keybind $Mod-bracketleft  cycle_all   -1
-herbstclient keybind $Mod-braceright   cycle_frame +1
-herbstclient keybind $Mod-braceleft    cycle_frame -1
-herbstclient keybind $Mod-parentright  cycle       +1
-herbstclient keybind $Mod-parentleft   cycle       -1
-herbstclient keybind $Mod-i            jumpto      urgent
+hc keybind $Mod-bracketright cycle_all   +1
+hc keybind $Mod-bracketleft  cycle_all   -1
+hc keybind $Mod-braceright   cycle_frame +1
+hc keybind $Mod-braceleft    cycle_frame -1
+hc keybind $Mod-parentright  cycle       +1
+hc keybind $Mod-parentleft   cycle       -1
+hc keybind $Mod-i            jumpto      urgent
 
 #  theme
-herbstclient attr theme.tiling.reset          1
-herbstclient attr theme.floating.reset        1
+hc attr theme.tiling.reset          1
+hc attr theme.floating.reset        1
 
-herbstclient attr theme.normal.color          '#505050'
-herbstclient attr theme.active.color          '#721045'
-herbstclient attr theme.urgent.color          '#a60000'
-herbstclient attr theme.inner_color           '#000000'
-herbstclient attr theme.floating.outer_color  '#000000'
-herbstclient attr theme.active.inner_color    '#813e00'
-herbstclient attr theme.active.outer_color    '#813e00'
-herbstclient attr theme.background_color      '#000000'
-herbstclient attr theme.inner_width           1
-herbstclient attr theme.border_width          1
-herbstclient attr theme.floating.border_width 1
-herbstclient attr theme.floating.outer_width  1
+hc attr theme.normal.color          '#505050'
+hc attr theme.active.color          '#721045'
+hc attr theme.urgent.color          '#a60000'
+hc attr theme.inner_color           '#000000'
+hc attr theme.floating.outer_color  '#000000'
+hc attr theme.active.inner_color    '#813e00'
+hc attr theme.active.outer_color    '#813e00'
+hc attr theme.background_color      '#000000'
+hc attr theme.inner_width           1
+hc attr theme.border_width          0
+hc attr theme.floating.border_width 1
+hc attr theme.floating.outer_width  1
 
-herbstclient set always_show_frame         1
-herbstclient set frame_border_width        1
-herbstclient set frame_bg_transparent      1
-herbstclient set frame_transparent_width   1
-herbstclient set frame_gap                 1
-herbstclient set frame_border_normal_color '#ffffff'
-herbstclient set frame_border_active_color '#ffffff'
-herbstclient set frame_bg_normal_color     '#f8f8f8'
-herbstclient set frame_bg_active_color     '#f8f8f8'
+hc set always_show_frame         1
+hc set frame_border_width        1
+hc set frame_bg_transparent      1
+hc set frame_transparent_width   1
+hc set frame_gap                 1
+hc set frame_border_normal_color '#ffffff'
+hc set frame_border_active_color '#ffffff'
+hc set frame_bg_normal_color     '#f8f8f8'
+hc set frame_bg_active_color     '#f8f8f8'
 
-herbstclient set window_gap                1
-herbstclient set frame_padding             1
-herbstclient set smart_window_surroundings 1
-herbstclient set smart_frame_surroundings  1
-herbstclient set mouse_recenter_gap        0
+hc set window_gap                1
+hc set frame_padding             1
+hc set smart_window_surroundings 1
+hc set smart_frame_surroundings  1
+hc set mouse_recenter_gap        0
+
+hc set auto_detect_monitors      1
 
 # rules
-herbstclient unrule --all
-herbstclient rule focus=on switchtag=on # normally focus new clients
+hc unrule --all
+hc rule focus=on switchtag=on # normally focus new clients
 
-herbstclient rule windowtype~'_NET_WM_WINDOW_TYPE_(DIALOG|UTILITY|SPLASH)' floating=on
-herbstclient rule windowtype='_NET_WM_WINDOW_TYPE_DIALOG' focus=on floatplacement=center
-herbstclient rule windowtype~'_NET_WM_WINDOW_TYPE_(NOTIFICATION|DOCK|DESKTOP)' manage=off
+hc rule windowtype~'_NET_WM_WINDOW_TYPE_(DIALOG|UTILITY|SPLASH)' floating=on
+hc rule windowtype='_NET_WM_WINDOW_TYPE_DIALOG' focus=on floatplacement=center
+hc rule windowtype~'_NET_WM_WINDOW_TYPE_(NOTIFICATION|DOCK|DESKTOP)' manage=off
 
 # home made applications
-herbstclient rule class~'termbar' manage=off focus=off
+hc rule class~'termbar' manage=off focus=off
+hc rule class~'fzmenu' focus=on floating=on floatplacement=center # floating_geometry=400x500
 
-herbstclient rule class~'hlwm-show-(time|tray)' floating=on
+hc rule class~'hlwm-show-(time|tray)' floating=on
 
 # firefox
-herbstclient rule windowrole='About' class='firefox' focus=on floating=on floatplacement=center
+hc rule windowrole='About' class='firefox' focus=on floating=on floatplacement=center
 
 # gtk
-herbstclient rule windowrole~'Gtk(App|Color|File|Font|Recent)ChooserDialog' floatplacement=center floating_geometry=1024x768
+hc rule windowrole~'Gtk(App|Color|File|Font|Recent)ChooserDialog' floatplacement=center floating_geometry=1024x768
 
 # jetbrains
-herbstclient rule class='jetbrains-clion' title='splash' focus=on pseudotile=on floatplacement=center
+hc rule class='jetbrains-clion' title='splash' focus=on pseudotile=on floatplacement=center
 
-herbstclient set tree_style '╾│ ├└╼─┐'
+hc set tree_style '╾│ ├└╼─┐'
 
 # unlock, just to be sure
-herbstclient unlock
+hc unlock
 
 # initialize the session
 ~/.config/herbstluftwm/init
