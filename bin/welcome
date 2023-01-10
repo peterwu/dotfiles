@@ -4,7 +4,7 @@ host_name=$(hostname)
 real_name=$(getent passwd `whoami`|cut -d: -f5)
 
 export LESSHISTFILE=-
-export XAUTHORITY=$HOME/.cache/X11/Xauthority
+export XAUTHORITY=$XDG_RUNTIME_DIR/.Xauthority
 
 echo "Welcome to ${host_name}!"
 echo ""
