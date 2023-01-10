@@ -115,8 +115,9 @@
   (setq ediff-window-setup-function 'ediff-setup-windows-plain))
 
 (with-package 'eglot
-  (add-hook 'c-mode-hook #'eglot-ensure)
-  (add-hook 'c++-mode-hook #'eglot-ensure))
+  (when (locate-file "clangd" exec-path exec-suffixes 1)
+    (add-hook 'c-mode-hook #'eglot-ensure)
+    (add-hook 'c++-mode-hook #'eglot-ensure)))
 
 (with-package 'eldoc
   (add-hook 'emacs-lisp-mode-hook #'eldoc-mode)
