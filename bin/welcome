@@ -12,7 +12,7 @@ read -e -p "${real_name}, do you want to startx? (Y/n) " ANSWER
 ANSWER=${ANSWER:=Y}
 
 if [[ ${ANSWER^} == "Y" ]]; then
-    exec xinit $HOME/.config/X11/xinitrc -- /usr/bin/X $DISPLAY -auth $XAUTHORITY &> /dev/null
+    /usr/local/bin/startx
 else
     exec /bin/bash
 fi

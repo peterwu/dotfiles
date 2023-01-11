@@ -31,6 +31,9 @@ if [[ -x /usr/bin/nvim ]]; then
     alias vi="vim"
     alias vim="nvim"
     alias vimdiff="nvim -d"
+
+    export MANPAGER='nvim +Man!'
+    export SUDO_EDITOR='nvim'
 fi
 
 alias E="sudo --edit"
@@ -62,9 +65,6 @@ alias rsync="rsync --progress"
 
 # herstluftwm
 [[ -x /usr/bin/herbstclient ]] && alias hc="herbstclient"
-
-# Colourize man pages
-[[ -x /usr/bin/nvim ]] && export MANPAGER='nvim +Man!'
 
 # Customize bash prompt
 show_bash_prompt() {
