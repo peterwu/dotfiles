@@ -11,9 +11,9 @@ actions=(
 commands=(
     'env xsecurelock'
     'herbstclient quit'
-    'systemctl reboot'
-    'systemctl poweroff'
-    'systemctl suspend'
+    'sudo systemctl reboot'
+    'sudo systemctl poweroff'
+    'sudo systemctl suspend'
 )
 
 menu=''

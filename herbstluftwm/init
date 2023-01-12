@@ -36,7 +36,7 @@ exec -a termbar kitty                      \
      --config ~/.config/kitty/termbar.conf \
      --single-instance                     \
      --instance-group=termbar              \
-     ~/.config/herbstluftwm/termbar 0 &
+     -- ~/.config/herbstluftwm/termbar 0 &
 
 if [[ $(herbstclient get_attr monitors.count) > 1 ]]; then
     # put the external monitor on the right

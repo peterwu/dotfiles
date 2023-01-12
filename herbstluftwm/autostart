@@ -22,10 +22,9 @@ hc keybind $Mod-Return  spawn kitty --single-instance --instance-group=main
 
 # user custom keybindings
 hc keybind $Mod-d                \
-    spawn kitty --class fzmenu --override font_family="Liberation Mono" --override fontsize=18 fzmenu
+    spawn kitty --class fzmenu --override font_family="Liberation Mono" --override font_size=14 -- fzmenu
 hc keybind Mod1-Control-Delete   \
-    spawn kitty --class fzmenu --override font_family="Liberation Mono" --override fontsize=18 ~/.config/herbstluftwm/exit
-    # spawn ~/.config/herbstluftwm/exit
+    spawn kitty --class fzmenu --override font_family="Liberation Mono" --override font_size=14 -- ~/.config/herbstluftwm/exit
 
 hc keybind XF86AudioMicMute      \
    spawn wpctl set-mute @DEFAULT_SOURCE@  toggle
@@ -142,9 +141,9 @@ hc attr theme.active.inner_color    '#813e00'
 hc attr theme.active.outer_color    '#813e00'
 hc attr theme.background_color      '#000000'
 hc attr theme.inner_width           1
-hc attr theme.border_width          0
-hc attr theme.floating.border_width 1
-hc attr theme.floating.outer_width  1
+hc attr theme.border_width          1
+hc attr theme.floating.border_width 0
+hc attr theme.floating.outer_width  0
 
 hc set always_show_frame         1
 hc set frame_border_width        1
@@ -174,7 +173,7 @@ hc rule windowtype~'_NET_WM_WINDOW_TYPE_(NOTIFICATION|DOCK|DESKTOP)' manage=off
 
 # home made applications
 hc rule class~'termbar' manage=off focus=off
-hc rule class~'fzmenu' focus=on floating=on floatplacement=center # floating_geometry=400x500
+hc rule class~'fzmenu' focus=on floating=on floatplacement=center floating_geometry=400x400
 
 hc rule class~'hlwm-show-(time|tray)' floating=on
 
