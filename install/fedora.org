@@ -2,243 +2,267 @@
 #+title: Fedora Installation Guide
 
 * preparation
-  1. download the Everything iso from https://alt.fedoraproject.org/
-  2. burn the iso to usb key
-     #+begin_src bash
-       # dd bs=4M if=/path/to/Fedora-Everything-netinst-x86_64-XYZ.iso of=/dev/sdx status=progress && sync
-     #+end_src
-  3. turn off Secure Boot in BIOS
+1. download the Everything iso from https://alt.fedoraproject.org/
+2. burn the iso to usb key
+   #+begin_src bash
+     # dd bs=4M if=/path/to/Fedora-Everything-netinst-x86_64-XYZ.iso of=/dev/sdx status=progress && sync
+   #+end_src
+3. turn off Secure Boot in BIOS
 * installation
-  1. disk partition
-     | size | mount point       | type  |
-     |------+-------------------+-------|
-     | 512M | /boot/efi         | vfat  |
-     | REST | /{@, @home, @var} | btrfs |
-  2. choose *Minimal Installation*
-  3. set hostname to *mulberry*
+1. disk partition
+   | size | mount point       | type  |
+   |------+-------------------+-------|
+   | 512M | /boot/efi         | vfat  |
+   | REST | /{@, @home, @var} | btrfs |
+2. choose *Minimal Installation*
+3. set hostname to *mulberry*
 * configuration
 ** remove bloatwarez
-   #+begin_src bash
-     # dnf remove sssd* yum nano
-   #+end_src
+#+begin_src bash
+  # dnf remove sssd* yum nano
+#+end_src
 ** enable personal and rpmfusion repos
-   #+begin_src bash
-     # dnf copr enable peterwu/rendezvous
-     # dnf install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
-   #+end_src
+#+begin_src bash
+  # dnf copr enable peterwu/rendezvous
+  # dnf install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+#+end_src
 ** acquire iwlwifi8265 firmware
-   #+begin_src bash
-     # dnf install iwl7260-firmware
-     # cp /usr/lib/firmware/iwlwifi-8265-36.ucode.xz /usr/local/lib/firmware/
-     # dnf remove iwl7260-firmware
-     # cd /usr/lib/firmware
-     # ln -sf /usr/local/lib/firmware/iwlwifi-8265-36.ucode.xz
-   #+end_src
+#+begin_src bash
+  # dnf install iwl7260-firmware
+  # cp /usr/lib/firmware/iwlwifi-8265-36.ucode.xz /usr/local/lib/firmware/
+  # dnf remove iwl7260-firmware
+  # cd /usr/lib/firmware
+  # ln -sf /usr/local/lib/firmware/iwlwifi-8265-36.ucode.xz
+#+end_src
 ** install plymouth system theme
-   #+begin_src bash
-     # dnf install plymouth-system-theme
-     # plymouth-set-default-theme -R bgrt
-   #+end_src
+#+begin_src bash
+  # dnf install plymouth-system-theme
+  # plymouth-set-default-theme -R bgrt
+#+end_src
 ** replace grub with systemd-boot
-   1. make sure that Fedora is loaded in UEFI mode
-      #+begin_src bash
-        # test -d /sys/firmware/efi && echo EFI || echo Legacy
-      #+end_src
-   2. remove grub from dnf protected packages
-      #+begin_src bash
-        # rm /etc/dnf/protected.d/{grub*,shim}.conf
-      #+end_src
-   3. remove grub
-      #+begin_src bash
-        # dnf remove grubby grub2* shim* memtest86
-        # rm -rf /boot/{grub2,loader}
-      #+end_src
-   4. save boot options to /etc/kernel/cmdline
-      #+begin_src bash
-        # cat /proc/cmdline | cut -d ' ' -f 2- | tee /etc/kernel/cmdline
-      #+end_src
-   5. install systemd-boot
-      #+begin_src bash
-        # bootctl install
-      #+end_src
-   6. initialize initrd rebuild and generate new config files
-       #+begin_src bash
-         # kernel-install add $(uname -r) /lib/modules/$(uname -r)/vmlinuz
-         # dnf reinstall kernel-core
-       #+end_src
-   7. reboot
-       #+begin_src bash
-         # systemctl reboot
-       #+end_src
+1. make sure that Fedora is loaded in UEFI mode
+   #+begin_src bash
+     # test -d /sys/firmware/efi && echo EFI || echo Legacy
+   #+end_src
+2. remove grub from dnf protected packages
+   #+begin_src bash
+     # rm /etc/dnf/protected.d/{grub*,shim}.conf
+   #+end_src
+3. remove grub
+   #+begin_src bash
+     # dnf remove grubby grub2* shim* memtest86
+     # rm -rf /boot/{grub2,loader}
+   #+end_src
+4. save boot options to /etc/kernel/cmdline
+   #+begin_src bash
+     # cat /proc/cmdline | cut -d ' ' -f 2- | tee /etc/kernel/cmdline
+   #+end_src
+5. install systemd-boot
+   #+begin_src bash
+     # bootctl install
+   #+end_src
+6. initialize initrd rebuild and generate new config files
+   #+begin_src bash
+     # kernel-install add $(uname -r) /lib/modules/$(uname -r)/vmlinuz
+     # dnf reinstall kernel-core
+   #+end_src
+7. reboot
+   #+begin_src bash
+     # systemctl reboot
+   #+end_src
 ** replace NetworkManager + dhcp-client with systemd-networkd + iwd
-   #+begin_src bash
-     # dnf remove NetworkManager dhcp-client
-     # dnf install iwd
-   #+end_src
+#+begin_src bash
+  # dnf remove NetworkManager dhcp-client
+  # dnf install iwd
+#+end_src
 
-   #+begin_src conf
-     /etc/iwd/main.conf
+#+begin_src conf
+  /etc/iwd/main.conf
 
-     [General]
-     EnableNetworkConfiguration=true
-   #+end_src
+  [General]
+  EnableNetworkConfiguration=true
+#+end_src
 
-   #+begin_src conf
-     /etc/systemd/network/20-wired.network
+#+begin_src conf
+  /etc/systemd/network/20-wired.network
 
-     [Match]
-     Name=enp0s31f6
+  [Match]
+  Name=enp0s31f6
 
-     [Network]
-     DHCP=yes
+  [Network]
+  DHCP=yes
 
-     [DHCPv4]
-     RouteMetric=10
-   #+end_src
-   #+begin_src conf
-     /etc/systemd/network/25-wireless.network
+  [DHCPv4]
+  RouteMetric=10
+#+end_src
+#+begin_src conf
+  /etc/systemd/network/25-wireless.network
 
-     [Match]
-     Name=wlp4s0
+  [Match]
+  Name=wlp4s0
 
-     [Network]
-     DHCP=yes
+  [Network]
+  DHCP=yes
 
-     [DHCPv4]
-     RouteMetric=20
-   #+end_src
+  [DHCPv4]
+  RouteMetric=20
+#+end_src
 
-   #+begin_src bash
-     # systemctl enable --now iwd
-     $ iwctl --passphrase {passphrase} station {device} connect {SSID}
-   #+end_src
+#+begin_src bash
+  # systemctl enable --now iwd
+  $ iwctl --passphrase {passphrase} station {device} connect {SSID}
+#+end_src
 
-   #+begin_src bash
-     # systemctl enable systemd-networkd
-   #+end_src
+#+begin_src bash
+  # systemctl enable systemd-networkd
+#+end_src
 ** install Xorg
-   #+begin_src bash
-     # dnf install xorg-x11-server-Xorg
-     # dnf install xorg-x11-xinit
-     # dnf install xorg-x11-drv-{evdev,libinput}
-     # dnf install mesa-{dri,vulkan}-drivers
-   #+end_src
+#+begin_src bash
+  # dnf install xorg-x11-server-Xorg
+  # dnf install xorg-x11-xinit
+  # dnf install xorg-x11-drv-{evdev,libinput}
+  # dnf install mesa-{dri,vulkan}-drivers
+#+end_src
 ** install window manager and relevant utils
-   #+begin_src bash
-     # dnf install herbstluftwm
-     # dnf install feh picom dunst xset
-     # dnf install xss-lock xsecurelock
-     # dnf install wireplumber pipewire pipewire-utils
-     # dnf install pipewire-pulseaudio pulseaudio-utils
-   #+end_src
+#+begin_src bash
+  # dnf install herbstluftwm
+  # dnf install feh picom dunst xset
+  # dnf install xss-lock xsecurelock
+  # dnf install wireplumber pipewire pipewire-utils
+  # dnf install pipewire-pulseaudio pulseaudio-utils
+#+end_src
 ** install terminal emulator
-   #+begin_src bash
-     # dnf install kitty
-   #+end_src
+#+begin_src bash
+  # dnf install kitty
+#+end_src
 ** install greetd as display manager
-   #+begin_src bash
-     # dnf install greetd
-     # systemctl enable greetd.service
-   #+end_src
+#+begin_src bash
+  # dnf install greetd
+  # systemctl enable greetd.service
+#+end_src
 
-   /usr/local/bin/welcome
-   #+begin_src bash
-     #!/usr/bin/env bash
+/usr/local/bin/welcome
+#+begin_src bash
+  #!/usr/bin/env bash
 
-     host_name=$(hostname)
-     real_name=$(getent passwd `whoami`|cut -d: -f5)
+  host_name=$(hostname)
+  real_name=$(getent passwd `whoami`|cut -d: -f5)
 
-     export LESSHISTFILE=-
-     export XAUTHORITY=$HOME/.config/X11/Xauthority
+  export LESSHISTFILE=-
+  export XAUTHORITY=$HOME/.config/X11/Xauthority
 
-     echo "Welcome to ${host_name}!"
-     echo ""
-     read -e -p "${real_name}, do you want to startx? (Y/n) " ANSWER
-     ANSWER=${ANSWER:=Y}
+  echo "Welcome to ${host_name}!"
+  echo ""
+  read -e -p "${real_name}, do you want to startx? (Y/n) " ANSWER
+  ANSWER=${ANSWER:=Y}
 
-     if [[ ${ANSWER^} == "Y" ]]; then
-         exec /usr/bin/startx $HOME/.config/X11/xinitrc &> /dev/null
-     else
-         exec /bin/bash
-     fi
-   #+end_src
+  if [[ ${ANSWER^} == "Y" ]]; then
+      exec /usr/bin/startx $HOME/.config/X11/xinitrc &> /dev/null
+  else
+      exec /bin/bash
+  fi
+#+end_src
 ** start graphical interface on boot
-   #+begin_src bash
-     # systemctl set-default graphical.target
-   #+end_src
+#+begin_src bash
+  # systemctl set-default graphical.target
+#+end_src
 ** disable raid-check.timer
-   #+begin_src bash
-     # systemctl disable --now raid-check.timer
-   #+end_src
+#+begin_src bash
+  # systemctl disable --now raid-check.timer
+#+end_src
 ** install software
-   - browsers
-     #+begin_src bash
-       # dnf install firefox chromium
+- browsers
+  #+begin_src bash
+    # dnf install firefox chromium
 
-       # cat > /etc/yum.repos.d/google-chrome.repo << EOF
-       [google-chrome]
-       name=google-chrome
-       baseurl=https://dl.google.com/linux/chrome/rpm/stable/x86_64
-       enabled=1
-       gpgcheck=1
-       gpgkey=https://dl.google.com/linux/linux_signing_key.pub
-       EOF
-       # dnf install google-chrome-stable
+    # cat > /etc/yum.repos.d/google-chrome.repo << EOF
+    [google-chrome]
+    name=google-chrome
+    baseurl=https://dl.google.com/linux/chrome/rpm/stable/x86_64
+    enabled=1
+    gpgcheck=1
+    gpgkey=https://dl.google.com/linux/linux_signing_key.pub
+    EOF
+    # dnf install google-chrome-stable
 
-       # cat > /etc/yum.repos.d/microsoft-edge.repo << EOF
-       [microsoft-edge]
-       name=microsoft-edge
-       baseurl=https://packages.microsoft.com/yumrepos/edge/
-       enabled=1
-       gpgcheck=1
-       gpgkey=https://packages.microsoft.com/keys/microsoft.asc
-       EOF
-       # rpm --import https://packages.microsoft.com/keys/microsoft.asc
-       # dnf install microsoft-edge-stable
-     #+end_src
-   - editors
-     #+begin_src bash
-       # dnf install vim emacs
-     #+end_src
-   - input methods
-     #+begin_src bash
-       # dnf install ibus ibus-libpinyin
-     #+end_src
-   - dbus
-     #+begin_src bash
-       # dnf install dbus-daemon
-     #+end_src
+    # cat > /etc/yum.repos.d/microsoft-edge.repo << EOF
+    [microsoft-edge]
+    name=microsoft-edge
+    baseurl=https://packages.microsoft.com/yumrepos/edge/
+    enabled=1
+    gpgcheck=1
+    gpgkey=https://packages.microsoft.com/keys/microsoft.asc
+    EOF
+    # rpm --import https://packages.microsoft.com/keys/microsoft.asc
+    # dnf install microsoft-edge-stable
+  #+end_src
+- editors
+  #+begin_src bash
+    # dnf install vim emacs
+  #+end_src
+- input methods
+  #+begin_src bash
+    # dnf install ibus ibus-libpinyin
+  #+end_src
+- dbus
+  #+begin_src bash
+    # dnf install dbus-daemon
+  #+end_src
 ** setup udev rules
-   #+begin_src bash
-     # cat > /etc/udev/rules.d/90-backlight.rules << EOF
-     SUBSYSTEM=="backlight", ACTION=="add",
-     RUN+="/bin/chgrp video /sys/class/backlight/intel_backlight/brightness",
-     RUN+="/bin/chmod g+w   /sys/class/backlight/intel_backlight/brightness"
-     EOF
-     # usermod -a -G video `whoami`
-   #+end_src
+#+begin_src bash
+  # cat > /etc/udev/rules.d/90-backlight.rules << EOF
+  SUBSYSTEM=="backlight", ACTION=="add",
+  RUN+="/bin/chgrp video /sys/class/backlight/intel_backlight/brightness",
+  RUN+="/bin/chmod g+w   /sys/class/backlight/intel_backlight/brightness"
+  EOF
+  # usermod -a -G video `whoami`
+#+end_src
 ** suspend settings
-   - after idle
-     #+begin_src bash
-       # cat > /etc/systemd/logind.conf << EOF
-       IdleAction=suspend
-       IdleActionSec=2min
-       EOF
-     #+end_src
-   - disable usb wakeup
-     #+begin_src bash
-       # cat > /etc/tmpfiles.d/disable-usb-wakeup.conf << EOF
-       #    Path                  Mode UID  GID  Age Argument
-       w    /proc/acpi/wakeup     -    -    -    -   XHC
-       EOF
-     #+end_src
+- after idle
+  #+begin_src bash
+    # cat > /etc/systemd/logind.conf << EOF
+    IdleAction=suspend
+    IdleActionSec=2min
+    EOF
+  #+end_src
+- disable usb wakeup
+  #+begin_src bash
+    # cat > /etc/tmpfiles.d/disable-usb-wakeup.conf << EOF
+    #    Path                  Mode UID  GID  Age Argument
+    w    /proc/acpi/wakeup     -    -    -    -   XHC
+    EOF
+  #+end_src
 
 ** pair bluetooth devices
-   #+begin_src conf
-         $ bluetoothctl
-         [bluetooth#] scan on
-         [bluetooth#] pair {BT_MAC_ADDRESS}
-         [bluetooth#] connect {BT_MAC_ADDRESS}
-         [bluetooth#] trust {BT_MAC_ADDRESS}
-         [bluetooth#] quit
-   #+end_src
+#+begin_src conf
+  $ bluetoothctl
+  [bluetooth#] scan on
+  [bluetooth#] pair {BT_MAC_ADDRESS}
+  [bluetooth#] connect {BT_MAC_ADDRESS}
+  [bluetooth#] trust {BT_MAC_ADDRESS}
+  [bluetooth#] quit
+#+end_src
+
+** turn on numlock on startup
+- /usr/local/bin/numlock
+  #+begin_src bash
+    #!/usr/bin/env bash
+
+    for tty in /dev/tty{1..6}
+    do
+        /usr/bin/setleds -D +num < "$tty";
+    done
+  #+end_src
+- /etc/systemd/system/numlock.service
+  #+begin_src conf
+    [Unit]
+    Description=numlock
+
+    [Service]
+    ExecStart=/usr/local/bin/numlock
+    StandardInput=tty
+    RemainAfterExit=yes
+
+    [Install]
+    WantedBy=multi-user.target
+  #+end_src
