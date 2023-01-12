@@ -5,6 +5,7 @@ real_name=$(getent passwd `whoami`|cut -d: -f5)
 
 export LESSHISTFILE=-
 export XAUTHORITY=$XDG_RUNTIME_DIR/.Xauthority
+export XINITRC=$HOME/.config/X11/xinitrc
 
 echo "Welcome to ${host_name}!"
 echo ""

@@ -8,5 +8,5 @@ if expr "$tty" : '/dev/tty[0-9][0-9]*$' > /dev/null; then
         tty_num=$(echo "$tty" | grep -oE '[0-9]+$')
         vtarg="vt$tty_num -keeptty"
 
-        exec xinit $HOME/.config/X11/xinitrc -- /usr/bin/X $DISPLAY $vtarg -auth $XAUTHORITY &> /dev/null
+        exec xinit $XINITRC -- /usr/bin/X $DISPLAY $vtarg -auth $XAUTHORITY &> /dev/null
 fi
