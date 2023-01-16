@@ -12,7 +12,7 @@ delta=$2
 
 vol_info=$(wpctl get-volume @DEFAULT_SINK@)
 vol=$(bc <<< "$(cut -d' ' -f2 <<< ${vol_info}) * 100" | cut -d. -f1)
-muted=$(echo $vol_info | cut -d' ' -f3)
+muted=$(cut -d' ' -f3 <<< $vol_info)
 if [[ $muted == "[MUTED]" ]]; then
     muted=true
 else

@@ -49,16 +49,14 @@ print_ime() {
 print_vol() {
     # format: vol/muted?/vol
 
-    # true - false
-    muted=$(pactl get-sink-mute @DEFAULT_SINK@ | cut -d ' ' -f 2)
-
-    if [[ $muted == "yes" ]]; then
+    vol_info=$(wpctl get-volume @DEFAULT_SINK@)
+    vol=$(bc <<< "$(cut -d' ' -f2 <<< ${vol_info}) * 100" | cut -d. -f1)
+    muted=$(cut -d' ' -f3 <<< $vol_info)
+    if [[ $muted == "[MUTED]" ]]; then
         muted=true
     else
         muted=false
     fi
-
-    vol=$(pactl get-sink-volume @DEFAULT_SINK@ | awk '{print $5}'| grep -m 1 % | sed 's/[%|,]//g')
 
     echo -e "vol\t${muted}\t${vol}"
 }
