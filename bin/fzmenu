@@ -1,47 +1,38 @@
-#!/usr/bin/env python
+#!/usr/bin/env bash
 
-import os
-import signal
-import subprocess
-import tempfile
+dirs=(
+    /usr/share/applications
+    /usr/local/share/applications
+    $HOME/.local/share/applications
+)
 
-from gi.repository import Gio
+# in the dirs, build a dictionary:
+# xyz.desktop -> /path/to/xyz.desktop
+declare -A files
+for d in "${dirs[@]}"; do
+    for f in $(ls -1 ${d}/*.desktop 2> /dev/null); do
+        name=${f##*/}
+        files[$name]=$f
+    done
+done
 
-# Returns a list of DesktopAppInfo objects (see docs)
-all_apps = Gio.AppInfo.get_all()
+# display name -> /path/to/xyz.desktop
+declare -A menu
+for f in "${files[@]}"; do
+    grep '^NoDisplay=true' $f &> /dev/null
+    if [[ $? -ne 0 ]]; then
+        name=$(grep -m1 '^Name=' $f | cut -d= -f2-)
+        menu["$name"]=$f
+    fi
+done
 
-name_file_dict = {}
+pick=$(printf '%s\n' "${!menu[@]}" | sort | fzf --reverse \
+                                                --no-info \
+                                                --border  \
+                                                --prompt "Run: ")
 
-with tempfile.NamedTemporaryFile(mode='a+t') as file:
-    for app in all_apps:
-        if not app.get_nodisplay():
-            app_display_name = app.get_display_name()
-            app_desktop_file = os.path.basename(app.get_filename())
-
-            name_file_dict[app_display_name] = app_desktop_file
-
-            file.write(app_display_name)
-            file.write(os.linesep)
-
-    # reset the file
-    file.seek(0)
-
-    try:
-        with subprocess.Popen([                     \
-                                "fzf",              \
-                                "--reverse",        \
-                                "--no-info",        \
-                                "--border",         \
-                                "--prompt", "Run: " \
-                               ],                   \
-                              stdin=file, stdout=subprocess.PIPE) as proc:
-            selected_app_display_name = proc.communicate()[0].decode('utf-8').rstrip()
-            selected_app_desktop_file = name_file_dict[selected_app_display_name]
-
-        # kill the kitty process that runs this script
-        os.kill(os.getppid(), signal.SIGHUP)
-
-        with subprocess.Popen(["gtk-launch", selected_app_desktop_file], start_new_session=True) as proc:
-            proc.communicate()
-    except Exception:
-        pass
+if [[ -n $pick ]]; then
+    set -m
+    kill -SIGHUP $PPID
+    gio launch ${menu[$pick]} &
+fi
