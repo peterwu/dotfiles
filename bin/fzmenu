@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+[[ "${FLOCKER}" != "$0" ]] && exec env FLOCKER="$0" flock -Fxn "$0" "$0" "$@" || :
+
+set -m
+
 dirs=(
     /usr/share/applications
     /usr/local/share/applications
@@ -26,13 +30,15 @@ for f in "${files[@]}"; do
     fi
 done
 
-pick=$(printf '%s\n' "${!menu[@]}" | sort | fzf --reverse \
-                                                --no-info \
-                                                --border  \
-                                                --prompt "Run: ")
+pick=$(printf '%s\n' "${!menu[@]}"                  \
+           | sort                                   \
+           | fzf --reverse                          \
+               --no-info                            \
+               --border                             \
+               --scrollbar ┆ --color scrollbar:blue \
+               --prompt "Run: ")
 
 if [[ -n $pick ]]; then
-    set -m
     kill -SIGHUP $PPID
-    gio launch ${menu[$pick]} &
+    gio launch ${menu[$pick]} &> /dev/null &
 fi
