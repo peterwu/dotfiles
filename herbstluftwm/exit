@@ -9,7 +9,7 @@ actions=(
 )
 
 commands=(
-    'env xsecurelock'
+    'xsecurelock'
     'herbstclient quit'
     'sudo systemctl reboot'
     'sudo systemctl poweroff'
@@ -27,7 +27,7 @@ index=$(echo -e ${menu}                                                        \
              | fzf --prompt "Go: " --reverse --border --no-info --with-nth=2.. \
              | cut -d' ' -f1)
 
-if [ $index -ge 0 ]; then
+if [[ -n $index ]]; then
     eval ${commands[$index]}
 else
     exit 1
