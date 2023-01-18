@@ -6,9 +6,7 @@ require 'statusline'
 -- AutoSaveFolds
 vim.api.nvim_create_augroup('AutoSaveFolds', {})
 
-vim.api.nvim_create_autocmd({'BufWinLeave',
-                             'BufLeave',
-                             'BufWritePost'}, {
+vim.api.nvim_create_autocmd({'BufWinLeave', 'BufLeave', 'BufWritePost'}, {
     group='AutoSaveFolds',
     pattern='?*',
     command='silent! mkview!',

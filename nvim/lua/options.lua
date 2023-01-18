@@ -28,7 +28,7 @@ vim.opt.splitright     = true
 vim.opt.tabstop        = 8
 vim.opt.termguicolors  = true
 vim.opt.timeoutlen     = 777
-vim.opt.title          = true
+vim.opt.title          = false
 vim.opt.undofile       = true
 vim.opt.viewoptions    = 'cursor,folds'
 

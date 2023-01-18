@@ -194,21 +194,21 @@ vim.opt.statusline = [[%!v:lua.require'statusline'.statusline()]]
 vim.api.nvim_create_augroup('StatusLine', {})
 
 vim.api.nvim_create_autocmd(
-   {'ColorScheme','WinEnter','BufEnter','BufWinEnter'},
-   {
-      group='StatusLine',
-      pattern='*',
-      command=[[lua require('statusline').highlights()]]
-   }
+{'ColorScheme','WinEnter','BufEnter','BufWinEnter'},
+{
+    group='StatusLine',
+    pattern='*',
+    command=[[lua require('statusline').highlights()]]
+}
 )
 
 vim.api.nvim_create_autocmd(
-   {'VimResized'},
-   {
-      group='StatusLine',
-      pattern='*',
-      command='redrawstatus'
-   }
+{'VimResized'},
+{
+    group='StatusLine',
+    pattern='*',
+    command='redrawstatus'
+}
 )
 
 return {statusline = build_status_line, highlights = set_highlights}

@@ -10,22 +10,18 @@ local plugins ={
         setup = utils.require('nvim-autopairs').setup
     },
     {
-        paq = {'norcalli/nvim-colorizer.lua', as = 'colorizer.nvim'},
+        paq = {'NvChad/nvim-colorizer.lua', as = 'colorizer.nvim'},
         setup = utils.require('colorizer').setup
     },
     {
         paq = {'tpope/vim-commentary', as = 'commentary.vim'}
     },
     {
-        paq = {'mfussenegger/nvim-dap', as = 'dap.nvim'},
-        setup = utils.require('plugins.dap').setup
-    },
-    {
-        paq = {'rcarriga/nvim-dap-ui', as = 'dap-ui.nvim'},
-        setup = utils.require('dapui').setup
-    },
-    {
         paq = {'tommcdo/vim-exchange', as = 'exchange.vim'}
+    },
+    {
+        paq = {'junegunn/fzf.vim', as = 'fzf.vim'},
+        setup = utils.require('plugins.fzf').setup
     },
     {
         paq = {'phaazon/hop.nvim'},
@@ -40,22 +36,8 @@ local plugins ={
         setup = utils.require('plugins.lspconfig').setup
     },
     {
-        paq = {'nvim-telescope/telescope.nvim'},
-        setup = utils.require('plugins.telescope').setup
-    },
-    {
-        paq = {'nvim-telescope/telescope-dap.nvim'},
-        setup = utils.require('plugins.telescope-dap').setup
-    },
-    {
         paq = {'ishan9299/modus-theme-vim', as = 'modus-theme.nvim'},
         setup = utils.require('plugins.modus-theme').setup
-    },
-    {
-        paq = {'nvim-lua/plenary.nvim'}
-    },
-    {
-        paq = {'nvim-lua/popup.nvim'}
     },
     {
         paq = {'tpope/vim-repeat', as = 'repeat.vim'}
