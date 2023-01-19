@@ -1,34 +1,24 @@
 #!/usr/bin/env bash
 
-actions=(
-    'Lock'
-    'Log Out'
-    'Reboot'
-    'Power Off'
-    'Suspend'
+[[ "${FLOCKER}" != "$0" ]] && exec env FLOCKER="$0" flock -Fxn "$0" "$0" "$@" || :
+
+map=(
+    'Lock'      'xsecurelock'
+    'Log Out'   'herbstclient quit'
+    'Reboot'    'systemctl reboot'
+    'Power Off' 'systemctl poweroff'
+    'Suspend'   'systemctl suspend'
 )
 
-commands=(
-    'xsecurelock'
-    'herbstclient quit'
-    'sudo systemctl reboot'
-    'sudo systemctl poweroff'
-    'sudo systemctl suspend'
-)
-
-menu=''
-for a in "${actions[@]}"; do
-    menu+="$a"
-    menu+='\n'
-done
-
-index=$(echo -e ${menu}                                                        \
-             | awk '{print NR-1, $0}'                                          \
-             | fzf --prompt "Go: " --reverse --border --no-info --with-nth=2.. \
-             | cut -d' ' -f1)
-
-if [[ -n $index ]]; then
-    eval ${commands[$index]}
-else
-    exit 1
-fi
+delimiter=':'
+for (( i=0; i<${#map[@]}; i+=2 )); do
+    echo "${map[i+1]}${delimiter}${map[i]}"
+done | fzf --prompt "Go: "          \
+           --reverse                \
+           --border                 \
+           --no-info                \
+           --delimiter=${delimiter} \
+           --with-nth=2.. | {
+    cmd=$(cut -d${delimiter} -f1)
+    exec $cmd
+}
