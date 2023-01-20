@@ -20,25 +20,19 @@ for d in "${dirs[@]}"; do
     done
 done
 
-# display name -> /path/to/xyz.desktop
-declare -A menu
 for f in "${files[@]}"; do
     grep '^NoDisplay=true' $f &> /dev/null
     if [[ $? -ne 0 ]]; then
         name=$(grep -m1 '^Name=' $f | cut -d= -f2-)
-        menu["$name"]=$f
+        echo $f $name
     fi
-done
-
-pick=$(printf '%s\n' "${!menu[@]}"                  \
-           | sort                                   \
-           | fzf --reverse                          \
-               --no-info                            \
-               --border                             \
-               --scrollbar ┆ --color scrollbar:blue \
-               --prompt "Run: ")
-
-if [[ -n $pick ]]; then
-    kill -SIGHUP $PPID
-    gio launch ${menu[$pick]} &> /dev/null &
-fi
+done 2> /dev/null | sort -k 2 |
+    fzf --reverse                            \
+        --no-info                            \
+        --border                             \
+        --scrollbar ┆ --color scrollbar:blue \
+        --with-nth=2..                       \
+        --prompt "Run: " | {
+    pick=$(cut -d' ' -f1)
+    [[ -n $pick ]] && gio launch ${pick} &> /dev/null &
+}
