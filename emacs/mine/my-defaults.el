@@ -13,7 +13,7 @@
 (setq-default auto-save-list-file-prefix nil)
 (setq-default backup-inhibited t)
 (setq-default bidi-inhibit-bpa t)
-(setq-default confirm-kill-emacs 'yes-or-no-p)
+(setq-default confirm-kill-emacs #'yes-or-no-p)
 (setq-default fill-column 80)
 (setq-default frame-title-format
               '((:eval

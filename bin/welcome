@@ -5,15 +5,15 @@ real_name=$(getent passwd `whoami`|cut -d: -f5)
 
 export LESSHISTFILE=-
 export XAUTHORITY=$XDG_RUNTIME_DIR/.Xauthority
-export XINITRC=$HOME/.config/X11/xinitrc
 
-echo "Welcome to ${host_name}!"
+echo "Hi ${real_name}, welcome to ${host_name}!" | /usr/bin/cowsay
+
 echo ""
-read -e -p "${real_name}, do you want to startx? (Y/n) " ANSWER
-ANSWER=${ANSWER:=Y}
+read -e -p "Would you like to $(tput setaf 2)startx$(tput sgr0)? (Y/n) " answer
+answer=${answer:=Y}
 
-if [[ ${ANSWER^} == "Y" ]]; then
-    /usr/local/bin/startx
+if [[ ${answer^} == "Y" ]]; then
+    exec /usr/local/bin/startx
 else
     exec /bin/bash
 fi

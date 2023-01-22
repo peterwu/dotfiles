@@ -62,7 +62,7 @@
     (setq wdired-create-parent-directories t))
 
   ;; autoload
-  (autoload-do-load 'wdired-change-to-wdired-mode))
+  (autoload-do-load #'wdired-change-to-wdired-mode))
 
 ;; my-dired-explorer
 (defvar my-dired-explorer-window nil)
