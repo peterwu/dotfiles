@@ -192,20 +192,13 @@ let g:lightline = {
             \   },
             \ }
 
-" ctrlp
-nnoremap <Leader>. :CtrlP .<CR>
-nnoremap <Leader>` :CtrlP /<CR>
-nnoremap <Leader>~ :CtrlP $HOME<CR>
-nnoremap <Leader>% :CtrlP %:p:h<CR>
-
-nnoremap <Leader>? :CtrlPMRU<CR>
-" nnoremap <Leader>: :History:<CR>
-" nnoremap <Leader>/ :History/<CR>
-
-nnoremap <Leader>b :CtrlPBuffer<CR>
-" nnoremap <Leader>h :Helptags<CR>
-" nnoremap <Leader>m :Maps<CR>
-" nnoremap <Leader>t :Tags<CR>
+" fzf
+nnoremap <Leader>f <Cmd>Files<CR>
+nnoremap <Leader>o <Cmd>History<CR>
+nnoremap <Leader>: <Cmd>Hisotry:<CR>
+nnoremap <Leader>/ <Cmd>Hisotry/<CR>
+nnoremap <Leader>b <Cmd>Buffers<CR>
+nnoremap <Leader>h <Cmd>Helptags<CR>
 
 " lion
 let g:lion_squeeze_spaces = 1
@@ -273,7 +266,7 @@ if exists('g:loaded_minpac')
     call minpac#add('tpope/vim-eunuch')
     call minpac#add('tpope/vim-vinegar')
     call minpac#add('mattn/emmet-vim',  {'name': 'vim-emmet'})
-    call minpac#add('ctrlpvim/ctrlp.vim', {'name': 'vim-ctrlp'})
+    call minpac#add('junegunn/fzf.vim', {'name': 'vim-fzf'})
 
     call minpac#add('chrisbra/colorizer',    {'name': 'vim-colorizer'})
     call minpac#add('itchyny/lightline.vim', {'name': 'vim-lightline'})
