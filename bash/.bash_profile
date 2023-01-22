@@ -3,13 +3,17 @@
 #
 
 # Get the aliases and functions
-[[ -f ~/.bashrc ]] && . ~/.bashrc
+[[ -f ~/.bashrc ]] && source ~/.bashrc
+
+# startx if possible
+[[ -z "${DISPLAY}" && "${XDG_VTNR}" -eq 1 ]] && exec /usr/local/bin/welcome
 
 # User specific environment and startup programs
 export CDPATH=".:$HOME"
 
-# readline
-export INPUTRC=$HOME/.config/readline/inputrc
+# fzf
+export FZF_DEFAULT_COMMAND='find .'
+export FZF_DEFAULT_OPTS='--height 100% --reverse --border --multi'
 
 # less
 export LESSHISTFILE=-
@@ -17,6 +21,5 @@ export LESSHISTFILE=-
 # python
 export PYTHONSTARTUP=$HOME/.config/python/pythonrc
 
-# fzf
-export FZF_DEFAULT_COMMAND='find .'
-export FZF_DEFAULT_OPTS='--height 100% --reverse --border --multi'
+# readline
+export INPUTRC=$HOME/.config/readline/inputrc

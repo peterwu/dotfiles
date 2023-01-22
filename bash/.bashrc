@@ -27,12 +27,12 @@ export EDITOR="$VISUAL"
 
 # User specific aliases and functions
 set -o vi
-if [[ -x /usr/bin/nvim ]]; then
+if [[ -x $(command -v nvim) ]]; then
     alias vi="vim"
     alias vim="nvim"
     alias vimdiff="nvim -d"
 
-    export MANPAGER='nvim +Man!'
+    export MANPAGER="nvim +Man! -c 'set laststatus=0'"
     export SUDO_EDITOR='nvim'
 fi
 
@@ -62,9 +62,6 @@ alias egrep="egrep --color=auto"
 
 alias less="LESSHISTFILE=- less -FXR --mouse --wheel-lines=3"
 alias rsync="rsync --progress"
-
-# herstluftwm
-[[ -x /usr/bin/herbstclient ]] && alias hc="herbstclient"
 
 # Customize bash prompt
 show_bash_prompt() {
