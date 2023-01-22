@@ -1,9 +1,7 @@
 # .bashrc
 
 # Source global definitions
-if [ -f /etc/bashrc ]; then
-    . /etc/bashrc
-fi
+[[ -f /etc/bashrc ]] && source /etc/bashrc
 
 # User specific environment
 if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]; then
@@ -21,18 +19,52 @@ shopt -s histappend
 HISTSIZE=20000
 HISTFILESIZE=20000
 
-# Default editor
-export VISUAL="vim"
-export EDITOR="$VISUAL"
-
 # User specific aliases and functions
 set -o vi
-if [[ -x $(command -v vim) ]]; then
+
+if pgrep --exact emacs > /dev/null; then
+    alias vi="emacsclient -nw"
+    alias e="emacsclient -nw"
+    alias emacs="emacs --maximized"
+    alias magit="emacsclient -nw --suppress-output --eval '(magit-status)'"
+
+    man() {
+        local m="$@"
+        /usr/bin/man ${m} > /dev/null
+        [[ $? -eq 0 ]] && /usr/bin/emacsclient -nw --quiet --suppress-output --eval "(man \"${m}\")"
+    }
+
+    export VISUAL="emacsclient -nw"
+elif [[ -x $(command -v vim) ]]; then
     alias vi="vim"
-    export SUDO_EDITOR='vim'
-    export MANPAGER='vim -M +MANPAGER "+set laststatus=0" --not-a-term -'
+    export MANPAGER="vim '+set laststatus=0' -M +MANPAGER --not-a-term -"
+    export VISUAL="vim"
+else
+    man() {
+        local cmd=(
+            env
+            LESS_TERMCAP_mb=$(tput bold; tput setaf 6)
+            LESS_TERMCAP_md=$(tput bold; tput setaf 6)
+            LESS_TERMCAP_me=$(tput sgr0)
+            LESS_TERMCAP_se=$(tput rmso; tput sgr0)
+            LESS_TERMCAP_ue=$(tput rmul; tput sgr0)
+            LESS_TERMCAP_us=$(tput smul; tput bold; tput setaf 4)
+            LESS_TERMCAP_mr=$(tput rev)
+            LESS_TERMCAP_mh=$(tput dim)
+            LESS_TERMCAP_ZN=$(tput ssubm)
+            LESS_TERMCAP_ZV=$(tput rsubm)
+            LESS_TERMCAP_ZO=$(tput ssupm)
+            LESS_TERMCAP_ZW=$(tput rsupm)
+            man "$@"
+        )
+
+        "${cmd[@]}"
+    }
 fi
 
+# Default editor
+export EDITOR="$VISUAL"
+alias VI="sudo --edit"
 alias E="sudo --edit"
 alias sudo="sudo "
 
