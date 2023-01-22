@@ -3,18 +3,55 @@
 " --------
 source $VIMRUNTIME/defaults.vim
 
+" ---------
+" work dirs
+" ---------
+let s:VIM_HOME=$HOME .. "/.vim"
+
+if !isdirectory(s:VIM_HOME .. "/cache")
+    call mkdir(s:VIM_HOME .. "/cache")
+endif
+
+if !isdirectory(s:VIM_HOME .. "/undo")
+    call mkdir(s:VIM_HOME .. "/undo")
+endif
+
 " -------
 " options
 " -------
-set number relativenumber lazyredraw showmatch hidden hlsearch
-set smartindent expandtab tabstop=8 shiftwidth=4 softtabstop=0
-set smartcase ignorecase shortmess+=I title mouse=a laststatus=2
-set noshowmode nolist listchars=trail:·,tab:»·
-set cursorline termguicolors path+=**
 set completeopt=menu,menuone,noinsert,noselect
-set viewoptions=folds,cursor
+set cursorline
+set expandtab
+set hidden
+set hlsearch
+set ignorecase
+set laststatus=2
+set lazyredraw
+set listchars=trail:·,tab:»·
+set mouse=a
+set nolist
+set noshowmode
+set notitle
+set number
+set path+=**
+set pumheight=7
+set relativenumber
 set sessionoptions=folds
-set viminfo+=n~/.vim/cache/viminfo
+set shiftwidth=4
+set shortmess+=Ic
+set showmatch
+set smartcase
+set smartindent
+set softtabstop=0
+set splitbelow
+set splitright
+set tabstop=8
+set termguicolors
+set timeoutlen=777
+set undodir=s:VIM_HOME/undo
+set undofile
+set viewoptions=cursor,folds
+set viminfo=%,<800,'10,/50,:100,h,f0,ns:VIM_HOME/cache/viminfo
 
 highlight CursorLine   cterm=NONE ctermbg=NONE ctermfg=NONE
 highlight CursorLineNr cterm=NONE ctermbg=NONE ctermfg=NONE
@@ -256,6 +293,10 @@ endfunction
 " termdebug
 let g:termdebug_wide = 1
 
+" which-key
+nnoremap <silent> <Leader>      :<C-u>WhichKey g:mapleader<CR>
+nnoremap <silent> <LocalLeader> :<C-u>WhichKey g:maplocalleader<CR>
+
 " --------------
 " minpac plugins
 " --------------
@@ -283,6 +324,7 @@ if exists('g:loaded_minpac')
     call minpac#add('itchyny/lightline.vim',               {'name': 'lightline'})
 
     call minpac#add('ackyshake/VimCompletesMe',            {'name': 'vcm'})
+    call minpac#add('liuchengxu/vim-which-key',            {'name': 'which-key'})
 
     call minpac#add('prabirshrestha/vim-lsp',              {'name': 'lsp'})
     call minpac#add('mattn/vim-lsp-settings',              {'name': 'lsp-settings'})
