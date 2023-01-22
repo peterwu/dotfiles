@@ -56,15 +56,15 @@ fire_battery_alert() {
     elif [[ $battery_percent -le $threshold_suspend ]]; then
         systemctl suspend
     elif [[ $battery_percent -le $threshold_critically_low ]]; then
-        dunstify --urgency critical                                                  \
-                 --hints int:value:${battery_percent} "Battery: ${battery_percent}%" \
-                 --replace $msgid_critically_low                                     \
-                 --icon battery-empty-symbolic
-    elif [[ $battery_percent -le $threshold_low ]]; then
-        dunstify --urgency normal                                                    \
-                 --hints int:value:${battery_percent} "Battery: ${battery_percent}%" \
-                 --replace $msgid_low                                                \
-                 --icon battery-low-symbolic
+        dunstify --urgency critical                                             \
+            --hints int:value:${battery_percent} "Battery: ${battery_percent}%" \
+            --replace $msgid_critically_low                                     \
+            --icon battery-empty-symbolic
+                elif [[ $battery_percent -le $threshold_low ]]; then
+                    dunstify --urgency normal                                               \
+                        --hints int:value:${battery_percent} "Battery: ${battery_percent}%" \
+                        --replace $msgid_low                                                \
+                        --icon battery-low-symbolic
     fi
 }
 

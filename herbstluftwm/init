@@ -49,7 +49,5 @@ if [[ $(herbstclient get_attr monitors.count) > 1 ]]; then
     herbstclient focus_monitor 0
 fi
 
-# install battery monitor
-battery-monitor &
-
-canberra-gtk-play --id desktop-login
+# install battery monitor only when present
+[[ -n $(ls -A /sys/class/power_supply) ]] && ~/.config/herbstluftwm/battery-monitor &
