@@ -27,13 +27,10 @@ export EDITOR="$VISUAL"
 
 # User specific aliases and functions
 set -o vi
-if [[ -x $(command -v nvim) ]]; then
+if [[ -x $(command -v vim) ]]; then
     alias vi="vim"
-    alias vim="nvim"
-    alias vimdiff="nvim -d"
-
-    export MANPAGER="nvim +Man! -c 'set laststatus=0'"
-    export SUDO_EDITOR='nvim'
+    export SUDO_EDITOR='vim'
+    export MANPAGER='vim -M +MANPAGER "+set laststatus=0" --not-a-term -'
 fi
 
 alias E="sudo --edit"
