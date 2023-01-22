@@ -6,15 +6,8 @@ source $VIMRUNTIME/defaults.vim
 " ---------
 " work dirs
 " ---------
-let s:VIM_HOME=$HOME .. "/.vim"
-
-if !isdirectory(s:VIM_HOME .. "/cache")
-    call mkdir(s:VIM_HOME .. "/cache")
-endif
-
-if !isdirectory(s:VIM_HOME .. "/undo")
-    call mkdir(s:VIM_HOME .. "/undo")
-endif
+call mkdir($HOME .. "/.vim/cache", "p")
+call mkdir($HOME .. "/.vim/undo", "p")
 
 " -------
 " options
@@ -48,10 +41,10 @@ set splitright
 set tabstop=8
 set termguicolors
 set timeoutlen=777
-set undodir=s:VIM_HOME/undo
+set undodir=$HOME/.vim/undo
 set undofile
 set viewoptions=cursor,folds
-set viminfo=%,<800,'10,/50,:100,h,f0,ns:VIM_HOME/cache/viminfo
+set viminfo=%,<800,'10,/50,:100,h,f0,n$HOME/.vim/cache/viminfo
 
 highlight CursorLine   cterm=NONE ctermbg=NONE ctermfg=NONE
 highlight CursorLineNr cterm=NONE ctermbg=NONE ctermfg=NONE
