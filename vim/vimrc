@@ -235,12 +235,14 @@ let g:lightline = {
 let g:rainbow_active = 1
 
 " fzf
-nnoremap <Leader>f <Cmd>Files<CR>
-nnoremap <Leader>o <Cmd>History<CR>
-nnoremap <Leader>: <Cmd>Hisotry:<CR>
-nnoremap <Leader>/ <Cmd>Hisotry/<CR>
-nnoremap <Leader>b <Cmd>Buffers<CR>
-nnoremap <Leader>h <Cmd>Helptags<CR>
+let g:fzf_preview_window = []
+
+nnoremap <Leader>ff <Cmd>Files<CR>
+nnoremap <Leader>fo <Cmd>History<CR>
+nnoremap <Leader>f: <Cmd>Hisotry:<CR>
+nnoremap <Leader>f/ <Cmd>Hisotry/<CR>
+nnoremap <Leader>fb <Cmd>Buffers<CR>
+nnoremap <Leader>fh <Cmd>Helptags<CR>
 
 " lion
 let g:lion_squeeze_spaces = 1
@@ -316,7 +318,6 @@ function! PackInit() abort
     call minpac#add('itchyny/lightline.vim',               {'name': 'lightline'})
     call minpac#add('luochen1990/rainbow')
 
-    call minpac#add('mattn/emmet-vim',                     {'name': 'emmet'})
     call minpac#add('junegunn/fzf.vim',                    {'name': 'fzf'})
     call minpac#add('ackyshake/VimCompletesMe',            {'name': 'vcm'})
 
