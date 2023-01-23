@@ -231,6 +231,9 @@ let g:lightline = {
             \   },
             \ }
 
+" rainbow
+let g:rainbow_active = 1
+
 " fzf
 nnoremap <Leader>f <Cmd>Files<CR>
 nnoremap <Leader>o <Cmd>History<CR>
@@ -286,49 +289,47 @@ endfunction
 " termdebug
 let g:termdebug_wide = 1
 
-" which-key
-nnoremap <silent> <Leader>      :<C-u>WhichKey g:mapleader<CR>
-nnoremap <silent> <LocalLeader> :<C-u>WhichKey g:maplocalleader<CR>
-
 " --------------
 " minpac plugins
 " --------------
-if exists('g:loaded_minpac')
+function! PackInit() abort
+    packadd minpac
+
     call minpac#init()
     call minpac#add('k-takata/minpac',                     {'type': 'opt'})
 
     call minpac#add('jiangmiao/auto-pairs')
     call minpac#add('tpope/vim-commentary',                {'name': 'commentary'})
+    call minpac#add('tommcdo/vim-exchange',                {'name': 'exchange'})
     call minpac#add('machakann/vim-highlightedyank',       {'name': 'highlighted-yank'})
+    call minpac#add('tommcdo/vim-lion',                    {'name': 'lion'})
     call minpac#add('tpope/vim-repeat',                    {'name': 'repeat'})
+    call minpac#add('justinmk/vim-sneak',                  {'name': 'sneak'})
     call minpac#add('tpope/vim-surround',                  {'name': 'surround'})
     call minpac#add('tpope/vim-unimpaired',                {'name': 'unimpaired'})
-    call minpac#add('justinmk/vim-sneak',                  {'name': 'sneak'})
-    call minpac#add('tommcdo/vim-exchange',                {'name': 'exchange'})
-    call minpac#add('tommcdo/vim-lion',                    {'name': 'lion'})
 
-    call minpac#add('tpope/vim-fugitive',                  {'name': 'fugitive'})
     call minpac#add('tpope/vim-eunuch',                    {'name': 'eunuch'})
+    call minpac#add('tpope/vim-fugitive',                  {'name': 'fugitive'})
     call minpac#add('tpope/vim-vinegar',                   {'name': 'vinegar'})
-    call minpac#add('mattn/emmet-vim',                     {'name': 'emmet'})
-    call minpac#add('junegunn/fzf.vim',                    {'name': 'fzf'})
 
     call minpac#add('chrisbra/colorizer',                  {'name': 'colorizer'})
     call minpac#add('itchyny/lightline.vim',               {'name': 'lightline'})
+    call minpac#add('luochen1990/rainbow')
 
+    call minpac#add('mattn/emmet-vim',                     {'name': 'emmet'})
+    call minpac#add('junegunn/fzf.vim',                    {'name': 'fzf'})
     call minpac#add('ackyshake/VimCompletesMe',            {'name': 'vcm'})
-    call minpac#add('liuchengxu/vim-which-key',            {'name': 'which-key'})
 
     call minpac#add('prabirshrestha/vim-lsp',              {'name': 'lsp'})
     call minpac#add('mattn/vim-lsp-settings',              {'name': 'lsp-settings'})
 
     call minpac#add('prabirshrestha/asyncomplete.vim',     {'name': 'asyncomplete'})
     call minpac#add('prabirshrestha/asyncomplete-lsp.vim', {'name': 'asyncomplete-lsp'})
-endif
+endfunction
 
 " Define user commands for updating/cleaning the plugins.
 " Each of them loads minpac, reloads .vimrc to register the
 " information of plugins, then performs the task.
-command! PackUpdate packadd minpac | source $MYVIMRC | call minpac#update('', {'do': 'call minpac#status()'})
-command! PackClean  packadd minpac | source $MYVIMRC | call minpac#clean()
-command! PackStatus packadd minpac | source $MYVIMRC | call minpac#status()
+command! PackUpdate source $MYVIMRC | call PackInit() | call minpac#update()
+command! PackClean  source $MYVIMRC | call PackInit() | call minpac#clean()
+command! PackStatus source $MYVIMRC | call PackInit() | call minpac#status()
