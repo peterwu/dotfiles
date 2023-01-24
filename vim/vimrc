@@ -12,6 +12,7 @@ call mkdir($HOME .. "/.vim/undo", "p")
 " -------
 " options
 " -------
+set background=light
 set completeopt=menu,menuone,noinsert,noselect
 set cursorline
 set expandtab
@@ -46,7 +47,6 @@ set undofile
 set viewoptions=cursor,folds
 set viminfo=%,<800,'10,/50,:100,h,f0,n$HOME/.vim/cache/viminfo
 
-set background=light
 colorscheme lunaperche
 
 " ------------
@@ -235,6 +235,7 @@ let g:lightline = {
 let g:rainbow_active = 1
 
 " fzf
+let g:fzf_layout = { 'down': '40%' }
 let g:fzf_preview_window = []
 
 nnoremap <Leader>ff <Cmd>Files<CR>
