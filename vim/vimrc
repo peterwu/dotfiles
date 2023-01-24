@@ -46,8 +46,8 @@ set undofile
 set viewoptions=cursor,folds
 set viminfo=%,<800,'10,/50,:100,h,f0,n$HOME/.vim/cache/viminfo
 
-highlight CursorLine   cterm=NONE ctermbg=NONE ctermfg=NONE
-highlight CursorLineNr cterm=NONE ctermbg=NONE ctermfg=NONE
+set background=light
+colorscheme lunaperche
 
 " ------------
 " key mappings
