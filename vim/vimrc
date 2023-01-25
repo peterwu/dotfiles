@@ -79,10 +79,10 @@ imap <Left>  <Nop>
 imap <Right> <Nop>
 
 " swap j/k <-> gj/gk
-nnoremap <expr> j (v:count? 'j' : 'gj')
-nnoremap <expr> k (v:count? 'k' : 'gk')
-vnoremap <expr> j (v:count? 'j' : 'gj')
-vnoremap <expr> k (v:count? 'k' : 'gk')
+nnoremap <expr> j (v:count ? 'j' : 'gj')
+nnoremap <expr> k (v:count ? 'k' : 'gk')
+vnoremap <expr> j (v:count ? 'j' : 'gj')
+vnoremap <expr> k (v:count ? 'k' : 'gk')
 
 " copy to clipboard
 nnoremap Y yg_
@@ -105,13 +105,10 @@ elseif executable('/usr/bin/xsel')
         let cb_save  = &clipboard
         let reg_save = getreg(reg)
         let reg_type = getregtype(reg)
-        let type = a:type
-        if a:type == "char"
+        if a:type ==# "char"
             silent execute 'normal! v`[o`]"'.reg.'y'
-            let type = 'v'
-        elseif a:type == "line"
+        elseif a:type ==# "line"
             silent execute 'normal! `[V`]"'.reg.'y'
-            let type = 'V'
         elseif a:type ==# "v" || a:type ==# "V" || a:type ==# "\<C-V>" || a:type == "block"
             let &selection = sel_save
             let ve = &virtualedit
@@ -121,7 +118,6 @@ elseif executable('/usr/bin/xsel')
             silent execute 'normal! gv"'.reg.'y'
             let &virtualedit = ve
         elseif a:type =~ '^\d\+$'
-            let type = 'v'
             silent execute 'normal! ^v'.a:type.'$h"'.reg.'y'
             if mode() ==# 'v'
                 normal! v
@@ -168,26 +164,90 @@ nnoremap <silent> <Leader>tV <Cmd>botright vertical terminal<CR>
 " initialization
 " --------------
 augroup AutoSaveFolds | autocmd!
-    autocmd BufWinLeave,BufLeave,BufWritePost ?* nested silent! mkview!
+    autocmd BufWinLeave,BufLeave,BufWritePost ?* ++nested silent! mkview!
     autocmd BufWinEnter ?* silent! loadview
 augroup END
 
 augroup AutoSetList | autocmd!
-  autocmd InsertEnter * set list
-  autocmd InsertLeave * set nolist
+    autocmd InsertEnter * set list
+    autocmd InsertLeave * set nolist
 augroup END
 
 augroup NoNumberForOldTerm | autocmd!
-  autocmd TerminalWinOpen * setlocal nonumber norelativenumber
+    autocmd TerminalWinOpen * setlocal nonumber norelativenumber
 augroup END
 
 augroup NoTrailingWhitespaces | autocmd!
-  autocmd BufWritePre * :%s/\s\+$//e
+    autocmd BufWritePre * :%s/\s\+$//e
 augroup END
 
 " ---------------
 " plugin settings
 " ---------------
+" fzf
+let g:fzf_layout = { 'down': '40%' }
+let g:fzf_preview_window = []
+
+nnoremap <Leader>ff <Cmd>Files<CR>
+nnoremap <Leader>fo <Cmd>History<CR>
+nnoremap <Leader>f: <Cmd>Hisotry:<CR>
+nnoremap <Leader>f/ <Cmd>Hisotry/<CR>
+nnoremap <Leader>fb <Cmd>Buffers<CR>
+nnoremap <Leader>fh <Cmd>Helptags<CR>
+
+" lightline
+let g:lightline = {
+            \   'colorscheme': 'solarized',
+            \   'active': {
+            \     'left': [ [ 'mode', 'paste' ],
+            \               [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
+            \   },
+            \   'component_function': {
+            \     'gitbranch': 'FugitiveHead'
+            \   },
+            \ }
+
+" lion
+let g:lion_squeeze_spaces = 1
+
+" lsp
+let g:lsp_diagnostics_echo_cursor = 1
+
+augroup LspClangd | autocmd!
+    autocmd User lsp_setup call lsp#register_server({
+                \ 'name': 'clangd',
+                \ 'cmd': {server_info->['clangd']},
+                \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp'],
+                \ })
+augroup END
+
+function! s:OnLspBufferEnabled() abort
+    let b:vcm_tab_complete = "omni"
+    setlocal omnifunc=lsp#complete
+    setlocal signcolumn=yes
+    if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
+
+    call s:SetLspMappings()
+endfunction
+
+augroup LspInstall | autocmd!
+    " call s:OnLspBufferEnabled only for languages that has the server registered.
+    autocmd User lsp_buffer_enabled call s:OnLspBufferEnabled()
+augroup END
+
+function! s:SetLspMappings()
+    nmap <buffer> gd <plug>(lsp-definition)
+    nmap <buffer> gr <plug>(lsp-references)
+    nmap <buffer> gi <plug>(lsp-implementation)
+    nmap <buffer> gt <plug>(lsp-type-definition)
+    nmap <buffer> gR <plug>(lsp-rename)
+    nmap <buffer> [g <plug>(lsp-previous-diagnostic)
+    nmap <buffer> ]g <plug>(lsp-next-diagnostic)
+    nmap <buffer> K <plug>(lsp-hover)
+
+    " refer to doc to add more commands
+endfunction
+
 " netrw
 let g:netrw_dirhistmax   = 0
 let g:netrw_liststyle    = 3
@@ -208,6 +268,9 @@ function! s:NetrwMapping()
     nmap <buffer> <silent> <nowait> <LocalLeader>cd <Cmd>execute "cd ".b:netrw_curdir<CR>:pwd<CR>
 endfunction
 
+" rainbow
+let g:rainbow_active = 1
+
 " sneak
 let g:sneak#label = 1
 
@@ -219,75 +282,8 @@ map F <Plug>Sneak_F
 map t <Plug>Sneak_t
 map T <Plug>Sneak_T
 
-" lightline
-let g:lightline = {
-            \   'colorscheme': 'solarized',
-            \   'active': {
-            \     'left': [ [ 'mode', 'paste' ],
-            \               [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
-            \   },
-            \   'component_function': {
-            \     'gitbranch': 'FugitiveHead'
-            \   },
-            \ }
-
-" rainbow
-let g:rainbow_active = 1
-
-" fzf
-let g:fzf_layout = { 'down': '40%' }
-let g:fzf_preview_window = []
-
-nnoremap <Leader>ff <Cmd>Files<CR>
-nnoremap <Leader>fo <Cmd>History<CR>
-nnoremap <Leader>f: <Cmd>Hisotry:<CR>
-nnoremap <Leader>f/ <Cmd>Hisotry/<CR>
-nnoremap <Leader>fb <Cmd>Buffers<CR>
-nnoremap <Leader>fh <Cmd>Helptags<CR>
-
-" lion
-let g:lion_squeeze_spaces = 1
-
 " vinegar
 noremap - k^
-
-" lsp
-let g:lsp_diagnostics_echo_cursor = 1
-
-augroup lsp_clangd | autocmd!
-    autocmd User lsp_setup call lsp#register_server({
-                \ 'name': 'clangd',
-                \ 'cmd': {server_info->['clangd']},
-                \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp'],
-                \ })
-augroup END
-
-function! s:on_lsp_buffer_enabled() abort
-    let b:vcm_tab_complete = "omni"
-    setlocal omnifunc=lsp#complete
-    setlocal signcolumn=yes
-    if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
-
-    call s:lsp_mappings()
-endfunction
-
-augroup lsp_install | autocmd!
-    " call s:on_lsp_buffer_enabled only for languages that has the server registered.
-    autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
-augroup END
-
-function! s:lsp_mappings()
-    nmap <buffer> gd <plug>(lsp-definition)
-    nmap <buffer> gr <plug>(lsp-references)
-    nmap <buffer> gi <plug>(lsp-implementation)
-    nmap <buffer> gt <plug>(lsp-type-definition)
-    nmap <buffer> gR <plug>(lsp-rename)
-    nmap <buffer> [g <plug>(lsp-previous-diagnostic)
-    nmap <buffer> ]g <plug>(lsp-next-diagnostic)
-    nmap <buffer> K <plug>(lsp-hover)
-
-    " refer to doc to add more commands
-endfunction
 
 " termdebug
 let g:termdebug_wide = 1
