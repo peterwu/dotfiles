@@ -216,11 +216,16 @@ g:lion_squeeze_spaces = 1
 g:lsp_diagnostics_echo_cursor = 1
 
 augroup LspClangd | autocmd!
-    autocmd User lsp_setup lsp#register_server({
+    autocmd User lsp_setup call lsp#register_server({
                 \ name: 'clangd',
                 \ cmd: (server_info) => 'clangd',
                 \ allowlist: [ 'c', 'cpp', 'objc', 'objcpp' ]
                 \ })
+augroup END
+
+augroup LspInstall | autocmd!
+    # call OnLspBufferEnabled only for languages that has the server registered.
+    autocmd User lsp_buffer_enabled call OnLspBufferEnabled()
 augroup END
 
 def OnLspBufferEnabled()
@@ -232,11 +237,6 @@ def OnLspBufferEnabled()
     SetLspMappings()
 enddef
 
-augroup LspInstall | autocmd!
-    # call OnLspBufferEnabled only for languages that has the server registered.
-    autocmd User lsp_buffer_enabled OnLspBufferEnabled()
-augroup END
-
 def SetLspMappings()
     nmap <buffer> gd <plug>(lsp-definition)
     nmap <buffer> gr <plug>(lsp-references)
@@ -247,7 +247,7 @@ def SetLspMappings()
     nmap <buffer> ]g <plug>(lsp-next-diagnostic)
     nmap <buffer> K <plug>(lsp-hover)
 
-    " refer to doc to add more commands
+    # refer to doc to add more commands
 enddef
 
 # netrw
@@ -330,6 +330,6 @@ enddef
 # Define user commands for updating/cleaning the plugins.
 # Each of them loads minpac, reloads .vimrc to register the
 # information of plugins, then performs the task.
-command! PackUpdate source $MYVIMRC | call <SID>PackInit() | minpac#update()
-command! PackClean  source $MYVIMRC | call <SID>PackInit() | minpac#clean()
-command! PackStatus source $MYVIMRC | call <SID>PackInit() | minpac#status()
+command! PackUpdate source $MYVIMRC | call <SID>PackInit() | call minpac#update()
+command! PackClean  source $MYVIMRC | call <SID>PackInit() | call minpac#clean()
+command! PackStatus source $MYVIMRC | call <SID>PackInit() | call minpac#status()

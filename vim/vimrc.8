@@ -1,0 +1,333 @@
+" --------
+" defaults
+" --------
+source $VIMRUNTIME/defaults.vim
+
+" ---------
+" work dirs
+" ---------
+call mkdir($HOME .. "/.vim/cache", "p")
+call mkdir($HOME .. "/.vim/undo",  "p")
+
+" -------
+" options
+" -------
+set background=light
+set completeopt=menu,menuone,noinsert,noselect
+set cursorline
+set expandtab
+set hidden
+set hlsearch
+set ignorecase
+set laststatus=2
+set lazyredraw
+set listchars=trail:·,tab:»·
+set mouse=a
+set nolist
+set noshowmode
+set notitle
+set number
+set path+=**
+set pumheight=7
+set relativenumber
+set sessionoptions=folds
+set shiftwidth=4
+set shortmess+=Ic
+set showmatch
+set smartcase
+set smartindent
+set softtabstop=0
+set splitbelow
+set splitright
+set tabstop=8
+set termguicolors
+set timeoutlen=777
+set undodir=$HOME/.vim/undo
+set undofile
+set viewoptions=cursor,folds
+set viminfo=%,<800,'10,/50,:100,h,f0,n$HOME/.vim/cache/viminfo
+
+colorscheme lunaperche
+
+" ------------
+" key mappings
+" ------------
+" leaders
+let g:mapleader      = " "
+let g:maplocalleader = ","
+
+" vimrc
+nnoremap <silent> <Leader>cd <Cmd>cd     %:p:h<CR><Cmd>pwd<CR>
+nnoremap <silent> <Leader>ev <Cmd>edit   $MYVIMRC<CR>
+nnoremap <silent> <Leader>sv <Cmd>source $MYVIMRC<CR>
+
+" minpac
+nnoremap <silent> <Leader>qu <Cmd>PackUpdate<CR>
+nnoremap <silent> <Leader>qc <Cmd>PackClean<CR>
+nnoremap <silent> <Leader>qs <Cmd>PackStatus<CR>
+
+" disable arrow keys in normal mode
+map <Up>    <Nop>
+map <Down>  <Nop>
+map <Left>  <Nop>
+map <Right> <Nop>
+
+" disable arrow keys in insert mode
+imap <Up>    <Nop>
+imap <Down>  <Nop>
+imap <Left>  <Nop>
+imap <Right> <Nop>
+
+" swap j/k <-> gj/gk
+nnoremap <expr> j (v:count ? 'j' : 'gj')
+nnoremap <expr> k (v:count ? 'k' : 'gk')
+vnoremap <expr> j (v:count ? 'j' : 'gj')
+vnoremap <expr> k (v:count ? 'k' : 'gk')
+
+" copy to clipboard
+nnoremap Y yg_
+
+if has('clipboard')
+    vnoremap <silent> <Leader>y  "+y
+    nnoremap <silent> <Leader>y  "+y
+    nnoremap <silent> <Leader>Y  "+yg_
+    nnoremap <silent> <Leader>yy "+y_
+elseif executable('/usr/bin/xsel')
+    vnoremap <silent> <Leader>y  <Cmd>set opfunc=<SID>CopyToClipboard<CR>g@
+    nnoremap <silent> <Leader>y  <Cmd>set opfunc=<SID>CopyToClipboard<CR>g@
+    nnoremap <silent> <Leader>Y  <Cmd>set opfunc=<SID>CopyToClipboard<CR>g@g_
+    nnoremap <silent> <Leader>yy <Cmd>set opfunc=<SID>CopyToClipboard<CR>g@_
+
+    function! s:CopyToClipboard(type, ...) abort
+        let reg = '"'
+        let sel_save = &selection
+        let &selection = "inclusive"
+        let cb_save  = &clipboard
+        let reg_save = getreg(reg)
+        let reg_type = getregtype(reg)
+        if a:type ==# "char"
+            silent execute 'normal! v`[o`]"'.reg.'y'
+        elseif a:type ==# "line"
+            silent execute 'normal! `[V`]"'.reg.'y'
+        elseif a:type ==# "v" || a:type ==# "V" || a:type ==# "\<C-V>" || a:type ==# "block"
+            let &selection = sel_save
+            let ve = &virtualedit
+            if !(a:0 && a:1)
+                set virtualedit=none
+            endif
+            silent execute 'normal! gv"'.reg.'y'
+            let &virtualedit = ve
+        elseif a:type =~ '^\d\+$'
+            silent execute 'normal! ^v'.a:type.'$h"'.reg.'y'
+            if mode() ==# 'v'
+                normal! v
+            endif
+        else
+            let &selection = sel_save
+            let &clipboard = cb_save
+        endif
+
+        call system('/usr/bin/xsel -i -b -l /dev/null', getreg(reg))
+
+        call setreg(reg, reg_save, reg_type)
+        let &selection = sel_save
+        let &clipboard = cb_save
+    endfunction
+endif
+
+" paste from clipboard
+if has('clipboard')
+    nnoremap <silent> <Leader>p "+p
+    nnoremap <silent> <Leader>P "+P
+    vnoremap <silent> <Leader>p "+p
+    vnoremap <silent> <Leader>P "+P
+elseif executable('/usr/bin/xsel')
+    nnoremap <silent> <Leader>p <Cmd>let @"=system('xsel -o -b -l /dev/null')<CR>""p
+    nnoremap <silent> <Leader>P <Cmd>let @"=system('xsel -o -b -l /dev/null')<CR>""P
+    vnoremap <silent> <Leader>p <Cmd>let @"=system('xsel -o -b -l /dev/null')<CR>""p
+    vnoremap <silent> <Leader>P <Cmd>let @"=system('xsel -o -b -l /dev/null')<CR>""P
+endif
+
+" use <C-L> to clear the highlighting of :set hlsearch.
+if maparg('<C-L>', 'n') ==# ''
+    nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
+endif
+
+" terminal
+tnoremap <Esc> <C-\><C-N>
+nnoremap <silent> <Leader>tt <Cmd>belowright terminal<CR>
+nnoremap <silent> <Leader>tv <Cmd>belowright vertical terminal<CR>
+nnoremap <silent> <Leader>tT <Cmd>botright terminal<CR>
+nnoremap <silent> <Leader>tV <Cmd>botright vertical terminal<CR>
+
+" --------------
+" initialization
+" --------------
+augroup AutoSaveFolds | autocmd!
+    autocmd BufWinLeave,BufLeave,BufWritePost ?* ++nested silent! mkview!
+    autocmd BufWinEnter ?* silent! loadview
+augroup END
+
+augroup AutoSetList | autocmd!
+    autocmd InsertEnter * set list
+    autocmd InsertLeave * set nolist
+augroup END
+
+augroup NoNumberForOldTerm | autocmd!
+    autocmd TerminalWinOpen * setlocal nonumber norelativenumber
+augroup END
+
+augroup NoTrailingWhitespaces | autocmd!
+    autocmd BufWritePre * :%s/\s\+$//e
+augroup END
+
+" ---------------
+" plugin settings
+" ---------------
+" fzf
+let g:fzf_layout = { 'down': '40%' }
+let g:fzf_preview_window = []
+
+nnoremap <Leader>ff <Cmd>Files<CR>
+nnoremap <Leader>fo <Cmd>History<CR>
+nnoremap <Leader>f: <Cmd>Hisotry:<CR>
+nnoremap <Leader>f/ <Cmd>Hisotry/<CR>
+nnoremap <Leader>fb <Cmd>Buffers<CR>
+nnoremap <Leader>fh <Cmd>Helptags<CR>
+
+" lightline
+let g:lightline = {
+            \   'colorscheme': 'solarized',
+            \   'active': {
+            \     'left': [ [ 'mode', 'paste' ],
+            \               [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
+            \   },
+            \   'component_function': {
+            \     'gitbranch': 'FugitiveHead'
+            \   },
+            \ }
+
+" lion
+let g:lion_squeeze_spaces = 1
+
+" lsp
+let g:lsp_diagnostics_echo_cursor = 1
+
+augroup LspClangd | autocmd!
+    autocmd User lsp_setup call lsp#register_server({
+                \ 'name': 'clangd',
+                \ 'cmd': { server_info->[ 'clangd' ] },
+                \ 'allowlist': [ 'c', 'cpp', 'objc', 'objcpp' ],
+                \ })
+augroup END
+
+augroup LspInstall | autocmd!
+    " call s:OnLspBufferEnabled only for languages that has the server registered.
+    autocmd User lsp_buffer_enabled call s:OnLspBufferEnabled()
+augroup END
+
+function! s:OnLspBufferEnabled() abort
+    let b:vcm_tab_complete = "omni"
+    setlocal omnifunc=lsp#complete
+    setlocal signcolumn=yes
+    if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
+
+    call s:SetLspMappings()
+endfunction
+
+function! s:SetLspMappings()
+    nmap <buffer> gd <plug>(lsp-definition)
+    nmap <buffer> gr <plug>(lsp-references)
+    nmap <buffer> gi <plug>(lsp-implementation)
+    nmap <buffer> gt <plug>(lsp-type-definition)
+    nmap <buffer> gR <plug>(lsp-rename)
+    nmap <buffer> [g <plug>(lsp-previous-diagnostic)
+    nmap <buffer> ]g <plug>(lsp-next-diagnostic)
+    nmap <buffer> K <plug>(lsp-hover)
+
+    " refer to doc to add more commands
+endfunction
+
+" netrw
+let g:netrw_dirhistmax   = 0
+let g:netrw_liststyle    = 3
+let g:netrw_banner       = 0
+let g:netrw_browse_split = 4
+let g:netrw_winsize      = 29
+let g:netrw_list_hide    = '\(^\|\s\s\)\zs\.\S\+'
+let g:netrw_keepdir      = 0
+
+nmap <silent> <F9> <Cmd>Lexplore<CR>
+
+" remap cd to be global
+augroup NetrwGroup | autocmd!
+    autocmd filetype netrw call s:NetrwMapping()
+augroup END
+
+function! s:NetrwMapping()
+    nmap <buffer> <silent> <nowait> <LocalLeader>cd <Cmd>execute "cd ".b:netrw_curdir<CR>:pwd<CR>
+endfunction
+
+" rainbow
+let g:rainbow_active = 1
+
+" sneak
+let g:sneak#label = 1
+
+map <Leader>s <Plug>Sneak_s
+map <Leader>S <Plug>Sneak_S
+
+map f <Plug>Sneak_f
+map F <Plug>Sneak_F
+map t <Plug>Sneak_t
+map T <Plug>Sneak_T
+
+" vinegar
+noremap - k^
+
+" termdebug
+let g:termdebug_wide = 1
+
+" --------------
+" minpac plugins
+" --------------
+function! s:PackInit() abort
+    packadd minpac
+
+    call minpac#init()
+    call minpac#add('k-takata/minpac',                     {'type': 'opt'})
+
+    call minpac#add('jiangmiao/auto-pairs')
+    call minpac#add('tpope/vim-commentary',                {'name': 'commentary'})
+    call minpac#add('tommcdo/vim-exchange',                {'name': 'exchange'})
+    call minpac#add('machakann/vim-highlightedyank',       {'name': 'highlighted-yank'})
+    call minpac#add('tommcdo/vim-lion',                    {'name': 'lion'})
+    call minpac#add('tpope/vim-repeat',                    {'name': 'repeat'})
+    call minpac#add('justinmk/vim-sneak',                  {'name': 'sneak'})
+    call minpac#add('tpope/vim-surround',                  {'name': 'surround'})
+    call minpac#add('tpope/vim-unimpaired',                {'name': 'unimpaired'})
+
+    call minpac#add('tpope/vim-eunuch',                    {'name': 'eunuch'})
+    call minpac#add('tpope/vim-fugitive',                  {'name': 'fugitive'})
+    call minpac#add('tpope/vim-vinegar',                   {'name': 'vinegar'})
+
+    call minpac#add('chrisbra/colorizer',                  {'name': 'colorizer'})
+    call minpac#add('itchyny/lightline.vim',               {'name': 'lightline'})
+    call minpac#add('luochen1990/rainbow')
+
+    call minpac#add('junegunn/fzf.vim',                    {'name': 'fzf'})
+    call minpac#add('ackyshake/VimCompletesMe',            {'name': 'vcm'})
+
+    call minpac#add('prabirshrestha/vim-lsp',              {'name': 'lsp'})
+    call minpac#add('mattn/vim-lsp-settings',              {'name': 'lsp-settings'})
+
+    call minpac#add('prabirshrestha/asyncomplete.vim',     {'name': 'asyncomplete'})
+    call minpac#add('prabirshrestha/asyncomplete-lsp.vim', {'name': 'asyncomplete-lsp'})
+endfunction
+
+" Define user commands for updating/cleaning the plugins.
+" Each of them loads minpac, reloads .vimrc to register the
+" information of plugins, then performs the task.
+command! PackUpdate source $MYVIMRC | call <SID>PackInit() | call minpac#update()
+command! PackClean  source $MYVIMRC | call <SID>PackInit() | call minpac#clean()
+command! PackStatus source $MYVIMRC | call <SID>PackInit() | call minpac#status()
