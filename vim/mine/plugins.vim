@@ -12,18 +12,6 @@ nnoremap <Leader>f/ <Cmd>Hisotry/<CR>
 nnoremap <Leader>fb <Cmd>Buffers<CR>
 nnoremap <Leader>fh <Cmd>Helptags<CR>
 
-" lightline
-let g:lightline = {
-            \   'colorscheme': 'solarized',
-            \   'active': {
-            \     'left': [ [ 'mode', 'paste' ],
-            \               [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
-            \   },
-            \   'component_function': {
-            \     'gitbranch': 'FugitiveHead'
-            \   },
-            \ }
-
 " lion
 let g:lion_squeeze_spaces = 1
 
@@ -32,9 +20,9 @@ let g:lsp_diagnostics_echo_cursor = 1
 
 augroup LspClangd | autocmd!
     autocmd User lsp_setup call lsp#register_server({
-                \ 'name': 'clangd',
-                \ 'cmd': { server_info->[ 'clangd' ] },
-                \ 'allowlist': [ 'c', 'cpp', 'objc', 'objcpp' ],
+                \       'name': 'clangd',
+                \       'cmd': { server_info->[ 'clangd' ] },
+                \       'allowlist': [ 'c', 'cpp', 'objc', 'objcpp' ],
                 \ })
 augroup END
 
@@ -129,7 +117,6 @@ function! s:PackInit() abort
 
     call minpac#add('chrisbra/colorizer',                  {'name': 'colorizer'})
     call minpac#add('junegunn/fzf.vim',                    {'name': 'fzf'})
-    " call minpac#add('itchyny/lightline.vim',               {'name': 'lightline'})
     call minpac#add('luochen1990/rainbow')
 
     call minpac#add('prabirshrestha/vim-lsp',              {'name': 'lsp'})

@@ -143,7 +143,6 @@ function! s:GetVimMode() abort
 
     const l:mode = mode()
     call s:Highlight('StatusVimMode', s:palette.bg_main, l:modes[l:mode].color, 'bold')
-
     return l:modes[l:mode].abbrev
 endfunction
 
@@ -151,7 +150,7 @@ function! s:GetGitBranch() abort
     const l:git_icon = ''
     const l:git_dir = expand('%:p:h:S')
     const l:git_cmd = 'git -C ' .. git_dir .. ' status --branch --porcelain=2'
-    :silent! let l:git_cmd_result = system(l:git_cmd)->split('\n')
+    silent! let l:git_cmd_result = system(l:git_cmd)->split('\n')
 
     " Line                                     Notes
     " ------------------------------------------------------------
@@ -163,7 +162,7 @@ function! s:GetGitBranch() abort
     " ------------------------------------------------------------
 
     if v:shell_error
-        call s:Highlight('StatusGitBranch', s:palette.fg_main, s:palette.bg_main, 'NONE')
+        call s:Highlight('StatusGitBranch', s:palette.fg_main, s:palette.bg_blue_nuanced, 'NONE')
         return ''
     else
         let l:git_branch = l:git_cmd_result->filter('v:val =~ "^# branch.head"')[0]->split()[2]
@@ -186,49 +185,44 @@ function! s:GetFileSize() abort
     let l:file = expand('%:p')
     let l:bytes = 0
 
-    if len(l:file) <= 0
+    if l:file->len() <= 0
         " it's a buffer
         let l:bytes = wordcount().bytes
     else
-        let l:bytes = getfsize(l:file)
+        let l:bytes = l:file->getfsize()
     endif
 
     if l:bytes == 0 || l:bytes == -1 || l:bytes == -2
         return ''
     end
 
-    let l:_1K = 1024
-    let l:_1M = 1024 * l:_1K
-    let l:_1G = 1024 * l:_1M
-    let l:_1T = 1024 * l:_1G
-    let l:_1P = 1024 * l:_1T
-    let l:_1E = 1024 * l:_1P
+    const l:_1K = 1024
+    const l:_1M = 1024 * l:_1K
+    const l:_1G = 1024 * l:_1M
+    const l:_1T = 1024 * l:_1G
+    const l:_1P = 1024 * l:_1T
+    const l:_1E = 1024 * l:_1P
 
-    let l:size=''
     if l:bytes < l:_1K
-        let l:size = printf('%dB',   l:bytes)
+        return printf('%dB',   l:bytes)
     elseif l:bytes < l:_1M
-        let l:size = printf('%.1fK', l:bytes/l:_1K)
+        return printf('%.1fK', l:bytes/l:_1K)
     elseif l:bytes < l:_1G
-        let l:size = printf('%.1fM', l:bytes/l:_1M)
+        return printf('%.1fM', l:bytes/l:_1M)
     elseif l:bytes < l:_1T
-        let l:size = printf('%.1fG', l:bytes/l:_1G)
+        return printf('%.1fG', l:bytes/l:_1G)
     elseif l:bytes < l:_1P
-        let l:size = printf('%.1fT', l:bytes/l:_1T)
+        return printf('%.1fT', l:bytes/l:_1T)
     elseif l:bytes < l:_1E
-        let l:size = printf('%.1fP', l:bytes/l:_1P)
+        return printf('%.1fP', l:bytes/l:_1P)
     else " math.maxinteger = 2^63 -1
-        let l:size = printf('%.1fE', l:bytes/l:_1E)
+        return printf('%.1fE', l:bytes/l:_1E)
     end
-
-    return l:size
 endfunction
 
 function! BuildStatusLine() abort
-    const l:focus = g:statusline_winid == win_getid()
-
-    if !l:focus
-        let l:statusline = join ([
+    if g:statusline_winid != win_getid()
+        return join ([
                     \  '%#StatusFileName#',
                     \  ' ',
                     \  '%<%t',
@@ -237,44 +231,42 @@ function! BuildStatusLine() abort
                     \  '%P'
                     \  ], '')
     else
-        let l:statusline = join ([
-                    \  '%#StatusVimMode#',
-                    \  ' ',
-                    \  s:GetVimMode(),
-                    \  ' ',
-                    \  '%#StatusBlank#',
-                    \  ' ',
-                    \  '%#StatusFileName#',
-                    \  '%<%F',
-                    \  '%#StatusBlank#',
-                    \  ' ',
-                    \  '%#StatusFileState#',
-                    \  '%m%r%h%w%q',
-                    \  '%#StatusBlank#',
-                    \  ' ',
-                    \  '%#StatusGitBranch#',
-                    \  s:GetGitBranch(),
-                    \  '%#StatusBlank#',
-                    \  '%=',
-                    \  '%#StatusFileSize#',
-                    \  s:GetFileSize(),
-                    \  '%#StatusBlank#',
-                    \  ' ',
-                    \  '%#StatusFileFormat#',
-                    \  ' ',
-                    \  '%{&fileformat}',
-                    \  ' | ',
-                    \  '%#StatusFileEncode#',
-                    \  '%{&fileencoding ? &fileencoding : &encoding}',
-                    \  ' ',
-                    \  '%#StatusBlank#',
-                    \  ' ',
-                    \  '%#StatusPercent#',
-                    \  '%P'
-                    \  ], '')
+        return join ([
+                    \    '%#StatusVimMode#',
+                    \    ' ',
+                    \    s:GetVimMode(),
+                    \    ' ',
+                    \    '%#StatusBlank#',
+                    \    ' ',
+                    \    '%#StatusFileName#',
+                    \    '%<%F',
+                    \    '%#StatusBlank#',
+                    \    ' ',
+                    \    '%#StatusFileState#',
+                    \    '%m%r%h%w%q',
+                    \    '%#StatusBlank#',
+                    \    ' ',
+                    \    '%#StatusGitBranch#',
+                    \    s:GetGitBranch(),
+                    \    '%#StatusBlank#',
+                    \    '%=',
+                    \    '%#StatusFileSize#',
+                    \    s:GetFileSize(),
+                    \    '%#StatusBlank#',
+                    \    ' ',
+                    \    '%#StatusFileFormat#',
+                    \    ' ',
+                    \    '%{&fileformat}',
+                    \    ' | ',
+                    \    '%#StatusFileEncode#',
+                    \    '%{&fileencoding ? &fileencoding : &encoding}',
+                    \    ' ',
+                    \    '%#StatusBlank#',
+                    \    ' ',
+                    \    '%#StatusPercent#',
+                    \    '%P'
+                    \ ], '')
     endif
-
-    return l:statusline
 endfunction
 
 call s:SetHighlights()

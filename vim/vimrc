@@ -1,5 +1,9 @@
 " let the fun begin
-let $VIM_HOME = $HOME .. '/.vim'
+if has('win32')
+    let $VIM_HOME = $HOME .. '/vimfiles'
+else
+    let $VIM_HOME = $HOME .. '/.vim'
+endif
 
 source $VIM_HOME/mine/options.vim
 source $VIM_HOME/mine/keybinds.vim
