@@ -22,51 +22,37 @@ HISTFILESIZE=20000
 # User specific aliases and functions
 set -o vi
 
-if pgrep --exact emacs > /dev/null; then
-    alias vi="emacsclient -nw"
-    alias e="emacsclient -nw"
-    alias emacs="emacs --maximized"
-    alias magit="emacsclient -nw --suppress-output --eval '(magit-status)'"
-
-    man() {
-        local m="$@"
-        /usr/bin/man ${m} > /dev/null
-        [[ $? -eq 0 ]] && /usr/bin/emacsclient -nw --quiet --suppress-output --eval "(man \"${m}\")"
-    }
-
-    export VISUAL="emacsclient -nw"
-elif [[ -x $(command -v vim) ]]; then
+if [[ -x $(command -v vim) ]]; then
+    # Default editor
     alias vi="vim"
-    export MANPAGER="vim '+set laststatus=0' -M +MANPAGER --not-a-term -"
+    alias VI="sudo --edit"
+
     export VISUAL="vim"
+    export EDITOR="$VISUAL"
+    export MANPAGER="vim '+setlocal laststatus=0' -M +MANPAGER --not-a-term -"
 else
     man() {
         local cmd=(
-            env
-            LESS_TERMCAP_mb=$(tput bold; tput setaf 6)
-            LESS_TERMCAP_md=$(tput bold; tput setaf 6)
-            LESS_TERMCAP_me=$(tput sgr0)
-            LESS_TERMCAP_se=$(tput rmso; tput sgr0)
-            LESS_TERMCAP_ue=$(tput rmul; tput sgr0)
-            LESS_TERMCAP_us=$(tput smul; tput bold; tput setaf 4)
-            LESS_TERMCAP_mr=$(tput rev)
-            LESS_TERMCAP_mh=$(tput dim)
-            LESS_TERMCAP_ZN=$(tput ssubm)
-            LESS_TERMCAP_ZV=$(tput rsubm)
-            LESS_TERMCAP_ZO=$(tput ssupm)
-            LESS_TERMCAP_ZW=$(tput rsupm)
-            man "$@"
-        )
+        env
+        LESS_TERMCAP_mb=$(tput bold; tput setaf 6)
+        LESS_TERMCAP_md=$(tput bold; tput setaf 6)
+        LESS_TERMCAP_me=$(tput sgr0)
+        LESS_TERMCAP_se=$(tput rmso; tput sgr0)
+        LESS_TERMCAP_ue=$(tput rmul; tput sgr0)
+        LESS_TERMCAP_us=$(tput smul; tput bold; tput setaf 4)
+        LESS_TERMCAP_mr=$(tput rev)
+        LESS_TERMCAP_mh=$(tput dim)
+        LESS_TERMCAP_ZN=$(tput ssubm)
+        LESS_TERMCAP_ZV=$(tput rsubm)
+        LESS_TERMCAP_ZO=$(tput ssupm)
+        LESS_TERMCAP_ZW=$(tput rsupm)
+        man "$@"
+    )
 
-        "${cmd[@]}"
-    }
+    "${cmd[@]}"
+}
 fi
 
-# Default editor
-export EDITOR="$VISUAL"
-alias VI="sudo --edit"
-alias E="sudo --edit"
-alias sudo="sudo "
 
 [[ "$TERM" == "xterm-kitty" ]] && alias ssh="kitty +kitten ssh"
 
@@ -86,11 +72,12 @@ alias dir="dir --color=auto"
 alias vdir="vdir --color=auto"
 
 alias grep="grep --color=auto"
-alias fgrep="fgrep --color=auto"
 alias egrep="egrep --color=auto"
+alias fgrep="fgrep --color=auto"
 
 alias less="LESSHISTFILE=- less -FXR --mouse --wheel-lines=3"
 alias rsync="rsync --progress"
+alias sudo="sudo "
 
 # Customize bash prompt
 show_bash_prompt() {
@@ -135,19 +122,14 @@ show_bash_prompt() {
     prompt+=" "
 
     # show git branch and its status if in a git tree
-    local git_status=$(git status --branch --porcelain 2> /dev/null)
-    IFS=$'\n' git_status=($git_status)
+    local git_result=$(git status --branch --porcelain=2 2> /dev/null)
 
     if [[ $? -eq 0 ]]; then
-        local git_branch="${git_status[0]}"
-        local git_branch_regex="^##\s((\w|\/|-)*).*$"
-
-        if  [[ ${git_branch} =~ ${git_branch_regex} ]]; then
-            git_branch="${BASH_REMATCH[1]}"
-        fi
+        local git_branch=$(printf "%s\n" "${git_result[@]}" | grep '^# branch.head' | cut -d' ' -f3)
+        local git_status=$(printf "%s\n" "${git_result[@]}" | grep -v '^# ')
 
         if [[ -n "${git_branch}" ]]; then
-            if [[ ${#git_status[@]} -gt 1 ]]; then
+            if [[ -n "${git_status}" ]]; then
                 # modified -> RED
                 prompt+="\001"
                 prompt+=$(tput sgr0; tput setaf 1)
