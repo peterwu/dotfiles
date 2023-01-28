@@ -5,8 +5,8 @@ else
     let $VIM_HOME = $HOME .. '/.vim'
 endif
 
-source $VIM_HOME/mine/options.vim
-source $VIM_HOME/mine/keybinds.vim
-source $VIM_HOME/mine/autocmds.vim
-source $VIM_HOME/mine/statusline.vim
-source $VIM_HOME/mine/plugins.vim"
+source $VIM_HOME/vimrc.d/options.vim
+source $VIM_HOME/vimrc.d/keybinds.vim
+source $VIM_HOME/vimrc.d/autocmds.vim
+source $VIM_HOME/vimrc.d/statusline.vim
+source $VIM_HOME/vimrc.d/plugins.vim"
