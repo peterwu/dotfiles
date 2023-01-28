@@ -6,15 +6,9 @@ source $VIMRUNTIME/defaults.vim
 " ---------
 " work dirs
 " ---------
-if has('win32')
-    let $VIM_HOME = $HOME .. '/vimfiles'
-else
-    let $VIM_HOME = $HOME .. '/.vim'
-endif
-
 call mkdir($VIM_HOME .. "/cache", "p")
-call mkdir($VIM_HOME .. "/swap", "p")
-call mkdir($VIM_HOME .. "/undo", "p")
+call mkdir($VIM_HOME .. "/swap",  "p")
+call mkdir($VIM_HOME .. "/undo",  "p")
 
 " -------
 " options
