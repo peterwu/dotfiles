@@ -48,39 +48,42 @@ elseif executable('/usr/bin/xsel')
     nnoremap <silent> <Leader>yy <Cmd>set opfunc=<SID>CopyToClipboard<CR>g@_
 
     function! s:CopyToClipboard(type, ...) abort
-        let reg = '"'
-        let sel_save = &selection
+        const l:reg = '"'
+        const l:sel_save = &selection
         let &selection = "inclusive"
-        let cb_save  = &clipboard
-        let reg_save = getreg(reg)
-        let reg_type = getregtype(reg)
+        const l:cb_save  = &clipboard
+        const l:reg_save = getreg(reg)
+        const l:reg_type = getregtype(reg)
+
         if a:type ==# "char"
-            silent execute 'normal! v`[o`]"'.reg.'y'
+            silent! execute 'normal! v`[o`]"' .. l:reg .. 'y'
         elseif a:type ==# "line"
-            silent execute 'normal! `[V`]"'.reg.'y'
+            silent! execute 'normal! `[V`]"' .. l:reg .. 'y'
         elseif a:type ==# "v" || a:type ==# "V" || a:type ==# "\<C-V>" || a:type ==# "block"
-            let &selection = sel_save
-            let ve = &virtualedit
+            let &selection = l:sel_save
+            const l:ve = &virtualedit
+
             if !(a:0 && a:1)
                 set virtualedit=none
             endif
-            silent execute 'normal! gv"'.reg.'y'
-            let &virtualedit = ve
+
+            silent execute 'normal! gv"' .. l:reg .. 'y'
+            let &virtualedit = l:ve
         elseif a:type =~ '^\d\+$'
-            silent execute 'normal! ^v'.a:type.'$h"'.reg.'y'
+            silent! execute 'normal! ^v' .. a:type .. '$h"' .. l:reg .. 'y'
             if mode() ==# 'v'
                 normal! v
             endif
         else
-            let &selection = sel_save
-            let &clipboard = cb_save
+            let &selection = l:sel_save
+            let &clipboard = l:cb_save
         endif
 
-        call system('/usr/bin/xsel -i -b -l /dev/null', getreg(reg))
+        silent! call system('/usr/bin/xsel -i -b -l /dev/null', getreg(l:reg))
 
-        call setreg(reg, reg_save, reg_type)
-        let &selection = sel_save
-        let &clipboard = cb_save
+        call setreg(l:reg, l:reg_save, l:reg_type)
+        let &selection = l:sel_save
+        let &clipboard = l:cb_save
     endfunction
 endif
 
@@ -91,10 +94,10 @@ if has('clipboard')
     vnoremap <silent> <Leader>p "+p
     vnoremap <silent> <Leader>P "+P
 elseif executable('/usr/bin/xsel')
-    nnoremap <silent> <Leader>p <Cmd>let @"=system('xsel -o -b -l /dev/null')<CR>""p
-    nnoremap <silent> <Leader>P <Cmd>let @"=system('xsel -o -b -l /dev/null')<CR>""P
-    vnoremap <silent> <Leader>p <Cmd>let @"=system('xsel -o -b -l /dev/null')<CR>""p
-    vnoremap <silent> <Leader>P <Cmd>let @"=system('xsel -o -b -l /dev/null')<CR>""P
+    nnoremap <silent> <Leader>p <Cmd>silent! let @"=system('xsel -o -b -l /dev/null')<CR>""p
+    nnoremap <silent> <Leader>P <Cmd>silent! let @"=system('xsel -o -b -l /dev/null')<CR>""P
+    vnoremap <silent> <Leader>p <Cmd>silent! let @"=system('xsel -o -b -l /dev/null')<CR>""p
+    vnoremap <silent> <Leader>P <Cmd>silent! let @"=system('xsel -o -b -l /dev/null')<CR>""P
 endif
 
 " use <C-L> to clear the highlighting of :set hlsearch
