@@ -2,9 +2,15 @@
 source $VIMRUNTIME/defaults.vim
 
 " options
-set number relativenumber
-set smartindent expandtab tabstop=8 shiftwidth=4 softtabstop=0
-set shortmess+=I laststatus=2
+set number
+set relativenumber
+set smartindent
+set expandtab
+set tabstop=8
+set shiftwidth=4
+set softtabstop=0
+set shortmess+=I
+set laststatus=2
 set listchars=trail:·,tab:»·
 
 " disable arrow keys in normal mode
@@ -20,8 +26,8 @@ imap <Left>  <Nop>
 imap <Right> <Nop>
 
 " swap j/k <-> gj/gk
-nnoremap <expr> j (v:count? 'j' : 'gj')
-nnoremap <expr> k (v:count? 'k' : 'gk')
+nnoremap <expr> j (v:count ? 'j' : 'gj')
+nnoremap <expr> k (v:count ? 'k' : 'gk')
 
 " copy to clipboard
 nnoremap Y yg_
@@ -37,44 +43,43 @@ elseif executable('/usr/bin/xsel')
     nnoremap <silent> <Leader>Y  <Cmd>set opfunc=CopyToClipboard<CR>g@g_
     nnoremap <silent> <Leader>yy <Cmd>set opfunc=CopyToClipboard<CR>g@_
 
-    function! CopyToClipboard(type, ...) abort
-        let reg = '"'
-        let sel_save = &selection
+    function! s:CopyToClipboard(type, ...) abort
+        const l:reg = '"'
+        const l:sel_save = &selection
         let &selection = "inclusive"
-        let cb_save  = &clipboard
-        let reg_save = getreg(reg)
-        let reg_type = getregtype(reg)
-        let type = a:type
-        if a:type == "char"
-            silent execute 'normal! v`[o`]"'.reg.'y'
-            let type = 'v'
-        elseif a:type == "line"
-            silent execute 'normal! `[V`]"'.reg.'y'
-            let type = 'V'
-        elseif a:type ==# "v" || a:type ==# "V" || a:type ==# "\<C-V>" || a:type == "block"
-            let &selection = sel_save
-            let ve = &virtualedit
+        const l:cb_save  = &clipboard
+        const l:reg_save = getreg(reg)
+        const l:reg_type = getregtype(reg)
+
+        if a:type ==# "char"
+            silent! execute 'normal! v`[o`]"' .. l:reg .. 'y'
+        elseif a:type ==# "line"
+            silent! execute 'normal! `[V`]"' .. l:reg .. 'y'
+        elseif a:type ==# "v" || a:type ==# "V" || a:type ==# "\<C-V>" || a:type ==# "block"
+            let &selection = l:sel_save
+            const l:ve = &virtualedit
+
             if !(a:0 && a:1)
-                set virtualedit=
+                set virtualedit=none
             endif
-            silent execute 'normal! gv"'.reg.'y'
-            let &virtualedit = ve
+
+            silent execute 'normal! gv"' .. l:reg .. 'y'
+            let &virtualedit = l:ve
         elseif a:type =~ '^\d\+$'
-            let type = 'v'
-            silent execute 'normal! ^v'.a:type.'$h"'.reg.'y'
+            silent! execute 'normal! ^v' .. a:type .. '$h"' .. l:reg .. 'y'
             if mode() ==# 'v'
                 normal! v
             endif
         else
-            let &selection = sel_save
-            let &clipboard = cb_save
+            let &selection = l:sel_save
+            let &clipboard = l:cb_save
         endif
 
-        call system('/usr/bin/xsel -i -b', getreg(reg))
+        silent! call system('/usr/bin/xsel -i -b -l /dev/null', getreg(l:reg))
 
-        call setreg(reg,reg_save,reg_type)
-        let &selection = sel_save
-        let &clipboard = cb_save
+        call setreg(l:reg, l:reg_save, l:reg_type)
+        let &selection = l:sel_save
+        let &clipboard = l:cb_save
     endfunction
 endif
 
