@@ -150,7 +150,7 @@ function! s:GetGitBranch() abort
     const l:git_icon = ''
     const l:git_dir = expand('%:p:h:S')
     const l:git_cmd = 'git -C ' .. git_dir .. ' status --branch --porcelain=2'
-    silent! let l:git_cmd_result = system(l:git_cmd)->split('\n')
+    silent! const l:git_cmd_result = system(l:git_cmd)->split('\n')
 
     " Line                                     Notes
     " ------------------------------------------------------------
@@ -165,8 +165,8 @@ function! s:GetGitBranch() abort
         call s:Highlight('StatusGitBranch', s:palette.fg_main, s:palette.bg_blue_nuanced, 'NONE')
         return ''
     else
-        let l:git_branch = l:git_cmd_result->filter('v:val =~ "^# branch.head"')[0]->split()[2]
-        let l:git_status = l:git_cmd_result->filter('v:val !~ "^# "')
+        let l:git_branch = copy(l:git_cmd_result)->filter('v:val =~ "^# branch.head"')[0]->split()[2]
+        let l:git_status = copy(l:git_cmd_result)->filter('v:val !~ "^# "')
 
         if l:git_status->len() > 0
             " dirty branch
