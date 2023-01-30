@@ -165,15 +165,15 @@ function! s:GetGitBranch() abort
         call s:Highlight('StatusGitBranch', s:palette.fg_main, s:palette.bg_blue_nuanced, 'NONE')
         return ''
     else
-        let l:git_branch = copy(l:git_cmd_result)->filter('v:val =~ "^# branch.head"')[0]->split()[2]
-        let l:git_status = copy(l:git_cmd_result)->filter('v:val !~ "^# "')
+        let l:git_branch = l:git_cmd_result->copy()->filter('v:val =~ "^# branch.head"')[0]->split()[2]
+        let l:git_status = l:git_cmd_result->copy()->filter('v:val !~ "^# "')
 
-        if l:git_status->len() > 0
-            " dirty branch
-            let l:git_color = s:palette.red_faint
-        else
+        if l:git_status->empty()
             " clean branch
             let l:git_color = s:palette.green_faint
+        else
+            " dirty branch
+            let l:git_color = s:palette.red_faint
         end
 
         call s:Highlight('StatusGitBranch', l:git_color, s:palette.bg_blue_nuanced, 'NONE')
