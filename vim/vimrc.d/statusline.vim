@@ -248,7 +248,7 @@ function! BuildStatusLine() abort
                     \    '%#StatusBlank#',
                     \    ' ',
                     \    '%#StatusGitBranchStatus#',
-                    \    '%{get(b:, "git_branch_status", "")}',
+                    \    '%{b:->get("git_branch_status", "")}',
                     \    '%#StatusBlank#',
                     \    '%=',
                     \    ' ',
@@ -276,6 +276,7 @@ call s:SetHighlights()
 set statusline=%!BuildStatusLine()
 
 augroup StatusLine | autocmd!
-    autocmd ColorScheme,BufEnter,BufWinEnter,WinEnter * call s:GetGitBranchStatus() | call s:SetHighlights()
+    autocmd BufEnter,BufWinEnter,WinEnter,BufWritePost,FileChangedShellPost *
+                \ call s:GetGitBranchStatus() | call s:SetHighlights()
     autocmd VimResized *  redrawstatus
 augroup END
