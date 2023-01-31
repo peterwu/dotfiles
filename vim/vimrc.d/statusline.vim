@@ -122,18 +122,18 @@ function! s:GetVimMode() abort
                 \ 's'    : { 'abbrev': 'S',  'alias': 'SELECT',    'color' : s:palette.blue    },
                 \ 'S'    : { 'abbrev': 'Sl', 'alias': 'S·LINE',    'color' : s:palette.blue    },
                 \ ''   : { 'abbrev': 'Sb', 'alias': 'S·BLOCK',   'color' : s:palette.blue    },
-                \ 'i'    : { 'abbrev': 'I',  'alias': 'INSERT',    'color' : s:palette.green   },
-                \ 'ic'   : { 'abbrev': 'I',  'alias': 'INSERT',    'color' : s:palette.green   },
-                \ 'ix'   : { 'abbrev': 'I',  'alias': 'INSERT',    'color' : s:palette.green   },
+                \ 'i'    : { 'abbrev': 'I',  'alias': 'INSERT',    'color' : s:palette.rust    },
+                \ 'ic'   : { 'abbrev': 'I',  'alias': 'INSERT',    'color' : s:palette.rust    },
+                \ 'ix'   : { 'abbrev': 'I',  'alias': 'INSERT',    'color' : s:palette.rust    },
                 \ 'R'    : { 'abbrev': 'R',  'alias': 'REPLACE',   'color' : s:palette.red     },
                 \ 'Rc'   : { 'abbrev': 'R',  'alias': 'REPLACE',   'color' : s:palette.red     },
                 \ 'Rx'   : { 'abbrev': 'R',  'alias': 'REPLACE',   'color' : s:palette.red     },
                 \ 'Rv'   : { 'abbrev': 'Vr', 'alias': 'V·REPLACE', 'color' : s:palette.red     },
                 \ 'Rvc'  : { 'abbrev': 'Vr', 'alias': 'V·REPLACE', 'color' : s:palette.red     },
                 \ 'Rvx'  : { 'abbrev': 'Vr', 'alias': 'V·REPLACE', 'color' : s:palette.red     },
-                \ 'c'    : { 'abbrev': 'C',  'alias': 'COMMAND',   'color' : s:palette.rust    },
-                \ 'cv'   : { 'abbrev': 'C',  'alias': 'EX',        'color' : s:palette.rust    },
-                \ 'ce'   : { 'abbrev': 'C',  'alias': 'EX',        'color' : s:palette.rust    },
+                \ 'c'    : { 'abbrev': 'C',  'alias': 'COMMAND',   'color' : s:palette.green   },
+                \ 'cv'   : { 'abbrev': 'C',  'alias': 'EX',        'color' : s:palette.green   },
+                \ 'ce'   : { 'abbrev': 'C',  'alias': 'EX',        'color' : s:palette.green   },
                 \ 'r'    : { 'abbrev': 'R',  'alias': 'REPLACE',   'color' : s:palette.red     },
                 \ 'rm'   : { 'abbrev': 'Rm', 'alias': 'MORE',      'color' : s:palette.yellow  },
                 \ 'r?'   : { 'abbrev': 'R?', 'alias': 'CONFIRM',   'color' : s:palette.yellow  },
@@ -146,7 +146,7 @@ function! s:GetVimMode() abort
     return l:modes[l:mode].abbrev
 endfunction
 
-function! s:GetGitBranch() abort
+function! s:GetGitBranchStatus() abort
     const l:git_icon = ''
     const l:git_dir = expand('%:p:h:S')
     const l:git_cmd = 'git -C ' .. git_dir .. ' status --branch --porcelain=2'
@@ -162,8 +162,8 @@ function! s:GetGitBranch() abort
     " ------------------------------------------------------------
 
     if v:shell_error
-        call s:Highlight('StatusGitBranch', s:palette.fg_main, s:palette.bg_blue_nuanced, 'NONE')
-        return ''
+        call s:Highlight('StatusGitBranchStatus', s:palette.fg_main, s:palette.bg_blue_nuanced, 'NONE')
+        let w:git_branch_status = ''
     else
         let l:git_branch = l:git_cmd_result->copy()->filter('v:val =~ "^# branch.head"')[0]->split()[2]
         let l:git_status = l:git_cmd_result->copy()->filter('v:val !~ "^# "')
@@ -176,8 +176,8 @@ function! s:GetGitBranch() abort
             let l:git_color = s:palette.red_faint
         end
 
-        call s:Highlight('StatusGitBranch', l:git_color, s:palette.bg_blue_nuanced, 'NONE')
-        return l:git_icon .. ' ' .. l:git_branch
+        call s:Highlight('StatusGitBranchStatus', l:git_color, s:palette.bg_blue_nuanced, 'NONE')
+        let w:git_branch_status = l:git_icon .. ' ' .. l:git_branch
     end
 endfunction
 
@@ -185,11 +185,11 @@ function! s:GetFileSize() abort
     let l:file = expand('%:p')
     let l:bytes = 0
 
-    if l:file->len() <= 0
+    if l:file->len()
+        let l:bytes = l:file->getfsize()
+    else
         " it's a buffer
         let l:bytes = wordcount().bytes
-    else
-        let l:bytes = l:file->getfsize()
     endif
 
     if l:bytes == 0 || l:bytes == -1 || l:bytes == -2
@@ -223,13 +223,14 @@ endfunction
 function! BuildStatusLine() abort
     if g:statusline_winid != win_getid()
         return join ([
-                    \  '%#StatusFileName#',
-                    \  ' ',
-                    \  '%<%t',
-                    \  '%=',
-                    \  '%#StatusPercent#',
-                    \  '%P'
-                    \  ], '')
+                    \    '%#StatusFileName#',
+                    \    ' ',
+                    \    '%<%F',
+                    \    '%=',
+                    \    '%#StatusPercent#',
+                    \    '%P',
+                    \    ' '
+                    \ ], '')
     else
         return join ([
                     \    '%#StatusVimMode#',
@@ -246,10 +247,11 @@ function! BuildStatusLine() abort
                     \    '%m%r%h%w%q',
                     \    '%#StatusBlank#',
                     \    ' ',
-                    \    '%#StatusGitBranch#',
-                    \    s:GetGitBranch(),
+                    \    '%#StatusGitBranchStatus#',
+                    \    '%{w:git_branch_status}',
                     \    '%#StatusBlank#',
                     \    '%=',
+                    \    ' ',
                     \    '%#StatusFileSize#',
                     \    s:GetFileSize(),
                     \    '%#StatusBlank#',
@@ -264,7 +266,8 @@ function! BuildStatusLine() abort
                     \    '%#StatusBlank#',
                     \    ' ',
                     \    '%#StatusPercent#',
-                    \    '%P'
+                    \    '%P',
+                    \    ' '
                     \ ], '')
     endif
 endfunction
@@ -273,6 +276,6 @@ call s:SetHighlights()
 set statusline=%!BuildStatusLine()
 
 augroup StatusLine | autocmd!
-    autocmd ColorScheme,BufEnter,BufWinEnter,WinEnter * call s:SetHighlights()
+    autocmd ColorScheme,BufEnter,BufWinEnter,WinEnter * call s:GetGitBranchStatus() | call s:SetHighlights()
     autocmd VimResized *  redrawstatus
 augroup END
