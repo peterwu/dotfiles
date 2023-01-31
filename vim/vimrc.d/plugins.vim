@@ -16,40 +16,29 @@ nnoremap <Leader>fh <Cmd>Helptags<CR>
 let g:lion_squeeze_spaces = 1
 
 " lsp
-let g:lsp_diagnostics_echo_cursor = 1
+let s:lsp_servers = [{
+            \   'filetype': [ 'c', 'cpp' ],
+            \   'path': '/usr/bin/clangd',
+            \   'args': [ '--background-index' ]
+            \ }]
 
-augroup LspClangd | autocmd!
-    autocmd User lsp_setup call lsp#register_server({
-                \       'name': 'clangd',
-                \       'cmd': { server_info->[ 'clangd' ] },
-                \       'allowlist': [ 'c', 'cpp', 'objc', 'objcpp' ],
-                \ })
+let s:lsp_opts = { 'autoHighlightDiags': v:true }
+
+augroup Lsp | autocmd!
+    autocmd VimEnter * call LspAddServer(s:lsp_servers)
+    autocmd VimEnter * call LspOptionsSet(s:lsp_opts)
+    autocmd VimEnter * call s:SetLspKeyBinds()
 augroup END
 
-augroup LspInstall | autocmd!
-    " call s:OnLspBufferEnabled only for languages that has the server registered.
-    autocmd User lsp_buffer_enabled call s:OnLspBufferEnabled()
-augroup END
-
-function! s:OnLspBufferEnabled() abort
-    setlocal omnifunc=lsp#complete
-    setlocal signcolumn=yes
-    if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
-
-    call s:SetLspMappings()
-endfunction
-
-function! s:SetLspMappings() abort
-    nmap <buffer> <LocalLeader>gd <plug>(lsp-definition)
-    nmap <buffer> <LocalLeader>gr <plug>(lsp-references)
-    nmap <buffer> <LocalLeader>gi <plug>(lsp-implementation)
-    nmap <buffer> <LocalLeader>gt <plug>(lsp-type-definition)
-    nmap <buffer> <LocalLeader>gR <plug>(lsp-rename)
-    nmap <buffer> <LocalLeader>[g <plug>(lsp-previous-diagnostic)
-    nmap <buffer> <LocalLeader>]g <plug>(lsp-next-diagnostic)
-    nmap <buffer> <LocalLeader>K  <plug>(lsp-hover)
-
-    " refer to doc to add more commands
+function! s:SetLspKeyBinds() abort
+    nmap <buffer> gd <Cmd>LspGotoDefinition<CR>
+    nmap <buffer> gr <Cmd>LspShowReferences<CR>
+    nmap <buffer> gi <Cmd>LspGotoImpl<CR>
+    nmap <buffer> gt <Cmd>LspGotoTypeDef<CR>
+    nmap <buffer> gR <Cmd>LspRename<CR>
+    nmap <buffer> [g <Cmd>LspDiagPrev<CR>
+    nmap <buffer> ]g <Cmd>LspDiagNext<CR>
+    nmap <buffer> K  <Cmd>LspHover<CR>
 endfunction
 
 " netrw
@@ -99,31 +88,28 @@ function! s:PackInit() abort
     packadd minpac
 
     call minpac#init()
-    call minpac#add('k-takata/minpac',                     {'type': 'opt'})
+    call minpac#add('k-takata/minpac',               {'type': 'opt'})
 
     call minpac#add('jiangmiao/auto-pairs')
-    call minpac#add('tpope/vim-commentary',                {'name': 'commentary'})
-    call minpac#add('tommcdo/vim-exchange',                {'name': 'exchange'})
-    call minpac#add('machakann/vim-highlightedyank',       {'name': 'highlighted-yank'})
-    call minpac#add('tommcdo/vim-lion',                    {'name': 'lion'})
-    call minpac#add('tpope/vim-repeat',                    {'name': 'repeat'})
-    call minpac#add('justinmk/vim-sneak',                  {'name': 'sneak'})
-    call minpac#add('tpope/vim-surround',                  {'name': 'surround'})
-    call minpac#add('tpope/vim-unimpaired',                {'name': 'unimpaired'})
+    call minpac#add('tpope/vim-commentary',          {'name': 'commentary'})
+    call minpac#add('tommcdo/vim-exchange',          {'name': 'exchange'})
+    call minpac#add('machakann/vim-highlightedyank', {'name': 'highlighted-yank'})
+    call minpac#add('tommcdo/vim-lion',              {'name': 'lion'})
+    call minpac#add('tpope/vim-repeat',              {'name': 'repeat'})
+    call minpac#add('justinmk/vim-sneak',            {'name': 'sneak'})
+    call minpac#add('tpope/vim-surround',            {'name': 'surround'})
+    call minpac#add('tpope/vim-unimpaired',          {'name': 'unimpaired'})
 
-    call minpac#add('tpope/vim-eunuch',                    {'name': 'eunuch'})
-    call minpac#add('tpope/vim-fugitive',                  {'name': 'fugitive'})
-    call minpac#add('tpope/vim-vinegar',                   {'name': 'vinegar'})
+    call minpac#add('tpope/vim-eunuch',              {'name': 'eunuch'})
+    call minpac#add('tpope/vim-fugitive',            {'name': 'fugitive'})
+    call minpac#add('tpope/vim-vinegar',             {'name': 'vinegar'})
 
-    call minpac#add('chrisbra/colorizer',                  {'name': 'colorizer'})
-    call minpac#add('junegunn/fzf.vim',                    {'name': 'fzf'})
+    call minpac#add('chrisbra/colorizer',            {'name': 'colorizer'})
     call minpac#add('luochen1990/rainbow')
 
-    call minpac#add('prabirshrestha/vim-lsp',              {'name': 'lsp'})
-    call minpac#add('mattn/vim-lsp-settings',              {'name': 'lsp-settings'})
+    call minpac#add('junegunn/fzf.vim',              {'name': 'fzf'})
 
-    call minpac#add('prabirshrestha/asyncomplete.vim',     {'name': 'asyncomplete'})
-    call minpac#add('prabirshrestha/asyncomplete-lsp.vim', {'name': 'asyncomplete-lsp'})
+    call minpac#add('yegappan/lsp')
 endfunction
 
 " define user commands for updating/cleaning the plugins
