@@ -227,6 +227,7 @@ function! BuildStatusLine() abort
                     \    ' ',
                     \    '%<%F',
                     \    '%=',
+                    \    ' ',
                     \    '%#StatusPercent#',
                     \    '%P',
                     \    ' '
