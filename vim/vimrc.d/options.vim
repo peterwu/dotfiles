@@ -9,6 +9,7 @@ source $VIMRUNTIME/defaults.vim
 call mkdir($VIM_HOME .. "/cache", "p")
 call mkdir($VIM_HOME .. "/swap",  "p")
 call mkdir($VIM_HOME .. "/undo",  "p")
+call mkdir($VIM_HOME .. "/view",  "p")
 
 " -------
 " options
@@ -46,6 +47,7 @@ set termguicolors
 set timeoutlen=777
 set undodir=$VIM_HOME/undo
 set undofile
+set viewdir=$VIM_HOME/view
 set viewoptions=cursor,folds
 set viminfo=%,<800,'10,/50,:100,h,f0,n$VIM_HOME/cache/viminfo
 
