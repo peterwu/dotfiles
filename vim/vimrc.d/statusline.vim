@@ -163,7 +163,7 @@ function! s:GetGitBranchStatus() abort
 
     if v:shell_error
         call s:Highlight('StatusGitBranchStatus', s:palette.fg_main, s:palette.bg_blue_nuanced, 'NONE')
-        let w:git_branch_status = ''
+        let b:git_branch_status = ''
     else
         let l:git_branch = l:git_cmd_result->copy()->filter('v:val =~ "^# branch.head"')[0]->split()[2]
         let l:git_status = l:git_cmd_result->copy()->filter('v:val !~ "^# "')
@@ -177,7 +177,7 @@ function! s:GetGitBranchStatus() abort
         end
 
         call s:Highlight('StatusGitBranchStatus', l:git_color, s:palette.bg_blue_nuanced, 'NONE')
-        let w:git_branch_status = l:git_icon .. ' ' .. l:git_branch
+        let b:git_branch_status = l:git_icon .. ' ' .. l:git_branch
     end
 endfunction
 
@@ -248,7 +248,7 @@ function! BuildStatusLine() abort
                     \    '%#StatusBlank#',
                     \    ' ',
                     \    '%#StatusGitBranchStatus#',
-                    \    '%{w:git_branch_status}',
+                    \    '%{get(b:, "git_branch_status", "")}',
                     \    '%#StatusBlank#',
                     \    '%=',
                     \    ' ',
