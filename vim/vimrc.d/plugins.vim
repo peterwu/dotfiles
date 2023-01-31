@@ -18,16 +18,16 @@ let g:lion_squeeze_spaces = 1
 " lsp
 let s:lsp_servers = [{
             \   'filetype': [ 'c', 'cpp' ],
-            \   'path': '/usr/bin/clangd',
-            \   'args': [ '--background-index' ]
+            \   'path':     'clangd',
+            \   'args':     [ '--background-index' ]
             \ }]
 
 let s:lsp_opts = { 'autoHighlightDiags': v:true }
 
 augroup Lsp | autocmd!
-    autocmd VimEnter * call LspAddServer(s:lsp_servers)
-    autocmd VimEnter * call LspOptionsSet(s:lsp_opts)
-    autocmd VimEnter * call s:SetLspKeyBinds()
+    autocmd VimEnter * silent! call LspAddServer(s:lsp_servers)
+    autocmd VimEnter * silent! call LspOptionsSet(s:lsp_opts)
+    autocmd VimEnter * silent! call s:SetLspKeyBinds()
 augroup END
 
 function! s:SetLspKeyBinds() abort
