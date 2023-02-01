@@ -16,16 +16,16 @@ nnoremap <silent> <Leader>qc <Cmd>PackClean<CR>
 nnoremap <silent> <Leader>qs <Cmd>PackStatus<CR>
 
 " disable arrow keys in normal mode
-map <Up>    <Nop>
-map <Down>  <Nop>
-map <Left>  <Nop>
-map <Right> <Nop>
+nnoremap <Up>    <Nop>
+nnoremap <Down>  <Nop>
+nnoremap <Left>  <Nop>
+nnoremap <Right> <Nop>
 
 " disable arrow keys in insert mode
-imap <Up>    <Nop>
-imap <Down>  <Nop>
-imap <Left>  <Nop>
-imap <Right> <Nop>
+inoremap <Up>    <Nop>
+inoremap <Down>  <Nop>
+inoremap <Left>  <Nop>
+inoremap <Right> <Nop>
 
 " swap j/k <-> gj/gk
 nnoremap <expr> j (v:count ? 'j' : 'gj')
