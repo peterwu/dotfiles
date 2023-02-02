@@ -6,16 +6,18 @@ source $VIMRUNTIME/defaults.vim
 " ---------
 " work dirs
 " ---------
-call mkdir($VIM_HOME .. "/cache", "p")
-call mkdir($VIM_HOME .. "/swap",  "p")
-call mkdir($VIM_HOME .. "/undo",  "p")
-call mkdir($VIM_HOME .. "/view",  "p")
+call mkdir($VIM_HOME .. "/backup", "p")
+call mkdir($VIM_HOME .. "/cache",  "p")
+call mkdir($VIM_HOME .. "/swap",   "p")
+call mkdir($VIM_HOME .. "/undo",   "p")
+call mkdir($VIM_HOME .. "/view",   "p")
 
 " -------
 " options
 " -------
 set autoindent
 set autoread
+set backupdir=$VIM_HOME/backup
 set background=light
 set complete-=i
 set completeopt=menu,menuone,noinsert,noselect
@@ -33,6 +35,7 @@ set laststatus=2
 set lazyredraw
 set listchars=trail:·,tab:»·
 set mouse=a
+set mousemodel=popup_setpos
 set nolist
 set noshowmode
 set notitle
@@ -54,6 +57,7 @@ set smarttab
 set softtabstop=0
 set splitbelow
 set splitright
+set switchbuf=uselast
 set tabstop=8
 set termencoding=utf-8
 set termguicolors

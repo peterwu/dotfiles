@@ -33,13 +33,16 @@ nnoremap <expr> k (v:count ? 'k' : 'gk')
 vnoremap <expr> j (v:count ? 'j' : 'gj')
 vnoremap <expr> k (v:count ? 'k' : 'gk')
 
-" i_backspacing
+" stolen from neovim defaults
+nnoremap Y     yg_
+nnoremap <C-L> <Cmd>nohlsearch<Bar>diffupdate<Bar>normal! <C-L><CR>
 inoremap <C-U> <C-G>u<C-U>
 inoremap <C-W> <C-G>u<C-W>
+xnoremap *     y/\V<C-R>"<CR>
+xnoremap #     y?\V<C-R>"<CR>
+nnoremap &     :&&<CR>
 
 " copy to clipboard
-nnoremap Y yg_
-
 if has('clipboard')
     vnoremap <silent> <Leader>y  "+y
     nnoremap <silent> <Leader>y  "+y
@@ -102,11 +105,6 @@ elseif executable('/usr/bin/xsel')
     nnoremap <silent> <Leader>P <Cmd>silent! let @"=system('xsel -o -b -l /dev/null')<CR>""P
     vnoremap <silent> <Leader>p <Cmd>silent! let @"=system('xsel -o -b -l /dev/null')<CR>""p
     vnoremap <silent> <Leader>P <Cmd>silent! let @"=system('xsel -o -b -l /dev/null')<CR>""P
-endif
-
-" use <C-L> to clear the highlighting of :set hlsearch
-if maparg('<C-L>', 'n') ==# ''
-    nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
 endif
 
 " force saving files that otherwise require sudoedit
