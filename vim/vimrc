@@ -9,4 +9,4 @@ source $VIM_HOME/vimrc.d/options.vim
 source $VIM_HOME/vimrc.d/keybinds.vim
 source $VIM_HOME/vimrc.d/autocmds.vim
 source $VIM_HOME/vimrc.d/statusline.vim
-source $VIM_HOME/vimrc.d/plugins.vim"
+source $VIM_HOME/vimrc.d/plugins.vim

@@ -33,6 +33,10 @@ nnoremap <expr> k (v:count ? 'k' : 'gk')
 vnoremap <expr> j (v:count ? 'j' : 'gj')
 vnoremap <expr> k (v:count ? 'k' : 'gk')
 
+" i_backspacing
+inoremap <C-U> <C-G>u<C-U>
+inoremap <C-W> <C-G>u<C-W>
+
 " copy to clipboard
 nnoremap Y yg_
 

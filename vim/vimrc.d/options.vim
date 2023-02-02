@@ -14,14 +14,17 @@ call mkdir($VIM_HOME .. "/view",  "p")
 " -------
 " options
 " -------
+set autoindent
+set autoread
 set background=light
+set complete-=i
 set completeopt=menu,menuone,noinsert,noselect
 set cursorline
 set directory=$VIM_HOME/swap
 set encoding=utf-8
 set expandtab
 set fileformats=unix,dos,mac
-set formatoptions=tcrqnbj
+set formatoptions=tcqj
 set hidden
 set history=1000
 set hlsearch
@@ -37,11 +40,14 @@ set number
 set path+=**
 set pumheight=7
 set relativenumber
-set sessionoptions=folds
+set scrolloff=1
+set sessionoptions-=options
 set shiftround
 set shiftwidth=4
 set shortmess+=Ic
 set showmatch
+set sidescroll=1
+set sidescrolloff=2
 set smartcase
 set smartindent
 set smarttab
@@ -56,8 +62,9 @@ set ttimeoutlen=77
 set undodir=$VIM_HOME/undo
 set undofile
 set viewdir=$VIM_HOME/view
-set viewoptions=cursor,folds
+set viewoptions-=options
 set viminfo=%,<800,'10,/50,:100,h,f0,n$VIM_HOME/cache/viminfo
 set virtualedit=block
+set wildoptions=pum,tagfile
 
 colorscheme lunaperche

@@ -53,6 +53,9 @@ function! s:SetLspMappings() abort
 
 endfunction
 
+" matchit
+packadd! matchit
+
 " netrw
 let g:netrw_banner       = 0
 let g:netrw_browse_split = 4
