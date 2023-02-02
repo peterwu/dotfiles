@@ -6,11 +6,11 @@ source $VIMRUNTIME/defaults.vim
 " ---------
 " work dirs
 " ---------
-call mkdir($VIM_HOME .. "/backup", "p")
-call mkdir($VIM_HOME .. "/cache",  "p")
-call mkdir($VIM_HOME .. "/swap",   "p")
-call mkdir($VIM_HOME .. "/undo",   "p")
-call mkdir($VIM_HOME .. "/view",   "p")
+call mkdir($VIM_HOME .. "/backup", "p", 0o700)
+call mkdir($VIM_HOME .. "/cache",  "p", 0o700)
+call mkdir($VIM_HOME .. "/swap",   "p", 0o700)
+call mkdir($VIM_HOME .. "/undo",   "p", 0o700)
+call mkdir($VIM_HOME .. "/view",   "p", 0o700)
 
 " -------
 " options
