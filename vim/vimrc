@@ -1,9 +1,5 @@
 " let the fun begin
-if has('win32')
-    let $VIM_HOME = $HOME .. '/vimfiles'
-else
-    let $VIM_HOME = $HOME .. '/.vim'
-endif
+let $VIM_HOME = fnamemodify(expand('<sfile>'), ':h')
 
 source $VIM_HOME/vimrc.d/options.vim
 source $VIM_HOME/vimrc.d/keybinds.vim

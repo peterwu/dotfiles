@@ -109,6 +109,7 @@ endif
 
 " force saving files that otherwise require sudoedit
 command! Wsudo execute "silent! write !sudo tee % >/dev/null" <Bar> edit!
+nnoremap <Leader>W <Cmd>Wsudo<CR>
 
 " terminal
 tnoremap <Esc> <C-\><C-N>
