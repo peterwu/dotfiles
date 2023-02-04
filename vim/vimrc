@@ -1,8 +1,8 @@
 " let the fun begin
-let $VIM_HOME = fnamemodify(expand('<sfile>'), ':h')
+let $VIM_HOME = expand('<sfile>:p:h')
 
 source $VIM_HOME/vimrc.d/options.vim
-source $VIM_HOME/vimrc.d/keybinds.vim
+source $VIM_HOME/vimrc.d/keymaps.vim
 source $VIM_HOME/vimrc.d/autocmds.vim
 source $VIM_HOME/vimrc.d/statusline.vim
 source $VIM_HOME/vimrc.d/plugins.vim

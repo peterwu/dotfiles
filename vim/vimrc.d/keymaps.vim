@@ -15,23 +15,26 @@ nnoremap <silent> <Leader>qu <Cmd>PackUpdate<CR>
 nnoremap <silent> <Leader>qc <Cmd>PackClean<CR>
 nnoremap <silent> <Leader>qs <Cmd>PackStatus<CR>
 
-" disable arrow keys in normal mode
-nnoremap <Up>    <Nop>
-nnoremap <Down>  <Nop>
-nnoremap <Left>  <Nop>
-nnoremap <Right> <Nop>
+" disable arrow keys
+noremap <Up>    <Nop>
+noremap <Down>  <Nop>
+noremap <Left>  <Nop>
+noremap <Right> <Nop>
 
-" disable arrow keys in insert mode
 inoremap <Up>    <Nop>
 inoremap <Down>  <Nop>
 inoremap <Left>  <Nop>
 inoremap <Right> <Nop>
 
+" use arrow keys to navigate windows
+nnoremap <Up>    <C-w><C-k>
+nnoremap <Down>  <C-w><C-j>
+nnoremap <Left>  <C-w><C-h>
+nnoremap <Right> <C-w><C-l>
+
 " swap j/k <-> gj/gk
-nnoremap <expr> j (v:count ? 'j' : 'gj')
-nnoremap <expr> k (v:count ? 'k' : 'gk')
-vnoremap <expr> j (v:count ? 'j' : 'gj')
-vnoremap <expr> k (v:count ? 'k' : 'gk')
+noremap <expr> j (v:count ? 'j' : 'gj')
+noremap <expr> k (v:count ? 'k' : 'gk')
 
 " stolen from neovim defaults
 nnoremap Y     yg_
@@ -40,7 +43,7 @@ inoremap <C-U> <C-G>u<C-U>
 inoremap <C-W> <C-G>u<C-W>
 xnoremap *     y/\V<C-R>"<CR>
 xnoremap #     y?\V<C-R>"<CR>
-nnoremap &     :&&<CR>
+nnoremap &     <Cmd>&&<CR>
 
 " copy to clipboard
 if has('clipboard')
