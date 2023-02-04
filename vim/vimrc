@@ -1,8 +1,667 @@
 " let the fun begin
-let $VIM_HOME = expand('<sfile>:p:h')
 
-source $VIM_HOME/vimrc.d/options.vim
-source $VIM_HOME/vimrc.d/keymaps.vim
-source $VIM_HOME/vimrc.d/autocmds.vim
-source $VIM_HOME/vimrc.d/statusline.vim
-source $VIM_HOME/vimrc.d/plugins.vim
+" options {{{
+
+" --------
+" defaults
+" --------
+source $VIMRUNTIME/defaults.vim
+
+" ---------
+" work dirs
+" ---------
+let s:vim_home = expand('<sfile>:p:h')
+
+call mkdir(s:vim_home .. "/backup", "p", 0o700)
+call mkdir(s:vim_home .. "/cache",  "p", 0o700)
+call mkdir(s:vim_home .. "/swap",   "p", 0o700)
+call mkdir(s:vim_home .. "/undo",   "p", 0o700)
+call mkdir(s:vim_home .. "/view",   "p", 0o700)
+
+" -------
+" options
+" -------
+set autoindent
+set autoread
+let &backupdir=s:vim_home .. '/backup'
+set background=light
+set complete-=i
+set completeopt=menu,menuone,noinsert,noselect
+set cursorline
+let &directory=s:vim_home .. '/swap'
+set encoding=utf-8
+set expandtab
+set fileformats=unix,dos,mac
+set foldmethod=marker
+set formatoptions=tcqj
+set hidden
+set history=1000
+set hlsearch
+set ignorecase
+set laststatus=2
+set lazyredraw
+set listchars=trail:·,tab:»·
+set mouse=a
+set mousemodel=popup_setpos
+set nolist
+set noshowmode
+set notitle
+set number
+set path+=**
+set pumheight=7
+set relativenumber
+set scrolloff=1
+set sessionoptions-=options
+set shiftround
+set shiftwidth=4
+set shortmess+=Ic
+set showmatch
+set sidescroll=1
+set sidescrolloff=2
+set smartcase
+set smartindent
+set smarttab
+set softtabstop=0
+set splitbelow
+set splitright
+set switchbuf=uselast
+set tabstop=8
+set termencoding=utf-8
+set termguicolors
+set timeoutlen=777
+set ttimeoutlen=77
+let &undodir=s:vim_home .. '/undo'
+set undofile
+let &viewdir=s:vim_home .. '/view'
+set viewoptions-=options
+set viminfo=%,<800,'10,/50,:100,h,f0
+let &viminfofile=s:vim_home .. '/cache/viminfo'
+set virtualedit=block
+set wildoptions=pum,tagfile
+
+colorscheme lunaperche
+
+" }}}
+
+" keymaps {{{
+
+" ------------
+" key mappings
+" ------------
+" leaders
+let g:mapleader      = " "
+let g:maplocalleader = ","
+
+" vimrc
+nnoremap <silent> <Leader>cd <Cmd>cd     %:p:h<CR><Cmd>pwd<CR>
+nnoremap <silent> <Leader>ev <Cmd>edit   $MYVIMRC<CR>
+nnoremap <silent> <Leader>sv <Cmd>source $MYVIMRC<CR>
+
+" minpac
+nnoremap <silent> <Leader>qu <Cmd>PackUpdate<CR>
+nnoremap <silent> <Leader>qc <Cmd>PackClean<CR>
+nnoremap <silent> <Leader>qs <Cmd>PackStatus<CR>
+
+" disable arrow keys
+noremap <Up>    <Nop>
+noremap <Down>  <Nop>
+noremap <Left>  <Nop>
+noremap <Right> <Nop>
+
+inoremap <Up>    <Nop>
+inoremap <Down>  <Nop>
+inoremap <Left>  <Nop>
+inoremap <Right> <Nop>
+
+" use arrow keys to navigate windows
+nnoremap <Up>    <C-w><C-k>
+nnoremap <Down>  <C-w><C-j>
+nnoremap <Left>  <C-w><C-h>
+nnoremap <Right> <C-w><C-l>
+
+" swap j/k <-> gj/gk
+noremap <expr> j (v:count ? 'j' : 'gj')
+noremap <expr> k (v:count ? 'k' : 'gk')
+
+" use Tab to toggle folds
+nnoremap <Tab> za
+
+" stolen from neovim defaults
+nnoremap Y     yg_
+nnoremap <C-L> <Cmd>nohlsearch<Bar>diffupdate<Bar>normal! <C-L><CR>
+inoremap <C-U> <C-G>u<C-U>
+inoremap <C-W> <C-G>u<C-W>
+xnoremap *     y/\V<C-R>"<CR>
+xnoremap #     y?\V<C-R>"<CR>
+nnoremap &     <Cmd>&&<CR>
+
+" copy to clipboard
+if has('clipboard')
+    vnoremap <silent> <Leader>y  "+y
+    nnoremap <silent> <Leader>y  "+y
+    nnoremap <silent> <Leader>Y  "+yg_
+    nnoremap <silent> <Leader>yy "+y_
+elseif executable('/usr/bin/xsel')
+    vnoremap <silent> <Leader>y  <Cmd>set opfunc=<SID>CopyToClipboard<CR>g@
+    nnoremap <silent> <Leader>y  <Cmd>set opfunc=<SID>CopyToClipboard<CR>g@
+    nnoremap <silent> <Leader>Y  <Cmd>set opfunc=<SID>CopyToClipboard<CR>g@g_
+    nnoremap <silent> <Leader>yy <Cmd>set opfunc=<SID>CopyToClipboard<CR>g@_
+
+    function! s:CopyToClipboard(type, ...) abort
+        const l:reg = '"'
+        const l:sel_save = &selection
+        let &selection = "inclusive"
+        const l:cb_save  = &clipboard
+        const l:reg_save = getreg(reg)
+        const l:reg_type = getregtype(reg)
+
+        if a:type ==# "char"
+            silent! execute 'normal! v`[o`]"' .. l:reg .. 'y'
+        elseif a:type ==# "line"
+            silent! execute 'normal! `[V`]"' .. l:reg .. 'y'
+        elseif a:type ==# "v" || a:type ==# "V" || a:type ==# "\<C-V>" || a:type ==# "block"
+            let &selection = l:sel_save
+            const l:ve = &virtualedit
+
+            if !(a:0 && a:1)
+                set virtualedit=none
+            endif
+
+            silent execute 'normal! gv"' .. l:reg .. 'y'
+            let &virtualedit = l:ve
+        elseif a:type =~ '^\d\+$'
+            silent! execute 'normal! ^v' .. a:type .. '$h"' .. l:reg .. 'y'
+            if mode() ==# 'v'
+                normal! v
+            endif
+        else
+            let &selection = l:sel_save
+            let &clipboard = l:cb_save
+        endif
+
+        silent! call system('/usr/bin/xsel -i -b -l /dev/null', getreg(l:reg))
+
+        call setreg(l:reg, l:reg_save, l:reg_type)
+        let &selection = l:sel_save
+        let &clipboard = l:cb_save
+    endfunction
+endif
+
+" paste from clipboard
+if has('clipboard')
+    nnoremap <silent> <Leader>p "+p
+    nnoremap <silent> <Leader>P "+P
+    vnoremap <silent> <Leader>p "+p
+    vnoremap <silent> <Leader>P "+P
+elseif executable('/usr/bin/xsel')
+    nnoremap <silent> <Leader>p <Cmd>silent! let @"=system('xsel -o -b -l /dev/null')<CR>""p
+    nnoremap <silent> <Leader>P <Cmd>silent! let @"=system('xsel -o -b -l /dev/null')<CR>""P
+    vnoremap <silent> <Leader>p <Cmd>silent! let @"=system('xsel -o -b -l /dev/null')<CR>""p
+    vnoremap <silent> <Leader>P <Cmd>silent! let @"=system('xsel -o -b -l /dev/null')<CR>""P
+endif
+
+" force saving files that otherwise require sudoedit
+command! Wsudo execute "silent! write !sudo tee % >/dev/null" <Bar> edit!
+nnoremap <Leader>W <Cmd>Wsudo<CR>
+
+" terminal
+tnoremap <Esc> <C-\><C-N>
+nnoremap <silent> <Leader>tt <Cmd>belowright terminal<CR>
+nnoremap <silent> <Leader>tv <Cmd>belowright vertical terminal<CR>
+nnoremap <silent> <Leader>tT <Cmd>botright terminal<CR>
+nnoremap <silent> <Leader>tV <Cmd>botright vertical terminal<CR>
+
+" }}}
+
+" auto commands {{{
+
+" -------------
+" auto commands
+" -------------
+augroup AutoSaveFolds | autocmd!
+    autocmd BufWinLeave,BufLeave,BufWritePost ?* ++nested silent! mkview!
+    autocmd BufWinEnter ?* silent! loadview
+augroup END
+
+augroup AutoSetList | autocmd!
+    autocmd InsertEnter,InsertLeave * set list!
+augroup END
+
+augroup NoNumberForOldTerm | autocmd!
+    autocmd TerminalWinOpen * setlocal nonumber norelativenumber
+augroup END
+
+augroup NoTrailingWhitespaces | autocmd!
+    autocmd BufWritePre * :%s/\s\+$//e
+augroup END
+
+" }}}
+
+" status line {{{
+
+" -----------
+" Status Line
+" -----------
+" modus operandi color palette
+const s:palette = {
+            "\ Basic values
+            \  'bg_main':            "#ffffff",
+            \  'bg_dim':             "#f0f0f0",
+            \  'fg_main':            "#000000",
+            \  'fg_dim':             "#595959",
+            \  'fg_alt':             "#193668",
+            \  'bg_active':          "#c4c4c4",
+            \  'bg_inactive':        "#e0e0e0",
+            \  'border':             "#9f9f9f",
+            \
+            "\ Common accent foregrounds
+            \  'red':                "#a60000",
+            \  'red_warmer':         "#972500",
+            \  'red_cooler':         "#a0132f",
+            \  'red_faint':          "#7f0000",
+            \  'red_intense':        "#d00000",
+            \  'green':              "#006800",
+            \  'green_warmer':       "#316500",
+            \  'green_cooler':       "#00663f",
+            \  'green_faint':        "#2a5045",
+            \  'green_intense':      "#008900",
+            \  'yellow':             "#6f5500",
+            \  'yellow_warmer':      "#884900",
+            \  'yellow_cooler':      "#7a4f2f",
+            \  'yellow_faint':       "#624416",
+            \  'yellow_intense':     "#808000",
+            \  'blue':               "#0031a9",
+            \  'blue_warmer':        "#3548cf",
+            \  'blue_cooler':        "#0000b0",
+            \  'blue_faint':         "#003497",
+            \  'blue_intense':       "#0000ff",
+            \  'magenta':            "#721045",
+            \  'magenta_warmer':     "#8f0075",
+            \  'magenta_cooler':     "#531ab6",
+            \  'magenta_faint':      "#7c318f",
+            \  'magenta_intense':    "#dd22dd",
+            \  'cyan':               "#005e8b",
+            \  'cyan_warmer':        "#3f578f",
+            \  'cyan_cooler':        "#005f5f",
+            \  'cyan_faint':         "#005077",
+            \  'cyan_intense':       "#008899",
+            \
+            "\ Uncommon accent foregrounds
+            \  'rust':               "#8a290f",
+            \  'gold':               "#80601f",
+            \  'olive':              "#56692d",
+            \  'slate':              "#2f3f83",
+            \  'indigo':             "#4a3a8a",
+            \  'maroon':             "#731c52",
+            \  'pink':               "#7b435c",
+            \
+            "\ Common accent backgrounds
+            \  'bg_red_intense':     "#ff8f88",
+            \  'bg_green_intense':   "#8adf80",
+            \  'bg_yellow_intense':  "#f3d000",
+            \  'bg_blue_intense':    "#bfc9ff",
+            \  'bg_magenta_intense': "#dfa0f0",
+            \  'bg_cyan_intense':    "#a4d5f9",
+            \
+            \  'bg_red_subtle':      "#ffcfbf",
+            \  'bg_green_subtle':    "#b3fabf",
+            \  'bg_yellow_subtle':   "#fff576",
+            \  'bg_blue_subtle':     "#ccdfff",
+            \  'bg_magenta_subtle':  "#ffddff",
+            \  'bg_cyan_subtle':     "#bfefff",
+            \
+            \  'bg_red_nuanced':     "#fff1f0",
+            \  'bg_green_nuanced':   "#ecf7ed",
+            \  'bg_yellow_nuanced':  "#fff3da",
+            \  'bg_blue_nuanced':    "#f3f3ff",
+            \  'bg_magenta_nuanced': "#fdf0ff",
+            \  'bg_cyan_nuanced':    "#ebf6fa",
+            \
+            "\ Uncommon accent backgrounds
+            \  'bg_ochre':           "#f0e0cc",
+            \  'bg_lavender':        "#dfdbfa",
+            \  'bg_sage':            "#c0e7d4"
+            \ }
+
+function! s:Highlight(group, fg, bg, style) abort
+    const l:cmd = 'highlight ' .. a:group
+                \ .. ' guifg=' .. a:fg
+                \ .. ' guibg=' .. a:bg
+                \ .. ' gui='   .. a:style
+                \ .. ' cterm=' .. a:style
+    execute l:cmd
+endfunction
+
+function! s:SetHighlights() abort
+    call s:Highlight('StatusBlank',      s:palette.fg_main, s:palette.bg_blue_nuanced, 'NONE')
+    call s:Highlight('StatusFileName',   s:palette.fg_main, s:palette.bg_blue_nuanced, 'bold')
+    call s:Highlight('StatusFileState',  s:palette.maroon,  s:palette.bg_blue_nuanced, 'bold')
+    call s:Highlight('StatusFileSize',   s:palette.fg_main, s:palette.bg_blue_nuanced, 'NONE')
+    call s:Highlight('StatusFileFormat', s:palette.fg_main, s:palette.bg_lavender,     'NONE')
+    call s:Highlight('StatusFileEncode', s:palette.fg_main, s:palette.bg_lavender,     'NONE')
+    call s:Highlight('StatusPercent',    s:palette.fg_main, s:palette.bg_blue_nuanced, 'NONE')
+endfunction
+
+function! s:GetVimMode() abort
+    " :help mode()
+    const l:modes = {
+                \ 'n'    : { 'abbrev': 'N',  'alias': 'NORMAL',    'color' : s:palette.blue    },
+                \ 'no'   : { 'abbrev': 'O',  'alias': 'O·PENDING', 'color' : s:palette.yellow  },
+                \ 'nov'  : { 'abbrev': 'O',  'alias': 'O·PENDING', 'color' : s:palette.yellow  },
+                \ 'noV'  : { 'abbrev': 'O',  'alias': 'O·PENDING', 'color' : s:palette.yellow  },
+                \ 'no' : { 'abbrev': 'O',  'alias': 'O·PENDING', 'color' : s:palette.yellow  },
+                \ 'niI'  : { 'abbrev': 'N',  'alias': 'NORMAL',    'color' : s:palette.blue    },
+                \ 'niR'  : { 'abbrev': 'N',  'alias': 'NORMAL',    'color' : s:palette.blue    },
+                \ 'niV'  : { 'abbrev': 'N',  'alias': 'NORMAL',    'color' : s:palette.blue    },
+                \ 'nt'   : { 'abbrev': 'T',  'alias': 'TERM',      'color' : s:palette.fg_main },
+                \ 'v'    : { 'abbrev': 'V',  'alias': 'VISUAL',    'color' : s:palette.cyan    },
+                \ 'vs'   : { 'abbrev': 'V',  'alias': 'VISUAL',    'color' : s:palette.cyan    },
+                \ 'V'    : { 'abbrev': 'Vl', 'alias': 'V·LINE',    'color' : s:palette.cyan    },
+                \ 'Vs'   : { 'abbrev': 'Vl', 'alias': 'V·LINE',    'color' : s:palette.cyan    },
+                \ ''   : { 'abbrev': 'Vb', 'alias': 'V·BLOCK',   'color' : s:palette.cyan    },
+                \ 's'  : { 'abbrev': 'Vb', 'alias': 'V·BLOCK',   'color' : s:palette.cyan    },
+                \ 's'    : { 'abbrev': 'S',  'alias': 'SELECT',    'color' : s:palette.blue    },
+                \ 'S'    : { 'abbrev': 'Sl', 'alias': 'S·LINE',    'color' : s:palette.blue    },
+                \ ''   : { 'abbrev': 'Sb', 'alias': 'S·BLOCK',   'color' : s:palette.blue    },
+                \ 'i'    : { 'abbrev': 'I',  'alias': 'INSERT',    'color' : s:palette.rust    },
+                \ 'ic'   : { 'abbrev': 'I',  'alias': 'INSERT',    'color' : s:palette.rust    },
+                \ 'ix'   : { 'abbrev': 'I',  'alias': 'INSERT',    'color' : s:palette.rust    },
+                \ 'R'    : { 'abbrev': 'R',  'alias': 'REPLACE',   'color' : s:palette.red     },
+                \ 'Rc'   : { 'abbrev': 'R',  'alias': 'REPLACE',   'color' : s:palette.red     },
+                \ 'Rx'   : { 'abbrev': 'R',  'alias': 'REPLACE',   'color' : s:palette.red     },
+                \ 'Rv'   : { 'abbrev': 'Vr', 'alias': 'V·REPLACE', 'color' : s:palette.red     },
+                \ 'Rvc'  : { 'abbrev': 'Vr', 'alias': 'V·REPLACE', 'color' : s:palette.red     },
+                \ 'Rvx'  : { 'abbrev': 'Vr', 'alias': 'V·REPLACE', 'color' : s:palette.red     },
+                \ 'c'    : { 'abbrev': 'C',  'alias': 'COMMAND',   'color' : s:palette.green   },
+                \ 'cv'   : { 'abbrev': 'C',  'alias': 'EX',        'color' : s:palette.green   },
+                \ 'ce'   : { 'abbrev': 'C',  'alias': 'EX',        'color' : s:palette.green   },
+                \ 'r'    : { 'abbrev': 'R',  'alias': 'REPLACE',   'color' : s:palette.red     },
+                \ 'rm'   : { 'abbrev': 'Rm', 'alias': 'MORE',      'color' : s:palette.yellow  },
+                \ 'r?'   : { 'abbrev': 'R?', 'alias': 'CONFIRM',   'color' : s:palette.yellow  },
+                \ '!'    : { 'abbrev': 'Sh', 'alias': 'SHELL',     'color' : s:palette.fg_main },
+                \ 't'    : { 'abbrev': 'T',  'alias': 'TERM',      'color' : s:palette.fg_main }
+                \ }
+
+    const l:mode = mode()
+    call s:Highlight('StatusVimMode', s:palette.bg_main, l:modes[l:mode].color, 'bold')
+    return l:modes[l:mode].abbrev
+endfunction
+
+function! s:GetGitBranchStatus() abort
+    const l:git_icon = ''
+    const l:git_dir = expand('%:p:h:S')
+    const l:git_cmd = 'git -C ' .. git_dir .. ' status --branch --porcelain=2'
+    silent! const l:git_cmd_result = system(l:git_cmd)->split('\n')
+
+    " Line                                     Notes
+    " ------------------------------------------------------------
+    " # branch.oid <commit> | (initial)        Current commit.
+    " # branch.head <branch> | (detached)      Current branch.
+    " # branch.upstream <upstream_branch>      If upstream is set.
+    " # branch.ab +<ahead> -<behind>           If upstream is set and
+    "                                          the commit is present.
+    " ------------------------------------------------------------
+
+    if v:shell_error
+        call s:Highlight('StatusGitBranchStatus', s:palette.fg_main, s:palette.bg_blue_nuanced, 'NONE')
+        let b:git_branch_status = ''
+    else
+        let l:git_branch = l:git_cmd_result->copy()->filter('v:val =~ "^# branch.head"')[0]->split()[2]
+        let l:git_status = l:git_cmd_result->copy()->filter('v:val !~ "^# "')
+
+        if l:git_status->empty()
+            " clean branch
+            let l:git_color = s:palette.green_faint
+        else
+            " dirty branch
+            let l:git_color = s:palette.red_faint
+        end
+
+        call s:Highlight('StatusGitBranchStatus', l:git_color, s:palette.bg_blue_nuanced, 'NONE')
+        let b:git_branch_status = l:git_icon .. ' ' .. l:git_branch
+    end
+endfunction
+
+function! s:GetFileSize() abort
+    let l:file = expand('%:p')
+    let l:bytes = 0
+
+    if l:file->len()
+        let l:bytes = l:file->getfsize()
+    else
+        " it's a buffer
+        let l:bytes = wordcount().bytes
+    endif
+
+    if l:bytes == 0 || l:bytes == -1 || l:bytes == -2
+        return ''
+    end
+
+    const l:_1K = 1024
+    const l:_1M = 1024 * l:_1K
+    const l:_1G = 1024 * l:_1M
+    const l:_1T = 1024 * l:_1G
+    const l:_1P = 1024 * l:_1T
+    const l:_1E = 1024 * l:_1P
+
+    if l:bytes < l:_1K
+        return printf('%dB',   l:bytes)
+    elseif l:bytes < l:_1M
+        return printf('%.1fK', l:bytes/l:_1K)
+    elseif l:bytes < l:_1G
+        return printf('%.1fM', l:bytes/l:_1M)
+    elseif l:bytes < l:_1T
+        return printf('%.1fG', l:bytes/l:_1G)
+    elseif l:bytes < l:_1P
+        return printf('%.1fT', l:bytes/l:_1T)
+    elseif l:bytes < l:_1E
+        return printf('%.1fP', l:bytes/l:_1P)
+    else " math.maxinteger = 2^63 -1
+        return printf('%.1fE', l:bytes/l:_1E)
+    end
+endfunction
+
+function! BuildStatusLine() abort
+    if g:statusline_winid != win_getid()
+        return join ([
+                    \    '%#StatusFileName#',
+                    \    ' ',
+                    \    '%<%F',
+                    \    '%=',
+                    \    ' ',
+                    \    '%#StatusPercent#',
+                    \    '%P',
+                    \    ' '
+                    \ ], '')
+    else
+        return join ([
+                    \    '%#StatusVimMode#',
+                    \    ' ',
+                    \    s:GetVimMode(),
+                    \    ' ',
+                    \    '%#StatusBlank#',
+                    \    ' ',
+                    \    '%#StatusFileName#',
+                    \    '%<%F',
+                    \    '%#StatusBlank#',
+                    \    ' ',
+                    \    '%#StatusFileState#',
+                    \    '%m%r%h%w%q',
+                    \    '%#StatusBlank#',
+                    \    ' ',
+                    \    '%#StatusGitBranchStatus#',
+                    \    '%{b:->get("git_branch_status", "")}',
+                    \    '%#StatusBlank#',
+                    \    '%=',
+                    \    ' ',
+                    \    '%#StatusFileSize#',
+                    \    s:GetFileSize(),
+                    \    '%#StatusBlank#',
+                    \    ' ',
+                    \    '%#StatusFileFormat#',
+                    \    ' ',
+                    \    '%{&fileformat}',
+                    \    ' | ',
+                    \    '%#StatusFileEncode#',
+                    \    '%{&fileencoding ? &fileencoding : &encoding}',
+                    \    ' ',
+                    \    '%#StatusBlank#',
+                    \    ' ',
+                    \    '%#StatusPercent#',
+                    \    '%P',
+                    \    ' '
+                    \ ], '')
+    endif
+endfunction
+
+call s:SetHighlights()
+set statusline=%!BuildStatusLine()
+
+augroup StatusLine | autocmd!
+    autocmd BufEnter,BufWinEnter,WinEnter,BufWritePost,FileChangedShellPost *
+                \ call s:GetGitBranchStatus() | call s:SetHighlights()
+    autocmd VimResized *  redrawstatus
+augroup END
+
+" }}}
+
+" plugins {{{
+
+" ---------------
+" plugin settings
+" ---------------
+" fzf
+let g:fzf_layout = { 'down': '40%' }
+let g:fzf_preview_window = []
+
+nnoremap <Leader>ff <Cmd>Files<CR>
+nnoremap <Leader>fo <Cmd>History<CR>
+nnoremap <Leader>f: <Cmd>Hisotry:<CR>
+nnoremap <Leader>f/ <Cmd>Hisotry/<CR>
+nnoremap <Leader>fb <Cmd>Buffers<CR>
+nnoremap <Leader>fh <Cmd>Helptags<CR>
+
+" lion
+let g:lion_squeeze_spaces = 1
+
+" lsp
+let g:lsp_diagnostics_echo_cursor = 1
+
+augroup LspClangd | autocmd!
+    autocmd User lsp_setup call lsp#register_server({
+                \       'name': 'clangd',
+                \       'cmd': { server_info->[ 'clangd' ] },
+                \       'allowlist': [ 'c', 'cpp', 'objc', 'objcpp' ],
+                \ })
+augroup END
+
+augroup LspInstall | autocmd!
+    " call s:OnLspBufferEnabled only for languages that has the server registered.
+    autocmd User lsp_buffer_enabled call s:OnLspBufferEnabled()
+augroup END
+
+function! s:OnLspBufferEnabled() abort
+    setlocal omnifunc=lsp#complete
+    setlocal signcolumn=yes
+    if exists('+tagfunc')
+        setlocal tagfunc=lsp#tagfunc
+    endif
+
+    call s:SetLspMappings()
+endfunction
+
+function! s:SetLspMappings() abort
+    nmap <buffer> gd <Plug>(lsp-definition)
+    nmap <buffer> gr <Plug>(lsp-references)
+    nmap <buffer> gi <Plug>(lsp-implementation)
+    nmap <buffer> gt <Plug>(lsp-type-definition)
+    nmap <buffer> gR <Plug>(lsp-rename)
+    nmap <buffer> [g <Plug>(lsp-previous-diagnostic)
+    nmap <buffer> ]g <Plug>(lsp-next-diagnostic)
+    nmap <buffer> K  <Plug>(lsp-hover)
+
+endfunction
+
+" matchit
+packadd! matchit
+
+" netrw
+let g:netrw_banner       = 0
+let g:netrw_browse_split = 4
+let g:netrw_dirhistmax   = 0
+let g:netrw_keepdir      = 0
+let g:netrw_list_hide    = '\(^\|\s\s\)\zs\.\S\+'
+let g:netrw_liststyle    = 3
+let g:netrw_winsize      = 29
+
+nmap <silent> <F9> <Cmd>Lexplore<CR>
+
+" remap cd to be global
+augroup NetrwGroup | autocmd!
+    autocmd filetype netrw call s:NetrwMapping()
+augroup END
+
+function! s:NetrwMapping()
+    nmap <buffer> <silent> <nowait> <LocalLeader>cd <Cmd>execute "cd ".b:netrw_curdir<CR>:pwd<CR>
+endfunction
+
+" rainbow
+let g:rainbow_active = 1
+
+" sneak
+let g:sneak#label = 1
+
+map <Leader>s <Plug>Sneak_s
+map <Leader>S <Plug>Sneak_S
+
+map f <Plug>Sneak_f
+map F <Plug>Sneak_F
+map t <Plug>Sneak_t
+map T <Plug>Sneak_T
+
+" vinegar
+noremap - k^
+
+" termdebug
+let g:termdebug_wide = 1
+
+" --------------
+" minpac plugins
+" --------------
+function! s:PackInit() abort
+    packadd minpac
+
+    call minpac#init({'package_name': 'plugged'})
+    call minpac#add('k-takata/minpac',                     {'type': 'opt'})
+
+    call minpac#add('jiangmiao/auto-pairs')
+    call minpac#add('tpope/vim-commentary',                {'name': 'commentary'})
+    call minpac#add('tommcdo/vim-exchange',                {'name': 'exchange'})
+    call minpac#add('machakann/vim-highlightedyank',       {'name': 'highlighted-yank'})
+    call minpac#add('tommcdo/vim-lion',                    {'name': 'lion'})
+    call minpac#add('tpope/vim-repeat',                    {'name': 'repeat'})
+    call minpac#add('justinmk/vim-sneak',                  {'name': 'sneak'})
+    call minpac#add('tpope/vim-surround',                  {'name': 'surround'})
+    call minpac#add('tpope/vim-unimpaired',                {'name': 'unimpaired'})
+
+    call minpac#add('tpope/vim-eunuch',                    {'name': 'eunuch'})
+    call minpac#add('tpope/vim-fugitive',                  {'name': 'fugitive'})
+    call minpac#add('tpope/vim-vinegar',                   {'name': 'vinegar'})
+
+    call minpac#add('chrisbra/colorizer',                  {'name': 'colorizer'})
+    call minpac#add('luochen1990/rainbow')
+
+    call minpac#add('junegunn/fzf.vim',                    {'name': 'fzf'})
+
+    call minpac#add('prabirshrestha/vim-lsp',              {'name': 'lsp'})
+
+    call minpac#add('prabirshrestha/asyncomplete.vim',     {'name': 'asyncomplete'})
+    call minpac#add('prabirshrestha/asyncomplete-lsp.vim', {'name': 'asyncomplete-lsp'})
+endfunction
+
+" define user commands for updating/cleaning the plugins
+command! PackUpdate source $MYVIMRC | call <SID>PackInit() | call minpac#update()
+command! PackClean  source $MYVIMRC | call <SID>PackInit() | call minpac#clean()
+command! PackStatus source $MYVIMRC | call <SID>PackInit() | call minpac#status()
+
+" }}}
