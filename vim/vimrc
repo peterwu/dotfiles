@@ -328,6 +328,8 @@ function! s:Highlight(group, fg, bg, style) abort
 endfunction
 
 function! s:SetHighlights() abort
+    call s:HighlightGitBranchStatus()
+
     call s:Highlight('StatusBlank',      s:palette.fg_main, s:palette.bg_blue_nuanced, 'NONE')
     call s:Highlight('StatusFileName',   s:palette.fg_main, s:palette.bg_blue_nuanced, 'bold')
     call s:Highlight('StatusFileState',  s:palette.maroon,  s:palette.bg_blue_nuanced, 'bold')
@@ -382,7 +384,7 @@ function! s:GetVimMode() abort
     return l:modes[l:mode].abbrev
 endfunction
 
-function! s:GetGitBranchStatus() abort
+function! s:HighlightGitBranchStatus() abort
     let l:git_icon = ''
     let l:git_dir = expand('%:p:h:S')
     let l:git_cmd = 'git -C ' .. git_dir .. ' status --branch --porcelain=2'
@@ -513,8 +515,7 @@ call s:SetHighlights()
 set statusline=%!BuildStatusLine()
 
 augroup StatusLine | autocmd!
-    autocmd BufEnter,BufWinEnter,WinEnter,BufWritePost,FileChangedShellPost *
-                \ call s:GetGitBranchStatus() | call s:SetHighlights()
+    autocmd BufEnter,BufWinEnter,WinEnter,BufWritePost * call s:SetHighlights()
     autocmd VimResized *  redrawstatus
 augroup END
 
@@ -598,7 +599,8 @@ function! s:PaqClean() abort
     endwhile
 
     if l:dirs->filter('v:val != ""')->empty()
-        redraw | echo 'Package [' .. s:package .. '] is clean.'
+        redraw!
+        echo 'Package [' .. s:package .. '] is clean.'
     else
         let l:prompt = "WARNING:\nThe following folder(s) will be deleted.\n\n"
                     \ .. l:dirs->join("\n") .. "\n\n"
