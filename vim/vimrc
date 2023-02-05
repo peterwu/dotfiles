@@ -630,7 +630,7 @@ let g:netrw_list_hide    = '\(^\|\s\s\)\zs\.\S\+'
 let g:netrw_liststyle    = 3
 let g:netrw_winsize      = 29
 
-nmap <silent> <F9> <Cmd>Lexplore<CR>
+nnoremap <silent> <F9> <Cmd>Lexplore<CR>
 
 " remap cd to be global
 augroup NetrwGroup | autocmd!
@@ -638,7 +638,7 @@ augroup NetrwGroup | autocmd!
 augroup END
 
 function! s:NetrwMapping()
-    nmap <buffer> <silent> <nowait> <LocalLeader>cd <Cmd>execute 'cd ' .. b:netrw_curdir<CR><Cmd>pwd<CR>
+    nnoremap <buffer> <silent> <nowait> <LocalLeader>cd <Cmd>execute 'cd ' .. b:netrw_curdir<CR><Cmd>pwd<CR>
 endfunction
 
 " termdebug
@@ -702,14 +702,14 @@ function! s:OnLspBufferEnabled() abort
 endfunction
 
 function! s:SetLspMappings() abort
-    nmap <buffer> gd <Plug>(lsp-definition)
-    nmap <buffer> gr <Plug>(lsp-references)
-    nmap <buffer> gi <Plug>(lsp-implementation)
-    nmap <buffer> gt <Plug>(lsp-type-definition)
-    nmap <buffer> gR <Plug>(lsp-rename)
-    nmap <buffer> [g <Plug>(lsp-previous-diagnostic)
-    nmap <buffer> ]g <Plug>(lsp-next-diagnostic)
-    nmap <buffer> K  <Plug>(lsp-hover)
+    nnoremap <buffer> gd <Plug>(lsp-definition)
+    nnoremap <buffer> gr <Plug>(lsp-references)
+    nnoremap <buffer> gi <Plug>(lsp-implementation)
+    nnoremap <buffer> gt <Plug>(lsp-type-definition)
+    nnoremap <buffer> gR <Plug>(lsp-rename)
+    nnoremap <buffer> [g <Plug>(lsp-previous-diagnostic)
+    nnoremap <buffer> ]g <Plug>(lsp-next-diagnostic)
+    nnoremap <buffer> K  <Plug>(lsp-hover)
 endfunction
 
 " rainbow
@@ -720,13 +720,13 @@ let g:rainbow_active = 1
 call s:PaqAdd('justinmk/vim-sneak', {'as': 'sneak'})
 let g:sneak#label = 1
 
-map <Leader>s <Plug>Sneak_s
-map <Leader>S <Plug>Sneak_S
+noremap <Leader>s <Plug>Sneak_s
+noremap <Leader>S <Plug>Sneak_S
 
-map f <Plug>Sneak_f
-map F <Plug>Sneak_F
-map t <Plug>Sneak_t
-map T <Plug>Sneak_T
+noremap f <Plug>Sneak_f
+noremap F <Plug>Sneak_F
+noremap t <Plug>Sneak_t
+noremap T <Plug>Sneak_T
 
 " vinegar
 call s:PaqAdd('tpope/vim-vinegar', {'as': 'vinegar'})
