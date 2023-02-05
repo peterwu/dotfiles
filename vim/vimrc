@@ -73,7 +73,7 @@ set ttimeoutlen=77
 let &undodir=s:vim_home .. '/undo'
 set undofile
 let &viewdir=s:vim_home .. '/view'
-set viewoptions-=options
+set viewoptions=cursor,folds
 set viminfo=%,<800,'10,/50,:100,h,f0
 let &viminfofile=s:vim_home .. '/cache/viminfo'
 set virtualedit=block
@@ -109,16 +109,22 @@ inoremap <Left>  <Nop>
 inoremap <Right> <Nop>
 
 " use arrow keys to navigate windows
-nnoremap <Up>    <C-w><C-k>
-nnoremap <Down>  <C-w><C-j>
-nnoremap <Left>  <C-w><C-h>
-nnoremap <Right> <C-w><C-l>
+nnoremap <Up>    <C-W><C-K>
+nnoremap <Down>  <C-W><C-J>
+nnoremap <Left>  <C-W><C-H>
+nnoremap <Right> <C-W><C-L>
 
 " swap j/k <-> gj/gk
-noremap <expr> j (v:count ? 'j' : 'gj')
-noremap <expr> k (v:count ? 'k' : 'gk')
+nnoremap <expr> j (v:count ? 'j' : 'gj')
+nnoremap <expr> k (v:count ? 'k' : 'gk')
+xnoremap <expr> j (v:count ? 'j' : 'gj')
+xnoremap <expr> k (v:count ? 'k' : 'gk')
 
-" use Tab to toggle folds
+" use tab to select from popup menu
+inoremap <expr> <Tab>   (pumvisible() ? '<C-N>' : '<Tab>')
+inoremap <expr> <S-Tab> (pumvisible() ? '<C-P>' : '<C-H>')
+
+" use tab to toggle folds
 nnoremap <Tab> za
 
 " stolen from neovim defaults
