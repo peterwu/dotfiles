@@ -137,12 +137,12 @@ if has('clipboard')
     nnoremap <silent> <Leader>Y  "+yg_
     nnoremap <silent> <Leader>yy "+y_
 elseif executable('/usr/bin/xsel')
-    vnoremap <silent> <Leader>y  <Cmd>set opfunc=<SID>CopyToClipboard<CR>g@
-    nnoremap <silent> <Leader>y  <Cmd>set opfunc=<SID>CopyToClipboard<CR>g@
-    nnoremap <silent> <Leader>Y  <Cmd>set opfunc=<SID>CopyToClipboard<CR>g@g_
-    nnoremap <silent> <Leader>yy <Cmd>set opfunc=<SID>CopyToClipboard<CR>g@_
+    vnoremap <silent> <Leader>y  <Cmd>set opfunc=<SID>copy_to_clipboard<CR>g@
+    nnoremap <silent> <Leader>y  <Cmd>set opfunc=<SID>copy_to_clipboard<CR>g@
+    nnoremap <silent> <Leader>Y  <Cmd>set opfunc=<SID>copy_to_clipboard<CR>g@g_
+    nnoremap <silent> <Leader>yy <Cmd>set opfunc=<SID>copy_to_clipboard<CR>g@_
 
-    function! s:CopyToClipboard(type, ...) abort
+    function! s:copy_to_clipboard(type, ...) abort
         let l:reg = '"'
         let l:sel_save = &selection
         let &selection = "inclusive"
@@ -213,20 +213,20 @@ nnoremap <silent> <Leader>tV <Cmd>botright vertical terminal<CR>
 " -------------
 " auto commands
 " -------------
-augroup AutoSaveFolds | autocmd!
+augroup save_folds | autocmd!
     autocmd BufWinLeave,BufLeave,BufWritePost ?* ++nested silent! mkview!
     autocmd BufWinEnter ?* silent! loadview
 augroup END
 
-augroup AutoSetList | autocmd!
+augroup set_list | autocmd!
     autocmd InsertEnter,InsertLeave * set list!
 augroup END
 
-augroup NoNumberForOldTerm | autocmd!
+augroup no_number_for_old_term | autocmd!
     autocmd TerminalWinOpen * setlocal nonumber norelativenumber
 augroup END
 
-augroup NoTrailingWhitespaces | autocmd!
+augroup no_trailing_whitespaces | autocmd!
     autocmd BufWritePre * :%s/\s\+$//e
 augroup END
 
@@ -318,7 +318,7 @@ const s:palette = {
             \  'bg_sage':            "#c0e7d4"
             \ }
 
-function! s:Highlight(group, fg, bg, style) abort
+function! s:highlight(group, fg, bg, style) abort
     let l:cmd = 'highlight ' .. a:group
                 \ .. ' guifg=' .. a:fg
                 \ .. ' guibg=' .. a:bg
@@ -327,19 +327,19 @@ function! s:Highlight(group, fg, bg, style) abort
     execute l:cmd
 endfunction
 
-function! s:SetHighlights() abort
-    call s:HighlightGitBranchStatus()
+function! s:set_highlights() abort
+    call s:highlight_git_branch_status()
 
-    call s:Highlight('StatusBlank',      s:palette.fg_main, s:palette.bg_blue_nuanced, 'NONE')
-    call s:Highlight('StatusFileName',   s:palette.fg_main, s:palette.bg_blue_nuanced, 'bold')
-    call s:Highlight('StatusFileState',  s:palette.maroon,  s:palette.bg_blue_nuanced, 'bold')
-    call s:Highlight('StatusFileSize',   s:palette.fg_main, s:palette.bg_blue_nuanced, 'NONE')
-    call s:Highlight('StatusFileFormat', s:palette.fg_main, s:palette.bg_lavender,     'NONE')
-    call s:Highlight('StatusFileEncode', s:palette.fg_main, s:palette.bg_lavender,     'NONE')
-    call s:Highlight('StatusPercent',    s:palette.fg_main, s:palette.bg_blue_nuanced, 'NONE')
+    call s:highlight('StatusBlank',      s:palette.fg_main, s:palette.bg_blue_nuanced, 'NONE')
+    call s:highlight('StatusFileName',   s:palette.fg_main, s:palette.bg_blue_nuanced, 'bold')
+    call s:highlight('StatusFileState',  s:palette.maroon,  s:palette.bg_blue_nuanced, 'bold')
+    call s:highlight('StatusFileSize',   s:palette.fg_main, s:palette.bg_blue_nuanced, 'NONE')
+    call s:highlight('StatusFileFormat', s:palette.fg_main, s:palette.bg_lavender,     'NONE')
+    call s:highlight('StatusFileEncode', s:palette.fg_main, s:palette.bg_lavender,     'NONE')
+    call s:highlight('StatusPercent',    s:palette.fg_main, s:palette.bg_blue_nuanced, 'NONE')
 endfunction
 
-function! s:GetVimMode() abort
+function! s:get_vim_mode() abort
     " :help mode()
     const l:modes = {
                 \ 'n'    : { 'abbrev': 'N',  'alias': 'NORMAL',    'color' : s:palette.blue    },
@@ -380,11 +380,11 @@ function! s:GetVimMode() abort
                 \ }
 
     let l:mode = mode()
-    call s:Highlight('StatusVimMode', s:palette.bg_main, l:modes[l:mode].color, 'bold')
+    call s:highlight('StatusVimMode', s:palette.bg_main, l:modes[l:mode].color, 'bold')
     return l:modes[l:mode].abbrev
 endfunction
 
-function! s:HighlightGitBranchStatus() abort
+function! s:highlight_git_branch_status() abort
     let l:git_icon = ''
     let l:git_dir = expand('%:p:h:S')
     let l:git_cmd = 'git -C ' .. git_dir .. ' status --branch --porcelain=2'
@@ -400,7 +400,7 @@ function! s:HighlightGitBranchStatus() abort
     " ------------------------------------------------------------
 
     if v:shell_error
-        call s:Highlight('StatusGitBranchStatus', s:palette.fg_main, s:palette.bg_blue_nuanced, 'NONE')
+        call s:highlight('StatusGitBranchStatus', s:palette.fg_main, s:palette.bg_blue_nuanced, 'NONE')
         let b:git_branch_status = ''
     else
         let l:git_branch = l:git_cmd_result->copy()->filter('v:val =~ "^# branch.head"')[0]->split()[2]
@@ -414,12 +414,12 @@ function! s:HighlightGitBranchStatus() abort
             let l:git_color = s:palette.red_faint
         end
 
-        call s:Highlight('StatusGitBranchStatus', l:git_color, s:palette.bg_blue_nuanced, 'NONE')
+        call s:highlight('StatusGitBranchStatus', l:git_color, s:palette.bg_blue_nuanced, 'NONE')
         let b:git_branch_status = l:git_icon .. ' ' .. l:git_branch
     end
 endfunction
 
-function! s:GetFileSize() abort
+function! s:get_file_size() abort
     let l:file = expand('%:p')
     let l:bytes = 0
 
@@ -458,7 +458,7 @@ function! s:GetFileSize() abort
     end
 endfunction
 
-function! BuildStatusLine() abort
+function! DrawStatusLine() abort
     if g:statusline_winid != win_getid()
         return join ([
                     \    '%#StatusFileName#',
@@ -474,7 +474,7 @@ function! BuildStatusLine() abort
         return join ([
                     \    '%#StatusVimMode#',
                     \    ' ',
-                    \    s:GetVimMode(),
+                    \    s:get_vim_mode(),
                     \    ' ',
                     \    '%#StatusBlank#',
                     \    ' ',
@@ -492,7 +492,7 @@ function! BuildStatusLine() abort
                     \    '%=',
                     \    ' ',
                     \    '%#StatusFileSize#',
-                    \    s:GetFileSize(),
+                    \    s:get_file_size(),
                     \    '%#StatusBlank#',
                     \    ' ',
                     \    '%#StatusFileFormat#',
@@ -511,11 +511,11 @@ function! BuildStatusLine() abort
     endif
 endfunction
 
-call s:SetHighlights()
-set statusline=%!BuildStatusLine()
+call s:set_highlights()
+set statusline=%!DrawStatusLine()
 
-augroup StatusLine | autocmd!
-    autocmd BufEnter,BufWinEnter,WinEnter,BufWritePost * call s:SetHighlights()
+augroup status_line | autocmd!
+    autocmd BufEnter,BufWinEnter,WinEnter,BufWritePost * call s:set_highlights()
     autocmd VimResized *  redrawstatus
 augroup END
 
@@ -533,12 +533,12 @@ let s:package_opt_dir   = s:vim_home .. '/pack/' .. s:package .. '/opt'
 let s:paqs = {}
 
 " Paq management functions
-function! s:PaqInit() abort
+function! s:paq_init() abort
     call mkdir(s:package_start_dir, 'p')
     call mkdir(s:package_opt_dir,   'p')
 endfunction
 
-function! s:PaqAdd(name, args = {}) abort
+function! s:paq_add(name, args = {}) abort
     let l:url = 'https://github.com/' .. a:name
     let l:as = a:args->get('as', a:name->split('/')[1])
 
@@ -551,7 +551,7 @@ function! s:PaqAdd(name, args = {}) abort
     let s:paqs[l:as] = { 'dir': l:dir, 'url': l:url }
 endfunction
 
-function! s:PaqUpdate() abort
+function! s:paq_update() abort
     for paq in s:paqs->items()
         let l:as  = paq[0]
         let l:dir = paq[1].dir
@@ -570,7 +570,7 @@ function! s:PaqUpdate() abort
     endfor
 endfunction
 
-function! s:PaqClean() abort
+function! s:paq_clean() abort
     let l:dirs = []
     for dir in [ s:package_start_dir, s:package_opt_dir ]
         let l:dirs += glob(dir .. '/*', v:true, v:true)
@@ -582,9 +582,10 @@ function! s:PaqClean() abort
     let l:dirs = sort(l:dirs + s:paqs->values()->map({ _, val -> val.dir }))
 
     let l:idx = 0
-    while l:idx < l:dirs->len()
+    let l:len = l:dirs->len()
+    while l:idx < l:len
         let l:val = l:dirs[l:idx]
-        while (l:idx + 1 < l:dirs->len())
+        while (l:idx + 1 < l:len)
             if (l:val != l:dirs[l:idx + 1])
                 break
             endif
@@ -633,33 +634,31 @@ let g:netrw_winsize      = 29
 nnoremap <silent> <F9> <Cmd>Lexplore<CR>
 
 " remap cd to be global
-augroup NetrwGroup | autocmd!
-    autocmd filetype netrw call s:NetrwMapping()
+augroup netrw_group | autocmd!
+    autocmd filetype netrw
+                \ nnoremap <buffer> <silent> <nowait> <LocalLeader>cd
+                \ <Cmd>execute 'cd ' .. b:netrw_curdir<CR><Cmd>pwd<CR>
 augroup END
-
-function! s:NetrwMapping()
-    nnoremap <buffer> <silent> <nowait> <LocalLeader>cd <Cmd>execute 'cd ' .. b:netrw_curdir<CR><Cmd>pwd<CR>
-endfunction
 
 " termdebug
 let g:termdebug_wide = 1
 
 " personal plugins
-call s:PaqAdd('prabirshrestha/asyncomplete.vim',     {'as': 'asyncomplete'})
-call s:PaqAdd('prabirshrestha/asyncomplete-lsp.vim', {'as': 'asyncomplete-lsp'})
-call s:PaqAdd('jiangmiao/auto-pairs')
-call s:PaqAdd('chrisbra/colorizer',                  {'as': 'colorizer'})
-call s:PaqAdd('tpope/vim-commentary',                {'as': 'commentary'})
-call s:PaqAdd('tpope/vim-eunuch',                    {'as': 'eunuch'})
-call s:PaqAdd('tommcdo/vim-exchange',                {'as': 'exchange'})
-call s:PaqAdd('tpope/vim-fugitive',                  {'as': 'fugitive'})
-call s:PaqAdd('machakann/vim-highlightedyank',       {'as': 'highlighted-yank'})
-call s:PaqAdd('tpope/vim-repeat',                    {'as': 'repeat'})
-call s:PaqAdd('tpope/vim-surround',                  {'as': 'surround'})
-call s:PaqAdd('tpope/vim-unimpaired',                {'as': 'unimpaired'})
+call s:paq_add('prabirshrestha/asyncomplete.vim',     {'as': 'asyncomplete'})
+call s:paq_add('prabirshrestha/asyncomplete-lsp.vim', {'as': 'asyncomplete-lsp'})
+call s:paq_add('jiangmiao/auto-pairs')
+call s:paq_add('chrisbra/colorizer',                  {'as': 'colorizer'})
+call s:paq_add('tpope/vim-commentary',                {'as': 'commentary'})
+call s:paq_add('tpope/vim-eunuch',                    {'as': 'eunuch'})
+call s:paq_add('tommcdo/vim-exchange',                {'as': 'exchange'})
+call s:paq_add('tpope/vim-fugitive',                  {'as': 'fugitive'})
+call s:paq_add('machakann/vim-highlightedyank',       {'as': 'highlighted-yank'})
+call s:paq_add('tpope/vim-repeat',                    {'as': 'repeat'})
+call s:paq_add('tpope/vim-surround',                  {'as': 'surround'})
+call s:paq_add('tpope/vim-unimpaired',                {'as': 'unimpaired'})
 
 " fzf
-call s:PaqAdd('junegunn/fzf.vim', {'as': 'fzf'})
+call s:paq_add('junegunn/fzf.vim', {'as': 'fzf'})
 let g:fzf_layout = { 'down': '40%' }
 let g:fzf_preview_window = []
 
@@ -671,14 +670,14 @@ nnoremap <Leader>fb <Cmd>Buffers<CR>
 nnoremap <Leader>fh <Cmd>Helptags<CR>
 
 " lion
-call s:PaqAdd('tommcdo/vim-lion', {'as': 'lion'})
+call s:paq_add('tommcdo/vim-lion', {'as': 'lion'})
 let g:lion_squeeze_spaces = 1
 
 " lsp
-call s:PaqAdd('prabirshrestha/vim-lsp', {'as': 'lsp'})
+call s:paq_add('prabirshrestha/vim-lsp', {'as': 'lsp'})
 let g:lsp_diagnostics_echo_cursor = 1
 
-augroup LspClangd | autocmd!
+augroup lsp_clangd | autocmd!
     autocmd User lsp_setup call lsp#register_server({
                 \       'name': 'clangd',
                 \       'cmd': { server_info->[ 'clangd' ] },
@@ -686,22 +685,22 @@ augroup LspClangd | autocmd!
                 \ })
 augroup END
 
-augroup LspInstall | autocmd!
-    " call s:OnLspBufferEnabled only for languages that has the server registered.
-    autocmd User lsp_buffer_enabled call s:OnLspBufferEnabled()
+augroup lsp_install | autocmd!
+    " call s:init_lsp_buffer only for languages that has the server registered.
+    autocmd User lsp_buffer_enabled call s:init_lsp_buffer()
 augroup END
 
-function! s:OnLspBufferEnabled() abort
+function! s:init_lsp_buffer() abort
     setlocal omnifunc=lsp#complete
     setlocal signcolumn=yes
     if exists('+tagfunc')
         setlocal tagfunc=lsp#tagfunc
     endif
 
-    call s:SetLspMappings()
+    call s:set_lsp_keymaps()
 endfunction
 
-function! s:SetLspMappings() abort
+function! s:set_lsp_keymaps() abort
     nnoremap <buffer> gd <Plug>(lsp-definition)
     nnoremap <buffer> gr <Plug>(lsp-references)
     nnoremap <buffer> gi <Plug>(lsp-implementation)
@@ -713,11 +712,11 @@ function! s:SetLspMappings() abort
 endfunction
 
 " rainbow
-call s:PaqAdd('luochen1990/rainbow')
+call s:paq_add('luochen1990/rainbow')
 let g:rainbow_active = 1
 
 " sneak
-call s:PaqAdd('justinmk/vim-sneak', {'as': 'sneak'})
+call s:paq_add('justinmk/vim-sneak', {'as': 'sneak'})
 let g:sneak#label = 1
 
 noremap <Leader>s <Plug>Sneak_s
@@ -729,12 +728,12 @@ noremap t <Plug>Sneak_t
 noremap T <Plug>Sneak_T
 
 " vinegar
-call s:PaqAdd('tpope/vim-vinegar', {'as': 'vinegar'})
+call s:paq_add('tpope/vim-vinegar', {'as': 'vinegar'})
 noremap - k^
 
 " define user commands for updating/cleaning the plugins
-command! PaqUpdate source $MYVIMRC | call <SID>PaqInit() | call <SID>PaqUpdate()
-command! PaqClean  source $MYVIMRC | call <SID>PaqInit() | call <SID>PaqClean()
+command! PaqUpdate source $MYVIMRC | call <SID>paq_init() | call <SID>paq_update()
+command! PaqClean  source $MYVIMRC | call <SID>paq_init() | call <SID>paq_clean()
 
 nnoremap <silent> <Leader>qu <Cmd>PaqUpdate<CR>
 nnoremap <silent> <Leader>qc <Cmd>PaqClean<CR>
