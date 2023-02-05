@@ -12,11 +12,11 @@ source $VIMRUNTIME/defaults.vim
 " ---------
 let s:vim_home = expand('<sfile>:p:h')
 
-call mkdir(s:vim_home .. "/backup", "p", 0o700)
-call mkdir(s:vim_home .. "/cache",  "p", 0o700)
-call mkdir(s:vim_home .. "/swap",   "p", 0o700)
-call mkdir(s:vim_home .. "/undo",   "p", 0o700)
-call mkdir(s:vim_home .. "/view",   "p", 0o700)
+call mkdir(s:vim_home .. '/backup', 'p', 0o700)
+call mkdir(s:vim_home .. '/cache',  'p', 0o700)
+call mkdir(s:vim_home .. '/swap',   'p', 0o700)
+call mkdir(s:vim_home .. '/undo',   'p', 0o700)
+call mkdir(s:vim_home .. '/view',   'p', 0o700)
 
 " -------
 " options
@@ -97,11 +97,6 @@ nnoremap <silent> <Leader>cd <Cmd>cd     %:p:h<CR><Cmd>pwd<CR>
 nnoremap <silent> <Leader>ev <Cmd>edit   $MYVIMRC<CR>
 nnoremap <silent> <Leader>sv <Cmd>source $MYVIMRC<CR>
 
-" minpac
-nnoremap <silent> <Leader>qu <Cmd>PackUpdate<CR>
-nnoremap <silent> <Leader>qc <Cmd>PackClean<CR>
-nnoremap <silent> <Leader>qs <Cmd>PackStatus<CR>
-
 " disable arrow keys
 noremap <Up>    <Nop>
 noremap <Down>  <Nop>
@@ -148,12 +143,12 @@ elseif executable('/usr/bin/xsel')
     nnoremap <silent> <Leader>yy <Cmd>set opfunc=<SID>CopyToClipboard<CR>g@_
 
     function! s:CopyToClipboard(type, ...) abort
-        const l:reg = '"'
-        const l:sel_save = &selection
+        let l:reg = '"'
+        let l:sel_save = &selection
         let &selection = "inclusive"
-        const l:cb_save  = &clipboard
-        const l:reg_save = getreg(reg)
-        const l:reg_type = getregtype(reg)
+        let l:cb_save  = &clipboard
+        let l:reg_save = getreg(reg)
+        let l:reg_type = getregtype(reg)
 
         if a:type ==# "char"
             silent! execute 'normal! v`[o`]"' .. l:reg .. 'y'
@@ -161,7 +156,7 @@ elseif executable('/usr/bin/xsel')
             silent! execute 'normal! `[V`]"' .. l:reg .. 'y'
         elseif a:type ==# "v" || a:type ==# "V" || a:type ==# "\<C-V>" || a:type ==# "block"
             let &selection = l:sel_save
-            const l:ve = &virtualedit
+            let l:ve = &virtualedit
 
             if !(a:0 && a:1)
                 set virtualedit=none
@@ -324,7 +319,7 @@ const s:palette = {
             \ }
 
 function! s:Highlight(group, fg, bg, style) abort
-    const l:cmd = 'highlight ' .. a:group
+    let l:cmd = 'highlight ' .. a:group
                 \ .. ' guifg=' .. a:fg
                 \ .. ' guibg=' .. a:bg
                 \ .. ' gui='   .. a:style
@@ -382,16 +377,16 @@ function! s:GetVimMode() abort
                 \ 't'    : { 'abbrev': 'T',  'alias': 'TERM',      'color' : s:palette.fg_main }
                 \ }
 
-    const l:mode = mode()
+    let l:mode = mode()
     call s:Highlight('StatusVimMode', s:palette.bg_main, l:modes[l:mode].color, 'bold')
     return l:modes[l:mode].abbrev
 endfunction
 
 function! s:GetGitBranchStatus() abort
-    const l:git_icon = ''
-    const l:git_dir = expand('%:p:h:S')
-    const l:git_cmd = 'git -C ' .. git_dir .. ' status --branch --porcelain=2'
-    silent! const l:git_cmd_result = system(l:git_cmd)->split('\n')
+    let l:git_icon = ''
+    let l:git_dir = expand('%:p:h:S')
+    let l:git_cmd = 'git -C ' .. git_dir .. ' status --branch --porcelain=2'
+    silent! let l:git_cmd_result = system(l:git_cmd)->split('\n')
 
     " Line                                     Notes
     " ------------------------------------------------------------
@@ -526,11 +521,143 @@ augroup END
 " }}}
 
 " plugins {{{
+let s:package = 'plugged'
+let s:package_start_dir = s:vim_home .. '/pack/' .. s:package .. '/start'
+let s:package_opt_dir   = s:vim_home .. '/pack/' .. s:package .. '/opt'
 
-" ---------------
-" plugin settings
-" ---------------
+" paq:
+" {
+"    'paq_name': { 'dir': dir, 'url': url }
+" }
+let s:paqs = {}
+
+" Paq management functions
+function! s:PaqInit() abort
+    call mkdir(s:package_start_dir, 'p')
+    call mkdir(s:package_opt_dir,   'p')
+endfunction
+
+function! s:PaqAdd(name, args = {}) abort
+    let l:url = 'https://github.com/' .. a:name
+    let l:as = a:args->get('as', a:name->split('/')[1])
+
+    if a:args->get('opt', v:false)
+        let l:dir = s:package_opt_dir   .. '/' .. l:as
+    else
+        let l:dir = s:package_start_dir .. '/' .. l:as
+    endif
+
+    let s:paqs[l:as] = { 'dir': l:dir, 'url': l:url }
+endfunction
+
+function! s:PaqUpdate() abort
+    for paq in s:paqs->items()
+        let l:as  = paq[0]
+        let l:dir = paq[1].dir
+        let l:url = paq[1].url
+
+        " check if it has been git cloned already
+        if finddir('.git', l:dir)->empty()
+            let l:git_clone_cmd = 'git clone --depth=1 ' .. l:url .. ' ' .. l:dir
+            silent! let l:git_cmd_result = system(l:git_clone_cmd)->split('\n')
+        else
+            let l:git_pull_cmd = 'git -C ' .. l:dir .. ' ' .. 'pull --depth=1'
+            silent! let l:git_cmd_result = system(l:git_pull_cmd)->split('\n')
+        endif
+
+        echo printf("%17s: %s", l:as, l:git_cmd_result[0])
+    endfor
+endfunction
+
+function! s:PaqClean() abort
+    let l:dirs = []
+    for dir in [ s:package_start_dir, s:package_opt_dir ]
+        let l:dirs += glob(dir .. '/*', v:true, v:true)
+    endfor
+
+    " blend the 2 lists and do a sort
+    " remove duplicates from a sorted list
+    " the remainder will be ones to be deleted
+    let l:dirs = sort(l:dirs + s:paqs->values()->map({ _, val -> val.dir }))
+
+    let l:idx = 0
+    while l:idx < l:dirs->len()
+        let l:val = l:dirs[l:idx]
+        while (l:idx + 1 < l:dirs->len())
+            if (l:val != l:dirs[l:idx + 1])
+                break
+            endif
+
+            let l:dirs[l:idx] = ''
+            let l:dirs[l:idx + 1] = ''
+
+            let l:idx += 1
+        endwhile
+
+        let l:idx += 1
+    endwhile
+
+    if l:dirs->filter('v:val != ""')->empty()
+        redraw | echo 'Package [' .. s:package .. '] is clean.'
+    else
+        let l:prompt = "WARNING:\nThe following folder(s) will be deleted.\n\n"
+                    \ .. l:dirs->join("\n") .. "\n\n"
+                    \ .. "Are you sure? "
+        if 1 == confirm(l:prompt, "&y\n&n", 2, "Warning")
+            for dir in l:dirs
+                call delete(dir, 'rf')
+            endfor
+        endif
+    endif
+endfunction
+
+" -------
+" plugins
+" -------
+" system plugins
+
+" matchit
+packadd! matchit
+
+" netrw
+let g:netrw_banner       = 0
+let g:netrw_browse_split = 4
+let g:netrw_dirhistmax   = 0
+let g:netrw_keepdir      = 0
+let g:netrw_list_hide    = '\(^\|\s\s\)\zs\.\S\+'
+let g:netrw_liststyle    = 3
+let g:netrw_winsize      = 29
+
+nmap <silent> <F9> <Cmd>Lexplore<CR>
+
+" remap cd to be global
+augroup NetrwGroup | autocmd!
+    autocmd filetype netrw call s:NetrwMapping()
+augroup END
+
+function! s:NetrwMapping()
+    nmap <buffer> <silent> <nowait> <LocalLeader>cd <Cmd>execute 'cd ' .. b:netrw_curdir<CR><Cmd>pwd<CR>
+endfunction
+
+" termdebug
+let g:termdebug_wide = 1
+
+" personal plugins
+call s:PaqAdd('prabirshrestha/asyncomplete.vim',     {'as': 'asyncomplete'})
+call s:PaqAdd('prabirshrestha/asyncomplete-lsp.vim', {'as': 'asyncomplete-lsp'})
+call s:PaqAdd('jiangmiao/auto-pairs')
+call s:PaqAdd('chrisbra/colorizer',                  {'as': 'colorizer'})
+call s:PaqAdd('tpope/vim-commentary',                {'as': 'commentary'})
+call s:PaqAdd('tpope/vim-eunuch',                    {'as': 'eunuch'})
+call s:PaqAdd('tommcdo/vim-exchange',                {'as': 'exchange'})
+call s:PaqAdd('tpope/vim-fugitive',                  {'as': 'fugitive'})
+call s:PaqAdd('machakann/vim-highlightedyank',       {'as': 'highlighted-yank'})
+call s:PaqAdd('tpope/vim-repeat',                    {'as': 'repeat'})
+call s:PaqAdd('tpope/vim-surround',                  {'as': 'surround'})
+call s:PaqAdd('tpope/vim-unimpaired',                {'as': 'unimpaired'})
+
 " fzf
+call s:PaqAdd('junegunn/fzf.vim', {'as': 'fzf'})
 let g:fzf_layout = { 'down': '40%' }
 let g:fzf_preview_window = []
 
@@ -542,9 +669,11 @@ nnoremap <Leader>fb <Cmd>Buffers<CR>
 nnoremap <Leader>fh <Cmd>Helptags<CR>
 
 " lion
+call s:PaqAdd('tommcdo/vim-lion', {'as': 'lion'})
 let g:lion_squeeze_spaces = 1
 
 " lsp
+call s:PaqAdd('prabirshrestha/vim-lsp', {'as': 'lsp'})
 let g:lsp_diagnostics_echo_cursor = 1
 
 augroup LspClangd | autocmd!
@@ -579,36 +708,14 @@ function! s:SetLspMappings() abort
     nmap <buffer> [g <Plug>(lsp-previous-diagnostic)
     nmap <buffer> ]g <Plug>(lsp-next-diagnostic)
     nmap <buffer> K  <Plug>(lsp-hover)
-
-endfunction
-
-" matchit
-packadd! matchit
-
-" netrw
-let g:netrw_banner       = 0
-let g:netrw_browse_split = 4
-let g:netrw_dirhistmax   = 0
-let g:netrw_keepdir      = 0
-let g:netrw_list_hide    = '\(^\|\s\s\)\zs\.\S\+'
-let g:netrw_liststyle    = 3
-let g:netrw_winsize      = 29
-
-nmap <silent> <F9> <Cmd>Lexplore<CR>
-
-" remap cd to be global
-augroup NetrwGroup | autocmd!
-    autocmd filetype netrw call s:NetrwMapping()
-augroup END
-
-function! s:NetrwMapping()
-    nmap <buffer> <silent> <nowait> <LocalLeader>cd <Cmd>execute "cd ".b:netrw_curdir<CR>:pwd<CR>
 endfunction
 
 " rainbow
+call s:PaqAdd('luochen1990/rainbow')
 let g:rainbow_active = 1
 
 " sneak
+call s:PaqAdd('justinmk/vim-sneak', {'as': 'sneak'})
 let g:sneak#label = 1
 
 map <Leader>s <Plug>Sneak_s
@@ -620,48 +727,14 @@ map t <Plug>Sneak_t
 map T <Plug>Sneak_T
 
 " vinegar
+call s:PaqAdd('tpope/vim-vinegar', {'as': 'vinegar'})
 noremap - k^
 
-" termdebug
-let g:termdebug_wide = 1
-
-" --------------
-" minpac plugins
-" --------------
-function! s:PackInit() abort
-    packadd minpac
-
-    call minpac#init({'package_name': 'plugged'})
-    call minpac#add('k-takata/minpac',                     {'type': 'opt'})
-
-    call minpac#add('jiangmiao/auto-pairs')
-    call minpac#add('tpope/vim-commentary',                {'name': 'commentary'})
-    call minpac#add('tommcdo/vim-exchange',                {'name': 'exchange'})
-    call minpac#add('machakann/vim-highlightedyank',       {'name': 'highlighted-yank'})
-    call minpac#add('tommcdo/vim-lion',                    {'name': 'lion'})
-    call minpac#add('tpope/vim-repeat',                    {'name': 'repeat'})
-    call minpac#add('justinmk/vim-sneak',                  {'name': 'sneak'})
-    call minpac#add('tpope/vim-surround',                  {'name': 'surround'})
-    call minpac#add('tpope/vim-unimpaired',                {'name': 'unimpaired'})
-
-    call minpac#add('tpope/vim-eunuch',                    {'name': 'eunuch'})
-    call minpac#add('tpope/vim-fugitive',                  {'name': 'fugitive'})
-    call minpac#add('tpope/vim-vinegar',                   {'name': 'vinegar'})
-
-    call minpac#add('chrisbra/colorizer',                  {'name': 'colorizer'})
-    call minpac#add('luochen1990/rainbow')
-
-    call minpac#add('junegunn/fzf.vim',                    {'name': 'fzf'})
-
-    call minpac#add('prabirshrestha/vim-lsp',              {'name': 'lsp'})
-
-    call minpac#add('prabirshrestha/asyncomplete.vim',     {'name': 'asyncomplete'})
-    call minpac#add('prabirshrestha/asyncomplete-lsp.vim', {'name': 'asyncomplete-lsp'})
-endfunction
-
 " define user commands for updating/cleaning the plugins
-command! PackUpdate source $MYVIMRC | call <SID>PackInit() | call minpac#update()
-command! PackClean  source $MYVIMRC | call <SID>PackInit() | call minpac#clean()
-command! PackStatus source $MYVIMRC | call <SID>PackInit() | call minpac#status()
+command! PaqUpdate source $MYVIMRC | call <SID>PaqInit() | call <SID>PaqUpdate()
+command! PaqClean  source $MYVIMRC | call <SID>PaqInit() | call <SID>PaqClean()
+
+nnoremap <silent> <Leader>qu <Cmd>PaqUpdate<CR>
+nnoremap <silent> <Leader>qc <Cmd>PaqClean<CR>
 
 " }}}
