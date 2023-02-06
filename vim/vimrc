@@ -405,7 +405,7 @@ function! s:get_vim_mode() abort
                 \ }
 
     let l:mode = mode()
-    call s:highlight('StatusVimMode', s:palette.bg_main, l:modes[l:mode].color, 'bold')
+    call s:highlight('StatusVimMode', l:modes[l:mode].color, s:palette.bg_main, 'bold,inverse')
     return l:modes[l:mode].abbrev
 endfunction
 
@@ -570,7 +570,13 @@ function! DrawTabLine() abort
         let l:winnr = tabpagewinnr(i)
         let l:buf = l:buflist[l:winnr - 1]
         let l:bufname = bufname(l:buf)->fnamemodify(':~')->pathshorten()
+
         let l:tabline ..= ' ' .. i .. ':' .. l:bufname .. ' '
+
+        " if buffer is modified
+        let l:buf_modified = getbufvar(l:buf, '&modified')
+        if l:buf_modified | let l:tabline ..= '[+] ' | endif
+
         if i != l:last_tab_nr &&
                     \ i != l:selected_tab_nr &&
                     \ i + 1 != l:selected_tab_nr
@@ -584,7 +590,7 @@ function! DrawTabLine() abort
     return l:tabline
 endfunction
 
-call s:highlight('TabLineSel',  s:palette.blue,    s:palette.bg_main, 'inverse')
+call s:highlight('TabLineSel',  s:palette.blue,    s:palette.bg_main, 'bold,inverse')
 call s:highlight('TabLine',     s:palette.fg_main, s:palette.bg_dim,  'NONE')
 call s:highlight('TabLineFill', s:palette.fg_main, s:palette.bg_main, 'NONE')
 
