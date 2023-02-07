@@ -202,29 +202,6 @@ inoremap <Down>  <Nop>
 inoremap <Left>  <Nop>
 inoremap <Right> <Nop>
 
-" use arrow keys to navigate windows
-nnoremap <Up>    <Cmd>wincmd<Space>k<CR>
-nnoremap <Down>  <Cmd>wincmd<Space>j<CR>
-nnoremap <Left>  <Cmd>wincmd<Space>h<CR>
-nnoremap <Right> <Cmd>wincmd<Space>l<CR>
-
-" use alt+arrow keys to navigate tabs
-nnoremap <A-Up>    <Cmd>silent! tabnext<Space>$<CR>
-nnoremap <A-Down>  <Cmd>silent! tabnext<Space>1<CR>
-nnoremap <A-Left>  <Cmd>silent! tabnext<Space>-<CR>
-nnoremap <A-Right> <Cmd>silent! tabnext<Space>+<CR>
-
-" use alt+{num} to switch to tab #{num}
-nnoremap <A-1> <Cmd>silent! tabnext<Space>1<CR>
-nnoremap <A-2> <Cmd>silent! tabnext<Space>2<CR>
-nnoremap <A-3> <Cmd>silent! tabnext<Space>3<CR>
-nnoremap <A-4> <Cmd>silent! tabnext<Space>4<CR>
-nnoremap <A-5> <Cmd>silent! tabnext<Space>5<CR>
-nnoremap <A-6> <Cmd>silent! tabnext<Space>6<CR>
-nnoremap <A-7> <Cmd>silent! tabnext<Space>7<CR>
-nnoremap <A-8> <Cmd>silent! tabnext<Space>8<CR>
-nnoremap <A-9> <Cmd>silent! tabnext<Space>9<CR>
-
 " swap j/k <-> gj/gk
 nnoremap <expr> j (v:count ? 'j' : 'gj')
 nnoremap <expr> k (v:count ? 'k' : 'gk')
@@ -361,6 +338,7 @@ function! s:set_highlights() abort
     call s:highlight('StatusFileFormat', s:palette.fg_main, s:palette.bg_lavender,     'NONE')
     call s:highlight('StatusFileEncode', s:palette.fg_main, s:palette.bg_lavender,     'NONE')
     call s:highlight('StatusPercent',    s:palette.fg_main, s:palette.bg_blue_nuanced, 'NONE')
+    call s:highlight('StatusWinNR',      s:palette.fg_main, s:palette.bg_sage,         'NONE')
 endfunction
 
 function! s:get_vim_mode() abort
@@ -492,6 +470,10 @@ function! DrawStatusLine() abort
                     \    ' ',
                     \    '%#StatusPercent#',
                     \    '%P',
+                    \    ' ',
+                    \    '%#StatusWinNR#',
+                    \    ' ',
+                    \    '%{winnr()}',
                     \    ' '
                     \ ], '')
     else
@@ -530,6 +512,10 @@ function! DrawStatusLine() abort
                     \    ' ',
                     \    '%#StatusPercent#',
                     \    '%P',
+                    \    ' ',
+                    \    '%#StatusWinNR#',
+                    \    ' ',
+                    \    '%{winnr()}',
                     \    ' '
                     \ ], '')
     endif
