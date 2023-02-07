@@ -634,25 +634,15 @@ function! s:paq_clean() abort
         let l:dirs += glob(dir .. '/*', v:true, v:true)
     endfor
 
-    " blend the 2 lists and do a sort
-    " remove duplicates from a sorted list
-    " the remainder will be ones to be deleted
-    let l:dirs = sort(l:dirs + s:paqs->values()->map({ _, val -> val.dir }))
-
     let l:idx = 0
     let l:len = l:dirs->len()
     while l:idx < l:len
-        let l:val = l:dirs[l:idx]
-        while (l:idx + 1 < l:len)
-            if (l:val != l:dirs[l:idx + 1])
+        for dir in s:paqs->values()->map({ _, val -> val.dir })
+            if l:dirs[l:idx] == dir
+                let l:dirs[l:idx] = ''
                 break
             endif
-
-            let l:dirs[l:idx] = ''
-            let l:dirs[l:idx + 1] = ''
-
-            let l:idx += 1
-        endwhile
+        endfor
 
         let l:idx += 1
     endwhile
