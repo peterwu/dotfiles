@@ -295,10 +295,7 @@ nnoremap <Leader>W <Cmd>Wsudo<CR>
 
 " terminal
 tnoremap <Esc> <C-\><C-N>
-nnoremap <silent> <Leader>tt <Cmd>belowright terminal<CR>
-nnoremap <silent> <Leader>tv <Cmd>belowright vertical terminal<CR>
-nnoremap <silent> <Leader>tT <Cmd>botright terminal<CR>
-nnoremap <silent> <Leader>tV <Cmd>botright vertical terminal<CR>
+nnoremap <C-`> <Cmd>belowright terminal<CR>
 
 " }}}
 
