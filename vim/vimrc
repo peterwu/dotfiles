@@ -224,7 +224,6 @@ nnoremap <A-6> <Cmd>silent! tabnext<Space>6<CR>
 nnoremap <A-7> <Cmd>silent! tabnext<Space>7<CR>
 nnoremap <A-8> <Cmd>silent! tabnext<Space>8<CR>
 nnoremap <A-9> <Cmd>silent! tabnext<Space>9<CR>
-nnoremap <A-0> <Cmd>silent! tabnext<Space>0<CR>
 
 " swap j/k <-> gj/gk
 nnoremap <expr> j (v:count ? 'j' : 'gj')
@@ -255,10 +254,10 @@ if has('clipboard')
     nnoremap <silent> <Leader>Y  "+yg_
     nnoremap <silent> <Leader>yy "+y_
 elseif executable('/usr/bin/xsel')
-    vnoremap <silent> <Leader>y  <Cmd>set opfunc=<SID>copy_to_clipboard<CR>g@
-    nnoremap <silent> <Leader>y  <Cmd>set opfunc=<SID>copy_to_clipboard<CR>g@
-    nnoremap <silent> <Leader>Y  <Cmd>set opfunc=<SID>copy_to_clipboard<CR>g@g_
-    nnoremap <silent> <Leader>yy <Cmd>set opfunc=<SID>copy_to_clipboard<CR>g@_
+    vnoremap <silent> <Leader>y  <Cmd>set operatorfunc=<SID>copy_to_clipboard<CR>g@
+    nnoremap <silent> <Leader>y  <Cmd>set operatorfunc=<SID>copy_to_clipboard<CR>g@
+    nnoremap <silent> <Leader>Y  <Cmd>set operatorfunc=<SID>copy_to_clipboard<CR>g@g_
+    nnoremap <silent> <Leader>yy <Cmd>set operatorfunc=<SID>copy_to_clipboard<CR>g@_
 
     function! s:copy_to_clipboard(type, ...) abort
         let l:reg = '"'
@@ -623,7 +622,7 @@ function! s:paq_add(name, args = {}) abort
         let l:dir = s:package_start_dir .. '/' .. l:as
     endif
 
-    let s:paqs[l:as] = { 'dir': l:dir, 'url': l:url }
+    let s:paqs[l:as] = { 'dir': l:dir->glob(), 'url': l:url }
 endfunction
 
 function! s:paq_update() abort
