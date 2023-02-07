@@ -576,10 +576,8 @@ function! DrawTabLine() abort
         let l:buf_modified = getbufvar(l:buf, '&modified')
         if l:buf_modified | let l:tabline ..= '[+] ' | endif
 
-        if i != l:last_tab_nr &&
-                    \ i != l:selected_tab_nr &&
-                    \ i + 1 != l:selected_tab_nr
-            let l:tabline ..= '|'
+        if i != l:last_tab_nr
+            let l:tabline ..= '%#TabLineFill#' .. ' '
         endif
     endfor
 
@@ -589,9 +587,9 @@ function! DrawTabLine() abort
     return l:tabline
 endfunction
 
-call s:highlight('TabLineSel',  s:palette.blue,    s:palette.bg_main, 'bold,inverse')
-call s:highlight('TabLine',     s:palette.fg_main, s:palette.bg_dim,  'NONE')
-call s:highlight('TabLineFill', s:palette.fg_main, s:palette.bg_main, 'NONE')
+call s:highlight('TabLineSel',  s:palette.blue,    s:palette.bg_main,     'bold,inverse')
+call s:highlight('TabLine',     s:palette.fg_main, s:palette.bg_lavender, 'NONE')
+call s:highlight('TabLineFill', s:palette.fg_main, s:palette.bg_main,     'NONE')
 
 " }}}
 
