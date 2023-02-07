@@ -4,7 +4,7 @@
 [credential]
     helper = store
 [core]
-    editor = emacsclient -nw
+    editor = vim
 [init]
     defaultBranch = main
 [pull]
@@ -13,19 +13,15 @@
     fontui   = -family \"Liberation Sans\" -size 12 -weight normal -slant roman -underline 0 -overstrike 0
     fontdiff = -family \"Liberation Mono\" -size 12 -weight normal -slant roman -underline 0 -overstrike 0
 [diff]
-    tool = ediff
+    tool = vimdiff
 [difftool]
     keepBackup = false
     prompt = false
     trustExitCode = true
-[difftool "ediff"]
-    cmd = ediff $LOCAL $REMOTE
 [merge]
     conflictStyle = diff3
-    tool = ediff
+    tool = vimdiff
 [mergetool]
     prompt = false
     keepBackup = false
     trustExitCode = true
-[mergetool "ediff"]
-    cmd = emerge $LOCAL $REMOTE $MERGED $BASE
