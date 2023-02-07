@@ -635,8 +635,7 @@ function! s:paq_clean() abort
     endfor
 
     let l:idx = 0
-    let l:len = l:dirs->len()
-    while l:idx < l:len
+    while l:idx < l:dirs->len()
         for dir in s:paqs->values()->map({ _, val -> val.dir })
             if l:dirs[l:idx] == dir
                 let l:dirs[l:idx] = ''
@@ -652,8 +651,8 @@ function! s:paq_clean() abort
     else
         let l:prompt = "WARNING:\nThe following folder(s) will be deleted.\n\n"
                     \ .. l:dirs->join("\n") .. "\n\n"
-                    \ .. "Are you sure? "
-        if 1 == confirm(l:prompt, "&y\n&n", 2, "Warning")
+                    \ .. "Are you sure? (y/n) "
+        if 'y' == input(l:prompt)->tolower()
             for dir in l:dirs
                 call delete(dir, 'rf')
             endfor
