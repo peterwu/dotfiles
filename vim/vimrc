@@ -603,7 +603,7 @@ function! s:paq_add(name, args = {}) abort
         let l:dir = s:package_start_dir .. '/' .. l:as
     endif
 
-    let s:paqs[l:as] = { 'dir': l:dir->glob(), 'url': l:url }
+    let s:paqs[l:as] = { 'dir': l:dir, 'url': l:url }
 endfunction
 
 function! s:paq_update() abort
@@ -619,6 +619,11 @@ function! s:paq_update() abort
         else
             let l:git_pull_cmd = 'git -C ' .. l:dir .. ' ' .. 'pull --depth=1'
             silent! let l:git_cmd_result = system(l:git_pull_cmd)->split('\n')
+        endif
+
+        let l:doc_dir = l:dir .. '/doc'
+        if l:doc_dir->isdirectory()
+            execute "helptags " ..  l:doc_dir
         endif
 
         echo printf("%17s: %s", l:as, l:git_cmd_result[0])
