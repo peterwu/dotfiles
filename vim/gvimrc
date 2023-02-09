@@ -2,8 +2,6 @@ set mousehide		" Hide the mouse when typing text
 set guioptions-=T guioptions-=m guioptions-=L guioptions-=r guioptions-=e
 set guifont=Iosevka\ Fusion\ 13
 
-colorscheme zellner
-
 nnoremap <Leader>egv :edit $MYGVIMRC<CR>
 nnoremap <Leader>sgv :source $MYGVIMRC<CR>
 
