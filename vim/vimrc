@@ -321,6 +321,12 @@ augroup no_trailing_whitespaces | autocmd!
     autocmd BufWritePre * :%s/\s\+$//e
 augroup END
 
+augroup auto_format | autocmd!
+    if executable('clang-format')
+        autocmd FileType c,cpp,objc setlocal equalprg=clang-format
+    endif
+augroup END
+
 " }}}
 
 " status line {{{
