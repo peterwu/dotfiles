@@ -3,96 +3,7 @@
 " commons {{{
 
 const s:vim_home = expand('<sfile>:p:h')
-
-" modus operandi color palette
-const s:palette = {
-            "\ Basic values
-            \  'bg_main':            "#ffffff",
-            \  'bg_dim':             "#f0f0f0",
-            \  'fg_main':            "#000000",
-            \  'fg_dim':             "#595959",
-            \  'fg_alt':             "#193668",
-            \  'bg_active':          "#c4c4c4",
-            \  'bg_inactive':        "#e0e0e0",
-            \  'border':             "#9f9f9f",
-            \
-            "\ Common accent foregrounds
-            \  'red':                "#a60000",
-            \  'red_warmer':         "#972500",
-            \  'red_cooler':         "#a0132f",
-            \  'red_faint':          "#7f0000",
-            \  'red_intense':        "#d00000",
-            \  'green':              "#006800",
-            \  'green_warmer':       "#316500",
-            \  'green_cooler':       "#00663f",
-            \  'green_faint':        "#2a5045",
-            \  'green_intense':      "#008900",
-            \  'yellow':             "#6f5500",
-            \  'yellow_warmer':      "#884900",
-            \  'yellow_cooler':      "#7a4f2f",
-            \  'yellow_faint':       "#624416",
-            \  'yellow_intense':     "#808000",
-            \  'blue':               "#0031a9",
-            \  'blue_warmer':        "#3548cf",
-            \  'blue_cooler':        "#0000b0",
-            \  'blue_faint':         "#003497",
-            \  'blue_intense':       "#0000ff",
-            \  'magenta':            "#721045",
-            \  'magenta_warmer':     "#8f0075",
-            \  'magenta_cooler':     "#531ab6",
-            \  'magenta_faint':      "#7c318f",
-            \  'magenta_intense':    "#dd22dd",
-            \  'cyan':               "#005e8b",
-            \  'cyan_warmer':        "#3f578f",
-            \  'cyan_cooler':        "#005f5f",
-            \  'cyan_faint':         "#005077",
-            \  'cyan_intense':       "#008899",
-            \
-            "\ Uncommon accent foregrounds
-            \  'rust':               "#8a290f",
-            \  'gold':               "#80601f",
-            \  'olive':              "#56692d",
-            \  'slate':              "#2f3f83",
-            \  'indigo':             "#4a3a8a",
-            \  'maroon':             "#731c52",
-            \  'pink':               "#7b435c",
-            \
-            "\ Common accent backgrounds
-            \  'bg_red_intense':     "#ff8f88",
-            \  'bg_green_intense':   "#8adf80",
-            \  'bg_yellow_intense':  "#f3d000",
-            \  'bg_blue_intense':    "#bfc9ff",
-            \  'bg_magenta_intense': "#dfa0f0",
-            \  'bg_cyan_intense':    "#a4d5f9",
-            \
-            \  'bg_red_subtle':      "#ffcfbf",
-            \  'bg_green_subtle':    "#b3fabf",
-            \  'bg_yellow_subtle':   "#fff576",
-            \  'bg_blue_subtle':     "#ccdfff",
-            \  'bg_magenta_subtle':  "#ffddff",
-            \  'bg_cyan_subtle':     "#bfefff",
-            \
-            \  'bg_red_nuanced':     "#fff1f0",
-            \  'bg_green_nuanced':   "#ecf7ed",
-            \  'bg_yellow_nuanced':  "#fff3da",
-            \  'bg_blue_nuanced':    "#f3f3ff",
-            \  'bg_magenta_nuanced': "#fdf0ff",
-            \  'bg_cyan_nuanced':    "#ebf6fa",
-            \
-            "\ Uncommon accent backgrounds
-            \  'bg_ochre':           "#f0e0cc",
-            \  'bg_lavender':        "#dfdbfa",
-            \  'bg_sage':            "#c0e7d4"
-            \ }
-
-function! s:highlight(group, fg, bg, style) abort
-    let l:cmd = 'highlight ' .. a:group
-                \ .. ' guifg=' .. a:fg
-                \ .. ' guibg=' .. a:bg
-                \ .. ' gui='   .. a:style
-                \ .. ' cterm=' .. a:style
-    execute l:cmd
-endfunction
+const s:enable_modus_operandi_theme = v:true
 
 " }}}
 
@@ -173,15 +84,335 @@ let &viminfofile=s:vim_home .. '/cache/viminfo'
 set virtualedit=block
 set wildoptions=pum,tagfile
 
-colorscheme lunaperche
+" }}}
+
+" color scheme {{{
+
+" modus operandi color palette
+const s:palette = {
+            "\ Basic values
+            \  'bg_main':            "#ffffff",
+            \  'bg_dim':             "#f0f0f0",
+            \  'fg_main':            "#000000",
+            \  'fg_dim':             "#595959",
+            \  'fg_alt':             "#193668",
+            \  'bg_active':          "#c4c4c4",
+            \  'bg_inactive':        "#e0e0e0",
+            \  'bg_hl_line':         "#dae5ec",
+            \
+            "\ Common accent foregrounds
+            \  'red':                "#a60000",
+            \  'red_warmer':         "#972500",
+            \  'red_cooler':         "#a0132f",
+            \  'red_faint':          "#7f0000",
+            \  'red_intense':        "#d00000",
+            \  'green':              "#006800",
+            \  'green_warmer':       "#316500",
+            \  'green_cooler':       "#00663f",
+            \  'green_faint':        "#2a5045",
+            \  'green_intense':      "#008900",
+            \  'yellow':             "#6f5500",
+            \  'yellow_warmer':      "#884900",
+            \  'yellow_cooler':      "#7a4f2f",
+            \  'yellow_faint':       "#624416",
+            \  'yellow_intense':     "#808000",
+            \  'blue':               "#0031a9",
+            \  'blue_warmer':        "#3548cf",
+            \  'blue_cooler':        "#0000b0",
+            \  'blue_faint':         "#003497",
+            \  'blue_intense':       "#0000ff",
+            \  'magenta':            "#721045",
+            \  'magenta_warmer':     "#8f0075",
+            \  'magenta_cooler':     "#531ab6",
+            \  'magenta_faint':      "#7c318f",
+            \  'magenta_intense':    "#dd22dd",
+            \  'cyan':               "#005e8b",
+            \  'cyan_warmer':        "#3f578f",
+            \  'cyan_cooler':        "#005f5f",
+            \  'cyan_faint':         "#005077",
+            \  'cyan_intense':       "#008899",
+            \
+            "\ Uncommon accent foregrounds
+            \  'rust':               "#8a290f",
+            \  'gold':               "#80601f",
+            \  'olive':              "#56692d",
+            \  'slate':              "#2f3f83",
+            \  'indigo':             "#4a3a8a",
+            \  'maroon':             "#731c52",
+            \  'pink':               "#7b435c",
+            \
+            "\ Common accent backgrounds
+            \  'bg_red_intense':     "#ff8f88",
+            \  'bg_green_intense':   "#8adf80",
+            \  'bg_yellow_intense':  "#f3d000",
+            \  'bg_blue_intense':    "#bfc9ff",
+            \  'bg_magenta_intense': "#dfa0f0",
+            \  'bg_cyan_intense':    "#a4d5f9",
+            \
+            \  'bg_red_subtle':      "#ffcfbf",
+            \  'bg_green_subtle':    "#b3fabf",
+            \  'bg_yellow_subtle':   "#fff576",
+            \  'bg_blue_subtle':     "#ccdfff",
+            \  'bg_magenta_subtle':  "#ffddff",
+            \  'bg_cyan_subtle':     "#bfefff",
+            \
+            \  'bg_red_nuanced':     "#fff1f0",
+            \  'bg_green_nuanced':   "#ecf7ed",
+            \  'bg_yellow_nuanced':  "#fff3da",
+            \  'bg_blue_nuanced':    "#f3f3ff",
+            \  'bg_magenta_nuanced': "#fdf0ff",
+            \  'bg_cyan_nuanced':    "#ebf6fa",
+            \
+            "\ Uncommon accent backgrounds
+            \  'bg_ochre':           "#f0e0cc",
+            \  'bg_lavender':        "#dfdbfa",
+            \  'bg_sage':            "#c0e7d4",
+            \
+            "\ Diffs
+            \  'bg_added':           "#c1f2d1",
+            \  'bg_added_faint':     "#d8f8e1",
+            \  'bg_added_refine':    "#aee5be",
+            \  'bg_added_fringe':    "#6cc06c",
+            \  'fg_added':           "#005000",
+            \  'fg_added_intense':   "#006700",
+            \
+            \  'bg_changed':         "#ffdfa9",
+            \  'bg_changed_faint':   "#ffefbf",
+            \  'bg_changed_refine':  "#fac090",
+            \  'bg_changed_fringe':  "#d7c20a",
+            \  'fg_changed':         "#553d00",
+            \  'fg_changed_intense': "#655000",
+            \
+            \  'bg_removed':         "#ffd8d5",
+            \  'bg_removed_faint':   "#ffe9e9",
+            \  'bg_removed_refine':  "#f3b5af",
+            \  'bg_removed_fringe':  "#d84a4f",
+            \  'fg_removed':         "#8f1313",
+            \  'fg_removed_intense': "#aa2222",
+            \
+            \  'bg_diff_context':    "#f3f3f3",
+            \
+            "\ Paren Match
+            \  'bg_paren_match':     "#5fcfff",
+            \  'bg_paren_expression':"#efd3f5"
+            \ }
+
+function! s:highlight(group, fg='NONE', bg='NONE', style='NONE') abort
+    let l:cmd = 'highlight '   .. a:group
+                \ .. ' guifg=' .. a:fg
+                \ .. ' guibg=' .. a:bg
+                \ .. ' gui='   .. a:style
+                \ .. ' cterm=' .. a:style
+    execute l:cmd
+endfunction
+
+if s:enable_modus_operandi_theme
+
+    highlight clear
+
+    highlight! link helpVim                   Title
+    highlight! link helpHeader                Title
+    highlight! link helpHyperTextJump         Underlined
+    highlight! link fugitiveSymbolicRef       PreProc
+    highlight! link fugitiveHeading           Statement
+    highlight! link fugitiveStagedHeading     Statement
+    highlight! link fugitiveUnstagedHeading   Statement
+    highlight! link fugitiveUntrackedHeading  Statement
+    highlight! link fugitiveStagedModifier    PreProc
+    highlight! link fugitiveUnstagedModifier  PreProc
+    highlight! link fugitiveHash              Constant
+    highlight! link diffFile                  PreProc
+    highlight! link markdownHeadingDelimiter  Special
+    highlight! link rstSectionDelimiter       Statement
+    highlight! link rstDirective              PreProc
+    highlight! link rstHyperlinkReference     Special
+    highlight! link rstFieldName              Constant
+    highlight! link rstDelimiter              Special
+    highlight! link rstInterpretedText        Special
+    highlight! link rstCodeBlock              Normal
+    highlight! link rstLiteralBlock           rstCodeBlock
+    highlight! link markdownUrl               String
+    highlight! link colortemplateKey          Statement
+    highlight! link xmlTagName                Statement
+    highlight! link javaScriptFunction        Statement
+    highlight! link javaScriptIdentifier      Statement
+    highlight! link sqlKeyword                Statement
+    highlight! link yamlBlockMappingKey       Statement
+    highlight! link rubyMacro                 Statement
+    highlight! link rubyDefine                Statement
+    highlight! link vimGroup                  Normal
+    highlight! link vimVar                    Normal
+    highlight! link vimOper                   Normal
+    highlight! link vimSep                    Normal
+    highlight! link vimParenSep               Normal
+    highlight! link vimOption                 Normal
+    highlight! link vimCommentString          Comment
+    highlight! link pythonInclude             Statement
+    highlight! link elixirOperator            Statement
+    highlight! link elixirKeyword             Statement
+    highlight! link elixirBlockDefinition     Statement
+    highlight! link elixirDefine              Statement
+    highlight! link elixirPrivateDefine       Statement
+    highlight! link elixirGuard               Statement
+    highlight! link elixirPrivateGuard        Statement
+    highlight! link elixirModuleDefine        Statement
+    highlight! link elixirProtocolDefine      Statement
+    highlight! link elixirImplDefine          Statement
+    highlight! link elixirRecordDefine        Statement
+    highlight! link elixirPrivateRecordDefine Statement
+    highlight! link elixirMacroDefine         Statement
+    highlight! link elixirPrivateMacroDefine  Statement
+    highlight! link elixirDelegateDefine      Statement
+    highlight! link elixirOverridableDefine   Statement
+    highlight! link elixirExceptionDefine     Statement
+    highlight! link elixirCallbackDefine      Statement
+    highlight! link elixirStructDefine        Statement
+    highlight! link elixirExUnitMacro         Statement
+    highlight! link elixirInclude             Statement
+    highlight! link elixirVariable            Special
+    highlight! link elixirAtom                Constant
+    highlight! link elixirDocTest             String
+    highlight! link shQuote                   Constant
+    highlight! link shNoQuote                 Normal
+    highlight! link shTestOpr                 Normal
+    highlight! link shOperator                Normal
+    highlight! link shSetOption               Normal
+    highlight! link shOption                  Normal
+    highlight! link shCommandSub              Normal
+    highlight! link shDerefPattern            shQuote
+    highlight! link shDerefOp                 Special
+    highlight! link phpStorageClass           Statement
+    highlight! link phpStructure              Statement
+    highlight! link phpInclude                Statement
+    highlight! link phpDefine                 Statement
+    highlight! link phpSpecialFunction        Normal
+    highlight! link phpParent                 Normal
+    highlight! link phpComparison             Normal
+    highlight! link phpOperator               Normal
+    highlight! link phpVarSelector            Special
+    highlight! link phpMemberSelector         Special
+    highlight! link phpDocCustomTags          phpDocTags
+    highlight! link javaExternal              Statement
+    highlight! link javaType                  Statement
+    highlight! link javaScopeDecl             Statement
+    highlight! link javaClassDecl             Statement
+    highlight! link javaStorageClass          Statement
+    highlight! link javaDocParam              PreProc
+    highlight! link csStorage                 Statement
+    highlight! link csAccessModifier          Statement
+    highlight! link csClass                   Statement
+    highlight! link csModifier                Statement
+    highlight! link csAsyncModifier           Statement
+    highlight! link csLogicSymbols            Normal
+    highlight! link csClassType               Normal
+    highlight! link csType                    Statement
+    highlight! link Terminal                  Normal
+    highlight! link StatuslineTerm            Statusline
+    highlight! link StatuslineTermNC          StatuslineNC
+    highlight! link LineNrAbove               LineNr
+    highlight! link LineNrBelow               LineNr
+    highlight! link MessageWindow             PMenu
+    highlight! link PopupNotification         Todo
+
+    " highlights
+    call s:highlight('Normal',           s:palette.fg_main,      s:palette.bg_main)
+    call s:highlight('Folded',           s:palette.fg_dim,       s:palette.bg_dim)
+    call s:highlight('LineNr',           s:palette.fg_alt,       s:palette.bg_dim)
+    call s:highlight('CursorLineNr',     s:palette.fg_main,      s:palette.bg_hl_line,   'bold')
+    call s:highlight('SignColumn',       s:palette.bg_main,      s:palette.bg_inactive)
+    call s:highlight('CursorLine',       'NONE',                 s:palette.bg_hl_line)
+    call s:highlight('NonText',          s:palette.fg_alt)
+    call s:highlight('NormalNC',         s:palette.fg_dim,       s:palette.bg_main)
+    call s:highlight('ErrorMsg',         s:palette.fg_main,      s:palette.bg_red_intense)
+    call s:highlight('Conceal',          s:palette.fg_main,      s:palette.bg_dim)
+    call s:highlight('Cursor',           s:palette.fg_main,      s:palette.bg_main,     'inverse')
+    call s:highlight('lCursor',          s:palette.fg_main,      s:palette.bg_main,     'inverse')
+    call s:highlight('CursorIM',         s:palette.fg_main,      s:palette.bg_main,     'inverse')
+    call s:highlight('ColorColumn',      s:palette.fg_main,      s:palette.bg_active)
+    call s:highlight('FoldColumn',       s:palette.fg_main,      s:palette.bg_active)
+    call s:highlight('Search',           s:palette.fg_main,      s:palette.bg_green_intense)
+    call s:highlight('IncSearch',        s:palette.fg_main,      s:palette.bg_green_intense)
+    call s:highlight('Substitute',       s:palette.fg_main,      s:palette.bg_green_intense)
+    call s:highlight('QuickFixLine',     s:palette.fg_main,      s:palette.bg_main,     'inverse')
+    call s:highlight('Menu',             s:palette.fg_main,      s:palette.bg_active)
+    call s:highlight('Pmenu',            s:palette.fg_main,      s:palette.bg_inactive)
+    call s:highlight('PmenuSel',         s:palette.fg_alt,       s:palette.bg_active,   'bold')
+    call s:highlight('PmenuSbar',        s:palette.fg_main,      s:palette.bg_inactive)
+    call s:highlight('PmenuThumb',       s:palette.fg_alt,       s:palette.bg_main,     'inverse')
+    call s:highlight('Scrollbar',        s:palette.bg_dim,       s:palette.bg_inactive)
+    call s:highlight('Directory',        s:palette.blue)
+    call s:highlight('Title',            s:palette.fg_main,      'NONE',                'bold')
+    call s:highlight('Visual',           s:palette.fg_main,      s:palette.bg_cyan_intense)
+    call s:highlight('Whitespace',       s:palette.fg_alt)
+    call s:highlight('MatchParen',       s:palette.fg_main,      s:palette.bg_paren_match)
+    call s:highlight('TabLineSel',       s:palette.blue,         s:palette.bg_main,     'bold,inverse')
+    call s:highlight('TabLine',          s:palette.fg_main,      s:palette.bg_lavender, 'NONE')
+    call s:highlight('TabLineFill',      s:palette.fg_main,      s:palette.bg_main,     'NONE')
+    call s:highlight('StatusLine',       s:palette.fg_main,      s:palette.bg_active)
+    call s:highlight('StatusLineNC',     s:palette.fg_dim,       s:palette.bg_inactive)
+    call s:highlight('VertSplit',        s:palette.fg_main,      s:palette.bg_main)
+    call s:highlight('WarningMsg',       s:palette.yellow)
+
+    call s:highlight('DiffAdd',          s:palette.fg_added,     s:palette.bg_added)
+    call s:highlight('DiffChange',       s:palette.fg_changed,   s:palette.bg_changed)
+    call s:highlight('DiffDelete',       s:palette.fg_removed,   s:palette.bg_removed)
+    call s:highlight('DiffText',         s:palette.fg_changed,   s:palette.bg_changed)
+
+    call s:highlight('SpellBad',         s:palette.red_warmer)
+    call s:highlight('SpellCap',         s:palette.red_warmer)
+
+    call s:highlight('Comment',          s:palette.fg_alt,       'NONE',                'italic')
+    call s:highlight('String',           s:palette.blue)
+    call s:highlight('Boolean',          s:palette.blue,         'NONE',                'bold')
+    call s:highlight('Character',        s:palette.blue)
+    call s:highlight('Conditional',      s:palette.magenta)
+    call s:highlight('Constant',         s:palette.blue)
+    call s:highlight('Function',         s:palette.magenta)
+    call s:highlight('Identifier',       s:palette.cyan)
+    call s:highlight('Include',          s:palette.red_faint)
+    call s:highlight('Label',            s:palette.cyan)
+    call s:highlight('Todo',             s:palette.magenta,      'NONE',                'bold')
+    call s:highlight('Type',             s:palette.cyan)
+    call s:highlight('Number',           s:palette.blue_faint)
+    call s:highlight('Operator',         s:palette.magenta)
+    call s:highlight('Float',            s:palette.blue_faint)
+    call s:highlight('PreCondit',        s:palette.red)
+    call s:highlight('Statement',        s:palette.magenta)
+    call s:highlight('Repeat',           s:palette.magenta)
+    call s:highlight('Keyword',          s:palette.magenta)
+    call s:highlight('Exception',        s:palette.magenta)
+    call s:highlight('PreProc',          s:palette.red)
+    call s:highlight('Define',           s:palette.red)
+    call s:highlight('Macro',            s:palette.red)
+    call s:highlight('StorageClass',     s:palette.magenta)
+    call s:highlight('Structure',        s:palette.magenta)
+    call s:highlight('Typedef',          s:palette.cyan)
+    call s:highlight('Tag',              s:palette.magenta)
+    call s:highlight('Delimiter',        s:palette.fg_main)
+    call s:highlight('Underlined',       s:palette.fg_main,      'NONE',                'underline')
+    call s:highlight('Error',            s:palette.fg_main,      s:palette.bg_red_intense)
+
+    call s:highlight('vimBracket',       s:palette.fg_main)
+    call s:highlight('vimCommentString', s:palette.fg_alt,       'NONE',                'italic')
+    call s:highlight('vimCommentTitle',  s:palette.red)
+    call s:highlight('vimFuncSID',       s:palette.fg_main)
+    call s:highlight('vimFuncVar',       s:palette.blue)
+    call s:highlight('vimIsCommand',     s:palette.fg_main)
+    call s:highlight('vimLet',           s:palette.magenta)
+    call s:highlight('vimMapLhs',        s:palette.fg_main)
+    call s:highlight('vimMapModKey',     s:palette.fg_main)
+    call s:highlight('vimNotation',      s:palette.fg_main)
+    call s:highlight('vimcommand',       s:palette.magenta)
+    call s:highlight('vimmap',           s:palette.magenta)
+    call s:highlight('vimnotfunc',       s:palette.magenta)
+    call s:highlight('vimvar',           s:palette.cyan)
+
+endif
 
 " }}}
 
 " keymaps {{{
 
-" ------------
-" key mappings
-" ------------
 " leaders
 let g:mapleader      = " "
 let g:maplocalleader = ","
@@ -307,11 +538,8 @@ endif
 
 " }}}
 
-" auto commands {{{
+" autos {{{
 
-" -------------
-" auto commands
-" -------------
 augroup save_folds | autocmd!
     autocmd BufWinLeave,BufLeave,BufWritePost ?* ++nested silent! mkview!
     autocmd BufWinEnter ?* silent! loadview
@@ -584,13 +812,10 @@ function! DrawTabLine() abort
     return l:tabline
 endfunction
 
-call s:highlight('TabLineSel',  s:palette.blue,    s:palette.bg_main,     'bold,inverse')
-call s:highlight('TabLine',     s:palette.fg_main, s:palette.bg_lavender, 'NONE')
-call s:highlight('TabLineFill', s:palette.fg_main, s:palette.bg_main,     'NONE')
-
 " }}}
 
 " plugins {{{
+
 let s:package = 'plugged'
 let s:package_start_dir = s:vim_home .. '/pack/' .. s:package .. '/start'
 let s:package_opt_dir   = s:vim_home .. '/pack/' .. s:package .. '/opt'
@@ -775,7 +1000,7 @@ endfunction
 
 " rainbow
 call s:paq_add('luochen1990/rainbow')
-let g:rainbow_active = 1
+let g:rainbow_active = 0
 
 " sneak
 call s:paq_add('justinmk/vim-sneak', {'as': 'sneak'})
