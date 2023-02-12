@@ -314,6 +314,28 @@ if s:enable_modus_operandi_theme
     highlight! link MessageWindow             PMenu
     highlight! link PopupNotification         Todo
 
+    if (has('termguicolors') && &termguicolors) || has('gui_running')
+        let g:terminal_ansi_colors = [
+                    \   s:palette.fg_main,
+                    \   s:palette.red,
+                    \   s:palette.green,
+                    \   s:palette.yellow,
+                    \   s:palette.blue,
+                    \   s:palette.magenta,
+                    \   s:palette.cyan,
+                    \   s:palette.bg_dim,
+                    \
+                    \   s:palette.fg_dim,
+                    \   s:palette.red_warmer,
+                    \   s:palette.green_warmer,
+                    \   s:palette.yellow_warmer,
+                    \   s:palette.blue_warmer,
+                    \   s:palette.magenta_warmer,
+                    \   s:palette.cyan_warmer,
+                    \   s:palette.bg_main
+                    \ ]
+    endif
+
     " highlights
     call s:highlight('Normal',           s:palette.fg_main,      s:palette.bg_main)
     call s:highlight('Folded',           s:palette.fg_dim,       s:palette.bg_dim)
@@ -365,28 +387,28 @@ if s:enable_modus_operandi_theme
     call s:highlight('String',           s:palette.blue)
     call s:highlight('Boolean',          s:palette.blue,         'NONE',                'bold')
     call s:highlight('Character',        s:palette.blue)
-    call s:highlight('Conditional',      s:palette.magenta)
-    call s:highlight('Constant',         s:palette.blue)
+    call s:highlight('Conditional',      s:palette.magenta_warmer)
+    call s:highlight('Constant',         s:palette.blue_warmer)
     call s:highlight('Function',         s:palette.magenta)
     call s:highlight('Identifier',       s:palette.cyan)
-    call s:highlight('Include',          s:palette.red_faint)
+    call s:highlight('Include',          s:palette.red_warmer)
     call s:highlight('Label',            s:palette.cyan)
     call s:highlight('Todo',             s:palette.magenta,      'NONE',                'bold')
-    call s:highlight('Type',             s:palette.cyan)
+    call s:highlight('Type',             s:palette.cyan_warmer)
     call s:highlight('Number',           s:palette.blue_faint)
-    call s:highlight('Operator',         s:palette.magenta)
+    call s:highlight('Operator',         s:palette.magenta_warmer)
     call s:highlight('Float',            s:palette.blue_faint)
     call s:highlight('PreCondit',        s:palette.red)
-    call s:highlight('Statement',        s:palette.magenta)
-    call s:highlight('Repeat',           s:palette.magenta)
-    call s:highlight('Keyword',          s:palette.magenta)
-    call s:highlight('Exception',        s:palette.magenta)
+    call s:highlight('Statement',        s:palette.magenta_warmer)
+    call s:highlight('Repeat',           s:palette.magenta_warmer)
+    call s:highlight('Keyword',          s:palette.magenta_warmer)
+    call s:highlight('Exception',        s:palette.magenta_warmer)
     call s:highlight('PreProc',          s:palette.red)
     call s:highlight('Define',           s:palette.red)
     call s:highlight('Macro',            s:palette.red)
-    call s:highlight('StorageClass',     s:palette.magenta)
-    call s:highlight('Structure',        s:palette.magenta)
-    call s:highlight('Typedef',          s:palette.cyan)
+    call s:highlight('StorageClass',     s:palette.magenta_warmer)
+    call s:highlight('Structure',        s:palette.magenta_warmer)
+    call s:highlight('Typedef',          s:palette.cyan_warmer)
     call s:highlight('Tag',              s:palette.magenta)
     call s:highlight('Delimiter',        s:palette.fg_main)
     call s:highlight('Underlined',       s:palette.fg_main,      'NONE',                'underline')
@@ -396,15 +418,15 @@ if s:enable_modus_operandi_theme
     call s:highlight('vimCommentString', s:palette.fg_alt,       'NONE',                'italic')
     call s:highlight('vimCommentTitle',  s:palette.red)
     call s:highlight('vimFuncSID',       s:palette.fg_main)
-    call s:highlight('vimFuncVar',       s:palette.blue)
+    call s:highlight('vimFuncVar',       s:palette.blue_warmer)
     call s:highlight('vimIsCommand',     s:palette.fg_main)
-    call s:highlight('vimLet',           s:palette.magenta)
+    call s:highlight('vimLet',           s:palette.magenta_warmer)
     call s:highlight('vimMapLhs',        s:palette.fg_main)
     call s:highlight('vimMapModKey',     s:palette.fg_main)
     call s:highlight('vimNotation',      s:palette.fg_main)
-    call s:highlight('vimcommand',       s:palette.magenta)
-    call s:highlight('vimmap',           s:palette.magenta)
-    call s:highlight('vimnotfunc',       s:palette.magenta)
+    call s:highlight('vimcommand',       s:palette.magenta_warmer)
+    call s:highlight('vimmap',           s:palette.magenta_warmer)
+    call s:highlight('vimnotfunc',       s:palette.magenta_warmer)
     call s:highlight('vimvar',           s:palette.cyan)
 
 endif
