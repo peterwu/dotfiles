@@ -10,7 +10,7 @@
        (if (display-graphic-p)
            (evil-set-register ?\" (evil-get-register ?+))
          (with-temp-buffer
-           (call-process "/usr/bin/xsel" nil t nil "-o" "-b")
+           (call-process "kitty" nil t nil "+kitten" "clipboard" "--get-clipboard")
            (evil-set-register ?\" (buffer-string))))
        (,evil-paste-command count ?\" yank-handler))))
 
@@ -63,7 +63,7 @@
         (evil-set-register ?+ (evil-get-register ?\"))
       (with-temp-buffer
         (insert (evil-get-register ?\"))
-        (call-process-region (point-min) (point-max) "/usr/bin/xsel" nil 0 nil  "-i" "-b" "-l" "/dev/null"))))
+        (call-process-region (point-min) (point-max) "kitty" nil 0 nil  "+kitten" "clipboard"))))
 
   (evil-define-operator my-evil-yank-to-clipboard (beg end type register yank-handler)
     :move-point nil
