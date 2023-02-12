@@ -297,6 +297,14 @@ nnoremap <Leader>W <Cmd>Wsudo<CR>
 tnoremap <Esc> <C-\><C-N>
 nnoremap <C-`> <Cmd>belowright terminal<CR>
 
+" diff mode
+if &diff
+    " layout = "(LOCAL,BASE,REMOTE)/MERGED"
+    nnoremap <LocalLeader>g1 <Cmd>diffget LO<CR>
+    nnoremap <LocalLeader>g2 <Cmd>diffget BA<CR>
+    nnoremap <LocalLeader>g3 <Cmd>diffget RE<CR>
+endif
+
 " }}}
 
 " auto commands {{{
