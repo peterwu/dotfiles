@@ -479,53 +479,31 @@ nnoremap &     <Cmd>&&<CR>
 
 " copy to clipboard
 if has('clipboard')
-    vnoremap <silent> <Leader>y  "+y
     nnoremap <silent> <Leader>y  "+y
+    xnoremap <silent> <Leader>y  "+y
     nnoremap <silent> <Leader>Y  "+yg_
     nnoremap <silent> <Leader>yy "+y_
-elseif executable('/usr/bin/xsel')
-    vnoremap <silent> <Leader>y  <Cmd>set operatorfunc=<SID>copy_to_clipboard<CR>g@
+elseif executable('/usr/bin/kitty')
     nnoremap <silent> <Leader>y  <Cmd>set operatorfunc=<SID>copy_to_clipboard<CR>g@
+    xnoremap <silent> <Leader>y  <Cmd>set operatorfunc=<SID>copy_to_clipboard<CR>g@
     nnoremap <silent> <Leader>Y  <Cmd>set operatorfunc=<SID>copy_to_clipboard<CR>g@g_
     nnoremap <silent> <Leader>yy <Cmd>set operatorfunc=<SID>copy_to_clipboard<CR>g@_
 
     function! s:copy_to_clipboard(type, ...) abort
-        let l:reg = '"'
-        let l:sel_save = &selection
-        let &selection = "inclusive"
-        let l:cb_save  = &clipboard
-        let l:reg_save = getreg(reg)
-        let l:reg_type = getregtype(reg)
-
         if a:type ==# "char"
-            silent! execute 'normal! v`[o`]"' .. l:reg .. 'y'
+            silent! execute 'normal! v`[o`]""y'
         elseif a:type ==# "line"
-            silent! execute 'normal! `[V`]"' .. l:reg .. 'y'
+            silent! execute 'normal! `[V`]""y'
         elseif a:type ==# "v" || a:type ==# "V" || a:type ==# "\<C-V>" || a:type ==# "block"
-            let &selection = l:sel_save
-            let l:ve = &virtualedit
-
-            if !(a:0 && a:1)
-                set virtualedit=none
-            endif
-
-            silent execute 'normal! gv"' .. l:reg .. 'y'
-            let &virtualedit = l:ve
+            silent! execute 'normal! gv""y'
         elseif a:type =~ '^\d\+$'
-            silent! execute 'normal! ^v' .. a:type .. '$h"' .. l:reg .. 'y'
+            silent! execute 'normal! ^v' .. a:type .. '$h""y'
             if mode() ==# 'v'
                 normal! v
             endif
-        else
-            let &selection = l:sel_save
-            let &clipboard = l:cb_save
         endif
 
-        silent! call system('/usr/bin/xsel -i -b -l /dev/null', getreg(l:reg))
-
-        call setreg(l:reg, l:reg_save, l:reg_type)
-        let &selection = l:sel_save
-        let &clipboard = l:cb_save
+        silent! call system('kitty +kitten clipboard', getreg('"'))
     endfunction
 endif
 
@@ -533,13 +511,13 @@ endif
 if has('clipboard')
     nnoremap <silent> <Leader>p "+p
     nnoremap <silent> <Leader>P "+P
-    vnoremap <silent> <Leader>p "+p
-    vnoremap <silent> <Leader>P "+P
-elseif executable('/usr/bin/xsel')
-    nnoremap <silent> <Leader>p <Cmd>silent! let @"=system('xsel -o -b -l /dev/null')<CR>""p
-    nnoremap <silent> <Leader>P <Cmd>silent! let @"=system('xsel -o -b -l /dev/null')<CR>""P
-    vnoremap <silent> <Leader>p <Cmd>silent! let @"=system('xsel -o -b -l /dev/null')<CR>""p
-    vnoremap <silent> <Leader>P <Cmd>silent! let @"=system('xsel -o -b -l /dev/null')<CR>""P
+    xnoremap <silent> <Leader>p "+p
+    xnoremap <silent> <Leader>P "+P
+elseif executable('/usr/bin/kitty')
+    nnoremap <silent> <Leader>p <Cmd>silent! let @"=system('kitty +kitten clipboard --get-clipboard')<CR>""p
+    nnoremap <silent> <Leader>P <Cmd>silent! let @"=system('kitty +kitten clipboard --get-clipboard')<CR>""P
+    xnoremap <silent> <Leader>p <Cmd>silent! let @"=system('kitty +kitten clipboard --get-clipboard')<CR>""p
+    xnoremap <silent> <Leader>P <Cmd>silent! let @"=system('kitty +kitten clipboard --get-clipboard')<CR>""P
 endif
 
 " force saving files that otherwise require sudoedit
