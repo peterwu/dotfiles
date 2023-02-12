@@ -1000,7 +1000,12 @@ endfunction
 
 " rainbow
 call s:paq_add('luochen1990/rainbow')
-let g:rainbow_active = 0
+let g:rainbow_active = 1
+let g:rainbow_conf = {
+            \	'guifgs':   [s:palette.blue_faint, s:palette.yellow_faint, s:palette.cyan_faint, s:palette.magenta_faint ],
+            \	'ctermfgs': ['lightblue',          'lightyellow',          'lightcyan',          'lightmagenta'],
+            \	'operators': '_,_'
+            \ }
 
 " sneak
 call s:paq_add('justinmk/vim-sneak', {'as': 'sneak'})
