@@ -207,112 +207,10 @@ function! s:highlight(group, fg='NONE', bg='NONE', style='NONE') abort
 endfunction
 
 if s:enable_modus_operandi_theme
-
     highlight clear
-
-    highlight! link helpVim                   Title
-    highlight! link helpHeader                Title
-    highlight! link helpHyperTextJump         Underlined
-    highlight! link fugitiveSymbolicRef       PreProc
-    highlight! link fugitiveHeading           Statement
-    highlight! link fugitiveStagedHeading     Statement
-    highlight! link fugitiveUnstagedHeading   Statement
-    highlight! link fugitiveUntrackedHeading  Statement
-    highlight! link fugitiveStagedModifier    PreProc
-    highlight! link fugitiveUnstagedModifier  PreProc
-    highlight! link fugitiveHash              Constant
-    highlight! link diffFile                  PreProc
-    highlight! link markdownHeadingDelimiter  Special
-    highlight! link rstSectionDelimiter       Statement
-    highlight! link rstDirective              PreProc
-    highlight! link rstHyperlinkReference     Special
-    highlight! link rstFieldName              Constant
-    highlight! link rstDelimiter              Special
-    highlight! link rstInterpretedText        Special
-    highlight! link rstCodeBlock              Normal
-    highlight! link rstLiteralBlock           rstCodeBlock
-    highlight! link markdownUrl               String
-    highlight! link colortemplateKey          Statement
-    highlight! link xmlTagName                Statement
-    highlight! link javaScriptFunction        Statement
-    highlight! link javaScriptIdentifier      Statement
-    highlight! link sqlKeyword                Statement
-    highlight! link yamlBlockMappingKey       Statement
-    highlight! link rubyMacro                 Statement
-    highlight! link rubyDefine                Statement
-    highlight! link vimGroup                  Normal
-    highlight! link vimVar                    Normal
-    highlight! link vimOper                   Normal
-    highlight! link vimSep                    Normal
-    highlight! link vimParenSep               Normal
-    highlight! link vimOption                 Normal
-    highlight! link vimCommentString          Comment
-    highlight! link pythonInclude             Statement
-    highlight! link elixirOperator            Statement
-    highlight! link elixirKeyword             Statement
-    highlight! link elixirBlockDefinition     Statement
-    highlight! link elixirDefine              Statement
-    highlight! link elixirPrivateDefine       Statement
-    highlight! link elixirGuard               Statement
-    highlight! link elixirPrivateGuard        Statement
-    highlight! link elixirModuleDefine        Statement
-    highlight! link elixirProtocolDefine      Statement
-    highlight! link elixirImplDefine          Statement
-    highlight! link elixirRecordDefine        Statement
-    highlight! link elixirPrivateRecordDefine Statement
-    highlight! link elixirMacroDefine         Statement
-    highlight! link elixirPrivateMacroDefine  Statement
-    highlight! link elixirDelegateDefine      Statement
-    highlight! link elixirOverridableDefine   Statement
-    highlight! link elixirExceptionDefine     Statement
-    highlight! link elixirCallbackDefine      Statement
-    highlight! link elixirStructDefine        Statement
-    highlight! link elixirExUnitMacro         Statement
-    highlight! link elixirInclude             Statement
-    highlight! link elixirVariable            Special
-    highlight! link elixirAtom                Constant
-    highlight! link elixirDocTest             String
-    highlight! link shQuote                   Constant
-    highlight! link shNoQuote                 Normal
-    highlight! link shTestOpr                 Normal
-    highlight! link shOperator                Normal
-    highlight! link shSetOption               Normal
-    highlight! link shOption                  Normal
-    highlight! link shCommandSub              Normal
-    highlight! link shDerefPattern            shQuote
-    highlight! link shDerefOp                 Special
-    highlight! link phpStorageClass           Statement
-    highlight! link phpStructure              Statement
-    highlight! link phpInclude                Statement
-    highlight! link phpDefine                 Statement
-    highlight! link phpSpecialFunction        Normal
-    highlight! link phpParent                 Normal
-    highlight! link phpComparison             Normal
-    highlight! link phpOperator               Normal
-    highlight! link phpVarSelector            Special
-    highlight! link phpMemberSelector         Special
-    highlight! link phpDocCustomTags          phpDocTags
-    highlight! link javaExternal              Statement
-    highlight! link javaType                  Statement
-    highlight! link javaScopeDecl             Statement
-    highlight! link javaClassDecl             Statement
-    highlight! link javaStorageClass          Statement
-    highlight! link javaDocParam              PreProc
-    highlight! link csStorage                 Statement
-    highlight! link csAccessModifier          Statement
-    highlight! link csClass                   Statement
-    highlight! link csModifier                Statement
-    highlight! link csAsyncModifier           Statement
-    highlight! link csLogicSymbols            Normal
-    highlight! link csClassType               Normal
-    highlight! link csType                    Statement
-    highlight! link Terminal                  Normal
-    highlight! link StatuslineTerm            Statusline
-    highlight! link StatuslineTermNC          StatuslineNC
-    highlight! link LineNrAbove               LineNr
-    highlight! link LineNrBelow               LineNr
-    highlight! link MessageWindow             PMenu
-    highlight! link PopupNotification         Todo
+    if exists("syntax_on")
+        syntax reset
+    endif
 
     if (has('termguicolors') && &termguicolors) || has('gui_running')
         let g:terminal_ansi_colors = [
@@ -336,99 +234,115 @@ if s:enable_modus_operandi_theme
                     \ ]
     endif
 
-    " highlights
-    call s:highlight('Normal',           s:palette.fg_main,      s:palette.bg_main)
-    call s:highlight('Folded',           s:palette.fg_dim,       s:palette.bg_dim)
-    call s:highlight('LineNr',           s:palette.fg_alt,       s:palette.bg_dim)
-    call s:highlight('CursorLineNr',     s:palette.fg_main,      s:palette.bg_hl_line,   'bold')
-    call s:highlight('SignColumn',       s:palette.bg_main,      s:palette.bg_inactive)
-    call s:highlight('CursorLine',       'NONE',                 s:palette.bg_hl_line)
-    call s:highlight('NonText',          s:palette.fg_alt)
-    call s:highlight('NormalNC',         s:palette.fg_dim,       s:palette.bg_main)
-    call s:highlight('ErrorMsg',         s:palette.fg_main,      s:palette.bg_red_intense)
-    call s:highlight('Conceal',          s:palette.fg_main,      s:palette.bg_dim)
-    call s:highlight('Cursor',           s:palette.fg_main,      s:palette.bg_main,     'inverse')
-    call s:highlight('lCursor',          s:palette.fg_main,      s:palette.bg_main,     'inverse')
-    call s:highlight('CursorIM',         s:palette.fg_main,      s:palette.bg_main,     'inverse')
-    call s:highlight('ColorColumn',      s:palette.fg_main,      s:palette.bg_active)
-    call s:highlight('FoldColumn',       s:palette.fg_main,      s:palette.bg_active)
-    call s:highlight('Search',           s:palette.fg_main,      s:palette.bg_green_intense)
-    call s:highlight('IncSearch',        s:palette.fg_main,      s:palette.bg_green_intense)
-    call s:highlight('Substitute',       s:palette.fg_main,      s:palette.bg_green_intense)
-    call s:highlight('QuickFixLine',     s:palette.fg_main,      s:palette.bg_main,     'inverse')
-    call s:highlight('Menu',             s:palette.fg_main,      s:palette.bg_active)
-    call s:highlight('Pmenu',            s:palette.fg_main,      s:palette.bg_inactive)
-    call s:highlight('PmenuSel',         s:palette.fg_alt,       s:palette.bg_active,   'bold')
-    call s:highlight('PmenuSbar',        s:palette.fg_main,      s:palette.bg_inactive)
-    call s:highlight('PmenuThumb',       s:palette.fg_alt,       s:palette.bg_main,     'inverse')
-    call s:highlight('Scrollbar',        s:palette.bg_dim,       s:palette.bg_inactive)
-    call s:highlight('Directory',        s:palette.blue)
-    call s:highlight('Title',            s:palette.fg_main,      'NONE',                'bold')
-    call s:highlight('Visual',           s:palette.fg_main,      s:palette.bg_cyan_intense)
-    call s:highlight('Whitespace',       s:palette.fg_alt)
-    call s:highlight('MatchParen',       s:palette.fg_main,      s:palette.bg_paren_match)
-    call s:highlight('TabLineSel',       s:palette.blue,         s:palette.bg_main,     'bold,inverse')
-    call s:highlight('TabLine',          s:palette.fg_main,      s:palette.bg_lavender, 'NONE')
-    call s:highlight('TabLineFill',      s:palette.fg_main,      s:palette.bg_main,     'NONE')
-    call s:highlight('StatusLine',       s:palette.fg_main,      s:palette.bg_active)
-    call s:highlight('StatusLineNC',     s:palette.fg_dim,       s:palette.bg_inactive)
-    call s:highlight('VertSplit',        s:palette.fg_main,      s:palette.bg_main)
-    call s:highlight('WarningMsg',       s:palette.yellow)
+    " :help highlight-groups
+    call s:highlight('ColorColumn',       s:palette.fg_main,        s:palette.bg_dim)
+    call s:highlight('Conceal',           s:palette.fg_main,        s:palette.bg_dim)
+    call s:highlight('Cursor',            s:palette.fg_main,        s:palette.bg_main,     'inverse')
+    call s:highlight('lCursor',           s:palette.fg_main,        s:palette.bg_main,     'inverse')
+    call s:highlight('CursorIM',          s:palette.fg_main,        s:palette.bg_main,     'inverse')
+    call s:highlight('CursorColumn',      s:palette.bg_main,        s:palette.bg_inactive)
+    call s:highlight('CursorLine',        'NONE',                   s:palette.bg_hl_line)
+    call s:highlight('Directory',         s:palette.blue)
+    call s:highlight('DiffAdd',           s:palette.fg_added,       s:palette.bg_added)
+    call s:highlight('DiffChange',        s:palette.fg_changed,     s:palette.bg_changed)
+    call s:highlight('DiffDelete',        s:palette.fg_removed,     s:palette.bg_removed)
+    call s:highlight('DiffText',          s:palette.fg_changed,     s:palette.bg_changed)
+    call s:highlight('EndOfBuffer',       s:palette.fg_alt)
+    call s:highlight('ErrorMsg',          s:palette.fg_main,        s:palette.bg_red_intense)
+    call s:highlight('VertSplit',         s:palette.fg_main,        s:palette.bg_main)
+    call s:highlight('Folded',            s:palette.fg_dim,         s:palette.bg_dim)
+    call s:highlight('FoldColumn',        s:palette.fg_main,        s:palette.bg_active)
+    call s:highlight('SignColumn',        s:palette.fg_main,        s:palette.bg_inactive)
+    call s:highlight('IncSearch',         s:palette.fg_main,        s:palette.bg_green_intense)
+    call s:highlight('LineNr',            s:palette.fg_alt,         s:palette.bg_dim)
+    call s:highlight('LineNrAbove',       s:palette.fg_alt,         s:palette.bg_dim)
+    call s:highlight('LineNrBelow',       s:palette.fg_alt,         s:palette.bg_dim)
+    call s:highlight('CursorLineNr',      s:palette.fg_main,        s:palette.bg_hl_line,  'bold')
+    call s:highlight('CursorLineFold',    s:palette.fg_main,        s:palette.bg_hl_line,  'bold')
+    call s:highlight('CursorLineSign',    s:palette.fg_main,        s:palette.bg_hl_line,  'bold')
+    call s:highlight('MatchParen',        s:palette.fg_main,        s:palette.bg_paren_match)
+    call s:highlight('MessageWindow',     s:palette.fg_main,        s:palette.bg_inactive)
+    call s:highlight('ModeMsg',           s:palette.green)
+    call s:highlight('MoreMsg',           s:palette.green_faint)
+    call s:highlight('NonText',           s:palette.fg_alt)
+    call s:highlight('Normal',            s:palette.fg_main,        s:palette.bg_main)
+    call s:highlight('Pmenu',             s:palette.fg_main,        s:palette.bg_inactive)
+    call s:highlight('PmenuSel',          s:palette.fg_alt,         s:palette.bg_active,   'bold')
+    call s:highlight('PmenuSbar',         s:palette.fg_main,        s:palette.bg_inactive)
+    call s:highlight('PmenuThumb',        s:palette.fg_alt,         s:palette.bg_main,     'inverse')
+    call s:highlight('PopupNotification', s:palette.magenta,        'NONE',                'bold')
+    call s:highlight('Question',          s:palette.maroon,         'NONE',                'bold')
+    call s:highlight('QuickFixLine',      s:palette.fg_main,        s:palette.bg_main,     'inverse')
+    call s:highlight('Search',            s:palette.fg_main,        s:palette.bg_green_intense)
+    call s:highlight('CurSearch',         s:palette.fg_main,        s:palette.bg_yellow_intense)
+    call s:highlight('SpecialKey',        s:palette.rust,           s:palette.bg_inactive)
+    call s:highlight('SpellBad',          s:palette.red_warmer,     s:palette.bg_main,     'inverse')
+    call s:highlight('SpellCap',          s:palette.red_warmer,     s:palette.bg_main,     'inverse')
+    call s:highlight('SpellLocal',        s:palette.magenta_warmer, s:palette.bg_main,     'inverse')
+    call s:highlight('SpellRare',         s:palette.magenta_cooler, s:palette.bg_main,     'inverse')
+    call s:highlight('StatusLine',        s:palette.fg_main,        s:palette.bg_active)
+    call s:highlight('StatusLineNC',      s:palette.fg_dim,         s:palette.bg_inactive)
+    call s:highlight('StatusLineTerm',    s:palette.fg_main,        s:palette.bg_active)
+    call s:highlight('StatusLineNCTerm',  s:palette.fg_dim,         s:palette.bg_inactive)
+    call s:highlight('TabLine',           s:palette.fg_main,        s:palette.bg_lavender)
+    call s:highlight('TabLineFill',       s:palette.fg_main,        s:palette.bg_main)
+    call s:highlight('TabLineSel',        s:palette.blue,           s:palette.bg_main,     'bold,inverse')
+    call s:highlight('Terminal',          s:palette.fg_main,        s:palette.bg_main)
+    call s:highlight('Title',             s:palette.fg_main,        'NONE',                'bold')
+    call s:highlight('Visual',            s:palette.fg_main,        s:palette.bg_cyan_intense)
+    call s:highlight('VisualNOS',         s:palette.fg_main,        s:palette.bg_cyan_intense)
+    call s:highlight('WarningMsg',        s:palette.yellow)
+    call s:highlight('WildMenu',          s:palette.fg_main,        s:palette.bg_inactive, 'standout')
 
-    call s:highlight('DiffAdd',          s:palette.fg_added,     s:palette.bg_added)
-    call s:highlight('DiffChange',       s:palette.fg_changed,   s:palette.bg_changed)
-    call s:highlight('DiffDelete',       s:palette.fg_removed,   s:palette.bg_removed)
-    call s:highlight('DiffText',         s:palette.fg_changed,   s:palette.bg_changed)
+    call s:highlight('Menu',      s:palette.fg_main, s:palette.bg_active)
+    call s:highlight('Scrollbar', s:palette.bg_dim,  s:palette.bg_inactive)
+    call s:highlight('Tooltip',   s:palette.fg_main, s:palette.bg_yellow_nuanced)
 
-    call s:highlight('SpellBad',         s:palette.red_warmer)
-    call s:highlight('SpellCap',         s:palette.red_warmer)
+    call s:highlight('Comment', s:palette.fg_alt, 'NONE', 'italic')
 
-    call s:highlight('Comment',          s:palette.fg_alt,       'NONE',                'italic')
-    call s:highlight('String',           s:palette.blue)
-    call s:highlight('Boolean',          s:palette.blue,         'NONE',                'bold')
-    call s:highlight('Character',        s:palette.blue)
-    call s:highlight('Conditional',      s:palette.magenta_warmer)
-    call s:highlight('Constant',         s:palette.blue_warmer)
-    call s:highlight('Function',         s:palette.magenta)
-    call s:highlight('Identifier',       s:palette.cyan)
-    call s:highlight('Include',          s:palette.red_warmer)
-    call s:highlight('Label',            s:palette.cyan)
-    call s:highlight('Todo',             s:palette.magenta,      'NONE',                'bold')
-    call s:highlight('Type',             s:palette.cyan_warmer)
-    call s:highlight('Number',           s:palette.blue_faint)
-    call s:highlight('Operator',         s:palette.magenta_warmer)
-    call s:highlight('Float',            s:palette.blue_faint)
-    call s:highlight('PreCondit',        s:palette.red)
-    call s:highlight('Statement',        s:palette.magenta_warmer)
-    call s:highlight('Repeat',           s:palette.magenta_warmer)
-    call s:highlight('Keyword',          s:palette.magenta_warmer)
-    call s:highlight('Exception',        s:palette.magenta_warmer)
-    call s:highlight('PreProc',          s:palette.red)
-    call s:highlight('Define',           s:palette.red)
-    call s:highlight('Macro',            s:palette.red)
-    call s:highlight('StorageClass',     s:palette.magenta_warmer)
-    call s:highlight('Structure',        s:palette.magenta_warmer)
-    call s:highlight('Typedef',          s:palette.cyan_warmer)
-    call s:highlight('Tag',              s:palette.magenta)
-    call s:highlight('Delimiter',        s:palette.fg_main)
-    call s:highlight('Underlined',       s:palette.fg_main,      'NONE',                'underline')
-    call s:highlight('Error',            s:palette.fg_main,      s:palette.bg_red_intense)
+    call s:highlight('Constant',  s:palette.blue_warmer)
+    call s:highlight('String',    s:palette.blue)
+    call s:highlight('Character', s:palette.blue)
+    call s:highlight('Number',    s:palette.blue_faint)
+    call s:highlight('Boolean',   s:palette.blue, 'NONE', 'bold')
+    call s:highlight('Float',     s:palette.blue_faint)
 
-    call s:highlight('vimBracket',       s:palette.fg_main)
-    call s:highlight('vimCommentString', s:palette.fg_alt,       'NONE',                'italic')
-    call s:highlight('vimCommentTitle',  s:palette.red)
-    call s:highlight('vimFuncSID',       s:palette.fg_main)
-    call s:highlight('vimFuncVar',       s:palette.blue_warmer)
-    call s:highlight('vimIsCommand',     s:palette.fg_main)
-    call s:highlight('vimLet',           s:palette.magenta_warmer)
-    call s:highlight('vimMapLhs',        s:palette.fg_main)
-    call s:highlight('vimMapModKey',     s:palette.fg_main)
-    call s:highlight('vimNotation',      s:palette.fg_main)
-    call s:highlight('vimcommand',       s:palette.magenta_warmer)
-    call s:highlight('vimmap',           s:palette.magenta_warmer)
-    call s:highlight('vimnotfunc',       s:palette.magenta_warmer)
-    call s:highlight('vimvar',           s:palette.cyan)
+    call s:highlight('Identifier', s:palette.cyan)
+    call s:highlight('Function',   s:palette.magenta)
 
+    call s:highlight('Statement',   s:palette.magenta_warmer)
+    call s:highlight('Conditional', s:palette.magenta_warmer)
+    call s:highlight('Repeat',      s:palette.magenta_warmer)
+    call s:highlight('Label',       s:palette.cyan)
+    call s:highlight('Operator',    s:palette.magenta_warmer)
+    call s:highlight('Keyword',     s:palette.magenta_warmer)
+    call s:highlight('Exception',   s:palette.magenta_warmer)
+
+    call s:highlight('PreProc',   s:palette.red)
+    call s:highlight('Include',   s:palette.red_warmer)
+    call s:highlight('Define',    s:palette.red)
+    call s:highlight('Macro',     s:palette.red)
+    call s:highlight('PreCondit', s:palette.red)
+
+    call s:highlight('Type',         s:palette.cyan_warmer)
+    call s:highlight('StorageClass', s:palette.magenta_warmer)
+    call s:highlight('Structure',    s:palette.magenta_warmer)
+    call s:highlight('Typedef',      s:palette.cyan_warmer)
+
+    call s:highlight('Special',        s:palette.rust)
+    call s:highlight('SpecialChar',    s:palette.rust)
+    call s:highlight('Tag',            s:palette.magenta)
+    call s:highlight('Delimiter',      s:palette.fg_main)
+    call s:highlight('SpecialComment', s:palette.magenta)
+    call s:highlight('Debug',          s:palette.slate)
+
+    call s:highlight('Underlined', s:palette.fg_main, 'NONE', 'underline')
+
+    call s:highlight('Ignore', s:palette.fg_dim, s:palette.bg_inactive)
+
+    call s:highlight('Error', s:palette.fg_main, s:palette.bg_red_intense)
+
+    call s:highlight('Todo', s:palette.magenta, 'NONE', 'bold')
 endif
 
 " }}}
