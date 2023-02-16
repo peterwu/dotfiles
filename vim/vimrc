@@ -3,7 +3,16 @@
 " commons {{{
 
 const s:vim_home = expand('<sfile>:p:h')
-const s:enable_modus_operandi_theme = v:true
+
+function! s:highlight(group, fg='NONE', bg='NONE', style='NONE') abort
+    execute 'highlight '         .. a:group
+                \ .. ' ctermfg=' .. a:fg
+                \ .. ' ctermbg=' .. a:bg
+                \ .. ' cterm='   .. a:style
+                \ .. ' guifg='   .. a:fg
+                \ .. ' guibg='   .. a:bg
+                \ .. ' gui='     .. a:style
+endfunction
 
 " }}}
 
@@ -88,263 +97,30 @@ set wildoptions=pum,tagfile
 
 " color scheme {{{
 
-" modus operandi color palette
-const s:palette = {
-            "\ Basic values
-            \  'bg_main':            "#ffffff",
-            \  'bg_dim':             "#f0f0f0",
-            \  'fg_main':            "#000000",
-            \  'fg_dim':             "#595959",
-            \  'fg_alt':             "#193668",
-            \  'bg_active':          "#c4c4c4",
-            \  'bg_inactive':        "#e0e0e0",
-            \  'bg_hl_line':         "#dae5ec",
-            \
-            "\ Common accent foregrounds
-            \  'red':                "#a60000",
-            \  'red_warmer':         "#972500",
-            \  'red_cooler':         "#a0132f",
-            \  'red_faint':          "#7f0000",
-            \  'red_intense':        "#d00000",
-            \  'green':              "#006800",
-            \  'green_warmer':       "#316500",
-            \  'green_cooler':       "#00663f",
-            \  'green_faint':        "#2a5045",
-            \  'green_intense':      "#008900",
-            \  'yellow':             "#6f5500",
-            \  'yellow_warmer':      "#884900",
-            \  'yellow_cooler':      "#7a4f2f",
-            \  'yellow_faint':       "#624416",
-            \  'yellow_intense':     "#808000",
-            \  'blue':               "#0031a9",
-            \  'blue_warmer':        "#3548cf",
-            \  'blue_cooler':        "#0000b0",
-            \  'blue_faint':         "#003497",
-            \  'blue_intense':       "#0000ff",
-            \  'magenta':            "#721045",
-            \  'magenta_warmer':     "#8f0075",
-            \  'magenta_cooler':     "#531ab6",
-            \  'magenta_faint':      "#7c318f",
-            \  'magenta_intense':    "#dd22dd",
-            \  'cyan':               "#005e8b",
-            \  'cyan_warmer':        "#3f578f",
-            \  'cyan_cooler':        "#005f5f",
-            \  'cyan_faint':         "#005077",
-            \  'cyan_intense':       "#008899",
-            \
-            "\ Uncommon accent foregrounds
-            \  'rust':               "#8a290f",
-            \  'gold':               "#80601f",
-            \  'olive':              "#56692d",
-            \  'slate':              "#2f3f83",
-            \  'indigo':             "#4a3a8a",
-            \  'maroon':             "#731c52",
-            \  'pink':               "#7b435c",
-            \
-            "\ Common accent backgrounds
-            \  'bg_red_intense':     "#ff8f88",
-            \  'bg_green_intense':   "#8adf80",
-            \  'bg_yellow_intense':  "#f3d000",
-            \  'bg_blue_intense':    "#bfc9ff",
-            \  'bg_magenta_intense': "#dfa0f0",
-            \  'bg_cyan_intense':    "#a4d5f9",
-            \
-            \  'bg_red_subtle':      "#ffcfbf",
-            \  'bg_green_subtle':    "#b3fabf",
-            \  'bg_yellow_subtle':   "#fff576",
-            \  'bg_blue_subtle':     "#ccdfff",
-            \  'bg_magenta_subtle':  "#ffddff",
-            \  'bg_cyan_subtle':     "#bfefff",
-            \
-            \  'bg_red_nuanced':     "#fff1f0",
-            \  'bg_green_nuanced':   "#ecf7ed",
-            \  'bg_yellow_nuanced':  "#fff3da",
-            \  'bg_blue_nuanced':    "#f3f3ff",
-            \  'bg_magenta_nuanced': "#fdf0ff",
-            \  'bg_cyan_nuanced':    "#ebf6fa",
-            \
-            "\ Uncommon accent backgrounds
-            \  'bg_ochre':           "#f0e0cc",
-            \  'bg_lavender':        "#dfdbfa",
-            \  'bg_sage':            "#c0e7d4",
-            \
-            "\ Diffs
-            \  'bg_added':           "#c1f2d1",
-            \  'bg_added_faint':     "#d8f8e1",
-            \  'bg_added_refine':    "#aee5be",
-            \  'bg_added_fringe':    "#6cc06c",
-            \  'fg_added':           "#005000",
-            \  'fg_added_intense':   "#006700",
-            \
-            \  'bg_changed':         "#ffdfa9",
-            \  'bg_changed_faint':   "#ffefbf",
-            \  'bg_changed_refine':  "#fac090",
-            \  'bg_changed_fringe':  "#d7c20a",
-            \  'fg_changed':         "#553d00",
-            \  'fg_changed_intense': "#655000",
-            \
-            \  'bg_removed':         "#ffd8d5",
-            \  'bg_removed_faint':   "#ffe9e9",
-            \  'bg_removed_refine':  "#f3b5af",
-            \  'bg_removed_fringe':  "#d84a4f",
-            \  'fg_removed':         "#8f1313",
-            \  'fg_removed_intense': "#aa2222",
-            \
-            \  'bg_diff_context':    "#f3f3f3",
-            \
-            "\ Paren Match
-            \  'bg_paren_match':     "#5fcfff",
-            \  'bg_paren_expression':"#efd3f5"
-            \ }
+colorscheme lunaperche
 
-function! s:highlight(group, fg='NONE', bg='NONE', style='NONE') abort
-    let l:cmd = 'highlight '   .. a:group
-                \ .. ' guifg=' .. a:fg
-                \ .. ' guibg=' .. a:bg
-                \ .. ' gui='   .. a:style
-                \ .. ' cterm=' .. a:style
-    execute l:cmd
-endfunction
-
-if s:enable_modus_operandi_theme
-    highlight clear
-    if exists("syntax_on")
-        syntax reset
-    endif
-
-    if (has('termguicolors') && &termguicolors) || has('gui_running')
-        let g:terminal_ansi_colors = [
-                    \   s:palette.fg_main,
-                    \   s:palette.red,
-                    \   s:palette.green,
-                    \   s:palette.yellow,
-                    \   s:palette.blue,
-                    \   s:palette.magenta,
-                    \   s:palette.cyan,
-                    \   s:palette.bg_dim,
-                    \
-                    \   s:palette.fg_dim,
-                    \   s:palette.red_warmer,
-                    \   s:palette.green_warmer,
-                    \   s:palette.yellow_warmer,
-                    \   s:palette.blue_warmer,
-                    \   s:palette.magenta_warmer,
-                    \   s:palette.cyan_warmer,
-                    \   s:palette.bg_main
-                    \ ]
-    endif
-
-    " :help highlight-groups
-    call s:highlight('ColorColumn',       s:palette.fg_main,        s:palette.bg_dim)
-    call s:highlight('Conceal',           s:palette.fg_main,        s:palette.bg_dim)
-    call s:highlight('Cursor',            s:palette.fg_main,        s:palette.bg_main,     'inverse')
-    call s:highlight('lCursor',           s:palette.fg_main,        s:palette.bg_main,     'inverse')
-    call s:highlight('CursorIM',          s:palette.fg_main,        s:palette.bg_main,     'inverse')
-    call s:highlight('CursorColumn',      s:palette.bg_main,        s:palette.bg_inactive)
-    call s:highlight('CursorLine',        'NONE',                   s:palette.bg_hl_line)
-    call s:highlight('Directory',         s:palette.blue)
-    call s:highlight('DiffAdd',           s:palette.fg_added,       s:palette.bg_added)
-    call s:highlight('DiffChange',        s:palette.fg_changed,     s:palette.bg_changed)
-    call s:highlight('DiffDelete',        s:palette.fg_removed,     s:palette.bg_removed)
-    call s:highlight('DiffText',          s:palette.fg_changed,     s:palette.bg_changed)
-    call s:highlight('EndOfBuffer',       s:palette.fg_alt)
-    call s:highlight('ErrorMsg',          s:palette.fg_main,        s:palette.bg_red_intense)
-    call s:highlight('VertSplit',         s:palette.fg_main,        s:palette.bg_main)
-    call s:highlight('Folded',            s:palette.fg_dim,         s:palette.bg_dim)
-    call s:highlight('FoldColumn',        s:palette.fg_main,        s:palette.bg_active)
-    call s:highlight('SignColumn',        s:palette.fg_main,        s:palette.bg_inactive)
-    call s:highlight('IncSearch',         s:palette.fg_main,        s:palette.bg_green_intense)
-    call s:highlight('LineNr',            s:palette.fg_alt,         s:palette.bg_dim)
-    call s:highlight('LineNrAbove',       s:palette.fg_alt,         s:palette.bg_dim)
-    call s:highlight('LineNrBelow',       s:palette.fg_alt,         s:palette.bg_dim)
-    call s:highlight('CursorLineNr',      s:palette.fg_main,        s:palette.bg_hl_line,  'bold')
-    call s:highlight('CursorLineFold',    s:palette.fg_main,        s:palette.bg_hl_line,  'bold')
-    call s:highlight('CursorLineSign',    s:palette.fg_main,        s:palette.bg_hl_line,  'bold')
-    call s:highlight('MatchParen',        s:palette.fg_main,        s:palette.bg_paren_match)
-    call s:highlight('MessageWindow',     s:palette.fg_main,        s:palette.bg_inactive)
-    call s:highlight('ModeMsg',           s:palette.green)
-    call s:highlight('MoreMsg',           s:palette.green_faint)
-    call s:highlight('NonText',           s:palette.fg_alt)
-    call s:highlight('Normal',            s:palette.fg_main,        s:palette.bg_main)
-    call s:highlight('Pmenu',             s:palette.fg_main,        s:palette.bg_inactive)
-    call s:highlight('PmenuSel',          s:palette.fg_alt,         s:palette.bg_active,   'bold')
-    call s:highlight('PmenuSbar',         s:palette.fg_main,        s:palette.bg_inactive)
-    call s:highlight('PmenuThumb',        s:palette.fg_alt,         s:palette.bg_main,     'inverse')
-    call s:highlight('PopupNotification', s:palette.magenta,        'NONE',                'bold')
-    call s:highlight('Question',          s:palette.maroon,         'NONE',                'bold')
-    call s:highlight('QuickFixLine',      s:palette.fg_main,        s:palette.bg_main,     'inverse')
-    call s:highlight('Search',            s:palette.fg_main,        s:palette.bg_green_intense)
-    call s:highlight('CurSearch',         s:palette.fg_main,        s:palette.bg_yellow_intense)
-    call s:highlight('SpecialKey',        s:palette.rust,           s:palette.bg_inactive)
-    call s:highlight('SpellBad',          s:palette.red_warmer,     s:palette.bg_main,     'inverse')
-    call s:highlight('SpellCap',          s:palette.red_warmer,     s:palette.bg_main,     'inverse')
-    call s:highlight('SpellLocal',        s:palette.magenta_warmer, s:palette.bg_main,     'inverse')
-    call s:highlight('SpellRare',         s:palette.magenta_cooler, s:palette.bg_main,     'inverse')
-    call s:highlight('StatusLine',        s:palette.fg_main,        s:palette.bg_active)
-    call s:highlight('StatusLineNC',      s:palette.fg_dim,         s:palette.bg_inactive)
-    call s:highlight('StatusLineTerm',    s:palette.fg_main,        s:palette.bg_active)
-    call s:highlight('StatusLineNCTerm',  s:palette.fg_dim,         s:palette.bg_inactive)
-    call s:highlight('TabLine',           s:palette.fg_main,        s:palette.bg_lavender)
-    call s:highlight('TabLineFill',       s:palette.fg_main,        s:palette.bg_main)
-    call s:highlight('TabLineSel',        s:palette.blue,           s:palette.bg_main,     'bold,inverse')
-    call s:highlight('Terminal',          s:palette.fg_main,        s:palette.bg_main)
-    call s:highlight('Title',             s:palette.fg_main,        'NONE',                'bold')
-    call s:highlight('Visual',            s:palette.fg_main,        s:palette.bg_cyan_intense)
-    call s:highlight('VisualNOS',         s:palette.fg_main,        s:palette.bg_cyan_intense)
-    call s:highlight('WarningMsg',        s:palette.yellow)
-    call s:highlight('WildMenu',          s:palette.fg_main,        s:palette.bg_inactive, 'standout')
-
-    call s:highlight('Menu',      s:palette.fg_main, s:palette.bg_active)
-    call s:highlight('Scrollbar', s:palette.bg_dim,  s:palette.bg_inactive)
-    call s:highlight('Tooltip',   s:palette.fg_main, s:palette.bg_yellow_nuanced)
-
-    call s:highlight('Comment', s:palette.fg_alt, 'NONE', 'italic')
-
-    call s:highlight('Constant',  s:palette.blue_warmer)
-    call s:highlight('String',    s:palette.blue)
-    call s:highlight('Character', s:palette.blue)
-    call s:highlight('Number',    s:palette.blue_faint)
-    call s:highlight('Boolean',   s:palette.blue, 'NONE', 'bold')
-    call s:highlight('Float',     s:palette.blue_faint)
-
-    call s:highlight('Identifier', s:palette.cyan)
-    call s:highlight('Function',   s:palette.magenta)
-
-    call s:highlight('Statement',   s:palette.magenta_warmer)
-    call s:highlight('Conditional', s:palette.magenta_warmer)
-    call s:highlight('Repeat',      s:palette.magenta_warmer)
-    call s:highlight('Label',       s:palette.cyan)
-    call s:highlight('Operator',    s:palette.magenta_warmer)
-    call s:highlight('Keyword',     s:palette.magenta_warmer)
-    call s:highlight('Exception',   s:palette.magenta_warmer)
-
-    call s:highlight('PreProc',   s:palette.red)
-    call s:highlight('Include',   s:palette.red_warmer)
-    call s:highlight('Define',    s:palette.red)
-    call s:highlight('Macro',     s:palette.red)
-    call s:highlight('PreCondit', s:palette.red)
-
-    call s:highlight('Type',         s:palette.cyan_warmer)
-    call s:highlight('StorageClass', s:palette.magenta_warmer)
-    call s:highlight('Structure',    s:palette.magenta_warmer)
-    call s:highlight('Typedef',      s:palette.cyan_warmer)
-
-    call s:highlight('Special',        s:palette.rust)
-    call s:highlight('SpecialChar',    s:palette.rust)
-    call s:highlight('Tag',            s:palette.magenta)
-    call s:highlight('Delimiter',      s:palette.fg_main)
-    call s:highlight('SpecialComment', s:palette.magenta)
-    call s:highlight('Debug',          s:palette.slate)
-
-    call s:highlight('Underlined', s:palette.fg_main, 'NONE', 'underline')
-
-    call s:highlight('Ignore', s:palette.fg_dim, s:palette.bg_inactive)
-
-    call s:highlight('Error', s:palette.fg_main, s:palette.bg_red_intense)
-
-    call s:highlight('Todo', s:palette.magenta, 'NONE', 'bold')
+if (has('termguicolors') && &termguicolors) || has('gui_running')
+    " consistent with terminal's color scheme
+    let g:terminal_ansi_colors = [
+                \   '#000000',
+                \   '#a60000',
+                \   '#006800',
+                \   '#6f5500',
+                \   '#0031a9',
+                \   '#721045',
+                \   '#00538b',
+                \   '#e1e1e1',
+                \
+                \   '#585858',
+                \   '#972500',
+                \   '#316500',
+                \   '#884900',
+                \   '#354fcf',
+                \   '#531ab6',
+                \   '#005a5f',
+                \   '#ffffff'
+                \ ]
 endif
-
 " }}}
 
 " keymaps {{{
@@ -484,58 +260,58 @@ augroup END
 function! s:set_highlights() abort
     call s:highlight_git_branch_status()
 
-    call s:highlight('StatusBlank',      s:palette.fg_main, s:palette.bg_blue_nuanced, 'NONE')
-    call s:highlight('StatusFileName',   s:palette.fg_main, s:palette.bg_blue_nuanced, 'bold')
-    call s:highlight('StatusFileState',  s:palette.maroon,  s:palette.bg_blue_nuanced, 'bold')
-    call s:highlight('StatusFileSize',   s:palette.fg_main, s:palette.bg_blue_nuanced, 'NONE')
-    call s:highlight('StatusFileFormat', s:palette.fg_main, s:palette.bg_lavender,     'NONE')
-    call s:highlight('StatusFileEncode', s:palette.fg_main, s:palette.bg_lavender,     'NONE')
-    call s:highlight('StatusPercent',    s:palette.fg_main, s:palette.bg_blue_nuanced, 'NONE')
-    call s:highlight('StatusWinNR',      s:palette.fg_main, s:palette.bg_sage,         'NONE')
+    call s:highlight('StatusBlank',      'Black',   'LightGray', 'NONE')
+    call s:highlight('StatusFileName',   'Black',   'LightGray', 'bold')
+    call s:highlight('StatusFileState',  'DarkRed', 'LightGray', 'bold')
+    call s:highlight('StatusFileSize',   'Black',   'LightGray', 'NONE')
+    call s:highlight('StatusFileFormat', 'Black',   'Gray',      'NONE')
+    call s:highlight('StatusFileEncode', 'Black',   'Gray',      'NONE')
+    call s:highlight('StatusPercent',    'Black',   'LightGray', 'NONE')
+    call s:highlight('StatusWinNR',      'White',   'DarkGreen', 'NONE')
 endfunction
 
 function! s:get_vim_mode() abort
     " :help mode()
     const l:modes = {
-                \ 'n'    : { 'abbrev': 'N',  'alias': 'NORMAL',    'color' : s:palette.blue    },
-                \ 'no'   : { 'abbrev': 'O',  'alias': 'O·PENDING', 'color' : s:palette.yellow  },
-                \ 'nov'  : { 'abbrev': 'O',  'alias': 'O·PENDING', 'color' : s:palette.yellow  },
-                \ 'noV'  : { 'abbrev': 'O',  'alias': 'O·PENDING', 'color' : s:palette.yellow  },
-                \ 'no' : { 'abbrev': 'O',  'alias': 'O·PENDING', 'color' : s:palette.yellow  },
-                \ 'niI'  : { 'abbrev': 'N',  'alias': 'NORMAL',    'color' : s:palette.blue    },
-                \ 'niR'  : { 'abbrev': 'N',  'alias': 'NORMAL',    'color' : s:palette.blue    },
-                \ 'niV'  : { 'abbrev': 'N',  'alias': 'NORMAL',    'color' : s:palette.blue    },
-                \ 'nt'   : { 'abbrev': 'T',  'alias': 'TERM',      'color' : s:palette.fg_main },
-                \ 'v'    : { 'abbrev': 'V',  'alias': 'VISUAL',    'color' : s:palette.cyan    },
-                \ 'vs'   : { 'abbrev': 'V',  'alias': 'VISUAL',    'color' : s:palette.cyan    },
-                \ 'V'    : { 'abbrev': 'Vl', 'alias': 'V·LINE',    'color' : s:palette.cyan    },
-                \ 'Vs'   : { 'abbrev': 'Vl', 'alias': 'V·LINE',    'color' : s:palette.cyan    },
-                \ ''   : { 'abbrev': 'Vb', 'alias': 'V·BLOCK',   'color' : s:palette.cyan    },
-                \ 's'  : { 'abbrev': 'Vb', 'alias': 'V·BLOCK',   'color' : s:palette.cyan    },
-                \ 's'    : { 'abbrev': 'S',  'alias': 'SELECT',    'color' : s:palette.blue    },
-                \ 'S'    : { 'abbrev': 'Sl', 'alias': 'S·LINE',    'color' : s:palette.blue    },
-                \ ''   : { 'abbrev': 'Sb', 'alias': 'S·BLOCK',   'color' : s:palette.blue    },
-                \ 'i'    : { 'abbrev': 'I',  'alias': 'INSERT',    'color' : s:palette.rust    },
-                \ 'ic'   : { 'abbrev': 'I',  'alias': 'INSERT',    'color' : s:palette.rust    },
-                \ 'ix'   : { 'abbrev': 'I',  'alias': 'INSERT',    'color' : s:palette.rust    },
-                \ 'R'    : { 'abbrev': 'R',  'alias': 'REPLACE',   'color' : s:palette.red     },
-                \ 'Rc'   : { 'abbrev': 'R',  'alias': 'REPLACE',   'color' : s:palette.red     },
-                \ 'Rx'   : { 'abbrev': 'R',  'alias': 'REPLACE',   'color' : s:palette.red     },
-                \ 'Rv'   : { 'abbrev': 'Vr', 'alias': 'V·REPLACE', 'color' : s:palette.red     },
-                \ 'Rvc'  : { 'abbrev': 'Vr', 'alias': 'V·REPLACE', 'color' : s:palette.red     },
-                \ 'Rvx'  : { 'abbrev': 'Vr', 'alias': 'V·REPLACE', 'color' : s:palette.red     },
-                \ 'c'    : { 'abbrev': 'C',  'alias': 'COMMAND',   'color' : s:palette.green   },
-                \ 'cv'   : { 'abbrev': 'C',  'alias': 'EX',        'color' : s:palette.green   },
-                \ 'ce'   : { 'abbrev': 'C',  'alias': 'EX',        'color' : s:palette.green   },
-                \ 'r'    : { 'abbrev': 'R',  'alias': 'REPLACE',   'color' : s:palette.red     },
-                \ 'rm'   : { 'abbrev': 'Rm', 'alias': 'MORE',      'color' : s:palette.yellow  },
-                \ 'r?'   : { 'abbrev': 'R?', 'alias': 'CONFIRM',   'color' : s:palette.yellow  },
-                \ '!'    : { 'abbrev': 'Sh', 'alias': 'SHELL',     'color' : s:palette.fg_main },
-                \ 't'    : { 'abbrev': 'T',  'alias': 'TERM',      'color' : s:palette.fg_main }
+                \ 'n'    : { 'abbrev': 'N',  'alias': 'NORMAL',    'color' : 'DarkBlue'    },
+                \ 'no'   : { 'abbrev': 'O',  'alias': 'O·PENDING', 'color' : 'Yellow'      },
+                \ 'nov'  : { 'abbrev': 'O',  'alias': 'O·PENDING', 'color' : 'Yellow'      },
+                \ 'noV'  : { 'abbrev': 'O',  'alias': 'O·PENDING', 'color' : 'Yellow'      },
+                \ 'no' : { 'abbrev': 'O',  'alias': 'O·PENDING', 'color' : 'Yellow'      },
+                \ 'niI'  : { 'abbrev': 'N',  'alias': 'NORMAL',    'color' : 'DarkBlue'    },
+                \ 'niR'  : { 'abbrev': 'N',  'alias': 'NORMAL',    'color' : 'DarkBlue'    },
+                \ 'niV'  : { 'abbrev': 'N',  'alias': 'NORMAL',    'color' : 'DarkBlue'    },
+                \ 'nt'   : { 'abbrev': 'T',  'alias': 'TERM',      'color' : 'Black'       },
+                \ 'v'    : { 'abbrev': 'V',  'alias': 'VISUAL',    'color' : 'DarkCyan'    },
+                \ 'vs'   : { 'abbrev': 'V',  'alias': 'VISUAL',    'color' : 'DarkCyan'    },
+                \ 'V'    : { 'abbrev': 'Vl', 'alias': 'V·LINE',    'color' : 'DarkCyan'    },
+                \ 'Vs'   : { 'abbrev': 'Vl', 'alias': 'V·LINE',    'color' : 'DarkCyan'    },
+                \ ''   : { 'abbrev': 'Vb', 'alias': 'V·BLOCK',   'color' : 'DarkCyan'    },
+                \ 's'  : { 'abbrev': 'Vb', 'alias': 'V·BLOCK',   'color' : 'DarkCyan'    },
+                \ 's'    : { 'abbrev': 'S',  'alias': 'SELECT',    'color' : 'LightCyan'   },
+                \ 'S'    : { 'abbrev': 'Sl', 'alias': 'S·LINE',    'color' : 'LightCyan'   },
+                \ ''   : { 'abbrev': 'Sb', 'alias': 'S·BLOCK',   'color' : 'LightCyan'   },
+                \ 'i'    : { 'abbrev': 'I',  'alias': 'INSERT',    'color' : 'DarkGreen'   },
+                \ 'ic'   : { 'abbrev': 'I',  'alias': 'INSERT',    'color' : 'DarkGreen'   },
+                \ 'ix'   : { 'abbrev': 'I',  'alias': 'INSERT',    'color' : 'DarkGreen'   },
+                \ 'R'    : { 'abbrev': 'R',  'alias': 'REPLACE',   'color' : 'DarkRed'     },
+                \ 'Rc'   : { 'abbrev': 'R',  'alias': 'REPLACE',   'color' : 'DarkRed'     },
+                \ 'Rx'   : { 'abbrev': 'R',  'alias': 'REPLACE',   'color' : 'DarkRed'     },
+                \ 'Rv'   : { 'abbrev': 'Vr', 'alias': 'V·REPLACE', 'color' : 'DarkRed'     },
+                \ 'Rvc'  : { 'abbrev': 'Vr', 'alias': 'V·REPLACE', 'color' : 'DarkRed'     },
+                \ 'Rvx'  : { 'abbrev': 'Vr', 'alias': 'V·REPLACE', 'color' : 'DarkRed'     },
+                \ 'c'    : { 'abbrev': 'C',  'alias': 'COMMAND',   'color' : 'DarkMagenta' },
+                \ 'cv'   : { 'abbrev': 'C',  'alias': 'EX',        'color' : 'DarkMagenta' },
+                \ 'ce'   : { 'abbrev': 'C',  'alias': 'EX',        'color' : 'DarkMagenta' },
+                \ 'r'    : { 'abbrev': 'R',  'alias': 'REPLACE',   'color' : 'DarkRed'     },
+                \ 'rm'   : { 'abbrev': 'Rm', 'alias': 'MORE',      'color' : 'Yellow'      },
+                \ 'r?'   : { 'abbrev': 'R?', 'alias': 'CONFIRM',   'color' : 'Yellow'      },
+                \ '!'    : { 'abbrev': 'Sh', 'alias': 'SHELL',     'color' : 'Black'       },
+                \ 't'    : { 'abbrev': 'T',  'alias': 'TERM',      'color' : 'Black'       }
                 \ }
 
     let l:mode = mode()
-    call s:highlight('StatusVimMode', l:modes[l:mode].color, s:palette.bg_main, 'bold,inverse')
+    call s:highlight('StatusVimMode', l:modes[l:mode].color, 'White', 'bold,inverse')
     return l:modes[l:mode].abbrev
 endfunction
 
@@ -555,7 +331,7 @@ function! s:highlight_git_branch_status() abort
     " ------------------------------------------------------------
 
     if v:shell_error
-        call s:highlight('StatusGitBranchStatus', s:palette.fg_main, s:palette.bg_blue_nuanced, 'NONE')
+        call s:highlight('StatusGitBranchStatus', 'Black', 'LightGray', 'NONE')
         let b:git_branch_status = ''
     else
         let l:git_branch = l:git_cmd_result->copy()->filter('v:val =~ "^# branch.head"')[0]->split()[2]
@@ -563,13 +339,13 @@ function! s:highlight_git_branch_status() abort
 
         if l:git_status->empty()
             " clean branch
-            let l:git_color = s:palette.green_faint
+            let l:git_color = 'DarkGreen'
         else
             " dirty branch
-            let l:git_color = s:palette.red_faint
+            let l:git_color = 'DarkRed'
         end
 
-        call s:highlight('StatusGitBranchStatus', l:git_color, s:palette.bg_blue_nuanced, 'NONE')
+        call s:highlight('StatusGitBranchStatus', l:git_color, 'LightGray', 'NONE')
         let b:git_branch_status = l:git_icon .. ' ' .. l:git_branch
     end
 endfunction
@@ -685,6 +461,10 @@ augroup END
 " }}}
 
 " tab line {{{
+
+call s:highlight('TabLine',     'Black',    'LightGray', 'NONE')
+call s:highlight('TabLineFill', 'Black',    'White',     'NONE')
+call s:highlight('TabLineSel',  'DarkBlue', 'White',     'bold,inverse')
 
 set tabline=%!DrawTabLine()
 function! DrawTabLine() abort
@@ -916,8 +696,8 @@ endfunction
 call s:paq_add('luochen1990/rainbow')
 let g:rainbow_active = 1
 let g:rainbow_conf = {
-            \	'guifgs':   [s:palette.blue_faint, s:palette.yellow_faint, s:palette.cyan_faint, s:palette.magenta_faint ],
-            \	'ctermfgs': ['lightblue',          'lightyellow',          'lightcyan',          'lightmagenta'],
+            \	'guifgs':    ['DarkBlue', 'DarkYellow', 'DarkCyan', 'DarkMagenta'],
+            \	'ctermfgs':  ['DarkBlue', 'DarkYellow', 'DarkCyan', 'DarkMagenta'],
             \	'operators': '_,_'
             \ }
 
