@@ -435,7 +435,7 @@ function! DrawStatusLine() abort
                     \    '%{&fileformat}',
                     \    ' | ',
                     \    '%#StatusFileEncode#',
-                    \    '%{&fileencoding ? &fileencoding : &encoding}',
+                    \    '%{&fileencoding ?? &encoding}',
                     \    ' ',
                     \    '%#StatusBlank#',
                     \    ' ',
