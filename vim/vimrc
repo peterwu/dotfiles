@@ -257,62 +257,44 @@ augroup END
 
 " status line {{{
 
-function! s:set_highlights() abort
+function! s:highlight_status_line() abort
     call s:highlight_git_branch_status()
 
-    call s:highlight('StatusBlank',      'Black',   'LightGray', 'NONE')
-    call s:highlight('StatusFileName',   'Black',   'LightGray', 'bold')
-    call s:highlight('StatusFileState',  'DarkRed', 'LightGray', 'bold')
-    call s:highlight('StatusFileSize',   'Black',   'LightGray', 'NONE')
-    call s:highlight('StatusFileFormat', 'Black',   'Gray',      'NONE')
-    call s:highlight('StatusFileEncode', 'Black',   'Gray',      'NONE')
-    call s:highlight('StatusPercent',    'Black',   'LightGray', 'NONE')
-    call s:highlight('StatusWinNR',      'White',   'DarkGreen', 'NONE')
+    call s:highlight('StatusBlank',      'Black',    'LightGray', 'NONE')
+    call s:highlight('StatusFileName',   'Black',    'LightGray', 'bold')
+    call s:highlight('StatusFileState',  'Brown',    'LightGray', 'bold')
+    call s:highlight('StatusFileSize',   'Black',    'LightGray', 'NONE')
+    call s:highlight('StatusFileFormat', 'Black',    'Gray',      'NONE')
+    call s:highlight('StatusFileEncode', 'Black',    'Gray',      'NONE')
+    call s:highlight('StatusPercent',    'Black',    'LightGray', 'NONE')
+    call s:highlight('StatusWinNR',      'DarkBlue', 'Gray',      'bold')
 endfunction
 
 function! s:get_vim_mode() abort
     " :help mode()
-    const l:modes = {
-                \ 'n'    : { 'abbrev': 'N',  'alias': 'NORMAL',    'color' : 'DarkBlue'    },
-                \ 'no'   : { 'abbrev': 'O',  'alias': 'O·PENDING', 'color' : 'Yellow'      },
-                \ 'nov'  : { 'abbrev': 'O',  'alias': 'O·PENDING', 'color' : 'Yellow'      },
-                \ 'noV'  : { 'abbrev': 'O',  'alias': 'O·PENDING', 'color' : 'Yellow'      },
-                \ 'no' : { 'abbrev': 'O',  'alias': 'O·PENDING', 'color' : 'Yellow'      },
-                \ 'niI'  : { 'abbrev': 'N',  'alias': 'NORMAL',    'color' : 'DarkBlue'    },
-                \ 'niR'  : { 'abbrev': 'N',  'alias': 'NORMAL',    'color' : 'DarkBlue'    },
-                \ 'niV'  : { 'abbrev': 'N',  'alias': 'NORMAL',    'color' : 'DarkBlue'    },
-                \ 'nt'   : { 'abbrev': 'T',  'alias': 'TERM',      'color' : 'Black'       },
-                \ 'v'    : { 'abbrev': 'V',  'alias': 'VISUAL',    'color' : 'DarkCyan'    },
-                \ 'vs'   : { 'abbrev': 'V',  'alias': 'VISUAL',    'color' : 'DarkCyan'    },
-                \ 'V'    : { 'abbrev': 'Vl', 'alias': 'V·LINE',    'color' : 'DarkCyan'    },
-                \ 'Vs'   : { 'abbrev': 'Vl', 'alias': 'V·LINE',    'color' : 'DarkCyan'    },
-                \ ''   : { 'abbrev': 'Vb', 'alias': 'V·BLOCK',   'color' : 'DarkCyan'    },
-                \ 's'  : { 'abbrev': 'Vb', 'alias': 'V·BLOCK',   'color' : 'DarkCyan'    },
-                \ 's'    : { 'abbrev': 'S',  'alias': 'SELECT',    'color' : 'LightCyan'   },
-                \ 'S'    : { 'abbrev': 'Sl', 'alias': 'S·LINE',    'color' : 'LightCyan'   },
-                \ ''   : { 'abbrev': 'Sb', 'alias': 'S·BLOCK',   'color' : 'LightCyan'   },
-                \ 'i'    : { 'abbrev': 'I',  'alias': 'INSERT',    'color' : 'DarkGreen'   },
-                \ 'ic'   : { 'abbrev': 'I',  'alias': 'INSERT',    'color' : 'DarkGreen'   },
-                \ 'ix'   : { 'abbrev': 'I',  'alias': 'INSERT',    'color' : 'DarkGreen'   },
-                \ 'R'    : { 'abbrev': 'R',  'alias': 'REPLACE',   'color' : 'DarkRed'     },
-                \ 'Rc'   : { 'abbrev': 'R',  'alias': 'REPLACE',   'color' : 'DarkRed'     },
-                \ 'Rx'   : { 'abbrev': 'R',  'alias': 'REPLACE',   'color' : 'DarkRed'     },
-                \ 'Rv'   : { 'abbrev': 'Vr', 'alias': 'V·REPLACE', 'color' : 'DarkRed'     },
-                \ 'Rvc'  : { 'abbrev': 'Vr', 'alias': 'V·REPLACE', 'color' : 'DarkRed'     },
-                \ 'Rvx'  : { 'abbrev': 'Vr', 'alias': 'V·REPLACE', 'color' : 'DarkRed'     },
-                \ 'c'    : { 'abbrev': 'C',  'alias': 'COMMAND',   'color' : 'DarkMagenta' },
-                \ 'cv'   : { 'abbrev': 'C',  'alias': 'EX',        'color' : 'DarkMagenta' },
-                \ 'ce'   : { 'abbrev': 'C',  'alias': 'EX',        'color' : 'DarkMagenta' },
-                \ 'r'    : { 'abbrev': 'R',  'alias': 'REPLACE',   'color' : 'DarkRed'     },
-                \ 'rm'   : { 'abbrev': 'Rm', 'alias': 'MORE',      'color' : 'Yellow'      },
-                \ 'r?'   : { 'abbrev': 'R?', 'alias': 'CONFIRM',   'color' : 'Yellow'      },
-                \ '!'    : { 'abbrev': 'Sh', 'alias': 'SHELL',     'color' : 'Black'       },
-                \ 't'    : { 'abbrev': 'T',  'alias': 'TERM',      'color' : 'Black'       }
+    const l:mode_color_map = {
+                \ 'N' : 'DarkBlue'    ,
+                \ 'O' : 'DarkYellow'  ,
+                \ 'V' : 'DarkCyan'    ,
+                \ 'S' : 'DarkMagenta' ,
+                \ 'I' : 'DarkGreen'   ,
+                \ 'R' : 'DarkRed'     ,
+                \ 'C' : 'Brown'       ,
+                \ 'T' : 'Black'
                 \ }
 
-    let l:mode = mode()
-    call s:highlight('StatusVimMode', l:modes[l:mode].color, 'White', 'bold,inverse')
-    return l:modes[l:mode].abbrev
+    let l:mode = mode()->toupper()
+
+    if l:mode ==# 'N' && state() =~# '[o]'
+        let l:mode = 'O'
+    elseif l:mode =~# "[vV\<C-V>]"
+       let l:mode = 'V'
+    elseif l:mode =~# "[sS\<C-S>]"
+       let l:mode = 'S'
+    endif
+
+    call s:highlight('StatusVimMode', l:mode_color_map[l:mode], 'White', 'bold,inverse')
+    return l:mode
 endfunction
 
 function! s:highlight_git_branch_status() abort
@@ -392,6 +374,10 @@ endfunction
 function! DrawStatusLine() abort
     if g:statusline_winid != win_getid()
         return join ([
+                    \    '%#StatusWinNR#',
+                    \    ' ',
+                    \    '%{winnr()}',
+                    \    ' ',
                     \    '%#StatusFileName#',
                     \    ' ',
                     \    '%<%F',
@@ -399,10 +385,6 @@ function! DrawStatusLine() abort
                     \    ' ',
                     \    '%#StatusPercent#',
                     \    '%P',
-                    \    ' ',
-                    \    '%#StatusWinNR#',
-                    \    ' ',
-                    \    '%{winnr()}',
                     \    ' '
                     \ ], '')
     else
@@ -441,21 +423,16 @@ function! DrawStatusLine() abort
                     \    ' ',
                     \    '%#StatusPercent#',
                     \    '%P',
-                    \    ' ',
-                    \    '%#StatusWinNR#',
-                    \    ' ',
-                    \    '%{winnr()}',
                     \    ' '
                     \ ], '')
     endif
 endfunction
 
-call s:set_highlights()
+call s:highlight_status_line()
 set statusline=%!DrawStatusLine()
 
-augroup status_line | autocmd!
-    autocmd WinEnter,BufEnter,BufWritePost * call s:set_highlights()
-    autocmd VimResized *  redrawstatus
+augroup update_status_line | autocmd!
+    autocmd ModeChanged,BufEnter,BufWritePost,WinEnter * redrawstatus
 augroup END
 
 " }}}
