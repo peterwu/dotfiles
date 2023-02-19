@@ -61,7 +61,7 @@ set nolist
 set noshowmode
 set notitle
 set number
-set path+=**
+set path=.,,**
 set pumheight=7
 set relativenumber
 set scrolloff=1
@@ -150,6 +150,25 @@ nnoremap <expr> j (v:count ? 'j' : 'gj')
 nnoremap <expr> k (v:count ? 'k' : 'gk')
 xnoremap <expr> j (v:count ? 'j' : 'gj')
 xnoremap <expr> k (v:count ? 'k' : 'gk')
+
+" unimpaired
+nnoremap <silent> [<Space> O<Esc>j
+nnoremap <silent> ]<Space> o<Esc>k
+
+nnoremap <silent> [a <Cmd>previous<CR>
+nnoremap <silent> ]a <Cmd>next<CR>
+nnoremap <silent> [A <Cmd>first<CR>
+nnoremap <silent> ]A <Cmd>last<CR>
+
+nnoremap <silent> [b <Cmd>bprevious<CR>
+nnoremap <silent> ]b <Cmd>bnext<CR>
+nnoremap <silent> [B <Cmd>bfirst<CR>
+nnoremap <silent> ]B <Cmd>blast<CR>
+
+nnoremap <silent> [q <Cmd>cprevious<CR>
+nnoremap <silent> ]q <Cmd>cnext<CR>
+nnoremap <silent> [Q <Cmd>cfirst<CR>
+nnoremap <silent> ]Q <Cmd>clast<CR>
 
 " use tab to select from popup menu
 inoremap <expr> <Tab>   (pumvisible() ? '<C-N>' : '<Tab>')
@@ -613,17 +632,17 @@ call s:paq_add('tpope/vim-fugitive',                  {'as': 'fugitive'})
 call s:paq_add('machakann/vim-highlightedyank',       {'as': 'highlighted-yank'})
 call s:paq_add('tpope/vim-repeat',                    {'as': 'repeat'})
 call s:paq_add('tpope/vim-surround',                  {'as': 'surround'})
-call s:paq_add('tpope/vim-unimpaired',                {'as': 'unimpaired'})
 
 " fzf
 call s:paq_add('junegunn/fzf.vim', {'as': 'fzf'})
-let g:fzf_layout = { 'down': '40%' }
+let g:fzf_buffers_jump   = 1
+let g:fzf_layout         = { 'down': '40%' }
 let g:fzf_preview_window = []
 
 nnoremap <Leader>ff <Cmd>Files<CR>
 nnoremap <Leader>fo <Cmd>History<CR>
-nnoremap <Leader>f: <Cmd>Hisotry:<CR>
-nnoremap <Leader>f/ <Cmd>Hisotry/<CR>
+nnoremap <Leader>f: <Cmd>History:<CR>
+nnoremap <Leader>f/ <Cmd>History/<CR>
 nnoremap <Leader>fb <Cmd>Buffers<CR>
 nnoremap <Leader>fh <Cmd>Helptags<CR>
 
