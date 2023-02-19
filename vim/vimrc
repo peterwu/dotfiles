@@ -170,6 +170,24 @@ nnoremap <silent> ]q <Cmd>cnext<CR>
 nnoremap <silent> [Q <Cmd>cfirst<CR>
 nnoremap <silent> ]Q <Cmd>clast<CR>
 
+" open/close quickfix window
+nnoremap <silent> <Leader>qo <Cmd>copen<CR>
+nnoremap <silent> <Leader>qc <Cmd>cclose<CR>
+
+" use quickfix to show buffers
+nnoremap <silent> <Leader>fb <Cmd>call <SID>QfBuffers()<CR>
+function! s:QfBuffers() abort
+    call range(1, bufnr('$'))->filter('buflisted(v:val)')->map({ -> { 'bufnr': v:val }})->setqflist()
+    copen
+endfunction
+
+" use quickfix to show oldfiles
+nnoremap <silent> <Leader>fo <Cmd>call <SID>QfOldFiles()<CR>
+function! s:QfOldFiles() abort
+    call copy(v:oldfiles)->map({ -> { 'filename': v:val }})->setqflist()
+    copen
+endfunction
+
 " use tab to select from popup menu
 inoremap <expr> <Tab>   (pumvisible() ? '<C-N>' : '<Tab>')
 inoremap <expr> <S-Tab> (pumvisible() ? '<C-P>' : '<C-H>')
@@ -271,6 +289,10 @@ augroup auto_format | autocmd!
         autocmd FileType c,cpp,objc setlocal equalprg=clang-format
     endif
 augroup END
+
+aug auto_close_quickfix_window | autocmd!
+    autocmd WinLeave * if &buftype == "quickfix" | cclose | endif
+aug END
 
 " }}}
 
@@ -626,25 +648,11 @@ call s:paq_add('prabirshrestha/asyncomplete-lsp.vim', {'as': 'asyncomplete-lsp'}
 call s:paq_add('jiangmiao/auto-pairs')
 call s:paq_add('chrisbra/colorizer',                  {'as': 'colorizer'})
 call s:paq_add('tpope/vim-commentary',                {'as': 'commentary'})
-call s:paq_add('tpope/vim-eunuch',                    {'as': 'eunuch'})
 call s:paq_add('tommcdo/vim-exchange',                {'as': 'exchange'})
 call s:paq_add('tpope/vim-fugitive',                  {'as': 'fugitive'})
 call s:paq_add('machakann/vim-highlightedyank',       {'as': 'highlighted-yank'})
 call s:paq_add('tpope/vim-repeat',                    {'as': 'repeat'})
 call s:paq_add('tpope/vim-surround',                  {'as': 'surround'})
-
-" fzf
-call s:paq_add('junegunn/fzf.vim', {'as': 'fzf'})
-let g:fzf_buffers_jump   = 1
-let g:fzf_layout         = { 'down': '40%' }
-let g:fzf_preview_window = []
-
-nnoremap <Leader>ff <Cmd>Files<CR>
-nnoremap <Leader>fo <Cmd>History<CR>
-nnoremap <Leader>f: <Cmd>History:<CR>
-nnoremap <Leader>f/ <Cmd>History/<CR>
-nnoremap <Leader>fb <Cmd>Buffers<CR>
-nnoremap <Leader>fh <Cmd>Helptags<CR>
 
 " lion
 call s:paq_add('tommcdo/vim-lion', {'as': 'lion'})
@@ -717,7 +725,7 @@ noremap - k^
 command! PaqUpdate source $MYVIMRC | call <SID>paq_init() | call <SID>paq_update()
 command! PaqClean  source $MYVIMRC | call <SID>paq_init() | call <SID>paq_clean()
 
-nnoremap <silent> <Leader>qu <Cmd>PaqUpdate<CR>
-nnoremap <silent> <Leader>qc <Cmd>PaqClean<CR>
+nnoremap <silent> <Leader>Qu <Cmd>PaqUpdate<CR>
+nnoremap <silent> <Leader>Qc <Cmd>PaqClean<CR>
 
 " }}}
