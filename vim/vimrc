@@ -300,15 +300,33 @@ augroup no_trailing_whitespaces | autocmd!
     autocmd BufWritePre * :%s/\s\+$//e
 augroup END
 
-augroup auto_format | autocmd!
+augroup auto_clang_format | autocmd!
     if executable('clang-format')
         autocmd FileType c,cpp,objc setlocal equalprg=clang-format
     endif
 augroup END
 
-aug auto_close_quickfix_window | autocmd!
+augroup setup_quickfix | autocmd!
     autocmd WinLeave * if &buftype == "quickfix" | cclose | endif
-aug END
+    autocmd Filetype qf setlocal norelativenumber statusline=%!DrawQfStatusLine()
+augroup END
+
+function! DrawQfStatusLine() abort
+    return join ([
+                \    '%#StatusLine#',
+                \    ' ',
+                \    'Q',
+                \    ' ',
+                \    '%#StatusFileName#',
+                \    ' ',
+                \    '%<%F',
+                \    '%=',
+                \    ' ',
+                \    '%#StatusPercent#',
+                \    '%l/%L',
+                \    ' '
+                \ ], '')
+endfunction
 
 " }}}
 
