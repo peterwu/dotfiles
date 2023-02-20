@@ -543,7 +543,8 @@ call s:highlight_status_line()
 set statusline=%!DrawStatusLine()
 
 augroup update_status_line | autocmd!
-    autocmd ModeChanged,BufEnter,BufWritePost,WinEnter * redrawstatus
+    autocmd BufEnter,BufWritePost,WinEnter * call s:highlight_status_line()
+    autocmd ModeChanged,VimResized * redrawstatus!
 augroup END
 
 " }}}
