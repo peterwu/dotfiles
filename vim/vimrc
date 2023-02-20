@@ -288,13 +288,14 @@ endif
 
 " autos {{{
 
-augroup save_folds | autocmd!
+augroup auto_save_folds | autocmd!
     autocmd BufWinLeave,BufLeave,BufWritePost ?* ++nested silent! mkview!
     autocmd BufWinEnter ?* silent! loadview
 augroup END
 
-augroup set_list | autocmd!
-    autocmd InsertEnter,InsertLeave * set list!
+augroup show_listchars_when_insert | autocmd!
+    autocmd InsertEnter * set list
+    autocmd InsertLeave * set nolist
 augroup END
 
 augroup no_number_for_old_term | autocmd!
@@ -319,9 +320,9 @@ augroup END
 
 function! DrawQfStatusLine() abort
     return join ([
-                \    '%#StatusLine#',
+                \    '%#StatusVimMode#',
                 \    ' ',
-                \    'Q',
+                \    s:get_vim_mode(),
                 \    ' ',
                 \    '%#StatusFileName#',
                 \    ' ',
@@ -340,9 +341,22 @@ augroup END
 
 function! s:show_color_column_per_line() abort
     let l:cc = &textwidth ? &textwidth + 1 : 0
-    let l:spot = '\%' .. l:cc .. 'v'
+    let l:spot = '\%' .. l:cc .. 'v.'
     call matchadd('ColorColumn', l:spot, 100)
 endfunction
+
+augroup override_colors | autocmd!
+    autocmd ColorScheme *
+                \ call s:highlight('ColorColumn', 'NONE',  'LightMagenta') |
+                \ call s:highlight('TabLine',     'Black', 'LightGray')    |
+                \ call s:highlight('TabLineFill', 'Black', 'White')        |
+                \ call s:highlight('TabLineSel',  'White', 'DarkBlue', 'bold')
+augroup END
+
+augroup update_status_line | autocmd!
+    autocmd BufEnter,BufWritePost,WinEnter * call s:highlight_status_line()
+    autocmd ModeChanged,VimResized * redrawstatus!
+augroup END
 
 " }}}
 
@@ -379,9 +393,9 @@ function! s:get_vim_mode() abort
     if l:mode ==# 'N' && state() =~# '[o]'
         let l:mode = 'O'
     elseif l:mode =~# "[vV\<C-V>]"
-       let l:mode = 'V'
+        let l:mode = 'V'
     elseif l:mode =~# "[sS\<C-S>]"
-       let l:mode = 'S'
+        let l:mode = 'S'
     endif
 
     let l:color = l:mode_color_map[l:mode]
@@ -525,18 +539,9 @@ endfunction
 call s:highlight_status_line()
 set statusline=%!DrawStatusLine()
 
-augroup update_status_line | autocmd!
-    autocmd BufEnter,BufWritePost,WinEnter * call s:highlight_status_line()
-    autocmd ModeChanged,VimResized * redrawstatus!
-augroup END
-
 " }}}
 
 " tab line {{{
-
-call s:highlight('TabLine',     'Black',    'LightGray', 'NONE')
-call s:highlight('TabLineFill', 'Black',    'White',     'NONE')
-call s:highlight('TabLineSel',  'DarkBlue', 'White',     'bold,inverse')
 
 set tabline=%!DrawTabLine()
 function! DrawTabLine() abort
@@ -816,10 +821,8 @@ nnoremap <silent> <Leader>Qc
 
 colorscheme lunaperche
 
-call s:highlight('ColorColumn', 'NONE', 'LightMagenta')
-
 if (has('termguicolors') && &termguicolors) || has('gui_running')
-    " consistent with terminal's color scheme
+    " use terminal's color scheme
     let g:terminal_ansi_colors = [
                 \   '#000000',
                 \   '#a60000',
