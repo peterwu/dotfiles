@@ -264,8 +264,7 @@ elseif executable('/usr/bin/kitty')
 endif
 
 " force saving files that otherwise require sudoedit
-command! Wsudo execute "silent! write !sudo tee % >/dev/null" <Bar> edit!
-nnoremap <Leader>W <Cmd>Wsudo<CR>
+nnoremap <Leader>W <Cmd>execute 'silent! write !sudo tee % >/dev/null'<Bar>edit!<Bar>echo expand('%:p') .. ' saved!'<CR>
 
 " terminal
 tnoremap <Esc> <C-\><C-N>
@@ -755,11 +754,8 @@ noremap T <Plug>Sneak_T
 call s:paq_add('tpope/vim-vinegar', {'as': 'vinegar'})
 noremap - k^
 
-" define user commands for updating/cleaning the plugins
-command! PaqUpdate source $MYVIMRC | call <SID>paq_init() | call <SID>paq_update()
-command! PaqClean  source $MYVIMRC | call <SID>paq_init() | call <SID>paq_clean()
-
-nnoremap <silent> <Leader>Qu <Cmd>PaqUpdate<CR>
-nnoremap <silent> <Leader>Qc <Cmd>PaqClean<CR>
+" update/clean plugins
+nnoremap <silent> <Leader>Qu <Cmd>source $MYVIMRC<Bar>call <SID>paq_init()<Bar>call <SID>paq_update()<CR>
+nnoremap <silent> <Leader>Qc <Cmd>source $MYVIMRC<Bar>call <SID>paq_init()<Bar>call <SID>paq_clean()<CR>
 
 " }}}
