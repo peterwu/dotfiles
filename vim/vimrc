@@ -95,34 +95,6 @@ set wildoptions=pum,tagfile
 
 " }}}
 
-" color scheme {{{
-
-colorscheme lunaperche
-
-if (has('termguicolors') && &termguicolors) || has('gui_running')
-    " consistent with terminal's color scheme
-    let g:terminal_ansi_colors = [
-                \   '#000000',
-                \   '#a60000',
-                \   '#006800',
-                \   '#6f5500',
-                \   '#0031a9',
-                \   '#721045',
-                \   '#00538b',
-                \   '#e1e1e1',
-                \
-                \   '#585858',
-                \   '#972500',
-                \   '#316500',
-                \   '#884900',
-                \   '#354fcf',
-                \   '#531ab6',
-                \   '#005a5f',
-                \   '#ffffff'
-                \ ]
-endif
-" }}}
-
 " keymaps {{{
 
 " leaders
@@ -173,9 +145,9 @@ nnoremap <silent> ]Q <Cmd>clast<CR>
 " open/close quickfix window
 nnoremap <silent> <Leader>qo <Cmd>copen<CR>
 nnoremap <silent> <Leader>qc <Cmd>cclose<CR>
-nnoremap <silent> <Leader>qq <Cmd>call <SID>QfToggle()<CR>
+nnoremap <silent> <Leader>qq <Cmd>call <SID>toggle_quickfix_window()<CR>
 
-function! s:QfToggle() abort
+function! s:toggle_quickfix_window() abort
     let l:nr1 = winnr('$')
     copen
     let l:nr2 = winnr('$')
@@ -188,19 +160,20 @@ endfunction
 nnoremap <silent> <Leader>fb <Cmd>silent! call setqflist([], ' ',
             \ {
             \   'items' : range(1, bufnr('$'))
-            \            ->filter('buflisted(v:val)')
-            \            ->map({ -> { 'bufnr' : v:val }}),
-            \   'quickfixtextfunc': '<SID>QfFormat'
+            \             ->filter('buflisted(v:val)')
+            \             ->map({ -> { 'bufnr' : v:val }}),
+            \   'quickfixtextfunc': '<SID>format_quickfix_items'
             \ })<Bar>copen<CR>
 
 " use quickfix to show oldfiles
 nnoremap <silent> <Leader>fo <Cmd>silent! call setqflist([], ' ',
             \ {
-            \   'lines' : v:oldfiles, 'efm' : '%f',
-            \   'quickfixtextfunc' : '<SID>QfFormat'
+            \   'items' : v:oldfiles->copy()
+            \             ->map({ -> { 'filename' : v:val->expand(':p') }}),
+            \   'quickfixtextfunc' : '<SID>format_quickfix_items'
             \ })<Bar>copen<CR>
 
-function! s:QfFormat(info) abort
+function! s:format_quickfix_items(info) abort
     let l:items = getqflist({ 'id' : a:info.id, 'items' : 1 }).items
     let l:list = []
     for idx in range(a:info.start_idx - 1, a:info.end_idx - 1)
@@ -294,7 +267,7 @@ elseif executable('/usr/bin/kitty')
 endif
 
 " force saving files that otherwise require sudoedit
-nnoremap <Leader>W
+nnoremap <Leader>w!
             \ <Cmd>execute 'silent! write !sudo tee % >/dev/null'
             \ <Bar>edit!
             \ <Bar>echo expand('%:p') .. ' saved!'<CR>
@@ -359,6 +332,16 @@ function! DrawQfStatusLine() abort
                 \    '%l/%L',
                 \    ' '
                 \ ], '')
+endfunction
+
+augroup show_color_column_per_line | autocmd!
+    autocmd FileType * call s:show_color_column_per_line()
+augroup END
+
+function! s:show_color_column_per_line() abort
+    let l:cc = &textwidth ? &textwidth + 1 : 0
+    let l:spot = '\%' .. l:cc .. 'v'
+    call matchadd('ColorColumn', l:spot, 100)
 endfunction
 
 " }}}
@@ -678,9 +661,10 @@ function! s:paq_clean() abort
         redraw! | echo 'Package [' .. s:package .. '] is clean.'
     else
         let l:prompt =
-                    \ "WARNING:\nThe following folder(s) will be deleted.\n"
-                    \ "\n" .. l:dirs->join("\n") .. "\n"
-                    \ "\n" .. "Are you sure? [y/N] "
+                    \ "WARNING:"
+                    \ .. "\nThe following folder(s) will be deleted.\n"
+                    \ .. "\n" .. l:dirs->join("\n") .. "\n"
+                    \ .. "\n" .. "Are you sure? [y/N] "
         if 'y' == input(l:prompt)->tolower()
             for dir in l:dirs
                 call delete(dir, 'rf')
@@ -825,5 +809,36 @@ nnoremap <silent> <Leader>Qc
             \ <Cmd>source $MYVIMRC
             \ <Bar>call <SID>paq_init()
             \ <Bar>call <SID>paq_clean()<CR>
+
+" }}}
+
+" color scheme {{{
+
+colorscheme lunaperche
+
+call s:highlight('ColorColumn', 'NONE', 'LightMagenta')
+
+if (has('termguicolors') && &termguicolors) || has('gui_running')
+    " consistent with terminal's color scheme
+    let g:terminal_ansi_colors = [
+                \   '#000000',
+                \   '#a60000',
+                \   '#006800',
+                \   '#6f5500',
+                \   '#0031a9',
+                \   '#721045',
+                \   '#00538b',
+                \   '#e1e1e1',
+                \
+                \   '#585858',
+                \   '#972500',
+                \   '#316500',
+                \   '#884900',
+                \   '#354fcf',
+                \   '#531ab6',
+                \   '#005a5f',
+                \   '#ffffff'
+                \ ]
+endif
 
 " }}}
