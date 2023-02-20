@@ -187,21 +187,21 @@ endfunction
 " use quickfix to show buffers
 nnoremap <silent> <Leader>fb <Cmd>silent! call setqflist([], ' ',
             \ {
-            \   'items': range(1, bufnr('$'))
+            \   'items' : range(1, bufnr('$'))
             \            ->filter('buflisted(v:val)')
-            \            ->map({ -> { 'bufnr': v:val }}),
+            \            ->map({ -> { 'bufnr' : v:val }}),
             \   'quickfixtextfunc': '<SID>QfFormat'
             \ })<Bar>copen<CR>
 
 " use quickfix to show oldfiles
 nnoremap <silent> <Leader>fo <Cmd>silent! call setqflist([], ' ',
             \ {
-            \   'lines': v:oldfiles, 'efm': '%f',
-            \   'quickfixtextfunc': '<SID>QfFormat'
+            \   'lines' : v:oldfiles, 'efm' : '%f',
+            \   'quickfixtextfunc' : '<SID>QfFormat'
             \ })<Bar>copen<CR>
 
 function! s:QfFormat(info) abort
-    let l:items = getqflist({ 'id': a:info.id, 'items': 1 }).items
+    let l:items = getqflist({ 'id' : a:info.id, 'items' : 1 }).items
     let l:list = []
     for idx in range(a:info.start_idx - 1, a:info.end_idx - 1)
         let l:bufname = bufname(items[idx].bufnr)
@@ -237,17 +237,25 @@ if has('clipboard')
     nnoremap <silent> <Leader>Y  "+yg_
     nnoremap <silent> <Leader>yy "+y_
 elseif executable('/usr/bin/kitty')
-    nnoremap <silent> <Leader>y  <Cmd>set operatorfunc=<SID>copy_to_clipboard<CR>g@
-    xnoremap <silent> <Leader>y  <Cmd>set operatorfunc=<SID>copy_to_clipboard<CR>g@
-    nnoremap <silent> <Leader>Y  <Cmd>set operatorfunc=<SID>copy_to_clipboard<CR>g@g_
-    nnoremap <silent> <Leader>yy <Cmd>set operatorfunc=<SID>copy_to_clipboard<CR>g@_
+    nnoremap <silent> <Leader>y
+                \ <Cmd>set operatorfunc=<SID>copy_to_clipboard
+                \ <Bar>normal! g@<CR>
+    xnoremap <silent> <Leader>y
+                \ <Cmd>set operatorfunc=<SID>copy_to_clipboard
+                \ <Bar>normal! g@<CR>
+    nnoremap <silent> <Leader>Y
+                \ <Cmd>set operatorfunc=<SID>copy_to_clipboard
+                \ <Bar>normal! g@g_<CR>
+    nnoremap <silent> <Leader>yy
+                \ <Cmd>set operatorfunc=<SID>copy_to_clipboard
+                \ <Bar>normal! g@_<CR>
 
     function! s:copy_to_clipboard(type, ...) abort
         if a:type ==# "char"
             silent! execute 'normal! v`[o`]""y'
         elseif a:type ==# "line"
             silent! execute 'normal! `[V`]""y'
-        elseif a:type ==# "v" || a:type ==# "V" || a:type ==# "\<C-V>" || a:type ==# "block"
+        elseif a:type =~# "[vV\<C-V>]" || a:type ==# "block"
             silent! execute 'normal! gv""y'
         elseif a:type =~ '^\d\+$'
             silent! execute 'normal! ^v' .. a:type .. '$h""y'
@@ -267,14 +275,29 @@ if has('clipboard')
     xnoremap <silent> <Leader>p "+p
     xnoremap <silent> <Leader>P "+P
 elseif executable('/usr/bin/kitty')
-    nnoremap <silent> <Leader>p <Cmd>silent! let @"=system('kitty +kitten clipboard --get-clipboard')<CR>""p
-    nnoremap <silent> <Leader>P <Cmd>silent! let @"=system('kitty +kitten clipboard --get-clipboard')<CR>""P
-    xnoremap <silent> <Leader>p <Cmd>silent! let @"=system('kitty +kitten clipboard --get-clipboard')<CR>""p
-    xnoremap <silent> <Leader>P <Cmd>silent! let @"=system('kitty +kitten clipboard --get-clipboard')<CR>""P
+    nnoremap <silent> <Leader>p
+                \ <Cmd>silent!
+                \ let @"=system('kitty +kitten clipboard --get-clipboard')
+                \ <Bar>normal! ""p<CR>
+    nnoremap <silent> <Leader>P
+                \ <Cmd>silent!
+                \ let @"=system('kitty +kitten clipboard --get-clipboard')
+                \ <Bar>normal! ""P<CR>
+    xnoremap <silent> <Leader>p
+                \ <Cmd>silent!
+                \ let @"=system('kitty +kitten clipboard --get-clipboard')
+                \ <Bar>normal! ""p<CR>
+    xnoremap <silent> <Leader>P
+                \ <Cmd>silent!
+                \ let @"=system('kitty +kitten clipboard --get-clipboard')
+                \ <Bar>normal! ""P<CR>
 endif
 
 " force saving files that otherwise require sudoedit
-nnoremap <Leader>W <Cmd>execute 'silent! write !sudo tee % >/dev/null'<Bar>edit!<Bar>echo expand('%:p') .. ' saved!'<CR>
+nnoremap <Leader>W
+            \ <Cmd>execute 'silent! write !sudo tee % >/dev/null'
+            \ <Bar>edit!
+            \ <Bar>echo expand('%:p') .. ' saved!'<CR>
 
 " terminal
 tnoremap <Esc> <C-\><C-N>
@@ -317,7 +340,8 @@ augroup END
 
 augroup setup_quickfix | autocmd!
     autocmd WinLeave * if &buftype == "quickfix" | cclose | endif
-    autocmd Filetype qf setlocal norelativenumber statusline=%!DrawQfStatusLine()
+    autocmd Filetype qf
+                \ setlocal norelativenumber statusline=%!DrawQfStatusLine()
 augroup END
 
 function! DrawQfStatusLine() abort
@@ -377,7 +401,8 @@ function! s:get_vim_mode() abort
        let l:mode = 'S'
     endif
 
-    call s:highlight('StatusVimMode', l:mode_color_map[l:mode], 'White', 'bold,inverse')
+    let l:color = l:mode_color_map[l:mode]
+    call s:highlight('StatusVimMode', l:color, 'White', 'bold,inverse')
     return l:mode
 endfunction
 
@@ -397,11 +422,13 @@ function! s:highlight_git_branch_status() abort
     " ------------------------------------------------------------
 
     if v:shell_error
-        call s:highlight('StatusGitBranchStatus', 'Black', 'LightGray', 'NONE')
+        call s:highlight('StatusGitBranchStatus', 'Black', 'LightGray')
         let b:git_branch_status = ''
     else
-        let l:git_branch = l:git_cmd_result->copy()->filter('v:val =~ "^# branch.head"')[0]->split()[2]
-        let l:git_status = l:git_cmd_result->copy()->filter('v:val !~ "^# "')
+        let l:git_branch = l:git_cmd_result->copy()
+                    \ ->filter('v:val =~ "^# branch.head"')[0]->split()[2]
+        let l:git_status = l:git_cmd_result->copy()
+                    \ ->filter('v:val !~ "^# "')
 
         if l:git_status->empty()
             " clean branch
@@ -411,7 +438,7 @@ function! s:highlight_git_branch_status() abort
             let l:git_color = 'DarkRed'
         end
 
-        call s:highlight('StatusGitBranchStatus', l:git_color, 'LightGray', 'NONE')
+        call s:highlight('StatusGitBranchStatus', l:git_color, 'LightGray')
         let b:git_branch_status = l:git_icon .. ' ' .. l:git_branch
     end
 endfunction
@@ -577,7 +604,7 @@ let s:package_opt_dir   = s:vim_home .. '/pack/' .. s:package .. '/opt'
 
 " paq:
 " {
-"    'paq_name': { 'dir': dir, 'url': url }
+"    'paq_name' : { 'dir' : dir, 'url' : url }
 " }
 let s:paqs = {}
 
@@ -597,7 +624,7 @@ function! s:paq_add(name, args = {}) abort
         let l:dir = s:package_start_dir .. '/' .. l:as
     endif
 
-    let s:paqs[l:as] = { 'dir': l:dir, 'url': l:url }
+    let s:paqs[l:as] = { 'dir' : l:dir, 'url' : l:url }
 endfunction
 
 function! s:paq_update() abort
@@ -608,11 +635,15 @@ function! s:paq_update() abort
 
         " check if it has been git cloned already
         if finddir('.git', l:dir)->empty()
-            let l:git_clone_cmd = 'git clone --depth=1 ' .. l:url .. ' ' .. l:dir
-            silent! let l:git_cmd_result = system(l:git_clone_cmd)->split('\n')
+            let l:git_clone_cmd =
+                        \ 'git clone --depth=1 ' .. l:url .. ' ' .. l:dir
+            silent! let l:git_cmd_result =
+                        \ system(l:git_clone_cmd)->split('\n')
         else
-            let l:git_pull_cmd = 'git -C ' .. l:dir .. ' ' .. 'pull --depth=1'
-            silent! let l:git_cmd_result = system(l:git_pull_cmd)->split('\n')
+            let l:git_pull_cmd =
+                        \ 'git -C ' .. l:dir .. ' ' .. 'pull --depth=1'
+            silent! let l:git_cmd_result =
+                        \ system(l:git_pull_cmd)->split('\n')
         endif
 
         let l:doc_dir = l:dir .. '/doc'
@@ -645,9 +676,10 @@ function! s:paq_clean() abort
     if l:dirs->filter('v:val != ""')->empty()
         redraw! | echo 'Package [' .. s:package .. '] is clean.'
     else
-        let l:prompt = "WARNING:\nThe following folder(s) will be deleted.\n\n"
-                    \ .. l:dirs->join("\n") .. "\n\n"
-                    \ .. "Are you sure? (y/n) "
+        let l:prompt =
+                    \ "WARNING:\nThe following folder(s) will be deleted.\n"
+                    \ "\n" .. l:dirs->join("\n") .. "\n"
+                    \ "\n" .. "Are you sure? [y/N] "
         if 'y' == input(l:prompt)->tolower()
             for dir in l:dirs
                 call delete(dir, 'rf')
@@ -686,35 +718,44 @@ augroup END
 let g:termdebug_wide = 1
 
 " personal plugins
-call s:paq_add('prabirshrestha/asyncomplete.vim',     {'as': 'asyncomplete'})
-call s:paq_add('prabirshrestha/asyncomplete-lsp.vim', {'as': 'asyncomplete-lsp'})
+call s:paq_add('prabirshrestha/asyncomplete.vim',
+            \ {'as' : 'asyncomplete'})
+call s:paq_add('prabirshrestha/asyncomplete-lsp.vim',
+            \ {'as' : 'asyncomplete-lsp'})
 call s:paq_add('jiangmiao/auto-pairs')
-call s:paq_add('chrisbra/colorizer',                  {'as': 'colorizer'})
-call s:paq_add('tpope/vim-commentary',                {'as': 'commentary'})
-call s:paq_add('tommcdo/vim-exchange',                {'as': 'exchange'})
-call s:paq_add('tpope/vim-fugitive',                  {'as': 'fugitive'})
-call s:paq_add('machakann/vim-highlightedyank',       {'as': 'highlighted-yank'})
-call s:paq_add('tpope/vim-repeat',                    {'as': 'repeat'})
-call s:paq_add('tpope/vim-surround',                  {'as': 'surround'})
+call s:paq_add('chrisbra/colorizer',
+            \ {'as' : 'colorizer'})
+call s:paq_add('tpope/vim-commentary',
+            \ {'as' : 'commentary'})
+call s:paq_add('tommcdo/vim-exchange',
+            \ {'as' : 'exchange'})
+call s:paq_add('tpope/vim-fugitive',
+            \ {'as' : 'fugitive'})
+call s:paq_add('machakann/vim-highlightedyank',
+            \ {'as' : 'highlighted-yank'})
+call s:paq_add('tpope/vim-repeat',
+            \ {'as' : 'repeat'})
+call s:paq_add('tpope/vim-surround',
+            \ {'as' : 'surround'})
 
 " lion
-call s:paq_add('tommcdo/vim-lion', {'as': 'lion'})
+call s:paq_add('tommcdo/vim-lion', {'as' : 'lion'})
 let g:lion_squeeze_spaces = 1
 
 " lsp
-call s:paq_add('prabirshrestha/vim-lsp', {'as': 'lsp'})
+call s:paq_add('prabirshrestha/vim-lsp', {'as' : 'lsp'})
 let g:lsp_diagnostics_echo_cursor = 1
 
 augroup lsp_clangd | autocmd!
     autocmd User lsp_setup call lsp#register_server({
-                \       'name': 'clangd',
-                \       'cmd': { server_info->[ 'clangd' ] },
-                \       'allowlist': [ 'c', 'cpp', 'objc', 'objcpp' ],
+                \ 'name'      : 'clangd',
+                \ 'cmd'       : { server_info->[ 'clangd' ] },
+                \ 'allowlist' : [ 'c', 'cpp', 'objc', 'objcpp' ],
                 \ })
 augroup END
 
 augroup lsp_install | autocmd!
-    " call s:init_lsp_buffer only for languages that has the server registered.
+    " call s:init_lsp_buffer only for registered languages
     autocmd User lsp_buffer_enabled call s:init_lsp_buffer()
 augroup END
 
@@ -743,13 +784,23 @@ endfunction
 call s:paq_add('luochen1990/rainbow')
 let g:rainbow_active = 1
 let g:rainbow_conf = {
-            \	'guifgs':    ['DarkBlue', 'DarkYellow', 'DarkCyan', 'DarkMagenta'],
-            \	'ctermfgs':  ['DarkBlue', 'DarkYellow', 'DarkCyan', 'DarkMagenta'],
-            \	'operators': '_,_'
+            \  'guifgs'    : ['DarkBlue',
+            \                 'DarkYellow',
+            \                 'DarkGreen',
+            \                 'DarkRed',
+            \                 'DarkCyan',
+            \                 'DarkMagenta'],
+            \  'ctermfgs'  : ['DarkBlue',
+            \                 'DarkYellow',
+            \                 'DarkGreen',
+            \                 'DarkRed',
+            \                 'DarkCyan',
+            \                 'DarkMagenta'],
+            \  'operators' : '_,_'
             \ }
 
 " sneak
-call s:paq_add('justinmk/vim-sneak', {'as': 'sneak'})
+call s:paq_add('justinmk/vim-sneak', {'as' : 'sneak'})
 let g:sneak#label = 1
 
 noremap <Leader>s <Plug>Sneak_s
@@ -761,11 +812,17 @@ noremap t <Plug>Sneak_t
 noremap T <Plug>Sneak_T
 
 " vinegar
-call s:paq_add('tpope/vim-vinegar', {'as': 'vinegar'})
+call s:paq_add('tpope/vim-vinegar', {'as' : 'vinegar'})
 noremap - k^
 
 " update/clean plugins
-nnoremap <silent> <Leader>Qu <Cmd>source $MYVIMRC<Bar>call <SID>paq_init()<Bar>call <SID>paq_update()<CR>
-nnoremap <silent> <Leader>Qc <Cmd>source $MYVIMRC<Bar>call <SID>paq_init()<Bar>call <SID>paq_clean()<CR>
+nnoremap <silent> <Leader>Qu
+            \ <Cmd>source $MYVIMRC
+            \ <Bar>call <SID>paq_init()
+            \ <Bar>call <SID>paq_update()<CR>
+nnoremap <silent> <Leader>Qc
+            \ <Cmd>source $MYVIMRC
+            \ <Bar>call <SID>paq_init()
+            \ <Bar>call <SID>paq_clean()<CR>
 
 " }}}
