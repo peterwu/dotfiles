@@ -10,15 +10,11 @@ map=(
     "Suspend"   "systemctl suspend"
 )
 
-delimiter=":"
 for (( i=0; i<${#map[@]}; i+=2 )); do
-    echo "${map[i+1]}${delimiter}${map[i]}"
-done | fzf --prompt "Go: "          \
-           --reverse                \
-           --border                 \
-           --no-info                \
-           --delimiter=${delimiter} \
-           --with-nth=2.. | {
-    cmd=$(cut -d${delimiter} -f1)
+    echo "${map[i]}"
+done | rofi -i -format 'i' -dmenu -p 'I would like to' | {
+    read idx
+    idx=$(( $idx * 2 + 1 ))
+    cmd="${map[$idx]}"
     exec $cmd
 }

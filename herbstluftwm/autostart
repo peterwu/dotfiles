@@ -22,10 +22,8 @@ hc keybind $Mod-Return  spawn kitty --single-instance --instance-group=main
 hc keybind $Mod-Shift-Return  spawn kitty --single-instance --instance-group=main --class scratchpad
 
 # user custom keybindings
-hc keybind $Mod-d                \
-    spawn kitty --class fzmenu --override font_family="Liberation Mono" --override font_size=14 -- ~/.config/herbstluftwm/fzmenu
-hc keybind Mod1-Control-Delete   \
-    spawn kitty --class fzmenu --override font_family="Liberation Mono" --override font_size=14 -- ~/.config/herbstluftwm/exit
+hc keybind $Mod-d                spawn rofi -display-drun "Run" -show drun
+hc keybind Mod1-Control-Delete   spawn ~/.config/herbstluftwm/exit
 
 hc keybind XF86AudioMicMute      \
    spawn wpctl set-mute @DEFAULT_SOURCE@  toggle
