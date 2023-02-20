@@ -175,17 +175,33 @@ nnoremap <silent> <Leader>qo <Cmd>copen<CR>
 nnoremap <silent> <Leader>qc <Cmd>cclose<CR>
 
 " use quickfix to show buffers
-nnoremap <silent> <Leader>fb <Cmd>call <SID>QfBuffers()<CR>
-function! s:QfBuffers() abort
-    call range(1, bufnr('$'))->filter('buflisted(v:val)')->map({ -> { 'bufnr': v:val }})->setqflist()
-    copen
-endfunction
+nnoremap <silent> <Leader>fb <Cmd>silent! call setqflist([], ' ',
+            \ {
+            \   'items': range(1, bufnr('$'))
+            \            ->filter('buflisted(v:val)')
+            \            ->map({ -> { 'bufnr': v:val }}),
+            \   'quickfixtextfunc': '<SID>QfFormat'
+            \ })<Bar>copen<CR>
 
 " use quickfix to show oldfiles
-nnoremap <silent> <Leader>fo <Cmd>call <SID>QfOldFiles()<CR>
-function! s:QfOldFiles() abort
-    call copy(v:oldfiles)->map({ -> { 'filename': v:val }})->setqflist()
-    copen
+nnoremap <silent> <Leader>fo <Cmd>silent! call setqflist([], ' ',
+            \ {
+            \   'lines': v:oldfiles, 'efm': '%f',
+            \   'quickfixtextfunc': '<SID>QfFormat'
+            \ })<Bar>copen<CR>
+
+function! s:QfFormat(info) abort
+    let l:items = getqflist({ 'id': a:info.id, 'items': 1 }).items
+    let l:list = []
+    for idx in range(a:info.start_idx - 1, a:info.end_idx - 1)
+        let l:bufname = bufname(items[idx].bufnr)
+        if l:bufname->empty()
+            call add(l:list, "[No Name]")
+        else
+            call add(l:list, fnamemodify(l:bufname, ':~'))
+        endif
+    endfor
+    return l:list
 endfunction
 
 " use tab to select from popup menu
