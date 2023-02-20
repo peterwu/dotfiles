@@ -173,6 +173,16 @@ nnoremap <silent> ]Q <Cmd>clast<CR>
 " open/close quickfix window
 nnoremap <silent> <Leader>qo <Cmd>copen<CR>
 nnoremap <silent> <Leader>qc <Cmd>cclose<CR>
+nnoremap <silent> <Leader>qq <Cmd>call <SID>QfToggle()<CR>
+
+function! s:QfToggle() abort
+    let l:nr1 = winnr('$')
+    copen
+    let l:nr2 = winnr('$')
+    if l:nr1 == l:nr2
+        cclose
+    endif
+endfunction
 
 " use quickfix to show buffers
 nnoremap <silent> <Leader>fb <Cmd>silent! call setqflist([], ' ',
