@@ -156,6 +156,14 @@ function! s:toggle_quickfix_window() abort
     endif
 endfunction
 
+" use quickfix to show args
+nnoremap <silent> <Leader>fa <Cmd>silent! call setqflist([], ' ',
+            \ {
+            \   'items' : argv()->copy()
+            \             ->map({ -> { 'filename' : v:val->expand(':p') }}),
+            \   'quickfixtextfunc': '<SID>format_quickfix_items'
+            \ })<Bar>copen<CR>
+
 " use quickfix to show buffers
 nnoremap <silent> <Leader>fb <Cmd>silent! call setqflist([], ' ',
             \ {
