@@ -191,9 +191,6 @@ endfunction
 inoremap <expr> <Tab>   (pumvisible() ? '<C-N>' : '<Tab>')
 inoremap <expr> <S-Tab> (pumvisible() ? '<C-P>' : '<C-H>')
 
-" use tab to toggle folds
-nnoremap <Tab> za
-
 " stolen from neovim defaults
 nnoremap Y     yg_
 nnoremap <C-L> <Cmd>nohlsearch<Bar>diffupdate<Bar>normal! <C-L><CR>
