@@ -807,12 +807,10 @@ noremap - k^
 
 " update/clean plugins
 nnoremap <silent> <Leader>Qu
-            \ <Cmd>source $MYVIMRC
-            \ <Bar>call <SID>paq_init()
+            \ <Cmd>call <SID>paq_init()
             \ <Bar>call <SID>paq_update()<CR>
 nnoremap <silent> <Leader>Qc
-            \ <Cmd>source $MYVIMRC
-            \ <Bar>call <SID>paq_init()
+            \ <Cmd>call <SID>paq_init()
             \ <Bar>call <SID>paq_clean()<CR>
 
 " }}}
