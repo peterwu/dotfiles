@@ -23,13 +23,21 @@ HISTFILESIZE=20000
 set -o vi
 
 if [[ -x $(command -v vim) ]]; then
-    # Default editor
     alias vi="vim"
-    alias VI="sudo --edit"
 
+    # Default editor
     export VISUAL="vim"
     export EDITOR="$VISUAL"
     export MANPAGER="vim '+setlocal laststatus=0' -M +MANPAGER --not-a-term -"
+elif [[ -x $(command -v vimx) ]]; then
+    alias vi="vimx"
+    alias vim="vimx"
+    alias vimdiff="vimx -d"
+
+    # Default editor
+    export VISUAL="vimx"
+    export EDITOR="$VISUAL"
+    export MANPAGER="vimx '+setlocal laststatus=0' -M +MANPAGER --not-a-term -"
 else
     man() {
         local cmd=(
@@ -52,7 +60,6 @@ else
     "${cmd[@]}"
 }
 fi
-
 
 [[ "$TERM" == "xterm-kitty" ]] && alias ssh="kitty +kitten ssh"
 

@@ -11,10 +11,6 @@
 # User specific environment and startup programs
 export CDPATH=".:$HOME"
 
-# fzf
-export FZF_DEFAULT_COMMAND='find .'
-export FZF_DEFAULT_OPTS='--height 100% --border --multi'
-
 # less
 export LESSHISTFILE=-
 
