@@ -1,15 +1,21 @@
-set mousehide		" Hide the mouse when typing text
-set guioptions-=T guioptions-=m guioptions-=L guioptions-=r guioptions-=e
 set guifont=Iosevka\ Fusion\ 13
+set guioptions-=T
+set guioptions-=m
+set guioptions-=L
+set guioptions-=r
+set guioptions-=e
 
-nnoremap <Leader>egv :edit $MYGVIMRC<CR>
-nnoremap <Leader>sgv :source $MYGVIMRC<CR>
+nnoremap <Leader>egv <Cmd>edit   $MYGVIMRC<CR>
+nnoremap <Leader>sgv <Cmd>source $MYGVIMRC<CR>
 
-nnoremap <C-F1> :if &go=~#'m'<Bar>set go-=m<Bar>else<Bar>set go+=m<Bar>endif<CR>
-nnoremap <C-F2> :if &go=~#'t'<Bar>set go-=t<Bar>else<Bar>set go+=t<Bar>endif<CR>
-nnoremap <C-F3> :if &go=~#'r'<Bar>set go-=r<Bar>else<Bar>set go+=r<Bar>endif<CR>
+nnoremap <C-F1> <Cmd>silent! call <SID>toggle_gui_option('m')<CR>
+nnoremap <C-F2> <Cmd>silent! call <SID>toggle_gui_option('T')<CR>
+nnoremap <C-F3> <Cmd>silent! call <SID>toggle_gui_option('r')<CR>
 
-" Make shift-insert work like in Xterm
-map <S-Insert> <MiddleMouse>
-map! <S-Insert> <MiddleMouse>
-
+function! s:toggle_gui_option(option) abort
+    if &guioptions =~# a:option
+        let &guioptions = substitute(&guioptions, a:option, '', 'g')
+    else
+        let &guioptions ..= a:option
+    endif
+endfunction
