@@ -102,7 +102,7 @@ let g:mapleader      = " "
 let g:maplocalleader = ","
 
 " vimrc
-nnoremap <silent> <Leader>cd <Cmd>cd     %:p:h<CR><Cmd>pwd<CR>
+nnoremap <silent> <Leader>cd <Cmd>cd     %:p:h<Bar>pwd<CR>
 nnoremap <silent> <Leader>ev <Cmd>edit   $MYVIMRC<CR>
 nnoremap <silent> <Leader>sv <Cmd>source $MYVIMRC<CR>
 
@@ -702,12 +702,16 @@ let g:netrw_winsize      = 29
 
 nnoremap <silent> <F9> <Cmd>Lexplore<CR>
 
-" remap cd to be global
-augroup netrw_group | autocmd!
-    autocmd filetype netrw
-                \ nnoremap <buffer> <silent> <nowait> <LocalLeader>cd
-                \ <Cmd>execute 'cd ' .. b:netrw_curdir<CR><Cmd>pwd<CR>
+augroup vinegarize_netrw | autocmd!
+    autocmd filetype netrw call s:vinegarize_netrw()
 augroup END
+
+function! s:vinegarize_netrw() abort
+    nnoremap <buffer> <silent> <nowait> <LocalLeader>cd
+                \ <Cmd>execute 'cd ' .. b:netrw_curdir<Bar>pwd<CR>
+    nnoremap <buffer> <silent> <nowait> - k^
+    nnoremap <buffer> <silent> <nowait> ~ <Cmd>edit ~/<CR>
+endfunction
 
 " termdebug
 let g:termdebug_wide = 1
@@ -798,17 +802,14 @@ let g:rainbow_conf = {
 call s:paq_add('justinmk/vim-sneak', {'as' : 'sneak'})
 let g:sneak#label = 1
 
-noremap <Leader>s <Plug>Sneak_s
-noremap <Leader>S <Plug>Sneak_S
+nnoremap <Leader>s <Plug>Sneak_s
+nnoremap <Leader>S <Plug>Sneak_S
 
-noremap f <Plug>Sneak_f
-noremap F <Plug>Sneak_F
-noremap t <Plug>Sneak_t
-noremap T <Plug>Sneak_T
+nnoremap f <Plug>Sneak_f
+nnoremap F <Plug>Sneak_F
+nnoremap t <Plug>Sneak_t
+nnoremap T <Plug>Sneak_T
 
-" vinegar
-call s:paq_add('tpope/vim-vinegar', {'as' : 'vinegar'})
-noremap - k^
 
 " update/clean plugins
 nnoremap <silent> <Leader>Qu
