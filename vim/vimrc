@@ -75,6 +75,7 @@ set sidescrolloff=2
 set smartcase
 set smartindent
 set smarttab
+set smoothscroll
 set softtabstop=0
 set splitbelow
 set splitright
@@ -815,7 +816,6 @@ nnoremap f <Plug>Sneak_f
 nnoremap F <Plug>Sneak_F
 nnoremap t <Plug>Sneak_t
 nnoremap T <Plug>Sneak_T
-
 
 " update/clean plugins
 nnoremap <silent> <Leader>Qu
