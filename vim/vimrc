@@ -123,6 +123,13 @@ nnoremap <expr> k (v:count ? 'k' : 'gk')
 xnoremap <expr> j (v:count ? 'j' : 'gj')
 xnoremap <expr> k (v:count ? 'k' : 'gk')
 
+" auto pairs
+inoremap " ""<Left>
+inoremap ' ''<Left>
+inoremap ( ()<Left>
+inoremap [ []<Left>
+inoremap { {}<Left>
+
 " unimpaired
 nnoremap <silent> [<Space> O<Esc>j
 nnoremap <silent> ]<Space> o<Esc>k
@@ -721,7 +728,6 @@ call s:paq_add('prabirshrestha/asyncomplete.vim',
             \ {'as' : 'asyncomplete'})
 call s:paq_add('prabirshrestha/asyncomplete-lsp.vim',
             \ {'as' : 'asyncomplete-lsp'})
-call s:paq_add('jiangmiao/auto-pairs')
 call s:paq_add('chrisbra/colorizer',
             \ {'as' : 'colorizer'})
 call s:paq_add('tpope/vim-commentary',
