@@ -809,8 +809,8 @@ let g:rainbow_conf = {
 call s:paq_add('justinmk/vim-sneak', {'as' : 'sneak'})
 let g:sneak#label = 1
 
-nnoremap <Leader>s <Plug>Sneak_s
-nnoremap <Leader>S <Plug>Sneak_S
+nnoremap s <Plug>Sneak_s
+nnoremap S <Plug>Sneak_S
 
 nnoremap f <Plug>Sneak_f
 nnoremap F <Plug>Sneak_F
