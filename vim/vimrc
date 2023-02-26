@@ -83,6 +83,7 @@ set switchbuf=uselast
 set tabstop=8
 set termencoding=utf-8
 set termguicolors
+set textwidth=79
 set timeoutlen=777
 set ttimeoutlen=77
 let &undodir=s:vim_home .. '/undo'
@@ -349,14 +350,8 @@ function! DrawQfStatusLine() abort
 endfunction
 
 augroup show_color_column_per_line | autocmd!
-    autocmd FileType * call s:show_color_column_per_line()
+    autocmd BufEnter * execute 'match ColorColumn /\%' .. &textwidth .. 'v./'
 augroup END
-
-function! s:show_color_column_per_line() abort
-    let l:cc = &textwidth ? &textwidth + 1 : 0
-    let l:spot = '\%' .. l:cc .. 'v.'
-    call matchadd('ColorColumn', l:spot, 100)
-endfunction
 
 augroup override_colors | autocmd!
     autocmd ColorScheme *
