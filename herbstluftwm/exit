@@ -1,20 +1,21 @@
 #!/usr/bin/env bash
 
-[[ "${FLOCKER}" != "$0" ]] && exec env FLOCKER="$0" flock -Fxn "$0" "$0" "$@" || :
+[[ "${FLOCKER}" != "$0" ]] \
+    && exec env FLOCKER="$0" flock -Fxn "$0" "$0" "$@" || :
 
 map=(
-    "Lock"      "xsecurelock"
-    "Log Out"   "pkill -SIGTERM -t tty${XDG_VTNR} Xorg"
-    "Reboot"    "systemctl reboot"
-    "Power Off" "systemctl poweroff"
-    "Suspend"   "systemctl suspend"
+    " " "Lock"      "xsecurelock"
+    " " "Log Out"   "pkill -SIGTERM -t tty${XDG_VTNR} Xorg"
+    " " "Reboot"    "systemctl reboot"
+    " " "Power Off" "systemctl poweroff"
+    " " "Suspend"   "systemctl suspend"
 )
 
-for (( i=0; i<${#map[@]}; i+=2 )); do
-    echo "${map[i]}"
+for (( i=0; i<${#map[@]}; i+=3 )); do
+    echo -e "${map[i]}\t${map[i+1]}"
 done | rofi -i -format 'i' -dmenu -p 'I would like to' | {
     read idx
-    idx=$(( $idx * 2 + 1 ))
+    idx=$(( $idx * 3 + 2 ))
     cmd="${map[$idx]}"
     exec $cmd
 }
