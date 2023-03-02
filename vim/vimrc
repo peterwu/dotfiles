@@ -349,8 +349,12 @@ function! DrawQfStatusLine() abort
                 \ ], '')
 endfunction
 
+augroup use_as_man_pager | autocmd!
+    autocmd FileType man setlocal textwidth=0 | match none
+augroup END
+
 augroup show_color_column_per_line | autocmd!
-    autocmd BufEnter * execute 'match ColorColumn'
+    autocmd FileType * execute 'match ColorColumn'
                 \ '/\%' .. (&textwidth ? &textwidth + 1 : 0) .. 'v./'
 augroup END
 
