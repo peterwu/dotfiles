@@ -350,7 +350,8 @@ function! DrawQfStatusLine() abort
 endfunction
 
 augroup show_color_column_per_line | autocmd!
-    autocmd BufEnter * execute 'match ColorColumn /\%' .. &textwidth .. 'v./'
+    autocmd BufEnter * execute 'match ColorColumn'
+                \ '/\%' .. (&textwidth ? &textwidth + 1 : 0) .. 'v./'
 augroup END
 
 augroup override_colors | autocmd!
