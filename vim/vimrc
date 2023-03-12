@@ -125,13 +125,6 @@ nnoremap <expr> k (v:count ? 'k' : 'gk')
 xnoremap <expr> j (v:count ? 'j' : 'gj')
 xnoremap <expr> k (v:count ? 'k' : 'gk')
 
-" auto pairs
-inoremap " ""<Left>
-inoremap ' ''<Left>
-inoremap ( ()<Left>
-inoremap [ []<Left>
-inoremap { {}<Left>
-
 " unimpaired
 nnoremap <silent> [<Space> O<Esc>j
 nnoremap <silent> ]<Space> o<Esc>k
@@ -743,6 +736,10 @@ call s:paq_add('tpope/vim-repeat',
             \ {'as' : 'repeat'})
 call s:paq_add('tpope/vim-surround',
             \ {'as' : 'surround'})
+
+" auto-pairs
+call s:paq_add('LunarWatcher/auto-pairs')
+let g:AutoPairsCompleteOnlyOnSpace = 1
 
 " lion
 call s:paq_add('tommcdo/vim-lion', {'as' : 'lion'})
