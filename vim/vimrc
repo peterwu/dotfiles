@@ -619,7 +619,7 @@ function! s:paq_add(name, args = {}) abort
         let l:dir = s:package_start_dir .. '/' .. l:as
     endif
 
-    let s:paqs[l:as] = { 'dir' : l:dir, 'url' : l:url }
+    let s:paqs[l:as] = { 'dir' : l:dir->expand(':p:h'), 'url' : l:url }
 endfunction
 
 function! s:paq_update() abort
