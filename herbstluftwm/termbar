@@ -85,41 +85,40 @@ print_net() {
 }
 
 print_batt() {
-    local PATH_AC="/sys/class/power_supply/AC"
-    local PATH_BATTERY_0="/sys/class/power_supply/BAT0"
-    local PATH_BATTERY_1="/sys/class/power_supply/BAT1"
+    local POWER_SUPPLY_PATH="/sys/class/power_supply"
 
-    local ac=0
-    local battery_level_0=0
-    local battery_level_1=0
-    local battery_max_0=0
-    local battery_max_1=0
+    local ac_path=''
+    local battery_paths=()
+    local ps_type
+    local ac_online=0
 
-    if [ -f "${PATH_AC}/online" ]; then
-        ac=$(cat "${PATH_AC}/online")
+    for ps_path in $POWER_SUPPLY_PATH/*; do
+        ps_type=$(cat "$ps_path/type")
+        case $ps_type in
+            'Mains')
+                ac_path=$ps_path
+                ;;
+            'Battery')
+                battery_paths+=($ps_path)
+                ;;
+        esac
+    done
+
+
+    if [ -f "${ac_path}/online" ]; then
+        ac_online=$(cat "${ac_path}/online")
     fi
 
-    if [ -f "${PATH_BATTERY_0}/energy_now" ]; then
-        battery_level_0=$(cat "${PATH_BATTERY_0}/energy_now")
-    fi
+    local battery_level=0
+    local battery_max=0
+    for battery_path in "${battery_paths[@]}"; do
+        battery_level=$(($battery_level + $(cat "${battery_path}/energy_now")))
+        battery_max=$(($battery_max + $(cat "${battery_path}/energy_full")))
+    done
 
-    if [ -f "${PATH_BATTERY_0}/energy_full" ]; then
-        battery_max_0=$(cat "${PATH_BATTERY_0}/energy_full")
-    fi
+    local battery_percentage=$((${battery_level} * 100 / ${battery_max}))
 
-    if [ -f "${PATH_BATTERY_1}/energy_now" ]; then
-        battery_level_1=$(cat "${PATH_BATTERY_1}/energy_now")
-    fi
-
-    if [ -f "${PATH_BATTERY_1}/energy_full" ]; then
-        battery_max_1=$(cat "${PATH_BATTERY_1}/energy_full")
-    fi
-
-    local battery_level=$((${battery_level_0} + ${battery_level_1}))
-    local battery_max=$((${battery_max_0} + ${battery_max_1}))
-    local battery_percent=$((${battery_level} * 100 / ${battery_max}))
-
-    echo -e "batt\t${ac}\t${battery_percent}"
+    echo -e "batt\t${ac_online}\t${battery_percentage}"
 }
 
 # formatters
