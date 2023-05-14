@@ -43,20 +43,20 @@
 
 ;; transients
 (with-eval-after-load 'transient
-  (transient-define-prefix my-gnus-transient-gnus-group-list-groups
+  (transient-define-prefix my-gnus-transient-gnus-group-list-groups ()
     "gnus-group listing groups"
     ["Listing groups"
      ("s" "List unread subscribed groups" gnus-group-list-groups)
      ("u" "List all groups" gnus-group-list-all-groups)])
 
-  (transient-define-prefix my-gnus-transient-gnus-topic-commands
+  (transient-define-prefix my-gnus-transient-gnus-topic-commands ()
     "gnus-topic topic commands"
     ["Topic commands"
      ("m" "Move group to other topic" gnus-topic-move-group)
      ("h" "Hide topic" gnus-topic-hide-topic)
      ("s" "Show topic" gnus-topic-show-topic)])
 
-  (transient-define-prefix my-gnus-transient-gnus-summary-mail-group-commands
+  (transient-define-prefix my-gnus-transient-gnus-summary-mail-group-commands ()
     "gnus-summary mail group commands"
     ["Mail group commands"
      ("d" "Delete mail article" gnus-summary-delete-article)]))
