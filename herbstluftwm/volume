@@ -3,7 +3,6 @@
 # $1: press mute button
 # $2: delta in volume
 
-msgid=123456
 delta=$2
 
 [[ "$1" -eq 1 ]] && wpctl set-mute @DEFAULT_SINK@ toggle
@@ -22,11 +21,13 @@ fi
 herbstclient emit_hook vol "${muted}" "${vol}"
 
 if [ $muted == true ]; then
-    dunstify --appname "hlwm-update-volume" \
-             --timeout 1500                 \
-             --urgency low                  \
-             --icon audio-volume-muted      \
-             --replace "$msgid" "Volume: MUTED"
+    dunstify --appname "herbstluftwm-update-volume"                      \
+             --timeout 1500                                              \
+             --urgency low                                               \
+             --icon audio-volume-muted                                   \
+             --hints string:x-dunst-stack-tag:herbstluftwm-update-volume \
+             "Volume: MUTED"
+
 else
     if [ "${vol}" -gt 66 ]; then
         icon="audio-volume-high"
@@ -38,12 +39,13 @@ else
         icon="audio-volume-muted"
     fi
 
-    dunstify --appname "hlwm-update-volume" \
-             --timeout 1500                 \
-             --urgency low                  \
-             --icon "$icon"                 \
-             --replace "$msgid"             \
-             --hints int:value:"$vol" "Volume: ${vol}%"
+    dunstify --appname "herbstluftwm-update-volume"                      \
+             --timeout 1500                                              \
+             --urgency low                                               \
+             --icon "$icon"                                              \
+             --hints string:x-dunst-stack-tag:herbstluftwm-update-volume \
+             --hints int:value:"$vol"                                    \
+             "Volume: ${vol}%"
 
     canberra-gtk-play --id audio-volume-change --description "hlwm-update-volume"
 fi
