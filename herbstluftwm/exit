@@ -4,8 +4,8 @@
     && exec env FLOCKER="$0" flock -Fxn "$0" "$0" "$@" || :
 
 map=(
-    " " "Lock"      "xsecurelock"
-    " " "Log Out"   "pkill -SIGTERM -t tty${XDG_VTNR} Xorg"
+    " " "Lock"      "loginctl lock-session"
+    " " "Log Out"   "loginctl terminate-user $USER"
     " " "Reboot"    "systemctl reboot"
     " " "Power Off" "systemctl poweroff"
     " " "Suspend"   "systemctl suspend"
