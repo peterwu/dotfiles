@@ -2,6 +2,8 @@
 
 # this is a simple config for herbstluftwm
 
+HLWM_HOME=$HOME/.config/herbstluftwm
+
 hc() {
     herbstclient "$@"
 }
@@ -18,33 +20,31 @@ Mod=Mod4   # Use the super key as the main modifier
 hc keybind $Mod-Shift-q quit
 hc keybind $Mod-Shift-r reload
 hc keybind $Mod-Shift-c close
-hc keybind $Mod-Return  spawn kitty --single-instance --instance-group=main
-hc keybind $Mod-Shift-Return  spawn kitty --single-instance --instance-group=main --class scratchpad
+hc keybind $Mod-Return       \
+    spawn kitty --single-instance --instance-group=main
+hc keybind $Mod-Shift-Return \
+    spawn kitty --single-instance --instance-group=main --class scratchpad
 
 # user custom keybindings
 hc keybind $Mod-d                spawn rofi -display-drun "Run" -show drun
-hc keybind Mod1-Control-Delete   spawn ~/.config/herbstluftwm/exit
+hc keybind Mod1-Control-Delete   spawn $HLWM_HOME/sayonara
 
-hc keybind XF86AudioMicMute      \
-   spawn wpctl set-mute @DEFAULT_SOURCE@  toggle
-hc keybind XF86AudioMute         \
-   spawn ~/.config/herbstluftwm/volume 1 0
-hc keybind XF86AudioRaiseVolume  \
-   spawn ~/.config/herbstluftwm/volume 0 5%+
-hc keybind XF86AudioLowerVolume  \
-   spawn ~/.config/herbstluftwm/volume 0 5%-
+hc keybind XF86AudioMicMute      spawn wpctl set-mute @DEFAULT_SOURCE@  toggle
+hc keybind XF86AudioMute         spawn $HLWM_HOME/volumectl 1 0
+hc keybind XF86AudioRaiseVolume  spawn $HLWM_HOME/volumectl 0 5%+
+hc keybind XF86AudioLowerVolume  spawn $HLWM_HOME/volumectl 0 5%-
 
-hc keybind XF86MonBrightnessUp   \
-   spawn ~/.config/herbstluftwm/brightness +5
-hc keybind XF86MonBrightnessDown \
-   spawn ~/.config/herbstluftwm/brightness -5
+hc keybind XF86MonBrightnessUp   spawn $HLWM_HOME/brightnessctl +5
+hc keybind XF86MonBrightnessDown spawn $HLWM_HOME/brightnessctl -5
 
 hc keybind Print                                       \
    chain , spawn canberra-gtk-play --id screen-capture \
-         , spawn scrot '%F_%H%M%S.png' --exec 'mv $f ~/Pictures/Screenshots/'
+         , spawn scrot '%F_%H%M%S.png'                 \
+                       --exec 'mv $f ~/Pictures/Screenshots/'
 hc keybind Mod1-Print                                  \
    chain , spawn canberra-gtk-play --id screen-capture \
-         , spawn scrot --focused '%F_%H%M%S.png' --exec 'mv $f ~/Pictures/Screenshots/'
+         , spawn scrot --focused '%F_%H%M%S.png'       \
+                       --exec 'mv $f ~/Pictures/Screenshots/'
 
 # basic movement
 # focusing clients
@@ -116,8 +116,7 @@ hc mousebind $Mod-Button2 zoom
 hc mousebind $Mod-Button3 resize
 
 #  focus
-hc keybind $Mod-BackSpace chain , cycle_monitor \
-                                , spawn ~/.config/herbstluftwm/monitor
+hc keybind $Mod-BackSpace chain , cycle_monitor , spawn $HLWM_HOME/monitorctl
 
 hc keybind $Mod-bracketright cycle_all   +1
 hc keybind $Mod-bracketleft  cycle_all   -1
@@ -220,5 +219,57 @@ hc set tree_style '╾│ ├└╼─┐'
 # unlock, just to be sure
 hc unlock
 
+#########################
 # initialize the session
-~/.config/herbstluftwm/init
+#########################
+
+# lock after 5 min / suspend after 2 min
+xset s 300 5
+xss-lock --notifier=/usr/libexec/xsecurelock/dimmer \
+         --transfer-sleep-lock                      \
+         -- env XSECURELOCK_COMPOSITE_OBSCURER=0 xsecurelock &
+
+# workaround a java bug for jetbrain products
+hc cycle_value wmname herbstluftwm LG3D
+
+# compositor
+picom --daemon
+
+# set wallpaper
+feh --no-fehbg --image-bg "#000000" --bg-center /usr/share/pixmaps/fedora-logo.png
+
+# start ibus daemon
+ibus-daemon -drx &
+
+# terminate already running bar instances
+pkill -u $UID -f termbar
+
+# wait until the processes have been shut down
+while pgrep -u $UID -f termbar >/dev/null; do sleep 1; done
+
+# do multi monitor setup here, e.g.:
+# herbstclient set_monitors 1280x1024+0+0 1280x1024+1280+0
+# or simply:
+hc detect_monitors
+
+# launch termbar on primary monitor
+hc pad 0 35
+exec -a termbar kitty                                             \
+     --class termbar                                              \
+     --config $HLWM_HOME/termbar.kitty.conf                       \
+     --override open_url_with=$HLWM_HOME/termbar-protocol-handler \
+     --single-instance                                            \
+     --instance-group=termbar                                     \
+     -- $HLWM_HOME/termbar 0 &
+
+if [[ $(hc get_attr monitors.count) > 1 ]]; then
+    # put the external monitor on the right
+    xrandr --output eDP-1 --primary --auto \
+           --output HDMI-2 --auto --right-of eDP-1
+
+    hc focus_monitor 1
+    hc use 0
+    hc lock_tag 1
+
+    hc focus_monitor 0
+fi

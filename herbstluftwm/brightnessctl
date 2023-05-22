@@ -20,10 +20,10 @@ brightness=$(( $(cat $BACKLIGHT_BRIGHTNESS) + ${delta} ))
 echo $brightness > $BACKLIGHT_BRIGHTNESS
 
 brightness=$(( $brightness / 12 ))
-dunstify --appname "herbstluftwm-update-brightness"                      \
-         --timeout 1500                                                  \
-         --urgency low                                                   \
-         --icon dialog-information                                       \
-         --hints string:x-dunst-stack-tag:herbstluftwm-update-brightness \
-         --hints int:value:"${brightness}"                               \
+dunstify --appname "wm-update-brightness"                      \
+         --timeout 1500                                        \
+         --urgency low                                         \
+         --icon dialog-information                             \
+         --hints string:x-dunst-stack-tag:wm-update-brightness \
+         --hints int:value:"${brightness}"                     \
          "Brightness: ${brightness}%"

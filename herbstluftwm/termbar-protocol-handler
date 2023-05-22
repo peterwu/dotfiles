@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# https://unix.stackexchange.com/questions/497146/create-a-custom-url-protocol-handler
+
+HLWM_HOME=$HOME/.config/herbstluftwm
+
+# workspace
+# tbp://wm/ws/${tag_name}
+if [[ $1 =~ ^tbp:\/\/wm\/ws\/[1-9]$ ]]; then
+    tag=${1##*/}
+    herbstclient use "${tag}"
+fi
+
+# date time panel
+# tbp://wm/dtp
+# show-time
+if [[ $1 =~ ^tbp:\/\/wm\/dtp$ ]]; then
+    herbstluftwm-show-time
+fi
+
+# sayonara
+# tbp://wm/bye
+if [[ $1 =~ ^tbp:\/\/wm\/bye$ ]]; then
+    $HLWM_HOME/sayonara
+fi

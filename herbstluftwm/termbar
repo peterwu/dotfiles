@@ -47,44 +47,50 @@ print_ime() {
 }
 
 print_vol() {
-    # format: vol/muted?/vol
+    # format: vol/muted?/volume
 
     vol_info=$(wpctl get-volume @DEFAULT_SINK@)
     vol=$(bc <<< "$(cut -d' ' -f2 <<< ${vol_info}) * 100" | cut -d. -f1)
     muted=$(cut -d' ' -f3 <<< $vol_info)
     if [[ $muted == "[MUTED]" ]]; then
-        muted=true
+        muted=1
     else
-        muted=false
+        muted=0
     fi
 
     echo -e "vol\t${muted}\t${vol}"
 }
 
 print_net() {
-    # format: net/eth?/strength
+    # format: net/connected?/type
 
-    local default_dev=$(ip route show|grep ^default|cut -d ' ' -f 5)
-    local eth=0
-    local strength=0
+    local ETHERNET=1
+    local WIRELESS=2
 
-    case ${default_dev} in
-        "enp0s31f6") # wired
-            eth=1
-            ;;
-        "wla0") # wireless
-            eth=0
-            strength=$(awk 'NR==3 {printf "%d",$3}' /proc/net/wireless)
-            ;;
-        "") # disconnected
-            eth=-1
-            ;;
-    esac
+    local NET_PATH="/sys/class/net"
+    local connected=0
+    local type=0
 
-    echo -e "net\t${eth}\t${strength}"
+    for net_path in $NET_PATH/*; do
+        operstate=$(cat "$net_path/operstate")
+
+        if [[ $operstate == "up" ]]; then
+            connected=1
+
+            if [[ -d "$net_path/wireless" ]]; then
+                type=$WIRELESS
+            else
+                type=$ETHERNET
+            fi
+        fi
+    done
+
+    echo -e "net\t${connected}\t${type}"
 }
 
-print_batt() {
+print_pwr() {
+    # format: pwr/ac_online?/batt_perc
+
     local POWER_SUPPLY_PATH="/sys/class/power_supply"
 
     local ac_path=''
@@ -104,7 +110,6 @@ print_batt() {
         esac
     done
 
-
     if [ -f "${ac_path}/online" ]; then
         ac_online=$(cat "${ac_path}/online")
     fi
@@ -116,9 +121,38 @@ print_batt() {
         battery_max=$(($battery_max + $(cat "${battery_path}/energy_full")))
     done
 
-    local battery_percentage=$((${battery_level} * 100 / ${battery_max}))
+    local battery_perc=$((${battery_level} * 100 / ${battery_max}))
 
-    echo -e "batt\t${ac_online}\t${battery_percentage}"
+    # file alerts when needed
+    local threshold_low=10
+    local threshold_critically_low=5
+    local threshold_suspend=3
+
+    local msgid_low=999998
+    local msgid_critically_low=999999
+
+    if [[ $ac_online -eq 1 ]]; then
+        dunstify --close $msgid_low
+        dunstify --close $msgid_critically_low
+    elif [[ $battery_perc -le $threshold_suspend ]]; then
+        systemctl suspend
+    elif [[ $battery_perc -le $threshold_critically_low ]]; then
+        dunstify --urgency critical                                \
+                 --icon battery-empty-symbolic                     \
+                 --replace=$msgid_critically_low                   \
+                 --hints string:x-dunst-stack-tag:wm-battery-alert \
+                 --hints int:value:${battery_perc}                 \
+                 "Battery: ${battery_perc}%"
+    elif [[ $battery_perc -le $threshold_low ]]; then
+        dunstify --urgency normal                                  \
+                 --icon battery-low-symbolic                       \
+                 --replace=$msgid_low                              \
+                 --hints string:x-dunst-stack-tag:wm-battery-alert \
+                 --hints int:value:${battery_perc}                 \
+                 "Battery: ${battery_perc}%"
+    fi
+
+    echo -e "pwr\t${ac_online}\t${battery_perc}"
 }
 
 # formatters
@@ -126,7 +160,7 @@ format_logo() {
     # # OSC 8 ; params ; URI ST <name> OSC 8 ;; ST
     # escape_mask = '\033]8;{};{}\033\\{}\033]8;;\033\\'
 
-    LOGO=$(echo -e "\033]8;;tbp://hlwm/bye\033\\${LOGO}\033]8;;\033\\")
+    LOGO=$(echo -e "\033]8;;tbp://wm/bye\033\\${LOGO}\033]8;;\033\\")
     LOGO="$(tput setaf 4)${LOGO}$(tput sgr0)"
 }
 
@@ -158,8 +192,8 @@ format_tags() {
         tag_name="${i:1}"
         tag_status="${i:0:1}"
 
-        # format tag_name to support tbp:: protocol
-        tag_name="\033]8;;tbp://hlwm/tag/${tag_name}\033\\\\${tag_name}\033]8;;\033\\"
+        # format tag_name to support termbar-protocol-handler:: protocol
+        tag_name="\033]8;;tbp://wm/ws/${tag_name}\033\\\\${tag_name}\033]8;;\033\\"
 
         case ${tag_status} in
             ".") # unoccupied
@@ -211,7 +245,7 @@ format_vol() {
     local vol=$2
     local icon
 
-    if [[ "${muted}" == true ]]; then
+    if [[ "${muted}" == 1 ]]; then
         icon=""
     else
         icon=""
@@ -225,28 +259,30 @@ format_net() {
     #  wifi
     #  disconnected
 
-    local eth=$1
-    local strength=$((${2:-0} * 100 / 70))
+    local connected=$1
+    local type=$2
     local icon
 
-    if [ "${eth}" -eq -1 ]; then
+    if [ "${connected}" -eq 0 ]; then
         # disconnected
         icon=""
-    elif [ "${eth}" -eq 1 ]; then
+    elif [ "${type}" -eq 1 ]; then
         # wired
         icon=""
-    else
+    elif [ "${type}" -eq 2 ]; then
         # wirless
         icon=""
+    else
+        icon=""
     fi
 
     echo -n "${icon}"
 }
 
-format_batt() {
+format_pwr() {
     local ac=$1
     local battery_percent=$2
-    local icon, batt
+    local icon, pwr
 
     if [[ "${ac}" -eq 1 ]]; then
         icon=""
@@ -264,13 +300,13 @@ format_batt() {
         fi
     fi
 
-    batt="${icon} ${battery_percent}%"
+    pwr="${icon} ${battery_percent}%"
 
     if [[ "${ac}" -eq 0 && "${battery_percent}" -le 9 ]]; then
-        batt="$(tput setaf 1)${batt}"
+        pwr="$(tput setaf 1)${pwr}"
     fi
 
-    echo -n "${batt}"
+    echo -n "${pwr}"
 }
 
 # hide the cursor
@@ -281,11 +317,21 @@ format_logo
 
 # the fun begins
 {
+    i=0
+
     # volume
     print_vol
 
     # ime
     print_ime
+    gdbus monitor                     \
+          --address $(ibus address)   \
+          --dest org.freedesktop.IBus \
+          --object-path /org/freedesktop/IBus |
+        while read event; do
+            print_ime
+        done > >(uniq_linebuffered) &
+    pids[$((i++))]=$!
 
     # time
     print_date
@@ -293,34 +339,27 @@ format_logo
         print_date
         sleep 1 || break
     done > >(uniq_linebuffered) &
-    pids[0]=$!
-
-    # battery info
-    while :; do
-        print_batt
-        sleep 17 || break
-    done > >(uniq_linebuffered) &
-    pids[1]=$!
-
-    udevadm monitor --udev --subsystem-match power_supply |
-        while read event; do
-            print_batt
-        done > >(uniq_linebuffered) &
-    pids[2]=$!
+    pids[$((i++))]=$!
 
     # net
     while :; do
         print_net
-        sleep 11 || break
+        sleep 1 || break
     done > >(uniq_linebuffered) &
-    pids[3]=$!
+    pids[$((i++))]=$!
 
-    # ime
-    dbus-monitor --address `ibus address` --profile "type='signal',member='GlobalEngineChanged'" |
+    # power supply
+    while :; do
+        print_pwr
+        sleep 15 || break
+    done > >(uniq_linebuffered) &
+    pids[$((i++))]=$!
+
+    udevadm monitor --udev --subsystem-match power_supply |
         while read event; do
-            print_ime
+            print_pwr
         done > >(uniq_linebuffered) &
-    pids[4]=$!
+    pids[$((i++))]=$!
 
     # initialize tags
     echo -n "tags init"
@@ -337,7 +376,8 @@ format_logo
         IFS=$'\t' read -ra cmd || break
         case "${cmd[0]}" in
             tag*)
-                IFS=$'\t' read -ra tags <<< $(herbstclient tag_status "${MONITOR}")
+                IFS=$'\t' \
+                    read -ra tags <<< $(herbstclient tag_status "${MONITOR}")
                 ws=$(format_tags "${tags[@]}")
                 ;;
             date)
@@ -349,8 +389,8 @@ format_logo
             net)
                 net=$(format_net "${cmd[@]:1}")
                 ;;
-            batt)
-                batt=$(format_batt "${cmd[@]:1}")
+            pwr)
+                pwr=$(format_pwr "${cmd[@]:1}")
                 ;;
             ime)
                 ime=$(format_ime "${cmd[@]:1}")
@@ -369,7 +409,10 @@ format_logo
         # print the final result
         LEFT="${LOGO}${SEPARATOR}${SEPARATOR}${ws}"
         CENTER="${date}"
-        RIGHT="${ime}${SEPARATOR}${vol}${SEPARATOR}${SEPARATOR}${net}${SEPARATOR}${SEPARATOR}${batt}"
+        RIGHT="${ime}"
+        RIGHT+="${SEPARATOR}${vol}${SEPARATOR}"
+        RIGHT+="${SEPARATOR}${net}${SEPARATOR}"
+        RIGHT+="${SEPARATOR}${pwr}"
 
         echo -n $(tput sgr0)
         printl "${LEFT}"
