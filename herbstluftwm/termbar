@@ -280,29 +280,29 @@ format_net() {
 }
 
 format_pwr() {
-    local ac=$1
-    local battery_percent=$2
+    local ac_online=$1
+    local battery_perc=$2
     local icon, pwr
 
-    if [[ "${ac}" -eq 1 ]]; then
+    if [[ "${ac_online}" -eq 1 ]]; then
         icon=""
     else
-        if [ "${battery_percent}" -ge 95 ]; then
+        if [ "${battery_perc}" -ge 95 ]; then
             icon+="" # full
-        elif [ "${battery_percent}" -ge 75 ]; then
+        elif [ "${battery_perc}" -ge 75 ]; then
             icon+="" # 3/4
-        elif [ "${battery_percent}" -ge 50 ]; then
+        elif [ "${battery_perc}" -ge 50 ]; then
             icon+="" # 1/2
-        elif [ "${battery_percent}" -ge 25 ]; then
+        elif [ "${battery_perc}" -ge 25 ]; then
             icon+="" # 1/4
         else
             icon+="" # empty
         fi
     fi
 
-    pwr="${icon} ${battery_percent}%"
+    pwr="${icon} ${battery_perc}%"
 
-    if [[ "${ac}" -eq 0 && "${battery_percent}" -le 9 ]]; then
+    if [[ "${ac_online}" -eq 0 && "${battery_perc}" -le 9 ]]; then
         pwr="$(tput setaf 1)${pwr}"
     fi
 
@@ -342,16 +342,17 @@ format_logo
     pids[$((i++))]=$!
 
     # net
-    while :; do
-        print_net
-        sleep 1 || break
-    done > >(uniq_linebuffered) &
+    print_net
+    ip monitor address |
+        while read event; do
+            print_net
+        done > >(uniq_linebuffered) &
     pids[$((i++))]=$!
 
     # power supply
     while :; do
         print_pwr
-        sleep 15 || break
+        sleep 30 || break
     done > >(uniq_linebuffered) &
     pids[$((i++))]=$!
 
