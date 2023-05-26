@@ -49,14 +49,10 @@ print_ime() {
 print_vol() {
     # format: vol/muted?/volume
 
-    vol_info=$(wpctl get-volume @DEFAULT_SINK@)
-    vol=$(bc <<< "$(cut -d' ' -f2 <<< ${vol_info}) * 100" | cut -d. -f1)
-    muted=$(cut -d' ' -f3 <<< $vol_info)
-    if [[ $muted == "[MUTED]" ]]; then
-        muted=1
-    else
-        muted=0
-    fi
+    set -- $(wpctl get-volume @DEFAULT_SINK@ |
+                 awk '{print $2*100,($3 == "" ? 0 : 1)}')
+    vol=$1
+    muted=$2
 
     echo -e "vol\t${muted}\t${vol}"
 }
@@ -72,9 +68,7 @@ print_net() {
     local type=0
 
     for net_path in $NET_PATH/*; do
-        operstate=$(cat "$net_path/operstate")
-
-        if [[ $operstate == "up" ]]; then
+        if [[ $(cat "$net_path/operstate") == "up" ]]; then
             connected=1
 
             if [[ -d "$net_path/wireless" ]]; then
@@ -95,12 +89,10 @@ print_pwr() {
 
     local ac_path=''
     local battery_paths=()
-    local ps_type
     local ac_online=0
 
     for ps_path in $POWER_SUPPLY_PATH/*; do
-        ps_type=$(cat "$ps_path/type")
-        case $ps_type in
+        case $(cat "$ps_path/type") in
             'Mains')
                 ac_path=$ps_path
                 ;;
