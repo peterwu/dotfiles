@@ -17,6 +17,8 @@ BACKLIGHT_BRIGHTNESS=/sys/class/backlight/intel_backlight/brightness
 delta=$(( $1 * 12 )) # adjust to (0-1200)
 brightness=$(( $(cat $BACKLIGHT_BRIGHTNESS) + ${delta} ))
 
+[[ $brightness -lt 0 ]] && brightness=0
+
 echo $brightness > $BACKLIGHT_BRIGHTNESS
 
 brightness=$(( $brightness / 12 ))
