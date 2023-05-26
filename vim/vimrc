@@ -216,19 +216,15 @@ if has('clipboard')
     xnoremap <silent> <Leader>y  "+y
     nnoremap <silent> <Leader>Y  "+yg_
     nnoremap <silent> <Leader>yy "+y_
-elseif executable('/usr/bin/kitty')
+elseif executable('kitten')
     nnoremap <silent> <Leader>y
-                \ <Cmd>set operatorfunc=<SID>copy_to_clipboard
-                \ <Bar>normal! g@<CR>
+                \ <Cmd>set operatorfunc=<SID>copy_to_clipboard<CR>g@
     xnoremap <silent> <Leader>y
-                \ <Cmd>set operatorfunc=<SID>copy_to_clipboard
-                \ <Bar>normal! g@<CR>
+                \ <Cmd>set operatorfunc=<SID>copy_to_clipboard<CR>g@
     nnoremap <silent> <Leader>Y
-                \ <Cmd>set operatorfunc=<SID>copy_to_clipboard
-                \ <Bar>normal! g@g_<CR>
+                \ <Cmd>set operatorfunc=<SID>copy_to_clipboard<CR>g@g_
     nnoremap <silent> <Leader>yy
-                \ <Cmd>set operatorfunc=<SID>copy_to_clipboard
-                \ <Bar>normal! g@_<CR>
+                \ <Cmd>set operatorfunc=<SID>copy_to_clipboard<CR>g@_
 
     function! s:copy_to_clipboard(type, ...) abort
         if a:type ==# "char"
@@ -244,7 +240,7 @@ elseif executable('/usr/bin/kitty')
             endif
         endif
 
-        silent! call system('kitty +kitten clipboard', getreg('"'))
+        silent! call system('kitten clipboard', getreg('"'))
     endfunction
 endif
 
@@ -254,22 +250,22 @@ if has('clipboard')
     nnoremap <silent> <Leader>P "+P
     xnoremap <silent> <Leader>p "+p
     xnoremap <silent> <Leader>P "+P
-elseif executable('/usr/bin/kitty')
+elseif executable('kitten')
     nnoremap <silent> <Leader>p
-                \ <Cmd>silent!
-                \ let @"=system('kitty +kitten clipboard --get-clipboard')
+                \ <Cmd>silent! call
+                \ setreg('"', system('kitten clipboard --get-clipboard'))
                 \ <Bar>normal! ""p<CR>
     nnoremap <silent> <Leader>P
-                \ <Cmd>silent!
-                \ let @"=system('kitty +kitten clipboard --get-clipboard')
+                \ <Cmd>silent! call
+                \ setreg('"', system('kitten clipboard --get-clipboard'))
                 \ <Bar>normal! ""P<CR>
     xnoremap <silent> <Leader>p
-                \ <Cmd>silent!
-                \ let @"=system('kitty +kitten clipboard --get-clipboard')
+                \ <Cmd>silent! call
+                \ setreg('"', system('kitten clipboard --get-clipboard'))
                 \ <Bar>normal! ""p<CR>
     xnoremap <silent> <Leader>P
-                \ <Cmd>silent!
-                \ let @"=system('kitty +kitten clipboard --get-clipboard')
+                \ <Cmd>silent! call
+                \ setreg('"', system('kitten clipboard --get-clipboard'))
                 \ <Bar>normal! ""P<CR>
 endif
 
