@@ -4,7 +4,7 @@
 
 set -m
 
-dirs=(
+readonly dirs=(
     /usr/share/applications
     /usr/local/share/applications
     $HOME/.local/share/applications
@@ -12,6 +12,7 @@ dirs=(
 
 # in the dirs, build a dictionary:
 # xyz.desktop -> /path/to/xyz.desktop
+
 declare -A files
 for d in "${dirs[@]}"; do
     for f in $(ls -1 ${d}/*.desktop 2> /dev/null); do

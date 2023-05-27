@@ -3,7 +3,7 @@
 [[ "${FLOCKER}" != "$0" ]] \
     && exec env FLOCKER="$0" flock -Fxn "$0" "$0" "$@" || :
 
-map=(
+readonly map=(
     " " "Lock"      "loginctl lock-session"
     " " "Log Out"   "loginctl terminate-user $USER"
     " " "Reboot"    "systemctl reboot"
@@ -12,10 +12,13 @@ map=(
 )
 
 for (( i=0; i<${#map[@]}; i+=3 )); do
-    echo -e "${map[i]}\t${map[i+1]}"
-done | rofi -i -format 'i' -dmenu -p 'I would like to' | {
-    read idx
-    idx=$(( $idx * 3 + 2 ))
-    cmd="${map[$idx]}"
+    echo -e "${map[i+2]}:${map[i]}\t${map[i+1]}"
+done | fzf --prompt "Go: "          \
+           --reverse                \
+           --border                 \
+           --no-info                \
+           --delimiter=':' \
+           --with-nth=2.. | {
+    cmd=$(awk -v FS=":" '{print $1}')
     exec $cmd
 }

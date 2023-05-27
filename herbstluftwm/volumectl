@@ -16,7 +16,7 @@ muted=$2
 
 herbstclient emit_hook vol "${muted}" "${vol}"
 
-if [ $muted == 1 ]; then
+if [[ $muted == 1 ]]; then
     dunstify --appname "wm-update-volume"                      \
              --timeout 1500                                    \
              --urgency low                                     \
@@ -24,11 +24,11 @@ if [ $muted == 1 ]; then
              --hints string:x-dunst-stack-tag:wm-update-volume \
              "Volume: MUTED"
 else
-    if [ "${vol}" -gt 66 ]; then
+    if [[ "${vol}" -gt 66 ]]; then
         icon="audio-volume-high"
-    elif [ "${vol}" -gt 33 ]; then
+    elif [[ "${vol}" -gt 33 ]]; then
         icon="audio-volume-medium"
-    elif [ "${vol}" -gt 0 ]; then
+    elif [[ "${vol}" -gt 0 ]]; then
         icon="audio-volume-low"
     else
         icon="audio-volume-muted"

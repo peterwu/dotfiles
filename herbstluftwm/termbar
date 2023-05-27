@@ -102,7 +102,7 @@ print_pwr() {
         esac
     done
 
-    if [ -f "${ac_path}/online" ]; then
+    if [[ -f "${ac_path}/online" ]]; then
         ac_online=$(cat "${ac_path}/online")
     fi
 
@@ -255,13 +255,13 @@ format_net() {
     local type=$2
     local icon
 
-    if [ "${connected}" -eq 0 ]; then
+    if [[ "${connected}" -eq 0 ]]; then
         # disconnected
         icon=""
-    elif [ "${type}" -eq 1 ]; then
+    elif [[ "${type}" -eq 1 ]]; then
         # wired
         icon=""
-    elif [ "${type}" -eq 2 ]; then
+    elif [[ "${type}" -eq 2 ]]; then
         # wirless
         icon=""
     else
@@ -279,13 +279,13 @@ format_pwr() {
     if [[ "${ac_online}" -eq 1 ]]; then
         icon=""
     else
-        if [ "${battery_perc}" -ge 95 ]; then
+        if [[ "${battery_perc}" -ge 95 ]]; then
             icon+="" # full
-        elif [ "${battery_perc}" -ge 75 ]; then
+        elif [[ "${battery_perc}" -ge 75 ]]; then
             icon+="" # 3/4
-        elif [ "${battery_perc}" -ge 50 ]; then
+        elif [[ "${battery_perc}" -ge 50 ]]; then
             icon+="" # 1/2
-        elif [ "${battery_perc}" -ge 25 ]; then
+        elif [[ "${battery_perc}" -ge 25 ]]; then
             icon+="" # 1/4
         else
             icon+="" # empty

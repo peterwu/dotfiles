@@ -26,8 +26,8 @@ hc keybind $Mod-Shift-Return \
     spawn kitty --single-instance --instance-group=main --class scratchpad
 
 # user custom keybindings
-hc keybind $Mod-d                spawn rofi -display-drun "Run" -show drun
-hc keybind Mod1-Control-Delete   spawn $HLWM_HOME/sayonara
+hc keybind $Mod-d                spawn kitty --class fzmenu -- $HLWM_HOME/alacarte
+hc keybind Mod1-Control-Delete   spawn kitty --class fzmenu -- $HLWM_HOME/sayonara
 
 hc keybind XF86AudioMicMute      spawn wpctl set-mute @DEFAULT_SOURCE@  toggle
 hc keybind XF86AudioMute         spawn $HLWM_HOME/volumectl 1 0
