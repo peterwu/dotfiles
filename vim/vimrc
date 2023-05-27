@@ -83,7 +83,7 @@ set switchbuf=uselast
 set tabstop=8
 set termencoding=utf-8
 set termguicolors
-set textwidth=79
+set textwidth=80
 set timeoutlen=777
 set ttimeoutlen=77
 let &undodir=s:vim_home .. '/undo'
@@ -736,6 +736,13 @@ call s:paq_add('tpope/vim-surround',
 " auto-pairs
 call s:paq_add('LunarWatcher/auto-pairs')
 let g:AutoPairsCompleteOnlyOnSpace = 1
+
+" fzf
+call s:paq_add('junegunn/fzf.vim', {'as': 'fzf'})
+let g:fzf_layout = { 'down': '40%' }
+let g:fzf_preview_window = []
+
+nnoremap <Leader>fz <Cmd>Files<CR>
 
 " lion
 call s:paq_add('tommcdo/vim-lion', {'as' : 'lion'})
