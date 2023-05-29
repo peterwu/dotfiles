@@ -37,6 +37,6 @@ done 2> /dev/null | sort -k 2 |
         --scrollbar ┆ --color scrollbar:blue \
         --with-nth=2..                       \
         --prompt "Run: " | {
-    pick=$(awk '{print $1}')
+    pick=$(cut -d' ' -f1)
     [[ -n ${pick} ]] && gio launch ${pick} &> /dev/null &
 }

@@ -7,17 +7,12 @@ MONITOR="${1:-0}"
 PIPE="/tmp/termbar-pipe0"
 
 # helpers
-uniq_linebuffered() {
-    awk '$0 != l {print; l=$0; fflush();}' "$@"
+hc() {
+    herbstclient "$@"
 }
 
-parrot() {
-    [[ -e "$PIPE" ]] && rm -rf "$PIPE"
-    mkfifo -m 600 "$PIPE"
-
-    while :; do
-        cat "$PIPE"
-    done
+uniq_linebuffered() {
+    awk '$0 != l {print; l=$0; fflush();}' "$@"
 }
 
 printl() {
@@ -364,15 +359,11 @@ format_logo
         done > >(uniq_linebuffered) &
     pids[$((i++))]=$!
 
-    # parrot received messages to /dev/stdout
-    parrot &
-    pids[$((i++))]=$!
-
     # initialize tags
     echo -n "tags init"
 
     # wait for events
-    herbstclient --idle
+    hc --idle
 
     # clean up
     for pid in "${pids[@]}"; do
@@ -383,8 +374,7 @@ format_logo
         IFS=$'\t' read -ra cmd || break
         case "${cmd[0]}" in
             tag*)
-                IFS=$'\t' \
-                    read -ra tags <<< $(herbstclient tag_status "${MONITOR}")
+                IFS=$'\t' read -ra tags <<< $(hc tag_status "${MONITOR}")
                 ws=$(format_tags "${tags[@]}")
                 ;;
             date)

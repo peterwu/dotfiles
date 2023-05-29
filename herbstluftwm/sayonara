@@ -11,14 +11,15 @@ readonly map=(
     " " "Suspend"   "systemctl suspend"
 )
 
+readonly delimiter=':'
 for (( i=0; i<${#map[@]}; i+=3 )); do
-    echo -e "${map[i+2]}:${map[i]}\t${map[i+1]}"
-done | fzf --prompt "Go: "          \
-           --reverse                \
-           --border                 \
-           --no-info                \
-           --delimiter=':' \
+    echo -e "${map[i+2]}${delimiter}${map[i]}\t${map[i+1]}"
+done | fzf --prompt "Go: "            \
+           --reverse                  \
+           --border                   \
+           --no-info                  \
+           --delimiter="${delimiter}" \
            --with-nth=2.. | {
-    cmd=$(awk -v FS=":" '{print $1}')
+    cmd=$(cut -d"${delimiter}" -f1)
     exec $cmd
 }
