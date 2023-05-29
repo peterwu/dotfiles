@@ -6,6 +6,58 @@ export XMODIFIERS=@im=ibus
 export QT_IM_MODULE=ibus
 export GLFW_IM_MODULE=ibus
 
-xrdb -load <<< " Xft.dpi:120 "
+xrdb -load <<< "
+
+    ! General
+    Xft.dpi       : 120
+    Xft.autohint  : true
+    Xft.lcdfilter : lcddefault
+    Xft.hintstyle : hintfull
+    Xft.hinting   : true
+    Xft.antialias : true
+    Xft.rgba      : rgb
+
+    ! Cursor
+    Xcursor.theme : Bibata-Modern-Classic
+
+    ! Modus Operandi
+    *.background  : #ffffff
+    *.foreground  : #000000
+    *.color0      : #555555
+    *.color8      : #222222
+    *.color1      : #7f1010
+    *.color9      : #b60000
+    *.color2      : #104410
+    *.color10     : #006800
+    *.color3      : #5f4400
+    *.color11     : #605b00
+    *.color4      : #003497
+    *.color12     : #1f1fce
+    *.color5      : #752f50
+    *.color13     : #a8007f
+    *.color6      : #005077
+    *.color14     : #005f88
+    *.color7      : #ffffff
+    *.color15     : #dddddd
+
+"
+
+#########################
+# initialize the session
+#########################
+
+# lock after 5 min / suspend after 2 min
+xset s 300 5
+xss-lock --notifier=/usr/libexec/xsecurelock/dimmer \
+         --transfer-sleep-lock                      \
+         -- env XSECURELOCK_COMPOSITE_OBSCURER=0 xsecurelock &
+
+# compositor
+picom --daemon
+
+# set wallpaper
+feh --no-fehbg           \
+    --image-bg "#000000" \
+    --bg-center /usr/share/pixmaps/fedora-logo.png
 
 exec dbus-run-session -- herbstluftwm --locked

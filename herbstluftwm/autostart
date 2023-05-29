@@ -219,38 +219,17 @@ hc set tree_style '╾│ ├└╼─┐'
 # unlock, just to be sure
 hc unlock
 
-#########################
-# initialize the session
-#########################
-
-# lock after 5 min / suspend after 2 min
-xset s 300 5
-xss-lock --notifier=/usr/libexec/xsecurelock/dimmer \
-         --transfer-sleep-lock                      \
-         -- env XSECURELOCK_COMPOSITE_OBSCURER=0 xsecurelock &
+# start ibus daemon
+ibus-daemon --daemonize --replace --xim &
 
 # workaround a java bug for jetbrain products
 hc cycle_value wmname herbstluftwm LG3D
-
-# compositor
-picom --daemon
-
-# set wallpaper
-feh --no-fehbg --image-bg "#000000" --bg-center /usr/share/pixmaps/fedora-logo.png
-
-# start ibus daemon
-ibus-daemon -drx &
 
 # terminate already running bar instances
 pkill -u $UID -f termbar
 
 # wait until the processes have been shut down
 while pgrep -u $UID -f termbar >/dev/null; do sleep 1; done
-
-# do multi monitor setup here, e.g.:
-# herbstclient set_monitors 1280x1024+0+0 1280x1024+1280+0
-# or simply:
-hc detect_monitors
 
 # launch termbar on primary monitor
 hc pad 0 35
@@ -261,6 +240,11 @@ exec -a termbar kitty                                             \
      --single-instance                                            \
      --instance-group=termbar                                     \
      -- $HLWM_HOME/termbar 0 &
+
+# do multi monitor setup here, e.g.:
+# herbstclient set_monitors 1280x1024+0+0 1280x1024+1280+0
+# or simply:
+hc detect_monitors
 
 if [[ $(hc get_attr monitors.count) > 1 ]]; then
     # put the external monitor on the right

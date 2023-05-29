@@ -4,10 +4,20 @@ LOGO=""
 SEPARATOR=" "
 COLS=$(tput cols)
 MONITOR="${1:-0}"
+PIPE="/tmp/termbar-pipe0"
 
 # helpers
 uniq_linebuffered() {
     awk '$0 != l {print; l=$0; fflush();}' "$@"
+}
+
+parrot() {
+    [[ -e "$PIPE" ]] && rm -rf "$PIPE"
+    mkfifo -m 600 "$PIPE"
+
+    while read data < "$PIPE"; do
+        echo -e "$data"
+    done
 }
 
 printl() {
@@ -352,6 +362,10 @@ format_logo
         while read event; do
             print_pwr
         done > >(uniq_linebuffered) &
+    pids[$((i++))]=$!
+
+    # parrot received messages to /dev/stdout
+    parrot &
     pids[$((i++))]=$!
 
     # initialize tags
