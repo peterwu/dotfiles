@@ -3,6 +3,11 @@
 # $1: press mute button
 # $2: delta in volume
 
+emit_message() {
+    local PIPE="/tmp/termbar-pipe0"
+    awk -v OFS='\t' '{$1=$1}1' <<< "$@" >> "$PIPE"
+}
+
 delta=$2
 
 [[ "$1" -eq 1 ]] && wpctl set-mute @DEFAULT_SINK@ toggle
@@ -14,8 +19,7 @@ set -- $(wpctl get-volume @DEFAULT_SINK@ |
 vol=$1
 muted=$2
 
-readonly PIPE="/tmp/termbar-pipe0"
-echo -e "vol\t${muted}\t${vol}" >> "$PIPE"
+emit_message "vol" "$muted" "$vol"
 
 if [[ $muted == 1 ]]; then
     dunstify --appname "wm-update-volume"                      \

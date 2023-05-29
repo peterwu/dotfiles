@@ -15,7 +15,8 @@ parrot() {
     [[ -e "$PIPE" ]] && rm -rf "$PIPE"
     mkfifo -m 600 "$PIPE"
 
-    while read data < "$PIPE"; do
+    while :; do
+        read data < "$PIPE"
         echo -e "$data"
     done
 }
