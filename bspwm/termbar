@@ -12,12 +12,11 @@ uniq_linebuffered() {
 }
 
 parrot() {
-    [[ -e "$PIPE" ]] && rm -rf "$PIPE"
+    [[ -e "$PIPE" ]] && rm "$PIPE"
     mkfifo -m 600 "$PIPE"
 
     while :; do
-        read data < "$PIPE"
-        echo -e "$data"
+        cat "$PIPE"
     done
 }
 
@@ -199,16 +198,16 @@ format_tags() {
         tag_name="\033]8;;tbp://wm/ws/${tag_name}\033\\\\${tag_name}\033]8;;\033\\"
 
         case ${tag_status} in
-            "f") # unoccupied
+            f) # unoccupied
                 ws+=$(format_unoccupied_tag "${tag_name}")
                 ;;
-            "o") # occupied
+            o) # occupied
                 ws+=$(format_occupied_tag "${tag_name}")
                 ;;
-            "O"|"F") # focused on specified monitor
+            [OF]) # focused on specified monitor
                 ws+=$(format_focused_tag "${tag_name}")
                 ;;
-            "U") # urgent!
+            U) # urgent!
                 ws+=$(format_urgent_tag "${tag_name}")
                 ;;
         esac
