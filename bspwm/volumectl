@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+# $1: press mute button
+# $2: delta in volume
+
+emit_message() {
+    local PIPE="/tmp/termbar-pipe0"
+    awk -v OFS='\t' '{$1=$1}1' <<< "$@" >> "$PIPE"
+}
+
+delta=$2
+
+[[ "$1" -eq 1 ]] && wpctl set-mute @DEFAULT_SINK@ toggle
+
+[[ "${delta}" != "0" ]] && wpctl set-volume @DEFAULT_SINK@ ${delta}
+
+set -- $(wpctl get-volume @DEFAULT_SINK@ |
+             awk '{print $2*100,($3 == "" ? 0 : 1)}')
+vol=$1
+muted=$2
+
+emit_message "vol" "$muted" "$vol"
+
+if [[ $muted == 1 ]]; then
+    dunstify --appname "wm-update-volume"                      \
+             --timeout 1500                                    \
+             --urgency low                                     \
+             --icon audio-volume-muted                         \
+             --hints string:x-dunst-stack-tag:wm-update-volume \
+             "Volume: MUTED"
+else
+    if [[ "${vol}" -gt 66 ]]; then
+        icon="audio-volume-high"
+    elif [[ "${vol}" -gt 33 ]]; then
+        icon="audio-volume-medium"
+    elif [[ "${vol}" -gt 0 ]]; then
+        icon="audio-volume-low"
+    else
+        icon="audio-volume-muted"
+    fi
+
+    dunstify --appname "wm-update-volume"                      \
+             --timeout 1500                                    \
+             --urgency low                                     \
+             --icon "$icon"                                    \
+             --hints string:x-dunst-stack-tag:wm-update-volume \
+             --hints int:value:"$vol"                          \
+             "Volume: ${vol}%"
+
+    canberra-gtk-play --id audio-volume-change --description "wm-update-volume"
+fi

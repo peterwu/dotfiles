@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+[[ "${FLOCKER}" != "$0" ]] \
+    && exec env FLOCKER="$0" flock -Fxn "$0" "$0" "$@" || :
+
+readonly map=(
+    " " "Lock"      "loginctl lock-session"
+    " " "Log Out"   "loginctl terminate-user $USER"
+    " " "Reboot"    "systemctl reboot"
+    " " "Power Off" "systemctl poweroff"
+    " " "Suspend"   "systemctl suspend"
+)
+
+readonly delimiter=':'
+for (( i=0; i<${#map[@]}; i+=3 )); do
+    echo -e "${map[i+2]}${delimiter}${map[i]}\t${map[i+1]}"
+done | fzf --prompt "Go: "            \
+           --reverse                  \
+           --border                   \
+           --no-info                  \
+           --delimiter="${delimiter}" \
+           --with-nth=2.. | {
+    cmd=$(cut -d"${delimiter}" -f1)
+    exec $cmd
+}
