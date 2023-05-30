@@ -111,11 +111,25 @@ print_pwr() {
         ac_online=$(cat "${ac_path}/online")
     fi
 
+    # https://www.kernel.org/doc/html/latest/power/power_supply_class.html
     local battery_level=0
     local battery_max=0
     for battery_path in "${battery_paths[@]}"; do
-        battery_level=$(($battery_level + $(cat "${battery_path}/energy_now")))
-        battery_max=$(($battery_max + $(cat "${battery_path}/energy_full")))
+        if [[ -f "${battery_path}/energy_now" ]]; then
+            capacity_now=$(cat "${battery_path}/energy_now")
+        fi
+        if [[ -f "${battery_path}/charge_now" ]]; then
+            capacity_now=$(cat "${battery_path}/charge_now")
+        fi
+        battery_level=$(($battery_level + $capacity_now))
+
+        if [[ -f "${battery_path}/energy_full" ]]; then
+            capacity_full=$(cat "${battery_path}/energy_full")
+        fi
+        if [[ -f "${battery_path}/charge_full" ]]; then
+            capacity_full=$(cat "${battery_path}/charge_full")
+        fi
+        battery_max=$(($battery_max + $capacity_full))
     done
 
     local battery_perc=$((${battery_level} * 100 / ${battery_max}))
