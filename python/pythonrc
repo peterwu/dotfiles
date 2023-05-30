@@ -1,0 +1,5 @@
+# disable python_history_file
+# $HOME/.config/python/pythonrc
+
+import readline
+readline.write_history_file = lambda *args: None
