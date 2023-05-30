@@ -12,16 +12,20 @@
 
 # $1 : delta in brightness (0-100)
 
-BACKLIGHT_BRIGHTNESS=/sys/class/backlight/intel_backlight/brightness
+BACKLIGHT_BRIGHTNESS_PATH=/sys/class/backlight/intel_backlight
 
-delta=$(( $1 * 12 )) # adjust to (0-1200)
-brightness=$(( $(cat $BACKLIGHT_BRIGHTNESS) + ${delta} ))
+actual=$(cat "${BACKLIGHT_BRIGHTNESS_PATH}/actual_brightness")
+max=$(cat "${BACKLIGHT_BRIGHTNESS_PATH}/max_brightness")
+one_perc=$(( "${max}" / 100 ))
+delta=$(( "${one_perc}" * "$1" ))
+now=$(( "${actual}" + "${delta}" ))
 
-[[ $brightness -lt 0 ]] && brightness=0
+[[ $now -lt 0 ]] && now=0
 
-echo $brightness > $BACKLIGHT_BRIGHTNESS
+echo $now >  "${BACKLIGHT_BRIGHTNESS_PATH}/brightness"
 
-brightness=$(( $brightness / 12 ))
+brightness=$(( $now * 100 / $max ))
+
 dunstify --appname "wm-update-brightness"                      \
          --timeout 1500                                        \
          --urgency low                                         \
