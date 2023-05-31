@@ -1,5 +1,7 @@
 " https://ikenox.info/blog/getting-started-ideavim/
 
+sethandler n-v:vim i:ide
+
 let mapleader=" "
 
 "set clipboard+=unnamedplus
