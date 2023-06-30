@@ -1,0 +1,31 @@
+
+- choose Expert Install
+- choose to allow ROOT to login (install doas later)
+- before install base package, partition the disk as follows (ctrl+alt+f2)
+
+df -h
+umount /target/boot/efi
+umount /target
+
+mount /dev/sda2 /mnt
+cd /mnt
+mv @rootfs @
+btrfs subvolume create @home
+
+mount -o rw,noatime,space_cache=v2,compress=zstd,ssd,discard=async,subvol=@ /dev/sda2 /target
+
+mkidr -p /target/boot/efi/
+mkdir -p /target/home
+
+mount -o rw,noatime,space_cache=v2,compress=zstd,ssd,discard=async,subvol=@home /dev/sda2 /target/home
+
+mount /dev/sda1 /target/boot/efi/
+
+nano /target/etc/fstab
+
+replace defaults with rw,noatime,space_cache=v2,compress=zstd,ssd,discard=async,subvol=@
+do the same for @home
+
+
+continue with the base system install
+
