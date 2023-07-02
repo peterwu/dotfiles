@@ -38,7 +38,6 @@ call mkdir(s:vim_home .. '/view',   'p', 0o700)
 set autoindent
 set autoread
 let &backupdir=s:vim_home .. '/backup'
-set background=light
 set complete-=i
 set completeopt=menu,menuone,noinsert,noselect
 set cursorline
@@ -829,7 +828,12 @@ nnoremap <silent> <Leader>Qc
 
 " color scheme {{{
 
-colorscheme lunaperche
+if $TERM == 'linux'
+    set background=dark
+else
+    set background=light
+endif
+colorscheme wildcharm
 
 if (has('termguicolors') && &termguicolors) || has('gui_running')
     " use terminal's color scheme
