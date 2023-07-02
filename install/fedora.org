@@ -59,7 +59,7 @@
    #+end_src
 5. install systemd-boot
    #+begin_src bash
-     # bootctl install
+     # bootctl install --efi-boot-option-description="Fedora"
    #+end_src
 6. initialize initrd rebuild and generate new config files
    #+begin_src bash
@@ -81,6 +81,9 @@
 
   [General]
   EnableNetworkConfiguration=true
+
+  [Scan]
+  DisablePeriodicScan=true
 #+end_src
 
 #+begin_src conf
@@ -120,8 +123,8 @@
 #+begin_src bash
   # dnf install xorg-x11-server-Xorg
   # dnf install xorg-x11-xinit
-  # dnf install xorg-x11-drv-{evdev,libinput}
-  # dnf install mesa-{dri,vulkan}-drivers
+  # dnf install xorg-x11-drv-libinput
+  # dnf install mesa-*-drivers
 #+end_src
 ** install window manager and relevant utils
 #+begin_src bash
@@ -134,33 +137,6 @@
 ** install terminal emulator
 #+begin_src bash
   # dnf install kitty
-#+end_src
-** install greetd as display manager
-#+begin_src bash
-  # dnf install greetd
-  # systemctl enable greetd.service
-#+end_src
-
-/usr/local/bin/welcome
-#+begin_src bash
-  #!/usr/bin/env bash
-
-  host_name=$(hostname)
-  real_name=$(getent passwd `whoami`|cut -d: -f5)
-
-  export LESSHISTFILE=-
-  export XAUTHORITY=$HOME/.config/X11/Xauthority
-
-  echo "Welcome to ${host_name}!"
-  echo ""
-  read -e -p "${real_name}, do you want to startx? (Y/n) " ANSWER
-  ANSWER=${ANSWER:=Y}
-
-  if [[ ${ANSWER^} == "Y" ]]; then
-      exec /usr/bin/startx $HOME/.config/X11/xinitrc &> /dev/null
-  else
-      exec /bin/bash
-  fi
 #+end_src
 ** start graphical interface on boot
 #+begin_src bash
