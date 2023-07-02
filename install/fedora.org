@@ -138,6 +138,46 @@
 #+begin_src bash
   # dnf install kitty
 #+end_src
+** startx manually
+- /usr/local/bin/welcome
+#+begin_src bash
+
+  #!/usr/bin/env bash
+
+  host_name=$(hostname)
+  real_name=$(getent passwd `whoami`|cut -d: -f5)
+
+  export LESSHISTFILE=-
+  export XAUTHORITY=$XDG_RUNTIME_DIR/.Xauthority
+
+  echo "Hi ${real_name}, welcome to ${host_name}!" | /usr/bin/cowsay
+
+  echo ""
+  read -e -p "Would you like to $(tput setaf 2)startx$(tput sgr0)? (Y/n) " answer
+  answer=${answer:=Y}
+
+  if [[ ${answer^} == "Y" ]]; then
+      exec /usr/local/bin/startx
+  else
+      exec /bin/bash
+  fi
+#+end_src
+
+- /usr/local/bin/startx
+#+begin_src bash
+  #!/usr/bin/env bash
+
+  # When starting the defaultserver start X on the current tty to avoid
+  # the startx session being seen as inactive:
+  # "https://bugzilla.redhat.com/show_bug.cgi?id=806491"
+  tty=$(tty)
+  if expr "$tty" : '/dev/tty[0-9][0-9]*$' > /dev/null; then
+          tty_num=$(echo "$tty" | grep -oE '[0-9]+$')
+          vtarg="vt$tty_num -keeptty"
+
+          exec xinit $HOME/.config/X11/xinitrc -- /usr/bin/X $DISPLAY $vtarg -auth $XAUTHORITY &> /dev/null
+  fi
+#+end_src
 ** start graphical interface on boot
 #+begin_src bash
   # systemctl set-default graphical.target
