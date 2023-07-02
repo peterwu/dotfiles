@@ -25,9 +25,6 @@ set -o vi
 if [[ -x $(command -v vim) ]]; then
     alias vi="vim"
 
-    # For sudoedit
-    alias VI="sudo --edit"
-
     # Default editor
     export VISUAL="vim"
     export EDITOR="$VISUAL"
@@ -78,7 +75,7 @@ alias fgrep="fgrep --color=auto"
 
 alias less="LESSHISTFILE=- less -FXR --mouse --wheel-lines=3"
 alias rsync="rsync --progress"
-alias sudo="sudo "
+alias sudo="doas"
 
 # Customize bash prompt
 show_bash_prompt() {
