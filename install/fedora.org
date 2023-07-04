@@ -9,13 +9,59 @@
    #+end_src
 3. turn off Secure Boot in BIOS
 * installation
-1. disk partition
+1. sudo -s
+2. setenforce 0
+3. sgdisk /dev/vda <<< “
+       label: gpt
+       size=512M,type=U,bootable
+       size=+,type=L
+   ”
+4. disk partition
    | size | mount point       | type  |
    |------+-------------------+-------|
    | 512M | /boot/efi         | vfat  |
    | REST | /{@, @home, @var} | btrfs |
-2. choose *Minimal Installation*
-3. set hostname to *mulberry*
+5. mkfs.fat -F 32 /dev/vda1
+6. mkfs.btrfs /dev/vda2
+7. mount /dev/vda2 /mnt
+8. cd /mnt
+9. btrfs subvolume create @
+10. btrfs subvolume create @home
+11. btrfs subvolume create @var
+12. cd
+13. umount /mnt
+14. mount -o compress=zstd:1,subvol=@ /dev/vda2 /mnt
+15. mkdir -p /mnt/{home,var}
+16. mount -o compress=zstd:1,subvol=@home /dev/vda2 /mnt/home
+17. mount -o compress=zstd:1,subvol=@var /dev/vda2 /mnt/var
+18. mkdir -p /mnt/boot/efi
+19. mount /dev/vda1 /mnt/boot/efi
+20. mkdir -p /mnt/{proc,sys,dev/pts}
+21. mount -t proc proc /mnt/proc
+22. mount -t sysfs sys /mnt/sys
+23. mount -B /dev /mnt/dev
+24. mount -t devpts pts /mnt/dev/pts
+25. source /etc/os-release
+26. export VERSION_ID=$VERSION_ID
+27. dnf --installroot=/mnt --releasever=$VERSION_ID groupinstall core
+28. dnf --installroot=/mnt install glibc-langpack-en
+29. mv /mnt/etc/resolv.conf{,.orig}
+30. cp -L /etc/resolv.conf /mnt/etc
+31. dnf install arch-install-scripts
+32. genfstab -U /mnt >> /mnt/etc/fstab
+33. chroot /mnt /bin/bash
+34. mount -a
+35. mount -t efivarfs efivarfs /sys/firmware/efi/efivars
+36. fixfiles -F onboot
+37. ensure “install_weak_deps=False” in /etc/dnf/dnf.conf
+38. dnf install btrfs-progs efibootmgr systemd-boot iwd iwl7260-firmware
+39. remove grub and install systemd-boot
+40. dnf install kernel
+41. systemd-firstboot
+42. passwd (for root)
+43. exit
+44. umount -n -R /mnt
+45. reboot
 * configuration
 ** remove bloatwarez
 #+begin_src bash
