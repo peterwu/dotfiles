@@ -3,6 +3,8 @@
 DISK=/dev/vda
 HOSTNAME=mulberry
 ROOT_PASSWD=root
+IWLWIFI_FIRMWARE=iwlwifi-8265-36.ucode.xz
+# IWLWIFI_FIRMWARE=iwlwifi-QuZ-a0-hr-b0-72.ucode.xz
 
 # disable selinux
 setenforce 0
@@ -87,18 +89,24 @@ dnf remove -y NetworkManager dhcp-client
 
 # install essential programs
 echo "install_weak_deps=False" >> /etc/dnf/dnf.conf
-dnf install -y btrfs-progs      \
-               cracklib-dicts   \
-               doas             \
-               efibootmgr       \
-               iwd              \
-               iwl7260-firmware \
-               systemd-boot     \
-               systemd-networkd \
+dnf install -y btrfs-progs       \
+               cracklib-dicts    \
+               doas              \
+               efibootmgr        \
+               iwd               \
+               iwl7260-firmware  \
+               iwlax2xx-firmware \
+               systemd-boot      \
+               systemd-networkd  \
                vim
 
 bootctl install --efi-boot-option-description="Fedora"
 dnf install -y kernel
+
+# keep the needed iwlwifi_firmware only
+cp /lib/firmware/$IWLWIFI_FIRMWARE /tmp/
+dnf remove -y iwl{7260,ax2xx}-firmware
+cp /tmp/$IWLWIFI_FIRMWARE /lib/firmware/
 
 systemd-firstboot               \
     --locale="en_US.UTF-8"      \
