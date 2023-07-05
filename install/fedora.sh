@@ -56,6 +56,9 @@ source /etc/os-release
 dnf -y --installroot=/mnt --releasever=$VERSION_ID  install @minimal-environment
 dnf -y --installroot=/mnt install glibc-langpack-en
 
+# save iwlwifi_firmware on the host
+cp /lib/firmware/$IWLWIFI_FIRMWARE /mnt/lib/firmware/
+
 # use host's resolv.conf
 mv /mnt/etc/resolv.conf{,.orig}
 cp -L /etc/resolv.conf /mnt/etc
@@ -94,19 +97,12 @@ dnf install -y btrfs-progs       \
                doas              \
                efibootmgr        \
                iwd               \
-               iwl7260-firmware  \
-               iwlax2xx-firmware \
                systemd-boot      \
                systemd-networkd  \
                vim
 
 bootctl install --efi-boot-option-description="Fedora"
 dnf install -y kernel
-
-# keep the needed iwlwifi_firmware only
-cp /lib/firmware/$IWLWIFI_FIRMWARE /tmp/
-dnf remove -y iwl{7260,ax2xx}-firmware
-cp /tmp/$IWLWIFI_FIRMWARE /lib/firmware/
 
 systemd-firstboot               \
     --locale="en_US.UTF-8"      \

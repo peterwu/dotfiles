@@ -3,11 +3,8 @@
 DISK=/dev/vda
 HOSTNAME=mulberry
 ROOT_PASSWD=root
-IWLWIFI_FIRMWARE=iwlwifi-8265-36.ucode.xz
-# IWLWIFI_FIRMWARE=iwlwifi-QuZ-a0-hr-b0-72.ucode.xz
-
-# disable selinux
-#setenforce 0
+IWLWIFI_FIRMWARE=iwlwifi-8265-36.ucode
+# IWLWIFI_FIRMWARE=iwlwifi-QuZ-a0-hr-b0-72.ucode
 
 sfdisk $DISK <<< "
     label: gpt
@@ -45,23 +42,32 @@ mount $PART1 /mnt/boot/efi
 
 # mount
 mkdir -p /mnt/{proc,sys,dev/pts}
-mount -t proc proc /mnt/proc
-mount -t sysfs sys /mnt/sys
-mount -B /dev /mnt/dev
-mount -t devpts pts /mnt/dev/pts
+for dir in sys dev proc; do
+    mount --rbind $dir /mnt/$dir
+    mount --make-rslave /mnt/$dir
+done
+# mount -t proc proc /mnt/proc
+# mount -t sysfs sys /mnt/sys
+# mount -B /dev /mnt/dev
+# mount -t devpts pts /mnt/dev/pts
 
 # bootstrap minimal system
-cat > /etc/apt/apt.conf.d/01norecommend << EOF
+cat > /etc/apt/apt.conf.d/01norecommends << EOF
 APT::Install-Recommends "0";
 APT::Install-Suggests "0";
 EOF
 
 source /etc/os-release
 apt update
-apt install debootstrap
+apt install -y debootstrap
 
 debootstrap $UBUNTU_CODENAME /mnt
 
+# save the iwlwifi_firmware on the host
+mkdir -p /mnt/lib/firmware
+cp /lib/firmware/$IWLWIFI_FIRMWARE /mnt/lib/firmware/
+
+# use host's sources.list
 cp /etc/apt/sources.list /mnt/etc/apt/sources.list
 
 # use host's resolv.conf
@@ -79,28 +85,19 @@ EOF
 
 cat << EOF | chroot /mnt /bin/bash
 mount -a
-
 apt update
 
+# don't install recommended programs by default
+echo 'APT::Install-Recommends "false"' > /etc/apt/apt.conf.d/99norecommends
 
 # install essential programs
-cat > /etc/apt/apt.conf.d/99norecommends << EOF
-apt install -y btrfs-progs       \
-               cracklib-dicts    \
-               doas              \
-               efibootmgr        \
-               iwd               \
-               systemd-boot      \
-               systemd-networkd  \
+apt install -y doas         \
+               iwd          \
+               systemd-boot \
                vim
 
-bootctl install --efi-boot-option-description="Ubuntu"
+bootctl install --esp-path=/boot/efi --efi-boot-option-description="Ubuntu"
 apt install -y linux-image-generic
-
-# keep the needed iwlwifi_firmware only
-cp /lib/firmware/$IWLWIFI_FIRMWARE /tmp/
-dnf remove -y iwl{7260,ax2xx}-firmware
-cp /tmp/$IWLWIFI_FIRMWARE /lib/firmware/
 
 systemd-firstboot               \
     --locale="en_US.UTF-8"      \
