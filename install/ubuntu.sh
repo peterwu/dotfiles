@@ -33,23 +33,17 @@ cd
 umount /mnt
 
 # mount btrfs subvolumes
-mount -o compress=zstd,subvol=@ $PART2 /mnt
+mount -o compress-force=zstd,subvol=@ $PART2 /mnt
 mkdir -p /mnt/{home,var}
-mount -o compress=zstd,subvol=@home $PART2 /mnt/home
-mount -o compress=zstd,subvol=@var $PART2 /mnt/var
+mount -o compress-force=zstd,subvol=@home $PART2 /mnt/home
+mount -o compress-force=zstd,subvol=@var $PART2 /mnt/var
 mkdir -p /mnt/boot/efi
 mount $PART1 /mnt/boot/efi
 
-# mount
-mkdir -p /mnt/{proc,sys,dev/pts}
-for dir in sys dev proc; do
-    mount --rbind $dir /mnt/$dir
-    mount --make-rslave /mnt/$dir
-done
-# mount -t proc proc /mnt/proc
-# mount -t sysfs sys /mnt/sys
-# mount -B /dev /mnt/dev
-# mount -t devpts pts /mnt/dev/pts
+# for dir in sys dev proc; do
+#     mount --rbind $dir /mnt/$dir
+#     mount --make-rslave /mnt/$dir
+# done
 
 # bootstrap minimal system
 cat > /etc/apt/apt.conf.d/01norecommends << EOF
@@ -62,6 +56,13 @@ apt update
 apt install -y debootstrap
 
 debootstrap $UBUNTU_CODENAME /mnt
+
+# mount
+mkdir -p /mnt/{proc,sys,dev/pts}
+mount -t proc proc /mnt/proc
+mount -t sysfs sys /mnt/sys
+mount -B /dev /mnt/dev
+mount -t devpts pts /mnt/dev/pts
 
 # save the iwlwifi_firmware on the host
 mkdir -p /mnt/lib/firmware
