@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 DISK=/dev/vda
 HOSTNAME=mulberry
 ROOT_PASSWD=root
