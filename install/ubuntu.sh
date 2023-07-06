@@ -67,8 +67,20 @@ debootstrap $UBUNTU_CODENAME /mnt
 mkdir -p /mnt/lib/firmware
 cp /lib/firmware/$IWLWIFI_FIRMWARE /mnt/lib/firmware/
 
-# use host's sources.list
-cp /etc/apt/sources.list /mnt/etc/apt/sources.list
+# use complete sources.list
+cat > /mnt/etc/apt/sources.list << EOF
+deb http://archive.ubuntu.com/ubuntu/ $UBUNTU_CODENAME main restricted universe multiverse
+# deb-src http://archive.ubuntu.com/ubuntu/ $UBUNTU_CODENAME restricted universe multiverse
+
+deb http://archive.ubuntu.com/ubuntu/ $UBUNTU_CODENAME-updates main restricted universe multiverse
+# deb-src http://archive.ubuntu.com/ubuntu/ $UBUNTU_CODENAME-updates main restricted universe multiverse
+
+deb http://archive.ubuntu.com/ubuntu/ $UBUNTU_CODENAME-security main restricted universe multiverse
+# deb-src http://archive.ubuntu.com/ubuntu/ $UBUNTU_CODENAME-security main restricted universe multiverse
+
+deb http://archive.ubuntu.com/ubuntu/ $UBUNTU_CODENAME-backports main restricted universe multiverse
+# deb-src http://archive.ubuntu.com/ubuntu/ $UBUNTU_CODENAME-backports main restricted universe multiverse
+EOF
 
 # use host's resolv.conf
 cp /etc/resolv.conf /mnt/etc/resolv.conf
@@ -88,7 +100,7 @@ mount -a
 apt update
 
 # don't install recommended programs by default
-echo 'APT::Install-Recommends "false"' > /etc/apt/apt.conf.d/99norecommends
+echo 'APT::Install-Recommends "false";' > /etc/apt/apt.conf.d/99norecommends
 
 # install essential programs
 apt install -y doas         \
