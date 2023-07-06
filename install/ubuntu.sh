@@ -99,26 +99,52 @@ UUID=$PART2_UUID /var      btrfs compress-force=zstd,subvol=@var  0 0
 EOF
 
 cat << EOF | chroot /mnt /bin/bash
+set -e
+
 mount -a
+mount -t efivarfs efivarfs /sys/firmware/efi/efivars
+
 apt update
 
 # don't install recommended programs by default
 echo 'APT::Install-Recommends "false";' > /etc/apt/apt.conf.d/99norecommends
 
 # install essential programs
-apt install -y doas         \
-               iwd          \
-               systemd-boot \
-               vim
+apt install -y btrfs-progs         \
+               doas                \
+               initramfs-tools     \
+               iwd                 \
+               linux-image-generic \
+               systemd-boot        \
+               vim                 \
+               zstd
 
-bootctl install --esp-path=/boot/efi --efi-boot-option-description="Ubuntu"
-apt install -y linux-image-generic
+# install systmed-boot
+bootctl install --efi-boot-option-description="Ubuntu"
+
+mkdir -p /boot/efi/ubuntu
+cp /boot/vmlinuz /boot/efi/ubuntu
+cp /boot/initrd.img /boot/efi/ubuntu
+
+cat > /boot/efi/loader/loader.conf << _EOF
+timeout 0
+editor  0
+_EOF
+
+cat > /boot/efi/loader/entries/ubuntu.conf << _EOF
+title      Ubuntu
+options    root=UUID=$PART2_UUID ro rootflags=subvol=@ rhgb quiet splash
+linux      /ubuntu/vmlinuz
+initrd     /ubuntu/initrd.img
+_EOF
 
 systemd-firstboot               \
-    --locale="en_US.UTF-8"      \
     --keymap="us"               \
-    --timezone="Canada/Eastern" \
+    --timezone="America/Toronto" \
     --hostname="$HOSTNAME"
+
+# set locale
+locale-gen --purge en_US.UTF-8
 
 echo "root:$ROOT_PASSWD" | chpasswd
 passwd --expire root
