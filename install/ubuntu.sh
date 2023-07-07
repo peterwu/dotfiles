@@ -91,6 +91,7 @@ cp /etc/resolv.conf /mnt/etc/resolv.conf
 # generate /etc/fstab
 PART1_UUID=$(blkid $PART1 -s UUID -o value)
 PART2_UUID=$(blkid $PART2 -s UUID -o value)
+PART1_UUID=$(printf "%-${#PART2_UUID}s" $PART1_UUID)
 cat > /mnt/etc/fstab << EOF
 UUID=$PART1_UUID /boot/efi vfat  umask=0077                       0 2
 UUID=$PART2_UUID /         btrfs compress-force=zstd,subvol=@     0 0
