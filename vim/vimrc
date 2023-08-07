@@ -736,13 +736,6 @@ call s:paq_add('tpope/vim-surround',
 call s:paq_add('LunarWatcher/auto-pairs')
 let g:AutoPairsCompleteOnlyOnSpace = 1
 
-" fzf
-call s:paq_add('junegunn/fzf.vim', {'as': 'fzf'})
-let g:fzf_layout = { 'down': '40%' }
-let g:fzf_preview_window = []
-
-nnoremap <Leader>fz <Cmd>Files<CR>
-
 " lion
 call s:paq_add('tommcdo/vim-lion', {'as' : 'lion'})
 let g:lion_squeeze_spaces = 1
