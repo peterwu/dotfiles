@@ -22,10 +22,23 @@ HISTFILESIZE=20000
 # User specific aliases and functions
 set -o vi
 
-if [[ -x $(command -v vim) ]]; then
+if pgrep --exact emacs > /dev/null; then
+    alias vi="emacsclient -nw"
+    alias vim="emacsclient -nw"
+    alias emacs="emacs --maximized"
+    alias magit="emacsclient -nw --suppress-output --eval '(magit-status)'"
+
+    export VISUAL="emacsclient -nw"
+    export EDITOR="$VISUAL"
+
+    man() {
+        local m="$@"
+        /usr/bin/man ${m} > /dev/null
+        [[ $? -eq 0 ]] && /usr/bin/emacsclient -nw --quiet --suppress-output --eval "(man \"${m}\")"
+    }
+elif [[ -x $(command -v vim) ]]; then
     alias vi="vim"
 
-    # Default editor
     export VISUAL="vim"
     export EDITOR="$VISUAL"
     export MANPAGER="vim '+setlocal laststatus=0' +MANPAGER --not-a-term -"
