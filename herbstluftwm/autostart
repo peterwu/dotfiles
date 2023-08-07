@@ -26,8 +26,8 @@ hc keybind $Mod-Shift-Return \
     spawn kitty --single-instance --instance-group=main --class scratchpad
 
 # user custom keybindings
-hc keybind $Mod-d                spawn kitty --class fzmenu -- $HLWM_HOME/alacarte
-hc keybind Mod1-Control-Delete   spawn kitty --class fzmenu -- $HLWM_HOME/sayonara
+hc keybind $Mod-d                spawn $HLWM_HOME/alacarte
+hc keybind Mod1-Control-Delete   spawn $HLWM_HOME/sayonara
 
 hc keybind XF86AudioMicMute      spawn wpctl set-mute @DEFAULT_SOURCE@  toggle
 hc keybind XF86AudioMute         spawn $HLWM_HOME/volumectl 1 0
@@ -75,13 +75,6 @@ hc keybind $Mod-Control-h  resize left  +$resizestep
 hc keybind $Mod-Control-j  resize down  +$resizestep
 hc keybind $Mod-Control-k  resize up    +$resizestep
 hc keybind $Mod-Control-l  resize right +$resizestep
-
-# set default frame layout
-hc set default_frame_layout horizontal
-hc substitute ALGO settings.default_frame_layout \
-    foreach T tags.by-name.                      \
-    sprintf ATTR '%c.tiling.root.algorithm' T    \
-    set_attr ATTR ALGO
 
 # tags
 tag_keys=( {1..9} 0 )
@@ -197,6 +190,13 @@ hc set mouse_recenter_gap        0
 
 hc set auto_detect_monitors      1
 
+# set default frame layout
+hc set default_frame_layout horizontal
+hc substitute ALGO settings.default_frame_layout \
+    foreach T tags.by-name.                      \
+    sprintf ATTR '%c.tiling.root.algorithm' T    \
+    set_attr ATTR ALGO
+
 # rules
 hc unrule --all
 hc rule focus=on switchtag=on # normally focus new clients
@@ -207,11 +207,14 @@ hc rule windowtype~'_NET_WM_WINDOW_TYPE_(NOTIFICATION|DOCK|DESKTOP)' manage=off
 
 # home made applications
 hc rule class~'termbar' manage=off focus=off
-hc rule class~'fzmenu' focus=on floating=on floatplacement=center floating_geometry=400x400
 hc rule class~'scratchpad' focus=on floating=on floatplacement=center floating_geometry=1440x900
+hc rule title~'ezf' focus=on floating=on floatplacement=center floating_geometry=320x360
 
 # firefox
 hc rule instance='Browser' class='firefox' focus=on floating=on floatplacement=center
+
+# galculator
+hc rule instance='galculator' class='Galculator' focus=on floating=on floatplacement=center
 
 # gtk
 hc rule windowrole~'Gtk(App|Color|File|Font|Recent)ChooserDialog' floatplacement=center floating_geometry=1024x768

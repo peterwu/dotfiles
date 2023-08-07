@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+set -o nounset -o errexit -o pipefail
+
+field=0
+delimiter=" "
+prompt="Run: "
+
+while getopts d:f:p: OPT; do
+    case $OPT in
+        d)
+            delimiter=$OPTARG
+            ;;
+        f)
+            field=$OPTARG
+            ;;
+        p)
+            prompt=$OPTARG
+            ;;
+        *)
+            echo "usage: ${0##*/} [-d delimiter] [-f field] [-p prompt]"
+            exit 2
+    esac
+done
+shift $(( OPTIND - 1 ))
+OPTIND=1
+
+ezftmp="$(mktemp)"
+trap 'rm -f -- "$ezftmp"' EXIT
+> "$ezftmp" cat -
+
+# xargs is there to strip the "" from the beginning and end of the
+# output from Emacs.  Ensure parameters are always passed as strings by
+# quoting them.
+
+elisp=" (progn
+            (require 'my-ezf)
+            (my-ezf \"$ezftmp\" $field \"$delimiter\" \"$prompt\")) "
+selection=$(emacsclient -n -c -F "((visibility . nil))" -e "$elisp" | xargs)
+
+if [[ "$selection" == "nil" ]]; then
+    exit 1
+else
+    echo "$selection"
+fi

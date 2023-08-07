@@ -30,13 +30,7 @@ for f in "${files[@]}"; do
         END {if (!no_display) {print FILENAME,name}}
 
      ' $f
-done 2> /dev/null | sort -k 2 |
-    fzf --reverse                            \
-        --no-info                            \
-        --border                             \
-        --scrollbar ┆ --color scrollbar:blue \
-        --with-nth=2..                       \
-        --prompt "Run: " | {
+done 2> /dev/null | sort -k 2 | ezf -f1 | {
     pick=$(cut -d' ' -f1)
     [[ -n ${pick} ]] && gio launch ${pick} &> /dev/null &
 }
