@@ -257,20 +257,6 @@
   (fido-vertical-mode +1))
 
 (with-package 'ido
-  (defun my-customize-ido-decorations ()
-    (setf (nth 0 ido-decorations) "\n")
-    (setf (nth 1 ido-decorations) "")
-    (setf (nth 2 ido-decorations)
-          (propertize "\n" 'face 'shadow))
-    (setf (nth 3 ido-decorations)
-          (propertize
-           (concat "\n" (if (char-displayable-p ?…) "…" "..."))
-           'face 'shadow))
-    (setf (nth 4 ido-decorations)
-          (propertize "\n" 'face 'shadow))
-    (setf (nth 5 ido-decorations)
-          (propertize "" 'face 'shadow)))
-
   (setq ido-default-buffer-method 'selected-window)
   (setq ido-default-file-method 'selected-window)
   (setq ido-enable-flex-matching t)
@@ -281,12 +267,26 @@
   (setq ido-show-dot-for-dired t)
   (setq ido-use-virtual-buffers t)
 
-  (add-hook 'ido-minibuffer-setup-hook #'my-customize-ido-decorations)
-  (add-hook 'ido-setup-hook (lambda ()
-                              (define-key ido-completion-map (kbd "<left>") #'ido-prev-match)
-                              (define-key ido-completion-map (kbd "<right>") #'ido-next-match)
-                              (define-key ido-completion-map (kbd "<up>") #'ido-prev-match)
-                              (define-key ido-completion-map (kbd "<down>") #'ido-next-match)))
+  (add-hook 'ido-minibuffer-setup-hook
+            (lambda ()
+              (setf (nth 0 ido-decorations) "\n")
+              (setf (nth 1 ido-decorations) "")
+              (setf (nth 2 ido-decorations)
+                    (propertize "\n" 'face 'shadow))
+              (setf (nth 3 ido-decorations)
+                    (propertize
+                     (concat "\n" (if (char-displayable-p ?…) "…" "..."))
+                     'face 'shadow))
+              (setf (nth 4 ido-decorations)
+                    (propertize "\n" 'face 'shadow))
+              (setf (nth 5 ido-decorations)
+                    (propertize "" 'face 'shadow))))
+  (add-hook 'ido-setup-hook
+            (lambda ()
+              (define-key ido-completion-map (kbd "<left>") #'ido-prev-match)
+              (define-key ido-completion-map (kbd "<right>") #'ido-next-match)
+              (define-key ido-completion-map (kbd "<up>") #'ido-prev-match)
+              (define-key ido-completion-map (kbd "<down>") #'ido-next-match)))
 
   (ido-mode +1))
 
