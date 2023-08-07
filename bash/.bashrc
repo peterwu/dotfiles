@@ -23,13 +23,13 @@ HISTFILESIZE=20000
 set -o vi
 
 if pgrep --exact emacs > /dev/null; then
-    alias vi="emacsclient -nw"
-    alias vim="emacsclient -nw"
-    alias emacs="emacs --maximized"
-    alias magit="emacsclient -nw --suppress-output --eval '(magit-status)'"
-
     export VISUAL="emacsclient -nw"
     export EDITOR="$VISUAL"
+
+    alias vi="$EDITOR"
+    alias vim="$EDITOR"
+    alias emacs="$EDITOR"
+    alias magit="emacsclient -nw --suppress-output --eval '(magit-status)'"
 
     man() {
         local m="$@"
@@ -37,11 +37,11 @@ if pgrep --exact emacs > /dev/null; then
         [[ $? -eq 0 ]] && /usr/bin/emacsclient -nw --quiet --suppress-output --eval "(man \"${m}\")"
     }
 elif [[ -x $(command -v vim) ]]; then
-    alias vi="vim"
-
     export VISUAL="vim"
     export EDITOR="$VISUAL"
     export MANPAGER="vim '+setlocal laststatus=0' +MANPAGER --not-a-term -"
+
+    alias vi="$EDITOR"
 else
     man() {
         local cmd=(
@@ -88,7 +88,11 @@ alias fgrep="fgrep --color=auto"
 
 alias less="LESSHISTFILE=- less -FXR --mouse --wheel-lines=3"
 alias rsync="rsync --progress"
-alias sudo="doas"
+
+alias sudo="doas "
+alias sudoedit="doasedit "
+alias e="$EDITOR "
+alias E="doasedit "
 
 # Customize bash prompt
 show_bash_prompt() {

@@ -1,0 +1,173 @@
+#!/usr/bin/env bash
+
+# a slightly modified version of https://codeberg.org/TotallyLeGIT/doasedit
+# rewritten in bash
+
+_help() {
+    cat - >&2 <<EOF
+doasedit - edit non-user-editable files with an unprivileged editor
+
+usage: doasedit -h
+usage: doasedit file ...
+
+Options:
+  -h, --help     display help message and exit
+  --             stop processing command line arguments
+
+Environment Variables:
+  DOAS_EDITOR    program used to edit files
+  EDITOR         program used to edit files if DOAS_EDITOR is unset
+
+To work properly doasedit needs to always start a new editor instance. Some
+editors, graphical ones in particular, open files in previously running
+instances. If so, append a command line argument to your (DOAS_)EDITOR variable
+such that the editor will always start a new instance (e. g.: 'kate -n').
+
+How it works:
+Every File to be edited is duplicated to a user owned file in /tmp. The editor
+is then run in user context. After closing the editor the user file replaces
+the original file while preserving file attributes. All this is done using doas
+as little as possible. Files are edited one after another, not all at once.
+EOF
+}
+
+_error() {
+    printf "doasedit: %s\n" "${@}" 1>&2
+}
+
+_exit() {
+    rm -rf "${tmpdir}"
+    trap - EXIT HUP QUIT TERM INT ABRT
+    exit "${1:-0}"
+}
+
+# no argument passed
+[[ "${#}" -eq 0 ]] && -help && exit 1
+
+while [ "${#}" -ne 0 ] ; do
+    case "${1}" in
+        --)
+            shift
+            break
+            ;;
+        --help|-h)
+            _help
+            exit 0
+            ;;
+        -*)
+            printf "doasedit: invalid option '%s'\n" "${1}"
+            _help
+            exit 1
+            ;;
+        *)
+            break
+            ;;
+    esac
+done
+
+[[ -n "${DOAS_EDITOR}" ]] && editor_cmd="${DOAS_EDITOR}" || editor_cmd="${EDITOR}"
+if [[ -z "${editor_cmd}" ]]; then
+    if command -v vi > /dev/null 2>&1; then
+        editor_cmd="vi"
+    else
+        _error "no editor specified"
+        exit 1
+    fi
+elif ! eval command -v "${editor_cmd}" > /dev/null 2>&1; then
+    _error "invalid editor command: '${editor_cmd}'"
+    exit 1
+fi
+
+exit_code=1
+trap '_exit "${exit_code}"' EXIT
+trap '_exit 130' HUP QUIT TERM INT ABRT
+tmpdir="$(mktemp -dt 'doasedit-XXXXXX')"
+
+for file; do
+    unset exists readable writable
+    dir="$(dirname -- "${file}")"
+    tmpfile="${tmpdir}/${file##*/}"
+    tmpfile_copy="${tmpdir}/copy-of-${file##*/}"
+    printf '' | tee "${tmpfile}" > "${tmpfile_copy}"
+    chmod 0600 "${tmpfile}" "${tmpfile_copy}"
+
+    if [[ -e "${file}" ]]; then
+        if ! [[ -f "${file}" ]]; then
+            _error "${file}: not a regular file"
+            continue
+        fi
+
+        # -O is not POSIX, but implemented at least in GNU, *BSD and macOS test
+        if [[ -O "${file}" ]]; then
+            _error "${file}: editing your own files is not permitted"
+            continue
+        fi
+        exists=1
+    elif doas [ -e "${file}" ]; then
+        if ! doas [ -f "${file}" ]; then
+            _error "${file}: not a regular file"
+            continue
+        fi
+        exists=0
+    else
+        # New file?
+        if [[ -O "${dir}" ]]; then
+            _error "${file}: creating files in your own directory is not permitted"
+            continue
+        elif [[ -x "${dir}" && -w "${dir}" ]]; then
+            _error "${file}: creating files in a user-writable directory is not permitted"
+            continue
+        elif ! doas [ -e "${dir}" ]; then
+            _error "${file}: no such directory"
+            continue
+        # else: root-writable directory
+        fi
+    fi
+
+    # If this test is true, it's an existent regular file
+    if [[ -n "${exists}" ]]; then
+        if [[ -w "${file}" ]]; then
+            writable=1
+        # Check in advance to make sure that it won't fail after editing.
+        elif ! doas dd status=none count=0 of=/dev/null; then
+            _error "unable to run 'doas dd'"
+            continue
+        fi
+
+        if [[ -r "${file}" ]]; then
+            if [[ -n "${writable}" ]]; then
+                _error "${file}: editing user-readable and -writable files is not permitted"
+                continue
+            fi
+            # Read file
+            cat -- "${file}" > "${tmpfile}"
+        # Better not suppress stderr here as there might be something of importance.
+        elif ! doas cat -- "${file}" > "${tmpfile}"; then
+            _error "you are not permitted to call 'doas cat'"
+            continue
+        fi
+
+        cat "${tmpfile}" > "${tmpfile_copy}"
+    fi
+
+    eval "${editor_cmd}" "${tmpfile}"
+
+    if cmp -s "${tmpfile}" "${tmpfile_copy}"; then
+        printf "doasedit: [%s] unchanged\n" "${file}"
+    else
+        if [[ -n "${writable}" ]]; then
+            dd status=none if="${tmpfile}" of="${file}"
+        else
+            for de_tries in 2 1 0; do
+                if doas dd status=none if="${tmpfile}" of="${file}"; then
+                    break
+                elif [[ "${de_tries}" -eq 0 ]]; then
+                    _error '3 incorrect password attempts'
+                    exit 1
+                fi
+            done
+        fi
+    fi
+
+    exit_code=0
+done
