@@ -405,6 +405,8 @@ function! s:get_vim_mode() abort
 endfunction
 
 function! s:highlight_git_branch_status() abort
+    if executable('git') < 1 | return | endif
+
     let l:git_icon = ''
     let l:git_dir = expand('%:p:h:S')
     let l:git_cmd = 'git -C ' .. git_dir .. ' status --branch --porcelain=2'
@@ -434,11 +436,11 @@ function! s:highlight_git_branch_status() abort
         else
             " dirty branch
             let l:git_color = 'DarkRed'
-        end
+        endif
 
         call s:highlight('StatusGitBranchStatus', l:git_color, 'LightGray')
         let b:git_branch_status = l:git_icon .. ' ' .. l:git_branch
-    end
+    endif
 endfunction
 
 function! s:get_file_size() abort
@@ -454,7 +456,7 @@ function! s:get_file_size() abort
 
     if l:bytes == 0 || l:bytes == -1 || l:bytes == -2
         return ''
-    end
+    endif
 
     const l:_1K = 1024
     const l:_1M = 1024 * l:_1K
@@ -477,7 +479,7 @@ function! s:get_file_size() abort
         return printf('%.1fP', l:bytes/l:_1P)
     else " math.maxinteger = 2^63 -1
         return printf('%.1fE', l:bytes/l:_1E)
-    end
+    endif
 endfunction
 
 function! DrawStatusLine() abort
