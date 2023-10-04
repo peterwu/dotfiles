@@ -215,32 +215,6 @@ if has('clipboard')
     xnoremap <silent> <Leader>y  "+y
     nnoremap <silent> <Leader>Y  "+yg_
     nnoremap <silent> <Leader>yy "+y_
-elseif executable('kitten')
-    nnoremap <silent> <Leader>y
-                \ <Cmd>set operatorfunc=<SID>copy_to_clipboard<CR>g@
-    xnoremap <silent> <Leader>y
-                \ <Cmd>set operatorfunc=<SID>copy_to_clipboard<CR>g@
-    nnoremap <silent> <Leader>Y
-                \ <Cmd>set operatorfunc=<SID>copy_to_clipboard<CR>g@g_
-    nnoremap <silent> <Leader>yy
-                \ <Cmd>set operatorfunc=<SID>copy_to_clipboard<CR>g@_
-
-    function! s:copy_to_clipboard(type, ...) abort
-        if a:type ==# "char"
-            silent! execute 'normal! v`[o`]""y'
-        elseif a:type ==# "line"
-            silent! execute 'normal! `[V`]""y'
-        elseif a:type =~# "[vV\<C-V>]" || a:type ==# "block"
-            silent! execute 'normal! gv""y'
-        elseif a:type =~ '^\d\+$'
-            silent! execute 'normal! ^v' .. a:type .. '$h""y'
-            if mode() ==# 'v'
-                normal! v
-            endif
-        endif
-
-        silent! call system('kitten clipboard', getreg('"'))
-    endfunction
 endif
 
 " paste from clipboard
@@ -249,23 +223,6 @@ if has('clipboard')
     nnoremap <silent> <Leader>P "+P
     xnoremap <silent> <Leader>p "+p
     xnoremap <silent> <Leader>P "+P
-elseif executable('kitten')
-    nnoremap <silent> <Leader>p
-                \ <Cmd>silent! call
-                \ setreg('"', system('kitten clipboard --get-clipboard'))
-                \ <Bar>normal! ""p<CR>
-    nnoremap <silent> <Leader>P
-                \ <Cmd>silent! call
-                \ setreg('"', system('kitten clipboard --get-clipboard'))
-                \ <Bar>normal! ""P<CR>
-    xnoremap <silent> <Leader>p
-                \ <Cmd>silent! call
-                \ setreg('"', system('kitten clipboard --get-clipboard'))
-                \ <Bar>normal! ""p<CR>
-    xnoremap <silent> <Leader>P
-                \ <Cmd>silent! call
-                \ setreg('"', system('kitten clipboard --get-clipboard'))
-                \ <Bar>normal! ""P<CR>
 endif
 
 " force saving files that otherwise require sudoedit
