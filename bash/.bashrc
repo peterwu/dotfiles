@@ -120,7 +120,7 @@ show_bash_prompt() {
     prompt+="\001"
     prompt+=$(tput sgr0; tput bold; tput setaf 4)
     prompt+="\002"
-    prompt+=$(dirs +0)
+    prompt+=$(dirs -p|head -1)
     prompt+=" "
 
     # show git branch and its status if in a git tree
