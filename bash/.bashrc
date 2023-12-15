@@ -22,37 +22,7 @@ HISTFILESIZE=20000
 # User specific aliases and functions
 set -o vi
 
-if [[ -x $(command -v vimx) ]]; then
-    export VISUAL="vimx"
-    export EDITOR="$VISUAL"
-    export MANPAGER="vimx '+setlocal laststatus=0' +MANPAGER --not-a-term -"
-
-    alias vi="$EDITOR"
-    alias vim="$EDITOR"
-fi
-
-man() {
-    local cmd=(
-    env
-    LESS_TERMCAP_mb=$(tput bold; tput setaf 6)
-    LESS_TERMCAP_md=$(tput bold; tput setaf 6)
-    LESS_TERMCAP_me=$(tput sgr0)
-    LESS_TERMCAP_se=$(tput rmso; tput sgr0)
-    LESS_TERMCAP_ue=$(tput rmul; tput sgr0)
-    LESS_TERMCAP_us=$(tput smul; tput bold; tput setaf 4)
-    LESS_TERMCAP_mr=$(tput rev)
-    LESS_TERMCAP_mh=$(tput dim)
-    LESS_TERMCAP_ZN=$(tput ssubm)
-    LESS_TERMCAP_ZV=$(tput rsubm)
-    LESS_TERMCAP_ZO=$(tput ssupm)
-    LESS_TERMCAP_ZW=$(tput rsupm)
-    man "$@"
-)
-
-    "${cmd[@]}"
-}
-
-[[ "$TERM" == "xterm-kitty" ]] && alias ssh="kitty +kitten ssh"
+export MANPAGER="vim '+setlocal laststatus=0' +MANPAGER --not-a-term -"
 
 alias ls="ls --color=auto --group-directories-first --indicator-style=slash -v"
 alias ll="ls -l --classify --size"
@@ -75,11 +45,6 @@ alias fgrep="fgrep --color=auto"
 
 alias less="LESSHISTFILE=- less -FXR --mouse --wheel-lines=3"
 alias rsync="rsync --progress"
-
-alias sudo="doas "
-alias sudoedit="doasedit "
-alias e="$EDITOR "
-alias E="doasedit "
 
 # Customize bash prompt
 show_bash_prompt() {
@@ -112,10 +77,16 @@ show_bash_prompt() {
     prompt+="\002"
     prompt+=$USER
     prompt+="\001"
-    prompt+=$(tput sgr0; tput setaf 3)
+    prompt+=$(tput sgr0)
     prompt+="\002"
     prompt+="@"
+    prompt+="\001"
+    prompt+=$(tput sgr0; tput setaf 3)
+    prompt+="\002"
     prompt+=$HOSTNAME
+    prompt+="\001"
+    prompt+=$(tput sgr0)
+    prompt+="\002"
     prompt+=":"
     prompt+="\001"
     prompt+=$(tput sgr0; tput bold; tput setaf 4)
