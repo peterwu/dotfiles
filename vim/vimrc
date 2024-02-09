@@ -312,7 +312,8 @@ augroup override_colors | autocmd!
 augroup END
 
 augroup update_status_line | autocmd!
-    autocmd BufEnter,BufWritePost,WinEnter * call s:highlight_status_line()
+    autocmd BufEnter,BufWritePost,WinEnter,VimEnter *
+                \ call s:highlight_status_line()
     autocmd ModeChanged,VimResized * redrawstatus!
 augroup END
 
@@ -672,10 +673,6 @@ endfunction
 let g:termdebug_wide = 1
 
 " personal plugins
-call s:paq_add('prabirshrestha/asyncomplete.vim',
-            \ {'as' : 'asyncomplete'})
-call s:paq_add('prabirshrestha/asyncomplete-lsp.vim',
-            \ {'as' : 'asyncomplete-lsp'})
 call s:paq_add('chrisbra/colorizer',
             \ {'as' : 'colorizer'})
 call s:paq_add('tpope/vim-commentary',
@@ -698,44 +695,6 @@ let g:AutoPairsCompleteOnlyOnSpace = 1
 " lion
 call s:paq_add('tommcdo/vim-lion', {'as' : 'lion'})
 let g:lion_squeeze_spaces = 1
-
-" lsp
-call s:paq_add('prabirshrestha/vim-lsp', {'as' : 'lsp'})
-let g:lsp_diagnostics_echo_cursor = 1
-
-augroup lsp_clangd | autocmd!
-    autocmd User lsp_setup call lsp#register_server({
-                \ 'name'      : 'clangd',
-                \ 'cmd'       : { server_info->[ 'clangd' ] },
-                \ 'allowlist' : [ 'c', 'cpp', 'objc', 'objcpp' ],
-                \ })
-augroup END
-
-augroup lsp_install | autocmd!
-    " call s:init_lsp_buffer only for registered languages
-    autocmd User lsp_buffer_enabled call s:init_lsp_buffer()
-augroup END
-
-function! s:init_lsp_buffer() abort
-    setlocal omnifunc=lsp#complete
-    setlocal signcolumn=yes
-    if exists('+tagfunc')
-        setlocal tagfunc=lsp#tagfunc
-    endif
-
-    call s:set_lsp_keymaps()
-endfunction
-
-function! s:set_lsp_keymaps() abort
-    nnoremap <buffer> gd <Plug>(lsp-definition)
-    nnoremap <buffer> gr <Plug>(lsp-references)
-    nnoremap <buffer> gi <Plug>(lsp-implementation)
-    nnoremap <buffer> gt <Plug>(lsp-type-definition)
-    nnoremap <buffer> gR <Plug>(lsp-rename)
-    nnoremap <buffer> [g <Plug>(lsp-previous-diagnostic)
-    nnoremap <buffer> ]g <Plug>(lsp-next-diagnostic)
-    nnoremap <buffer> K  <Plug>(lsp-hover)
-endfunction
 
 " rainbow
 call s:paq_add('luochen1990/rainbow')
