@@ -77,16 +77,10 @@ show_bash_prompt() {
     prompt+="\002"
     prompt+=$USER
     prompt+="\001"
-    prompt+=$(tput sgr0)
+    prompt+=$(tput sgr0; tput setaf 0)
     prompt+="\002"
     prompt+="@"
-    prompt+="\001"
-    prompt+=$(tput sgr0; tput setaf 3)
-    prompt+="\002"
     prompt+=$HOSTNAME
-    prompt+="\001"
-    prompt+=$(tput sgr0)
-    prompt+="\002"
     prompt+=":"
     prompt+="\001"
     prompt+=$(tput sgr0; tput bold; tput setaf 4)
