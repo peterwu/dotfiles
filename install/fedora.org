@@ -165,6 +165,33 @@
 #+begin_src bash
   # systemctl enable systemd-networkd
 #+end_src
+** replace wpa_supplicant with iwd
+#+begin_src bash
+  # dnf remove wpa_supplicant dhcp-client
+  # dnf install iwd
+#+end_src
+
+#+begin_src conf
+  /etc/iwd/main.conf
+
+  [General]
+  EnableNetworkConfiguration=true
+
+  [Scan]
+  DisablePeriodicScan=true
+#+end_src
+
+#+begin_src conf
+  /etc/NetworkManager/NetworkManager.conf
+
+  [device]
+  wifi.scan-rand-mac-address=no
+  wifi.backend=iwd
+#+end_src
+
+#+begin_src bash
+  # systemctl enable --now iwd
+#+end_src
 ** install Xorg
 #+begin_src bash
   # dnf install xorg-x11-server-Xorg
