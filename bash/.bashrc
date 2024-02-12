@@ -68,24 +68,24 @@ show_bash_prompt() {
     prompt+="\001"
     prompt+=$(tput sgr0; tput setaf 5)
     prompt+="\002"
-    prompt+="\A"
+    prompt+=$(date +%R)
     prompt+=" "
 
     # user@host:pwd
     prompt+="\001"
     prompt+=$(tput sgr0; tput setaf 4)
     prompt+="\002"
-    prompt+="\u"
+    prompt+=$USER
     prompt+="\001"
     prompt+=$(tput sgr0; tput setaf 0)
     prompt+="\002"
     prompt+="@"
-    prompt+="\H"
+    prompt+=$HOSTNAME
     prompt+=":"
     prompt+="\001"
     prompt+=$(tput sgr0; tput bold; tput setaf 4)
     prompt+="\002"
-    prompt+="\w"
+    prompt+=$(dirs -p|head -1)
     prompt+=" "
 
     # show git branch and its status if in a git tree
@@ -140,7 +140,14 @@ show_bash_prompt() {
         prompt+="\002"
     fi
 
-    prompt+="\$"
+    # use appropriate prompt to reflect effective uid
+    if [[ $(id -u) -eq 0 ]]; then
+        # root
+        prompt+="Λ"
+    else
+        # non-root
+        prompt+="λ"
+    fi
 
     # reset colors
     prompt+="\001"
@@ -148,8 +155,8 @@ show_bash_prompt() {
     prompt+="\002"
     prompt+=" "
 
-    echo -n "${prompt}"
+    printf "${prompt}"
 }
 
 # no double quotes here
-PS1=`show_bash_prompt`
+PS1='$(show_bash_prompt)'
