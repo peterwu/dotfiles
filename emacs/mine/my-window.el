@@ -1,13 +1,13 @@
 ;;; my-window.el -*- lexical-binding: t; -*-
 
 (with-package 'windmove
+  (setq windmove-create-window nil)
   (with-eval-after-load 'evil
-    (setq windmove-create-window nil)
-
     (define-key evil-window-map (kbd "<left>")  #'windmove-left)
     (define-key evil-window-map (kbd "<right>") #'windmove-right)
     (define-key evil-window-map (kbd "<up>")    #'windmove-up)
-    (define-key evil-window-map (kbd "<down>")  #'windmove-down)))
+    (define-key evil-window-map (kbd "<down>")  #'windmove-down))
+  (windmove-default-keybindings))
 
 (with-package 'window
   (setq even-window-sizes 'height-only)
