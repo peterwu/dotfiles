@@ -87,6 +87,7 @@
 (defun my-ignore-some-evil-functions ()
   (fset 'evil-visual-update-x-selection 'ignore))
 
+(setq evil-default-state 'emacs)
 (setq evil-echo-state nil)
 (setq evil-mode-line-format nil)
 (setq evil-respect-visual-line-mode nil)
@@ -132,13 +133,10 @@
   (my-ignore-some-evil-functions)
   (my-propertize-evil-state-tags)
 
-  (evil-mode +1))
+  (evil-set-initial-state 'prog-mode 'normal)
+  (evil-set-initial-state 'text-mode 'normal)
 
-;; evil-collection
-(with-package 'evil-collection
-  (with-eval-after-load 'evil
-    (setq evil-collection-setup-minibuffer t)
-    (evil-collection-init)))
+  (evil-mode +1))
 
 ;; evil-args
 (with-package 'evil-args
