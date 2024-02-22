@@ -2,23 +2,22 @@
 
 ;; dired
 (with-package 'dired
+  (setq delete-by-moving-to-trash t)
+  (setq dired-dwim-target t)
+  (setq dired-listing-switches
+        "-AGFhlv --group-directories-first --time-style=long-iso")
+  (setq dired-recursive-copies 'always)
+  (setq dired-recursive-deletes 'always)
+
+  ;; hooks
+  (add-hook 'dired-mode-hook #'dired-hide-details-mode)
+  (add-hook 'dired-mode-hook #'hl-line-mode)
+
+  ;; evil keybinds
   (with-eval-after-load 'evil
-    (setq delete-by-moving-to-trash t)
-    (setq dired-dwim-target t)
-    (setq dired-listing-switches
-          "-AGFhlv --group-directories-first --time-style=long-iso")
-    (setq dired-recursive-copies 'always)
-    (setq dired-recursive-deletes 'always)
-
-    ;; hooks
-    (add-hook 'dired-mode-hook #'dired-hide-details-mode)
-    (add-hook 'dired-mode-hook #'hl-line-mode))
-
-  ;; bind keys
-  ;; :bind (:map wy:evil-dired-map
-  ;;             ("j" . dired-jump)
-  ;;             ("J" . dired-jump-other-window)))
-  )
+    (evil-define-key 'normal dired-mode-map (kbd "RET") #'dired-find-file)
+    (evil-define-key 'normal dired-mode-map (kbd "-")   #'dired-up-directory)
+    (evil-define-key 'normal dired-mode-map (kbd "^")   #'dired-up-directory)))
 
 ;; dired-aux
 (with-package 'dired-aux
