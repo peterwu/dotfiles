@@ -7,11 +7,9 @@
     `(evil-define-command ,my-evil-paste-command (count &optional register yank-handler)
        :suppress-operator t
        (interactive "*P<x>")
-       (if (display-graphic-p)
-           (evil-set-register ?\" (evil-get-register ?+))
-         (with-temp-buffer
-           (call-process "xsel" nil t nil "--output" "--clipboard")
-           (evil-set-register ?\" (buffer-string))))
+       (with-temp-buffer
+         (call-process "wl-paste" nil t nil)
+         (evil-set-register ?\" (buffer-string)))
        (,evil-paste-command count ?\" yank-handler))))
 
 ;; functions
@@ -63,7 +61,7 @@
         (evil-set-register ?+ (evil-get-register ?\"))
       (with-temp-buffer
         (insert (evil-get-register ?\"))
-        (call-process-region (point-min) (point-max) "xsel" nil 0 nil  "--input" "--clipboard"))))
+        (call-process-region (point-min) (point-max) "wl-copy" nil 0 nil))))
 
   (evil-define-operator my-evil-yank-to-clipboard (beg end type register yank-handler)
     :move-point nil
