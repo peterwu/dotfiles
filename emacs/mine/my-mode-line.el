@@ -48,6 +48,15 @@
        'mouse-face 'mode-line-highlight))))
 (put 'my-mode-line-tab-bar-indicator 'risky-local-variable t)
 
+(defvar-local my-evil-mode-line-tag
+    '(:eval
+      (cond ((mode-line-window-selected-p)
+             evil-mode-line-tag)
+            (t
+             (propertize evil-mode-line-tag
+                         'face '(:inherit mode-line-inactive :background "light grey" :weight bold))))))
+(put 'my-evil-mode-line-tag 'risky-local-variable t)
+
 (defvar-local my-mode-line-buffer-identification
   '(:eval (if (buffer-file-name)
               (propertize (my-ellipsize-file-name
@@ -166,7 +175,7 @@
                  ;; left hand side
                  (list
                   "%e"
-                  evil-mode-line-tag
+                  my-evil-mode-line-tag
                   " "
                   my-mode-line-buffer-identification
                   " "
@@ -177,13 +186,18 @@
                   my-mode-line-centre-placeholder)
 
                  ;; right hand side
-                 (list
-                  ;; my-mode-line-position
-                  ;; " "
-                  my-mode-line-buffer-size
-                  " "
-                  my-mode-line-modes
-                  my-mode-line-percent-position
-                  " "))))
+                 (cond
+                  ((mode-line-window-selected-p)
+                   (list
+                    my-mode-line-buffer-size
+                    " "
+                    my-mode-line-modes
+                    my-mode-line-percent-position
+                    " "))
+                  (t
+                   (list
+                    " "
+                    my-mode-line-percent-position
+                    " "))))))
 
 (provide 'my-mode-line)
