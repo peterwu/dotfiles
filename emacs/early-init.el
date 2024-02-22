@@ -13,7 +13,7 @@
             (garbage-collect) t))
 (run-with-idle-timer 5 t 'garbage-collect)
 
-;; Do not resize the frame at this early stage.
+;; do not resize the frame at this early stage.
 (setq frame-inhibit-implied-resize t)
 
 (unless (file-directory-p (expand-file-name "cache" user-emacs-directory))
@@ -35,9 +35,12 @@
 
 (setq native-comp-async-report-warnings-errors 'silent)
 
-(set-face-attribute 'default nil        :family "Iosevka Fusion"  :height 140 :weight 'normal)
-(set-face-attribute 'fixed-pitch nil    :family "Iosevka Fusion"  :height 140 :weight 'normal)
-(set-face-attribute 'variable-pitch nil :family "Liberation Sans" :height 140 :weight 'normal)
+(set-face-attribute 'default        nil :family "Iosevka Fusion"  :height 145 :weight 'normal)
+(set-face-attribute 'fixed-pitch    nil :family "Iosevka Fusion"  :height 145 :weight 'normal)
+(set-face-attribute 'variable-pitch nil :family "Liberation Sans" :height 145 :weight 'normal)
+
+;; start maximized (cross-platform)
+(add-hook 'window-setup-hook 'toggle-frame-maximized t)
 
 (provide 'early-init)
 ;;; early-init.el ends here
