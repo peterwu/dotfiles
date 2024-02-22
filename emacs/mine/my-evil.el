@@ -131,8 +131,13 @@
   (my-ignore-some-evil-functions)
   (my-propertize-evil-state-tags)
 
-  (evil-set-initial-state 'prog-mode 'normal)
-  (evil-set-initial-state 'text-mode 'normal)
+  ;; initialize these modes to evil normal
+  (let ((modes '(conf-mode
+                 fundamental-mode
+                 prog-mode
+                 text-mode)))
+    (dolist (mode modes)
+      (evil-set-initial-state mode 'normal)))
 
   (evil-mode +1))
 
