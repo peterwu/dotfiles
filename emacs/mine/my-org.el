@@ -29,15 +29,7 @@
   ;; hooks
   (add-hook 'org-mode-hook (lambda ()
                              (variable-pitch-mode -1)
-                             (display-line-numbers-mode -1))))
-
-;; org-superstar
-(with-package 'org-superstar
-  (setq org-superstar-headline-bullets-list '("⁖" "‣" "◉" "•" "▣" "⁕" "★" "✓"))
-  (setq org-superstar-leading-bullet ?\s)
-  (setq org-superstar-prettify-item-bullets t)
-
-  ;; hooks
-  (add-hook 'org-mode-hook #'org-superstar-mode))
+                             (display-line-numbers-mode -1)
+                             (org-indent-mode +1))))
 
 (provide 'my-org)

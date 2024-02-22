@@ -7,7 +7,7 @@
     (define-key evil-window-map (kbd "<right>") #'windmove-right)
     (define-key evil-window-map (kbd "<up>")    #'windmove-up)
     (define-key evil-window-map (kbd "<down>")  #'windmove-down))
-  (windmove-default-keybindings))
+  (windmove-default-keybindings 'ctrl))
 
 (with-package 'window
   (setq even-window-sizes 'height-only)
