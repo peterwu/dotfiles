@@ -200,13 +200,15 @@
 
   (autoload-do-load 'flymake-mode))
 
-(unless (eq system-type 'windows-nt)
-  (with-package 'ispell
-    (setq ispell-program-name "hunspell")
-    (setq ispell-dictionary "en_US")
+(and
+ (not (eq system-type 'windows-nt))
+ (locate-file "hunspell" exec-path exec-suffixes 1)
+ (with-package 'ispell
+   (setq ispell-program-name "hunspell")
+   (setq ispell-dictionary "en_US")
 
-    (ispell-set-spellchecker-params)
-    (ispell-hunspell-add-multi-dic "en_US")))
+   (ispell-set-spellchecker-params)
+   (ispell-hunspell-add-multi-dic "en_US")))
 
 (unless (eq system-type 'windows-nt)
   (with-package 'flyspell
