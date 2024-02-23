@@ -11,13 +11,7 @@
 
   ;; hooks
   (add-hook 'dired-mode-hook #'dired-hide-details-mode)
-  (add-hook 'dired-mode-hook #'hl-line-mode)
-
-  ;; evil keybinds
-  (with-eval-after-load 'evil
-    (evil-define-key 'normal dired-mode-map (kbd "RET") #'dired-find-file)
-    (evil-define-key 'normal dired-mode-map (kbd "-")   #'dired-up-directory)
-    (evil-define-key 'normal dired-mode-map (kbd "^")   #'dired-up-directory)))
+  (add-hook 'dired-mode-hook #'hl-line-mode))
 
 ;; dired-aux
 (with-package 'dired-aux

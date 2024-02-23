@@ -82,10 +82,14 @@
   ;; my-evil-paste-after-from-clipboard
   (my-evil-paste-from-clipboard after))
 
+(defun my-customize-evil-insert-state-bindings ()
+  (define-key evil-insert-state-map (kbd "C-x C-n") #'evil-complete-next-line)
+  (define-key evil-insert-state-map (kbd "C-x C-p") #'evil-complete-previous-line))
+
 (defun my-ignore-some-evil-functions ()
   (fset 'evil-visual-update-x-selection 'ignore))
 
-(setq evil-default-state 'emacs)
+(setq evil-disable-insert-state-bindings t)
 (setq evil-echo-state nil)
 (setq evil-mode-line-format nil)
 (setq evil-respect-visual-line-mode nil)
@@ -106,13 +110,14 @@
   (define-prefix-command 'my-evil-leader-nmap)
   (define-key evil-normal-state-map (kbd "SPC") 'my-evil-leader-nmap)
 
+  (define-prefix-command 'my-evil-magit-map)
+  (define-key my-evil-leader-nmap (kbd "g") 'my-evil-magit-map)
+  (global-set-key (kbd "C-c g") my-evil-magit-map)
+
   (define-prefix-command 'my-evil-jump-map)
   (define-key my-evil-leader-nmap (kbd "j") 'my-evil-jump-map)
   (global-set-key (kbd "C-c j") my-evil-jump-map)
 
-  (define-prefix-command 'my-evil-magit-map)
-  (define-key my-evil-leader-nmap (kbd "g") 'my-evil-magit-map)
-  (global-set-key (kbd "C-c g") my-evil-magit-map)
   (define-prefix-command 'my-evil-org-map)
   (define-key my-evil-leader-nmap (kbd "o") 'my-evil-org-map)
   (global-set-key (kbd "C-c o") my-evil-org-map)
@@ -130,17 +135,10 @@
   (define-key my-evil-leader-nmap (kbd "z") #'text-scale-adjust)
 
   ;; initialize
+  (my-customize-evil-insert-state-bindings)
   (my-define-evil-commands)
   (my-ignore-some-evil-functions)
   (my-propertize-evil-state-tags)
-
-  ;; initialize these modes to evil normal
-  (let ((modes '(conf-mode
-                 fundamental-mode
-                 prog-mode
-                 text-mode)))
-    (dolist (mode modes)
-      (evil-set-initial-state mode 'normal)))
 
   (evil-mode +1))
 
