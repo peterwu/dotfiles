@@ -28,15 +28,15 @@
                       'face `(:foreground ,white :background "dark cyan" :weight bold)))
 
     (setq evil-visual-line-tag
-          (propertize " Vl "
+          (propertize " L "
                       'face `(:foreground ,white :background "dark cyan" :weight bold)))
 
     (setq evil-visual-screen-line-tag
-          (propertize " Vs "
+          (propertize " S "
                       'face `(:foreground ,white :background "dark cyan" :weight bold)))
 
     (setq evil-visual-block-tag
-          (propertize " Vb "
+          (propertize " B "
                       'face `(:foreground ,white :background "dark cyan" :weight bold)))
 
     (setq evil-operator-state-tag
