@@ -4,6 +4,8 @@
 (with-package 'dired
   (setq delete-by-moving-to-trash t)
   (setq dired-dwim-target t)
+  (when (eq system-type 'darwin)
+    (setq insert-directory-program "gls"))
   (setq dired-listing-switches
         "-AGFhlv --group-directories-first --time-style=long-iso")
   (setq dired-recursive-copies 'always)
