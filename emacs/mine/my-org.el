@@ -19,12 +19,17 @@
 
   (setq org-agenda-files (list "~/Documents/Org"))
   (setq org-capture-templates
-        '(("t" "Todo" entry (file+headline "~/Documents/Org/gtd.org" "Tasks")
+        '(("t" "Todo" entry (file+headline "~/Documents/Org/todo.org" "Tasks")
            "* TODO %?\n  %i\n  %a")
           ("n" "Notes" entry (file+headline "~/Documents/Org/notes.org" "Notes")
            "* Notes %?\n  %i\n  %a")
           ("j" "Journal" entry (file+olp+datetree "~/Documents/Org/journal.org")
            "* %?\nEntered on %U\n  %i\n  %a")))
+
+  ;; key binds
+  (with-eval-after-load 'evil
+    (define-key my-evil-org-map (kbd "a") #'org-agenda)
+    (define-key my-evil-org-map (kbd "c") #'org-capture))
 
   ;; hooks
   (add-hook 'org-mode-hook (lambda ()

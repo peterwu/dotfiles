@@ -113,6 +113,9 @@
   (define-prefix-command 'my-evil-magit-map)
   (define-key my-evil-leader-nmap (kbd "g") 'my-evil-magit-map)
   (global-set-key (kbd "C-c g") my-evil-magit-map)
+  (define-prefix-command 'my-evil-org-map)
+  (define-key my-evil-leader-nmap (kbd "o") 'my-evil-org-map)
+  (global-set-key (kbd "C-c o") my-evil-org-map)
 
   (define-prefix-command 'my-evil-toggle-map)
   (define-key my-evil-leader-nmap (kbd "t") 'my-evil-toggle-map)
