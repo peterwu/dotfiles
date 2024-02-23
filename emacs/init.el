@@ -117,7 +117,10 @@
 (with-package 'eglot
   (when (locate-file "clangd" exec-path exec-suffixes 1)
     (add-hook 'c-mode-hook #'eglot-ensure)
-    (add-hook 'c++-mode-hook #'eglot-ensure)))
+    (add-hook 'c++-mode-hook #'eglot-ensure))
+
+  (when (locate-file "pylsp" exec-path exec-suffixes 1)
+    (add-hook 'python-mode-hook #'eglot-ensure)))
 
 (with-package 'eldoc
   (add-hook 'emacs-lisp-mode-hook #'eldoc-mode)
@@ -215,6 +218,8 @@
   (setq gdb-many-windows t)
   (setq gdb-restore-window-configuration-after-quit t)
   (setq gdb-show-main t))
+
+(with-package 'goto-chg)
 
 (with-package 'ibuffer
   (setq ibuffer-default-shrink-to-minimum-size nil)
