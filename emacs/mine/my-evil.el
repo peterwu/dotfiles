@@ -1,61 +1,63 @@
 ;;; my-evil.el -*- lexical-binding: t; -*-
 
 ;; evil
-(defmacro my-evil-paste-from-clipboard (position)
-  (let ((my-evil-paste-command (intern (concat "my-evil-paste-" (symbol-name position) "-from-clipboard")))
-        (evil-paste-command (intern (concat "evil-paste-" (symbol-name position)))))
-    `(evil-define-command ,my-evil-paste-command (count &optional register yank-handler)
-       :suppress-operator t
-       (interactive "*P<x>")
-       (with-temp-buffer
-         (call-process "wl-paste" nil t nil)
-         (evil-set-register ?\" (buffer-string)))
-       (,evil-paste-command count ?\" yank-handler))))
+(use-package evil
+  :ensure t
+  :preface
+  (defmacro my-evil-paste-from-clipboard (position)
+    (let ((my-evil-paste-command (intern (concat "my-evil-paste-" (symbol-name position) "-from-clipboard")))
+          (evil-paste-command (intern (concat "evil-paste-" (symbol-name position)))))
+      `(evil-define-command ,my-evil-paste-command (count &optional register yank-handler)
+         :suppress-operator t
+         (interactive "*P<x>")
+         (with-temp-buffer
+           (call-process "wl-paste" nil t nil)
+           (evil-set-register ?\" (buffer-string)))
+         (,evil-paste-command count ?\" yank-handler))))
 
-;; functions
-(defun my-propertize-evil-state-tags ()
-  (let ((white "#FFFFFF"))
-    (setq evil-normal-state-tag
-          (propertize " N "
-                      'face `(:foreground ,white :background "dark blue" :weight bold)))
+  ;; functions
+  (defun my-propertize-evil-state-tags ()
+    (let ((white "#FFFFFF"))
+      (setq evil-normal-state-tag
+            (propertize " N "
+                        'face `(:foreground ,white :background "dark blue" :weight bold)))
 
-    (setq evil-insert-state-tag
-          (propertize " I "
-                      'face `(:foreground ,white :background "dark green" :weight bold)))
+      (setq evil-insert-state-tag
+            (propertize " I "
+                        'face `(:foreground ,white :background "dark green" :weight bold)))
 
-    (setq evil-visual-char-tag
-          (propertize " V "
-                      'face `(:foreground ,white :background "dark cyan" :weight bold)))
+      (setq evil-visual-char-tag
+            (propertize " V "
+                        'face `(:foreground ,white :background "dark cyan" :weight bold)))
 
-    (setq evil-visual-line-tag
-          (propertize " L "
-                      'face `(:foreground ,white :background "dark cyan" :weight bold)))
+      (setq evil-visual-line-tag
+            (propertize " L "
+                        'face `(:foreground ,white :background "dark cyan" :weight bold)))
 
-    (setq evil-visual-screen-line-tag
-          (propertize " S "
-                      'face `(:foreground ,white :background "dark cyan" :weight bold)))
+      (setq evil-visual-screen-line-tag
+            (propertize " S "
+                        'face `(:foreground ,white :background "dark cyan" :weight bold)))
 
-    (setq evil-visual-block-tag
-          (propertize " B "
-                      'face `(:foreground ,white :background "dark cyan" :weight bold)))
+      (setq evil-visual-block-tag
+            (propertize " B "
+                        'face `(:foreground ,white :background "dark cyan" :weight bold)))
 
-    (setq evil-operator-state-tag
-          (propertize " O "
-                      'face `(:foreground ,white :background "dark orange" :weight bold)))
+      (setq evil-operator-state-tag
+            (propertize " O "
+                        'face `(:foreground ,white :background "dark orange" :weight bold)))
 
-    (setq evil-replace-state-tag
-          (propertize " R "
-                      'face `(:foreground ,white :background "dark red" :weight bold)))
+      (setq evil-replace-state-tag
+            (propertize " R "
+                        'face `(:foreground ,white :background "dark red" :weight bold)))
 
-    (setq evil-motion-state-tag
-          (propertize " M "
-                      'face `(:foreground ,white :background "black" :weight bold)))
+      (setq evil-motion-state-tag
+            (propertize " M "
+                        'face `(:foreground ,white :background "black" :weight bold)))
 
-    (setq evil-emacs-state-tag
-          (propertize " E "
-                      'face `(:foreground ,white :background "dark magenta" :weight bold)))))
+      (setq evil-emacs-state-tag
+            (propertize " E "
+                        'face `(:foreground ,white :background "dark magenta" :weight bold)))))
 
-(defun my-define-evil-commands ()
   (defun my-smart-copy-to-clipboard ()
     (if (display-graphic-p)
         (evil-set-register ?+ (evil-get-register ?\"))
@@ -63,157 +65,186 @@
         (insert (evil-get-register ?\"))
         (call-process-region (point-min) (point-max) "wl-copy" nil 0 nil))))
 
-  (evil-define-operator my-evil-yank-to-clipboard (beg end type register yank-handler)
-    :move-point nil
-    :repeat nil
-    (interactive "<R><x><y>")
-    (evil-yank beg end type ?\" yank-handler)
-    (my-smart-copy-to-clipboard))
+  :custom
+  (evil-default-state 'emacs)
+  (evil-disable-insert-state-bindings t)
+  (evil-echo-state nil)
+  (evil-mode-line-format nil)
+  (evil-respect-visual-line-mode nil)
+  (evil-undo-system 'undo-redo)
+  (evil-want-C-i-jump nil)
+  (evil-want-Y-yank-to-eol t)
+  (evil-want-integration t)
+  (evil-want-keybinding nil)
 
-  (evil-define-operator my-evil-yank-line-to-clipboard (beg end type register)
-    :motion evil-line-or-visual-line
-    :move-point nil
-    (interactive "<R><x>")
-    (evil-yank-line beg end type ?\")
-    (my-smart-copy-to-clipboard))
+  :bind
+  (:map evil-motion-state-map
+        :prefix "<SPC>" :prefix-map my-evil-leader-mmap)
+  (:map evil-normal-state-map
+        :prefix "<SPC>" :prefix-map my-evil-leader-nmap)
 
-  ;; my-evil-paste-before-from-clipboard
-  (my-evil-paste-from-clipboard before)
-  ;; my-evil-paste-after-from-clipboard
-  (my-evil-paste-from-clipboard after))
+  :bind
+  (:map my-evil-leader-nmap
+        :prefix "g" :prefix-map my-evil-magit-map)
+  :bind-keymap
+  ("C-c g" . my-evil-magit-map)
 
-(defun my-customize-evil-insert-state-bindings ()
-  (define-key evil-insert-state-map (kbd "C-x C-n") #'evil-complete-next-line)
-  (define-key evil-insert-state-map (kbd "C-x C-p") #'evil-complete-previous-line))
+  :bind
+  (:map my-evil-leader-nmap
+        :prefix "j" :prefix-map my-evil-jump-map)
+  :bind-keymap
+  ("C-c j" . my-evil-jump-map)
 
-(defun my-ignore-some-evil-functions ()
-  (fset 'evil-visual-update-x-selection 'ignore))
+  :bind
+  (:map my-evil-leader-nmap
+        :prefix "o" :prefix-map my-evil-org-map)
+  :bind-keymap
+  ("C-c o" . my-evil-org-map)
 
-(setq evil-disable-insert-state-bindings t)
-(setq evil-echo-state nil)
-(setq evil-mode-line-format nil)
-(setq evil-respect-visual-line-mode nil)
-(setq evil-undo-system 'undo-redo)
-(setq evil-want-C-i-jump nil)
-(setq evil-want-Y-yank-to-eol t)
-(setq evil-want-integration t)
-(setq evil-want-keybinding nil)
+  :bind
+  (:map my-evil-leader-nmap
+        :prefix "t" :prefix-map my-evil-toggle-map)
+  :bind-keymap
+  ("C-c t" . my-evil-toggle-map)
 
-(with-package 'evil
-  (my-evil-paste-from-clipboard before)
-  (my-evil-paste-from-clipboard after)
+  :bind
+  (:map my-evil-leader-mmap
+        ("y" . my-evil-yank-to-clipboard)
+        ("Y" . my-evil-yank-line-to-clipboard))
 
-  ;; define prefix keymaps
-  (define-prefix-command 'my-evil-leader-mmap)
-  (define-key evil-motion-state-map (kbd "SPC") 'my-evil-leader-mmap)
+  (:map my-evil-leader-nmap
+        ("p" . my-evil-paste-after-from-clipboard)
+        ("P" . my-evil-paste-before-from-clipboard)
+        ("z" . text-scale-adjust))
 
-  (define-prefix-command 'my-evil-leader-nmap)
-  (define-key evil-normal-state-map (kbd "SPC") 'my-evil-leader-nmap)
+  (:map evil-insert-state-map
+        ("C-x C-n" . evil-complete-next-line)
+        ("C-x C-p" . evil-complete-previous-line))
 
-  (define-prefix-command 'my-evil-magit-map)
-  (define-key my-evil-leader-nmap (kbd "g") 'my-evil-magit-map)
-  (global-set-key (kbd "C-c g") my-evil-magit-map)
-
-  (define-prefix-command 'my-evil-jump-map)
-  (define-key my-evil-leader-nmap (kbd "j") 'my-evil-jump-map)
-  (global-set-key (kbd "C-c j") my-evil-jump-map)
-
-  (define-prefix-command 'my-evil-org-map)
-  (define-key my-evil-leader-nmap (kbd "o") 'my-evil-org-map)
-  (global-set-key (kbd "C-c o") my-evil-org-map)
-
-  (define-prefix-command 'my-evil-toggle-map)
-  (define-key my-evil-leader-nmap (kbd "t") 'my-evil-toggle-map)
-  (global-set-key (kbd "C-c t") my-evil-toggle-map)
-
-  ;; bing keys
-  (define-key my-evil-leader-mmap (kbd "y") #'my-evil-yank-to-clipboard)
-  (define-key my-evil-leader-mmap (kbd "Y") #'my-evil-yank-line-to-clipboard)
-
-  (define-key my-evil-leader-nmap (kbd "p") #'my-evil-paste-after-from-clipboard)
-  (define-key my-evil-leader-nmap (kbd "P") #'my-evil-paste-before-from-clipboard)
-  (define-key my-evil-leader-nmap (kbd "z") #'text-scale-adjust)
-
-  ;; initialize
-  (my-customize-evil-insert-state-bindings)
-  (my-define-evil-commands)
-  (my-ignore-some-evil-functions)
+  :init
   (my-propertize-evil-state-tags)
+  :hook
+  (evil-after-load . (lambda ()
+                       (evil-define-operator my-evil-yank-to-clipboard (beg end type register yank-handler)
+                         :move-point nil
+                         :repeat nil
+                         (interactive "<R><x><y>")
+                         (evil-yank beg end type ?\" yank-handler)
+                         (my-smart-copy-to-clipboard))
 
+                       (evil-define-operator my-evil-yank-line-to-clipboard (beg end type register)
+                         :motion evil-line-or-visual-line
+                         :move-point nil
+                         (interactive "<R><x>")
+                         (evil-yank-line beg end type ?\")
+                         (my-smart-copy-to-clipboard))
+
+                       (my-evil-paste-from-clipboard before)
+                       (my-evil-paste-from-clipboard after)))
+  (evil-after-load . (lambda ()
+                       (fset 'evil-visual-update-x-selection 'ignore)))
+  (evil-after-load . (lambda ()
+                       (let ((modes '(conf-mode
+                                      fundamental-mode
+                                      prog-mode
+                                      text-mode)))
+                         (dolist (mode modes)
+                           (evil-set-initial-state mode 'normal)))))
+  :config
   (evil-mode +1))
 
 ;; evil-args
-(with-package 'evil-args
-  (define-key evil-inner-text-objects-map (kbd "a") #'evil-inner-arg)
-  (define-key evil-outer-text-objects-map (kbd "a") #'evil-outer-arg)
+(use-package evil-args
+  :ensure t
+  :bind
+  (:map evil-inner-text-objects-map
+        ("a" . evil-inner-arg))
+  (:map evil-outer-text-objects-map
+        ("a" . evil-outer-arg))
 
-  (define-key evil-normal-state-map (kbd "H") #'evil-backward-arg)
-  (define-key evil-normal-state-map (kbd "L") #'evil-forward-arg)
-  (define-key evil-normal-state-map (kbd "K") #'evil-jump-out-args)
+  (:map evil-normal-state-map
+        ("H" . evil-backward-arg)
+        ("L" . evil-forward-arg)
+        ("K" . evil-jump-out-args))
 
-  (define-key evil-motion-state-map (kbd "H") #'evil-backward-arg)
-  (define-key evil-motion-state-map (kbd "L") #'evil-forward-arg))
+  (:map evil-motion-state-map
+        ("H" . evil-backward-arg)
+        ("L" . evil-forward-arg)))
 
 ;; evil-commentary
-(with-package 'evil-commentary
+(use-package evil-commentary
+  :ensure t
+  :config
   (evil-commentary-mode +1))
 
 ;; evil-exchange
-(with-package 'evil-exchange
+(use-package evil-exchange
+  :ensure t
+  :config
   (evil-exchange-install))
 
 ;; evil-goggles
-(defun my-add-evil-commands-to-goggles ()
-  (let ((commands (list
-                   '(my-evil-yank-to-clipboard
-                     :face evil-goggles-yank-face
-                     :switch evil-goggles-enable-yank
-                     :advice evil-goggles--generic-async-advice)
+(use-package evil-goggles
+  :ensure t
+  :preface
+  (defun my-add-evil-commands-to-goggles ()
+    (let ((commands (list
+                     '(my-evil-yank-to-clipboard
+                       :face evil-goggles-yank-face
+                       :switch evil-goggles-enable-yank
+                       :advice evil-goggles--generic-async-advice)
 
-                   '(my-evil-yank-line-to-clipboard
-                     :face evil-goggles-yank-face
-                     :switch evil-goggles-enable-yank
-                     :advice evil-goggles--generic-async-advice)
+                     '(my-evil-yank-line-to-clipboard
+                       :face evil-goggles-yank-face
+                       :switch evil-goggles-enable-yank
+                       :advice evil-goggles--generic-async-advice)
 
-                   '(my-evil-paste-before-from-clipboard
-                     :face evil-goggles-paste-face
-                     :switch evil-goggles-enable-paste
-                     :advice evil-goggles--paste-advice :after t)
+                     '(my-evil-paste-before-from-clipboard
+                       :face evil-goggles-paste-face
+                       :switch evil-goggles-enable-paste
+                       :advice evil-goggles--paste-advice :after t)
 
-                   '(my-evil-paste-after-from-clipboard
-                     :face evil-goggles-paste-face
-                     :switch evil-goggles-enable-paste
-                     :advice evil-goggles--paste-advice :after t))))
-    (dolist (command commands)
-      (add-to-list 'evil-goggles--commands command))))
-
-(with-package 'evil-goggles
-  (setq evil-goggles-async-duration 0.900)
-  (setq evil-goggles-blocking-duration 0.100)
-  (setq evil-goggles-pulse t)
-
+                     '(my-evil-paste-after-from-clipboard
+                       :face evil-goggles-paste-face
+                       :switch evil-goggles-enable-paste
+                       :advice evil-goggles--paste-advice :after t))))
+      (dolist (command commands)
+        (add-to-list 'evil-goggles--commands command))))
+  :custom
+  (evil-goggles-async-duration 0.900)
+  (evil-goggles-blocking-duration 0.100)
+  (evil-goggles-pulse t)
+  :config
   (my-add-evil-commands-to-goggles)
-
   (evil-goggles-mode +1))
 
 ;; evil-lion
-(with-package 'evil-lion
+(use-package evil-lion
+  :ensure t
+  :config
   (evil-lion-mode +1))
 
 ;; evil-matchit
-(with-package 'evil-matchit
+(use-package evil-matchit
+  :ensure t
+  :config
   (global-evil-matchit-mode +1))
 
 ;; evil-numbers
-(with-package 'evil-numbers
-  (with-eval-after-load 'evil
-    (define-key my-evil-leader-nmap (kbd "C-a") #'evil-numbers/inc-at-pt)
-    (define-key my-evil-leader-nmap (kbd "C-x") #'evil-numbers/dec-at-pt)
-    (define-key my-evil-leader-nmap (kbd "M-a") #'evil-numbers/inc-at-pt-incremental)
-    (define-key my-evil-leader-nmap (kbd "M-a") #'evil-numbers/dec-at-pt-incremental)))
+(use-package evil-numbers
+  :ensure t
+  :after evil
+  :bind
+  (:map my-evil-leader-nmap
+        ("C-a" . evil-numbers/inc-at-pt)
+        ("C-x" . evil-numbers/dec-at-pt)
+        ("M-a" . evil-numbers/inc-at-pt-incremental)
+        ("M-a" . evil-numbers/dec-at-pt-incremental)))
 
 ;; evil-surround
-(with-package 'evil-surround
+(use-package evil-surround
+  :ensure t
+  :config
   (global-evil-surround-mode +1))
 
 (provide 'my-evil)

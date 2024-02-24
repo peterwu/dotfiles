@@ -1,63 +1,62 @@
 ;;; my-dired.el -*- lexical-binding: t; -*-
 
 ;; dired
-(with-package 'dired
-  (setq delete-by-moving-to-trash t)
-  (setq dired-dwim-target t)
+(use-package dired
+  :preface
   (when (eq system-type 'darwin)
     (setq insert-directory-program "gls"))
-  (setq dired-listing-switches
-        "-AGFhlv --group-directories-first --time-style=long-iso")
-  (setq dired-recursive-copies 'always)
-  (setq dired-recursive-deletes 'always)
-
-  ;; hooks
-  (add-hook 'dired-mode-hook #'dired-hide-details-mode)
-  (add-hook 'dired-mode-hook #'hl-line-mode))
+  :custom
+  (delete-by-moving-to-trash t)
+  (dired-dwim-target t)
+  (dired-listing-switches
+   "-AGFhlv --group-directories-first --time-style=long-iso")
+  (dired-recursive-copies 'always)
+  (dired-recursive-deletes 'always)
+  :hook
+  (dired-mode . dired-hide-details-mode))
 
 ;; dired-aux
-(with-package 'dired-aux
-  (setq dired-create-destination-dirs 'ask)
-  (setq dired-isearch-filenames 'dwim)
-  (setq dired-vc-rename-file t)
-
-  ;; bind keys
-  (define-key dired-mode-map
-    (kbd "C-+") #'dired-create-empty-file))
+(use-package dired-aux
+  :custom
+  (dired-create-destination-dirs 'ask)
+  (dired-isearch-filenames 'dwim)
+  (dired-vc-rename-file t)
+  :bind
+  (:map dired-mode-map
+        ("C-+" . dired-create-empty-file)))
 
 ;; dired-x
-(with-package 'dired-x
-  (setq dired-bind-info nil)
-  (setq dired-bind-man nil)
-  (setq dired-clean-confirm-killing-deleted-buffers t)
-  (setq dired-clean-up-buffers-too t)
-  (setq dired-guess-shell-alist-user '(("\\.pdf$" "xdg-open * &")))
-  (setq dired-x-hands-off-my-keys t)
-
-  ;; bind keys
-  (define-key dired-mode-map
-    (kbd "I") #'dired-info))
+(use-package dired-x
+  :custom
+  (dired-bind-info nil)
+  (dired-bind-man nil)
+  (dired-clean-confirm-killing-deleted-buffers t)
+  (dired-clean-up-buffers-too t)
+  (dired-guess-shell-alist-user '(("\\.pdf$" "xdg-open * &")))
+  (dired-x-hands-off-my-keys t)
+  :bind
+  (:map dired-mode-map
+        ("I" . dired-info)))
 
 ;; image-dired
-(with-package 'image-dired
-  (setq image-dired-external-viewer "xdg-open")
-  (setq image-dired-thumb-margin 2)
-  (setq image-dired-thumb-relief 0)
-  (setq image-dired-thumb-size 80)
-  (setq image-dired-thumbs-per-row 4)
-
-  ;; bind keys
-  (define-key image-dired-thumbnail-mode-map
-    (kbd "RET") #'image-dired-thumbnail-display-external))
+(use-package image-dired
+  :custom
+  (image-dired-external-viewer "xdg-open")
+  (image-dired-thumb-margin 2)
+  (image-dired-thumb-relief 0)
+  (image-dired-thumb-size 80)
+  (image-dired-thumbs-per-row 4)
+  :bind
+  (:map image-dired-thumbnail-mode-map
+        ("RET" . image-dired-thumbnail-display-external)))
 
 ;; wdired
-(with-package 'wdired
-  (with-eval-after-load 'dired
-    (setq wdired-allow-to-change-permissions t)
-    (setq wdired-create-parent-directories t))
-
-  ;; autoload
-  (autoload-do-load #'wdired-change-to-wdired-mode))
+(use-package wdired
+  :after dired
+  :autoload wdired-change-to-wdired-mode
+  :custom
+  (wdired-allow-to-change-permissions t)
+  (wdired-create-parent-directories t))
 
 ;; my-dired-explorer
 (defvar my-dired-explorer-window nil)
@@ -140,28 +139,17 @@
       (my-dired-explorer-hide-window)
     (my-dired-explorer-show-window)))
 
-(global-set-key (kbd "<f9>") #'my-dired-explorer-toggle-window)
+(keymap-global-set "<f9>" #'my-dired-explorer-toggle-window)
 
 ;; autoload
 (autoload-do-load #'my-dired-explorer-toggle-window)
 
-(defvar my-dired-explorer-mode-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "RET") #'my-dired-explorer-find-file-at-point)
-    (define-key map (kbd "-")   #'my-dired-explorer-find-up-directory)
-    (define-key map (kbd "^")   #'my-dired-explorer-find-up-directory)
-    map))
-
 ;;;###autoload
 (define-minor-mode my-dired-explorer-mode
   "Get your foos in the right places."
-  :key my-dired-explorer-mode-map
-
-  (with-eval-after-load 'evil
-    (evil-define-key 'normal my-dired-explorer-mode-map (kbd "RET") #'my-dired-explorer-find-file-at-point)
-    (evil-define-key 'normal my-dired-explorer-mode-map (kbd "-")   #'my-dired-explorer-find-up-directory)
-    (evil-define-key 'normal my-dired-explorer-mode-map (kbd "^")   #'my-dired-explorer-find-up-directory)
-
-    (evil-normalize-keymaps)))
+  :keymap (define-keymap
+            "RET" #'my-dired-explorer-find-file-at-point
+            "-"   #'my-dired-explorer-find-up-directory
+            "^"   #'my-dired-explorer-find-up-directory))
 
 (provide 'my-dired)

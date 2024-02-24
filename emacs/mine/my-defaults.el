@@ -90,6 +90,6 @@
 (add-hook 'text-mode-hook #'turn-on-auto-fill)
 
 ;; key binds
-(define-key mode-specific-map (kbd "RET") #'pp-macroexpand-last-sexp)
+(keymap-set mode-specific-map "RET" #'pp-macroexpand-last-sexp)
 
 (provide 'my-defaults)

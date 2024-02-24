@@ -1,28 +1,34 @@
 ;;; my-window.el -*- lexical-binding: t; -*-
 
-(with-package 'windmove
-  (setq windmove-create-window nil)
-  (with-eval-after-load 'evil
-    (define-key evil-window-map (kbd "<left>")  #'windmove-left)
-    (define-key evil-window-map (kbd "<right>") #'windmove-right)
-    (define-key evil-window-map (kbd "<up>")    #'windmove-up)
-    (define-key evil-window-map (kbd "<down>")  #'windmove-down))
+(use-package windmove
+  :after evil
+  :custom
+  (windmove-create-window nil)
+  :bind
+  (:map evil-window-map
+        ("<left>" . windmove-left)
+        ("<right>" . windmove-right)
+        ("<up>" . windmove-up)
+        ("<down>" . windmove-down))
+  :config
   (windmove-default-keybindings 'control))
 
-(with-package 'window
-  (setq even-window-sizes 'height-only)
-  (setq switch-to-buffer-in-dedicated-window 'pop)
-  (setq window-combination-resize t)
-  (setq window-sides-vertical nil)
+(use-package window
+  :custom
+  (even-window-sizes 'height-only)
+  (switch-to-buffer-in-dedicated-window 'pop)
+  (window-combination-resize t)
+  (window-sides-vertical nil)
+  :hook
+  ((help-mode custom-mode) . visual-line-mode))
 
-  (add-hook 'help-mode-hook   #'visual-line-mode)
-  (add-hook 'custom-mode-hook #'visual-line-mode))
-
-(with-package 'winner
-  (with-eval-after-load 'evil
-    (define-key evil-window-map (kbd "u") #'winner-undo)
-    (define-key evil-window-map (kbd "U") #'winner-redo)
-
-    (winner-mode +1)))
+(use-package winner
+  :after evil
+  :bind
+  (:map evil-window-map
+        ("u" . winner-undo)
+        ("U" . winner-redo))
+  :config
+  (winner-mode +1))
 
 (provide 'my-window)
