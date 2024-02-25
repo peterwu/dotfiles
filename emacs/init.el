@@ -108,9 +108,7 @@
 
 (use-package eglot
   :hook
-  ((c-mode
-    c++-mode
-    python-mode) . eglot-ensure))
+  ((c-mode c++-mode python-mode) . eglot-ensure))
 
 (use-package eldoc
   :hook
@@ -331,16 +329,8 @@
         ("J" . magit-file-dispatch)
         ("r" . vc-refresh-state)))
 
-(use-package man
-  :custom
-  (Man-notify-method 'bully)
-  :bind
-  ("Q" . (lambda () (interactive)
-           (delete-other-frames)
-           (delete-frame))))
-
 (use-package minions
-             :ensure t
+  :ensure t
   :custom
   (minions-mode-line-delimiters '("" . ""))
   (minions-mode-line-face 'mode-line-emphasis)
@@ -370,7 +360,7 @@
   (show-paren-mode +1))
 
 (use-package proced
-  :autoload proceed
+  :commands proceed
   :custom
   (proced-auto-update-flag t)
   (proced-auto-update-interval 1)
@@ -452,7 +442,7 @@
   (global-tab-line-mode -1))
 
 (use-package time
-  :autoload world-clock
+  :commands world-clock
   :custom
   (display-time-default-load-average nil)
   (display-time-format "[%H:%M]")

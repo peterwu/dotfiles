@@ -79,40 +79,40 @@
 
   :bind
   (:map evil-motion-state-map
-        :prefix "<SPC>" :prefix-map my-evil-leader-mmap)
+        :prefix "<SPC>" :prefix-map my-evil-leader-motion-state-map)
   (:map evil-normal-state-map
-        :prefix "<SPC>" :prefix-map my-evil-leader-nmap)
+        :prefix "<SPC>" :prefix-map my-evil-leader-normal-state-map)
 
   :bind
-  (:map my-evil-leader-nmap
+  (:map my-evil-leader-normal-state-map
         :prefix "g" :prefix-map my-evil-magit-map)
   :bind-keymap
   ("C-c g" . my-evil-magit-map)
 
   :bind
-  (:map my-evil-leader-nmap
+  (:map my-evil-leader-normal-state-map
         :prefix "j" :prefix-map my-evil-jump-map)
   :bind-keymap
   ("C-c j" . my-evil-jump-map)
 
   :bind
-  (:map my-evil-leader-nmap
+  (:map my-evil-leader-normal-state-map
         :prefix "o" :prefix-map my-evil-org-map)
   :bind-keymap
   ("C-c o" . my-evil-org-map)
 
   :bind
-  (:map my-evil-leader-nmap
+  (:map my-evil-leader-normal-state-map
         :prefix "t" :prefix-map my-evil-toggle-map)
   :bind-keymap
   ("C-c t" . my-evil-toggle-map)
 
   :bind
-  (:map my-evil-leader-mmap
+  (:map my-evil-leader-motion-state-map
         ("y" . my-evil-yank-to-clipboard)
         ("Y" . my-evil-yank-line-to-clipboard))
 
-  (:map my-evil-leader-nmap
+  (:map my-evil-leader-normal-state-map
         ("p" . my-evil-paste-after-from-clipboard)
         ("P" . my-evil-paste-before-from-clipboard)
         ("z" . text-scale-adjust))

@@ -6,10 +6,10 @@
   (windmove-create-window nil)
   :bind
   (:map evil-window-map
-        ("<left>" . windmove-left)
+        ("<left>"  . windmove-left)
         ("<right>" . windmove-right)
-        ("<up>" . windmove-up)
-        ("<down>" . windmove-down))
+        ("<up>"    . windmove-up)
+        ("<down>"  . windmove-down))
   :config
   (windmove-default-keybindings 'control))
 
