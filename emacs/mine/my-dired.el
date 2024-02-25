@@ -53,7 +53,7 @@
 ;; wdired
 (use-package wdired
   :after dired
-  :autoload wdired-change-to-wdired-mode
+  :commands wdired-change-to-wdired-mode
   :custom
   (wdired-allow-to-change-permissions t)
   (wdired-create-parent-directories t))
@@ -150,6 +150,8 @@
   :keymap (define-keymap
             "RET" #'my-dired-explorer-find-file-at-point
             "-"   #'my-dired-explorer-find-up-directory
-            "^"   #'my-dired-explorer-find-up-directory))
+            "^"   #'my-dired-explorer-find-up-directory)
+
+  (dired-hide-details-mode +1))
 
 (provide 'my-dired)
