@@ -73,6 +73,7 @@
   (evil-respect-visual-line-mode nil)
   (evil-undo-system 'undo-redo)
   (evil-want-C-i-jump nil)
+  (evil-want-C-w-in-emacs-state t)
   (evil-want-Y-yank-to-eol t)
   (evil-want-integration t)
   (evil-want-keybinding nil)
@@ -144,12 +145,11 @@
   (evil-after-load . (lambda ()
                        (fset 'evil-visual-update-x-selection 'ignore)))
   (evil-after-load . (lambda ()
-                       (let ((modes '(conf-mode
-                                      fundamental-mode
-                                      prog-mode
-                                      text-mode)))
-                         (dolist (mode modes)
-                           (evil-set-initial-state mode 'normal)))))
+                       (dolist (mode '(conf-mode
+                                       fundamental-mode
+                                       prog-mode
+                                       text-mode))
+                         (evil-set-initial-state mode 'normal))))
   :config
   (evil-mode +1))
 
