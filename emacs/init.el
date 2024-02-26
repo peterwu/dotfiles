@@ -309,14 +309,15 @@
 
 (use-package keycast
   :ensure t
+  :pin melpa
   :after evil
   :custom
   (keycast-mode-line-format "%k%c%R")
-  (keycast-mode-line-insert-after 'my-mode-line-centre-placeholder)
+  (keycast-mode-line-insert-after 'my-mode-line-centre-place-holder)
   (keycast-mode-line-remove-tail-elements nil)
   :bind
   (:map my-evil-toggle-map
-        ("k" .  keycast-mode)))
+        ("k" .  keycast-mode-line-mode)))
 
 (use-package magit
   :ensure t

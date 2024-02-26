@@ -128,8 +128,8 @@
                ((t git-mode-line-status)))))))
 (put 'my-mode-line-git-status 'risky-local-variable t)
 
-(defvar-local my-mode-line-centre-placeholder "")
-(put 'my-mode-line-centre-placeholder 'risky-local-variable t)
+(defvar-local my-mode-line-centre-place-holder "")
+(put 'my-mode-line-centre-place-holder 'risky-local-variable t)
 
 (defvar-local my-mode-line-position
   '(:propertize "(%l,%C)"
@@ -183,7 +183,7 @@
 
                  ;; centre
                  (list
-                  my-mode-line-centre-placeholder)
+                  my-mode-line-centre-place-holder)
 
                  ;; right hand side
                  (cond
