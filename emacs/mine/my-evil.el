@@ -4,6 +4,14 @@
 (use-package evil
   :ensure t
   :preface
+  (defvar my-cli-copy-command
+    (cond ((eq system-type 'darwin) "pbcopy")
+          ((eq system-type 'gnu/linux) "wl-copy")))
+
+  (defvar my-cli-paste-command
+    (cond ((eq system-type 'darwin) "pbpaste")
+          ((eq system-type 'gnu/linux) "wl-paste")))
+
   (defmacro my-evil-paste-from-clipboard (position)
     (let ((my-evil-paste-command (intern (concat "my-evil-paste-" (symbol-name position) "-from-clipboard")))
           (evil-paste-command (intern (concat "evil-paste-" (symbol-name position)))))
@@ -11,11 +19,15 @@
          :suppress-operator t
          (interactive "*P<x>")
          (with-temp-buffer
-           (call-process "wl-paste" nil t nil)
+           (call-process my-cli-paste-command nil t nil)
            (evil-set-register ?\" (buffer-string)))
          (,evil-paste-command count ?\" yank-handler))))
 
-  ;; functions
+  (defun my-evil-copy-to-clipboard ()
+    (with-temp-buffer
+      (insert (evil-get-register ?\"))
+      (call-process-region (point-min) (point-max) my-cli-copy-command nil 0 nil)))
+
   (defun my-propertize-evil-state-tags ()
     (let ((white "#FFFFFF"))
       (setq evil-normal-state-tag
@@ -57,11 +69,6 @@
       (setq evil-emacs-state-tag
             (propertize " E "
                         'face `(:foreground ,white :background "dark magenta" :weight bold)))))
-
-  (defun my-smart-copy-to-clipboard ()
-    (with-temp-buffer
-      (insert (evil-get-register ?\"))
-      (call-process-region (point-min) (point-max) "wl-copy" nil 0 nil)))
 
   :custom
   (evil-default-state 'emacs)
@@ -129,14 +136,14 @@
                          :repeat nil
                          (interactive "<R><x><y>")
                          (evil-yank beg end type ?\" yank-handler)
-                         (my-smart-copy-to-clipboard))
+                         (my-evil-copy-to-clipboard))
 
                        (evil-define-operator my-evil-yank-line-to-clipboard (beg end type register)
                          :motion evil-line-or-visual-line
                          :move-point nil
                          (interactive "<R><x>")
                          (evil-yank-line beg end type ?\")
-                         (my-smart-copy-to-clipboard))
+                         (my-evil-copy-to-clipboard))
 
                        (my-evil-paste-from-clipboard before)
                        (my-evil-paste-from-clipboard after)))
