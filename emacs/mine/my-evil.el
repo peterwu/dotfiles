@@ -59,11 +59,9 @@
                         'face `(:foreground ,white :background "dark magenta" :weight bold)))))
 
   (defun my-smart-copy-to-clipboard ()
-    (if (display-graphic-p)
-        (evil-set-register ?+ (evil-get-register ?\"))
-      (with-temp-buffer
-        (insert (evil-get-register ?\"))
-        (call-process-region (point-min) (point-max) "wl-copy" nil 0 nil))))
+    (with-temp-buffer
+      (insert (evil-get-register ?\"))
+      (call-process-region (point-min) (point-max) "wl-copy" nil 0 nil)))
 
   :custom
   (evil-default-state 'emacs)
@@ -182,39 +180,6 @@
   :ensure t
   :config
   (evil-exchange-install))
-
-;; evil-goggles
-(use-package evil-goggles
-  :ensure t
-  :preface
-  (defun my-add-evil-commands-to-goggles ()
-    (dolist (command '((my-evil-yank-to-clipboard
-                        :face evil-goggles-yank-face
-                        :switch evil-goggles-enable-yank
-                        :advice evil-goggles--generic-async-advice)
-
-                       (my-evil-yank-line-to-clipboard
-                        :face evil-goggles-yank-face
-                        :switch evil-goggles-enable-yank
-                        :advice evil-goggles--generic-async-advice)
-
-                       (my-evil-paste-before-from-clipboard
-                        :face evil-goggles-paste-face
-                        :switch evil-goggles-enable-paste
-                        :advice evil-goggles--paste-advice :after t)
-
-                       (my-evil-paste-after-from-clipboard
-                        :face evil-goggles-paste-face
-                        :switch evil-goggles-enable-paste
-                        :advice evil-goggles--paste-advice :after t)))
-      (add-to-list 'evil-goggles--commands command)))
-  :custom
-  (evil-goggles-async-duration 0.900)
-  (evil-goggles-blocking-duration 0.100)
-  (evil-goggles-pulse t)
-  :config
-  (my-add-evil-commands-to-goggles)
-  (evil-goggles-mode +1))
 
 ;; evil-lion
 (use-package evil-lion

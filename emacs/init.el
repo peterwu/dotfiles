@@ -380,6 +380,43 @@
      (?m "Magit" magit-project-status)
      (?e "Eshell" project-eshell))))
 
+(use-package pulse
+  :after evil
+  :preface
+  (defconst my-pulse-duration 0.200)
+
+  (defun my-evil-delete-advice (orig-fn beg end &rest args)
+    (let ((beg (or beg (point)))
+          (end (or end (line-end-position))))
+      (unless (eq evil-this-type 'block)
+        (pulse-momentary-highlight-region beg end)
+        (sit-for my-pulse-duration))
+      (apply orig-fn beg end args)))
+
+  (defun my-evil-paste-advice (orig-fn count &rest args)
+    (let (beg end)
+      (setq beg (point))
+      (apply orig-fn count args)
+      (setq end (point))
+      (pulse-momentary-highlight-region beg end)))
+
+  (defun my-evil-yank-advice (orig-fn beg end &rest args)
+    (pulse-momentary-highlight-region beg end)
+    (apply orig-fn beg end args))
+
+  (defun my-pulse-evil-commands ()
+    (dolist (construct '((evil-delete                    . my-evil-delete-advice)
+                         (evil-paste-after               . my-evil-paste-advice)
+                         (evil-paste-before              . my-evil-paste-advice)
+                         (evil-yank                      . my-evil-yank-advice)
+                         (my-evil-paste-after            . my-evil-paste-advice)
+                         (my-evil-paste-before           . my-evil-paste-advice)
+                         (my-evil-yank-to-clipboard      . my-evil-yank-advice)
+                         (my-evil-yank-line-to-clipboard . my-evil-yank-advice)))
+      (advice-add (car construct) :around (cdr construct))))
+  :config
+  (my-pulse-evil-commands))
+
 (use-package rainbow-mode
   :ensure t
   :custom
