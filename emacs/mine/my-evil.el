@@ -188,28 +188,26 @@
   :ensure t
   :preface
   (defun my-add-evil-commands-to-goggles ()
-    (let ((commands (list
-                     '(my-evil-yank-to-clipboard
-                       :face evil-goggles-yank-face
-                       :switch evil-goggles-enable-yank
-                       :advice evil-goggles--generic-async-advice)
+    (dolist (command '((my-evil-yank-to-clipboard
+                        :face evil-goggles-yank-face
+                        :switch evil-goggles-enable-yank
+                        :advice evil-goggles--generic-async-advice)
 
-                     '(my-evil-yank-line-to-clipboard
-                       :face evil-goggles-yank-face
-                       :switch evil-goggles-enable-yank
-                       :advice evil-goggles--generic-async-advice)
+                       (my-evil-yank-line-to-clipboard
+                        :face evil-goggles-yank-face
+                        :switch evil-goggles-enable-yank
+                        :advice evil-goggles--generic-async-advice)
 
-                     '(my-evil-paste-before-from-clipboard
-                       :face evil-goggles-paste-face
-                       :switch evil-goggles-enable-paste
-                       :advice evil-goggles--paste-advice :after t)
+                       (my-evil-paste-before-from-clipboard
+                        :face evil-goggles-paste-face
+                        :switch evil-goggles-enable-paste
+                        :advice evil-goggles--paste-advice :after t)
 
-                     '(my-evil-paste-after-from-clipboard
-                       :face evil-goggles-paste-face
-                       :switch evil-goggles-enable-paste
-                       :advice evil-goggles--paste-advice :after t))))
-      (dolist (command commands)
-        (add-to-list 'evil-goggles--commands command))))
+                       (my-evil-paste-after-from-clipboard
+                        :face evil-goggles-paste-face
+                        :switch evil-goggles-enable-paste
+                        :advice evil-goggles--paste-advice :after t)))
+      (add-to-list 'evil-goggles--commands command)))
   :custom
   (evil-goggles-async-duration 0.900)
   (evil-goggles-blocking-duration 0.100)
@@ -235,7 +233,7 @@
   :ensure t
   :after evil
   :bind
-  (:map my-evil-leader-nmap
+  (:map my-evil-leader-normal-state-map
         ("C-a" . evil-numbers/inc-at-pt)
         ("C-x" . evil-numbers/dec-at-pt)
         ("M-a" . evil-numbers/inc-at-pt-incremental)
