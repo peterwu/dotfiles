@@ -27,7 +27,7 @@ alias emacs="emacs -nw"
 export VI_HOME="$HOME/.config/vi"
 alias vi="vi -S $VI_HOME/virc"
 
-alias ls="ls --color=auto --group-directories-first --indicator-style=slash -v"
+alias ls="ls --color=auto --group-directories-first --indicator-style=slash --time-style=long-iso -v"
 alias ll="ls -l --classify --size"
 alias la="ls -l --classify --size --all"
 
