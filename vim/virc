@@ -2,99 +2,105 @@
 source $VIMRUNTIME/defaults.vim
 
 " options
-set number
-set relativenumber
-set smartindent
+set autoindent
+set autoread
+set complete-=i
+set completeopt=menu,menuone,noinsert,noselect
+set cursorline
+set encoding=utf-8
 set expandtab
-set tabstop=8
-set shiftwidth=4
-set softtabstop=0
-set shortmess+=I
+set fileformats=unix,dos,mac
+set foldmethod=marker
+set formatoptions=tcqj
+set hidden
+set history=1000
+set hlsearch
+set ignorecase
 set laststatus=2
+set lazyredraw
 set listchars=trail:·,tab:»·
+set mouse=a
+set mousemodel=popup_setpos
+set nolist
+set notitle
+set number
+set path=.,,**
+set pumheight=7
+set relativenumber
+set scrolloff=1
+set sessionoptions-=options
+set shiftround
+set shiftwidth=4
+set shortmess+=Ic
+set showmatch
+set sidescroll=1
+set sidescrolloff=2
+set smartcase
+set smartindent
+set smarttab
+set smoothscroll
+set softtabstop=0
+set splitbelow
+set splitright
+set switchbuf=uselast
+set tabstop=8
+set termencoding=utf-8
+set termguicolors
+set textwidth=80
+set timeoutlen=777
+set ttimeoutlen=77
+set viewoptions=cursor,folds
+set virtualedit=block
+set wildoptions=pum,tagfile
 
-" disable arrow keys in normal mode
-map <Up>    <Nop>
-map <Down>  <Nop>
-map <Left>  <Nop>
-map <Right> <Nop>
+" virc
+nnoremap <silent> <Space>ev <Cmd>edit   $VI_HOME/virc<CR>
+nnoremap <silent> <Space>sv <Cmd>source $VI_HOME/virc<CR>
 
-" disable arrow keys in insert mode
-imap <Up>    <Nop>
-imap <Down>  <Nop>
-imap <Left>  <Nop>
-imap <Right> <Nop>
+" disable arrow keys
+noremap <Up>    <Nop>
+noremap <Down>  <Nop>
+noremap <Left>  <Nop>
+noremap <Right> <Nop>
+
+inoremap <Up>    <Nop>
+inoremap <Down>  <Nop>
+inoremap <Left>  <Nop>
+inoremap <Right> <Nop>
 
 " swap j/k <-> gj/gk
 nnoremap <expr> j (v:count ? 'j' : 'gj')
 nnoremap <expr> k (v:count ? 'k' : 'gk')
+xnoremap <expr> j (v:count ? 'j' : 'gj')
+xnoremap <expr> k (v:count ? 'k' : 'gk')
 
-" copy to clipboard
-nnoremap Y yg_
+" unimpaired
+nnoremap <silent> [<Space> O<Esc>j
+nnoremap <silent> ]<Space> o<Esc>k
 
-if has('clipboard')
-    vnoremap <Leader>y  "+y
-    nnoremap <Leader>y  "+y
-    nnoremap <Leader>Y  "+yg_
-    nnoremap <Leader>yy "+y_
-elseif executable('/usr/bin/xsel')
-    vnoremap <silent> <Leader>y  <Cmd>set opfunc=CopyToClipboard<CR>g@
-    nnoremap <silent> <Leader>y  <Cmd>set opfunc=CopyToClipboard<CR>g@
-    nnoremap <silent> <Leader>Y  <Cmd>set opfunc=CopyToClipboard<CR>g@g_
-    nnoremap <silent> <Leader>yy <Cmd>set opfunc=CopyToClipboard<CR>g@_
+nnoremap <silent> [a <Cmd>previous<CR>
+nnoremap <silent> ]a <Cmd>next<CR>
+nnoremap <silent> [A <Cmd>first<CR>
+nnoremap <silent> ]A <Cmd>last<CR>
 
-    function! s:CopyToClipboard(type, ...) abort
-        const l:reg = '"'
-        const l:sel_save = &selection
-        let &selection = "inclusive"
-        const l:cb_save  = &clipboard
-        const l:reg_save = getreg(reg)
-        const l:reg_type = getregtype(reg)
+nnoremap <silent> [b <Cmd>bprevious<CR>
+nnoremap <silent> ]b <Cmd>bnext<CR>
+nnoremap <silent> [B <Cmd>bfirst<CR>
+nnoremap <silent> ]B <Cmd>blast<CR>
 
-        if a:type ==# "char"
-            silent! execute 'normal! v`[o`]"' .. l:reg .. 'y'
-        elseif a:type ==# "line"
-            silent! execute 'normal! `[V`]"' .. l:reg .. 'y'
-        elseif a:type ==# "v" || a:type ==# "V" || a:type ==# "\<C-V>" || a:type ==# "block"
-            let &selection = l:sel_save
-            const l:ve = &virtualedit
+" stolen from neovim defaults
+nnoremap Y     yg_
+inoremap <C-U> <C-G>u<C-U>
+inoremap <C-W> <C-G>u<C-W>
+xnoremap *     y/\V<C-R>"<CR>
+xnoremap #     y?\V<C-R>"<CR>
+nnoremap &     <Cmd>&&<CR>
 
-            if !(a:0 && a:1)
-                set virtualedit=none
-            endif
+augroup show_listchars_when_insert | autocmd!
+    autocmd InsertEnter * set list
+    autocmd InsertLeave * set nolist
+augroup END
 
-            silent execute 'normal! gv"' .. l:reg .. 'y'
-            let &virtualedit = l:ve
-        elseif a:type =~ '^\d\+$'
-            silent! execute 'normal! ^v' .. a:type .. '$h"' .. l:reg .. 'y'
-            if mode() ==# 'v'
-                normal! v
-            endif
-        else
-            let &selection = l:sel_save
-            let &clipboard = l:cb_save
-        endif
-
-        silent! call system('/usr/bin/xsel -i -b -l /dev/null', getreg(l:reg))
-
-        call setreg(l:reg, l:reg_save, l:reg_type)
-        let &selection = l:sel_save
-        let &clipboard = l:cb_save
-    endfunction
-endif
-
-" paste from clipboard
-if has('clipboard')
-    nnoremap <Leader>p "+p
-    nnoremap <Leader>P "+P
-    vnoremap <Leader>p "+p
-    vnoremap <Leader>P "+P
-elseif executable('/usr/bin/xsel')
-    nnoremap <silent> <Leader>p <Cmd>let @"=system('xsel -o -b')<CR>""p
-    nnoremap <silent> <Leader>P <Cmd>let @"=system('xsel -o -b')<CR>""P
-    vnoremap <silent> <Leader>p <Cmd>let @"=system('xsel -o -b')<CR>""p
-    vnoremap <silent> <Leader>P <Cmd>let @"=system('xsel -o -b')<CR>""P
-endif
-
-" set list when in insert mode
-autocmd InsertEnter,InsertLeave * set list!
+augroup no_trailing_whitespaces | autocmd!
+    autocmd BufWritePre * :%s/\s\+$//e
+augroup END

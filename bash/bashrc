@@ -22,7 +22,10 @@ HISTFILESIZE=20000
 # User specific aliases and functions
 set -o vi
 
-export MANPAGER="vim '+setlocal laststatus=0' +MANPAGER --not-a-term -"
+alias emacs="emacs -nw"
+
+export VI_HOME="$HOME/.config/vi"
+alias vi="vi -S $VI_HOME/virc"
 
 alias ls="ls --color=auto --group-directories-first --indicator-style=slash -v"
 alias ll="ls -l --classify --size"
