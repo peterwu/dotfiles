@@ -20,8 +20,6 @@ HISTSIZE=20000
 HISTFILESIZE=20000
 
 # User specific aliases and functions
-set -o vi
-
 alias emacs="emacs -nw"
 
 export VI_HOME="$HOME/.config/vi"

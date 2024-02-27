@@ -479,6 +479,15 @@
   :config
   (global-tab-line-mode -1))
 
+(use-package term
+  :after evil
+  :custom
+  (explicit-shell-file-name "/bin/bash --login")
+  :hook
+  (term-mode . (lambda()
+                 (evil-set-initial-state 'term-mode 'emacs)
+                 (setq-local global-hl-line-mode nil))))
+
 (use-package time
   :commands world-clock
   :custom
