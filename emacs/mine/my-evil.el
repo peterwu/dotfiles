@@ -70,18 +70,26 @@
             (propertize " E "
                         'face `(:foreground ,white :background "dark magenta" :weight bold)))))
 
-  :custom
-  (evil-default-state 'emacs)
-  (evil-disable-insert-state-bindings t)
-  (evil-echo-state nil)
-  (evil-mode-line-format nil)
-  (evil-respect-visual-line-mode nil)
-  (evil-undo-system 'undo-redo)
-  (evil-want-C-i-jump nil)
-  (evil-want-C-w-in-emacs-state t)
-  (evil-want-Y-yank-to-eol t)
-  (evil-want-integration t)
-  (evil-want-keybinding nil)
+  :init
+  (setq evil-default-state 'emacs)
+  (setq evil-emacs-state-modes nil)
+  (setq evil-insert-state-modes nil)
+  (setq evil-motion-state-modes nil)
+  (setq evil-normal-state-modes '(conf-mode
+                                  fundamental-mode
+                                  prog-mode
+                                  text-mode))
+
+  (setq evil-disable-insert-state-bindings t)
+  (setq evil-echo-state nil)
+  (setq evil-mode-line-format nil)
+  (setq evil-respect-visual-line-mode nil)
+  (setq evil-undo-system 'undo-redo)
+  (setq evil-want-C-i-jump nil)
+  (setq evil-want-C-w-in-emacs-state t)
+  (setq evil-want-Y-yank-to-eol t)
+  (setq evil-want-integration t)
+  (setq evil-want-keybinding nil)
 
   :bind
   (:map evil-motion-state-map
@@ -147,14 +155,6 @@
 
                        (my-evil-paste-from-clipboard before)
                        (my-evil-paste-from-clipboard after)))
-  (evil-after-load . (lambda ()
-                       (fset 'evil-visual-update-x-selection 'ignore)))
-  (evil-after-load . (lambda ()
-                       (dolist (mode '(conf-mode
-                                       fundamental-mode
-                                       prog-mode
-                                       text-mode))
-                         (evil-set-initial-state mode 'normal))))
   :config
   (evil-mode +1))
 
