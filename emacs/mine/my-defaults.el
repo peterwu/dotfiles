@@ -62,6 +62,10 @@
 ;; hl-line
 (global-hl-line-mode +1)
 
+;; pixel-scroll-precision-mode
+(setopt pixel-scroll-precision-interpolate-page t)
+(pixel-scroll-precision-mode +1)
+
 ;; simple
 (column-number-mode +1)
 (global-visual-line-mode +1)
