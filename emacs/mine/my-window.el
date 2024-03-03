@@ -14,11 +14,16 @@
   (windmove-default-keybindings 'control))
 
 (use-package window
+  :after evil
   :custom
   (even-window-sizes 'height-only)
   (switch-to-buffer-in-dedicated-window 'pop)
   (window-combination-resize t)
   (window-sides-vertical nil)
+  :bind
+  (:map evil-normal-state-map
+        ("] b" . next-buffer)
+        ("[ b" . previous-buffer))
   :hook
   ((help-mode custom-mode) . visual-line-mode))
 

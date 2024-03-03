@@ -31,44 +31,44 @@
   (defun my-propertize-evil-state-tags ()
     (let ((white "#FFFFFF"))
       (setq-default evil-normal-state-tag
-            (propertize " N "
-                        'face `(:foreground ,white :background "dark blue" :weight bold)))
+                    (propertize " N "
+                                'face `(:foreground ,white :background "dark blue" :weight bold)))
 
       (setq-default evil-insert-state-tag
-            (propertize " I "
-                        'face `(:foreground ,white :background "dark green" :weight bold)))
+                    (propertize " I "
+                                'face `(:foreground ,white :background "dark green" :weight bold)))
 
       (setq-default evil-visual-char-tag
-            (propertize " V "
-                        'face `(:foreground ,white :background "dark cyan" :weight bold)))
+                    (propertize " V "
+                                'face `(:foreground ,white :background "dark cyan" :weight bold)))
 
       (setq-default evil-visual-line-tag
-            (propertize " L "
-                        'face `(:foreground ,white :background "dark cyan" :weight bold)))
+                    (propertize " L "
+                                'face `(:foreground ,white :background "dark cyan" :weight bold)))
 
       (setq-default evil-visual-screen-line-tag
-            (propertize " S "
-                        'face `(:foreground ,white :background "dark cyan" :weight bold)))
+                    (propertize " S "
+                                'face `(:foreground ,white :background "dark cyan" :weight bold)))
 
       (setq-default evil-visual-block-tag
-            (propertize " B "
-                        'face `(:foreground ,white :background "dark cyan" :weight bold)))
+                    (propertize " B "
+                                'face `(:foreground ,white :background "dark cyan" :weight bold)))
 
       (setq-default evil-operator-state-tag
-            (propertize " O "
-                        'face `(:foreground ,white :background "dark orange" :weight bold)))
+                    (propertize " O "
+                                'face `(:foreground ,white :background "dark orange" :weight bold)))
 
       (setq-default evil-replace-state-tag
-            (propertize " R "
-                        'face `(:foreground ,white :background "dark red" :weight bold)))
+                    (propertize " R "
+                                'face `(:foreground ,white :background "dark red" :weight bold)))
 
       (setq-default evil-motion-state-tag
-            (propertize " M "
-                        'face `(:foreground ,white :background "black" :weight bold)))
+                    (propertize " M "
+                                'face `(:foreground ,white :background "black" :weight bold)))
 
       (setq-default evil-emacs-state-tag
-            (propertize " E "
-                        'face `(:foreground ,white :background "dark magenta" :weight bold)))))
+                    (propertize " E "
+                                'face `(:foreground ,white :background "dark magenta" :weight bold)))))
 
   :init
   (setopt evil-default-state 'emacs)
@@ -76,9 +76,9 @@
   (setopt evil-insert-state-modes nil)
   (setopt evil-motion-state-modes nil)
   (setopt evil-normal-state-modes '(conf-mode
-                                  fundamental-mode
-                                  prog-mode
-                                  text-mode))
+                                    fundamental-mode
+                                    prog-mode
+                                    text-mode))
 
   (setopt evil-disable-insert-state-bindings t)
   (setopt evil-echo-state nil)
@@ -134,6 +134,18 @@
   (:map evil-insert-state-map
         ("C-x C-n" . evil-complete-next-line)
         ("C-x C-p" . evil-complete-previous-line))
+
+  (:map evil-normal-state-map
+        ("] SPC" . (lambda (number-of-lines)
+                     (interactive "P")
+                     (dotimes (_ (or number-of-lines 1))
+                       (evil-insert-newline-below)
+                       (evil-previous-visual-line))))
+        ("[ SPC" . (lambda (number-of-lines)
+                     (interactive "P")
+                     (dotimes (_ (or number-of-lines 1))
+                       (evil-insert-newline-above)
+                       (evil-next-visual-line)))))
 
   :init
   (my-propertize-evil-state-tags)
