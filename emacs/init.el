@@ -90,6 +90,8 @@
   (corfu-cycle t)
   (corfu-scroll-margin 5)
   :config
+  (corfu-history-mode +1)
+  (corfu-popupinfo-mode +1)
   (global-corfu-mode +1))
 
 (use-package display-line-numbers
@@ -416,6 +418,37 @@
       (advice-add (car construct) :around (cdr construct))))
   :config
   (my-pulse-evil-commands))
+
+(use-package pyvenv
+  :ensure t
+  :demand t
+  :preface
+  (defconst my-pyvenv-dirs '(".venv" "venv"))
+  (defun my-pyvenv-auto-activate ()
+    (when-let
+        ((venv-dir
+          (seq-find #'identity
+                    (mapcar (lambda (dir)
+                              (let
+                                  ((parent-dir
+                                    (locate-dominating-file
+                                     default-directory
+                                     (concat
+                                      (file-name-as-directory
+                                       (concat
+                                        (file-name-as-directory dir)
+                                        "bin"))
+                                      "activate"))))
+                                (when parent-dir
+                                  (concat
+                                   (file-name-as-directory parent-dir)
+                                   dir))))
+                            my-pyvenv-dirs)))
+         (match (not (equal venv-dir pyvenv-virtual-env))))
+      (pyvenv-activate venv-dir)
+      (message "pyvenv activated %s." venv-dir)))
+  :hook
+  (python-mode . my-pyvenv-auto-activate))
 
 (use-package rainbow-mode
   :ensure t
