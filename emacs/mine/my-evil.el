@@ -30,66 +30,66 @@
 
   (defun my-propertize-evil-state-tags ()
     (let ((white "#FFFFFF"))
-      (setq evil-normal-state-tag
+      (setq-default evil-normal-state-tag
             (propertize " N "
                         'face `(:foreground ,white :background "dark blue" :weight bold)))
 
-      (setq evil-insert-state-tag
+      (setq-default evil-insert-state-tag
             (propertize " I "
                         'face `(:foreground ,white :background "dark green" :weight bold)))
 
-      (setq evil-visual-char-tag
+      (setq-default evil-visual-char-tag
             (propertize " V "
                         'face `(:foreground ,white :background "dark cyan" :weight bold)))
 
-      (setq evil-visual-line-tag
+      (setq-default evil-visual-line-tag
             (propertize " L "
                         'face `(:foreground ,white :background "dark cyan" :weight bold)))
 
-      (setq evil-visual-screen-line-tag
+      (setq-default evil-visual-screen-line-tag
             (propertize " S "
                         'face `(:foreground ,white :background "dark cyan" :weight bold)))
 
-      (setq evil-visual-block-tag
+      (setq-default evil-visual-block-tag
             (propertize " B "
                         'face `(:foreground ,white :background "dark cyan" :weight bold)))
 
-      (setq evil-operator-state-tag
+      (setq-default evil-operator-state-tag
             (propertize " O "
                         'face `(:foreground ,white :background "dark orange" :weight bold)))
 
-      (setq evil-replace-state-tag
+      (setq-default evil-replace-state-tag
             (propertize " R "
                         'face `(:foreground ,white :background "dark red" :weight bold)))
 
-      (setq evil-motion-state-tag
+      (setq-default evil-motion-state-tag
             (propertize " M "
                         'face `(:foreground ,white :background "black" :weight bold)))
 
-      (setq evil-emacs-state-tag
+      (setq-default evil-emacs-state-tag
             (propertize " E "
                         'face `(:foreground ,white :background "dark magenta" :weight bold)))))
 
   :init
-  (setq evil-default-state 'emacs)
-  (setq evil-emacs-state-modes nil)
-  (setq evil-insert-state-modes nil)
-  (setq evil-motion-state-modes nil)
-  (setq evil-normal-state-modes '(conf-mode
+  (setopt evil-default-state 'emacs)
+  (setopt evil-emacs-state-modes nil)
+  (setopt evil-insert-state-modes nil)
+  (setopt evil-motion-state-modes nil)
+  (setopt evil-normal-state-modes '(conf-mode
                                   fundamental-mode
                                   prog-mode
                                   text-mode))
 
-  (setq evil-disable-insert-state-bindings t)
-  (setq evil-echo-state nil)
-  (setq evil-mode-line-format nil)
-  (setq evil-respect-visual-line-mode nil)
-  (setq evil-undo-system 'undo-redo)
-  (setq evil-want-C-i-jump nil)
-  (setq evil-want-C-w-in-emacs-state t)
-  (setq evil-want-Y-yank-to-eol t)
-  (setq evil-want-integration t)
-  (setq evil-want-keybinding nil)
+  (setopt evil-disable-insert-state-bindings t)
+  (setopt evil-echo-state nil)
+  (setopt evil-mode-line-format '(after . nil))
+  (setopt evil-respect-visual-line-mode nil)
+  (setopt evil-undo-system 'undo-redo)
+  (setopt evil-want-C-i-jump nil)
+  (setopt evil-want-C-w-in-emacs-state t)
+  (setopt evil-want-Y-yank-to-eol t)
+  (setopt evil-want-integration t)
+  (setopt evil-want-keybinding nil)
 
   :bind
   (:map evil-motion-state-map

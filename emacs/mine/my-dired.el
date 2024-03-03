@@ -4,39 +4,37 @@
 (use-package dired
   :preface
   (when (eq system-type 'darwin)
-    (setq insert-directory-program "gls"))
+    (setq-default insert-directory-program "gls"))
   :custom
+  (dired-bind-info nil)
+  (dired-bind-man nil)
   (delete-by-moving-to-trash t)
+  (dired-clean-confirm-killing-deleted-buffers t)
+  (dired-clean-up-buffers-too t)
+  (dired-create-destination-dirs 'ask)
   (dired-dwim-target t)
+  (dired-guess-shell-alist-user '(("\\.pdf$" "xdg-open * &")))
+  (dired-isearch-filenames 'dwim)
+  (dired-kill-when-opening-new-dired-buffer t)
   (dired-listing-switches
    "-AGFhlv --group-directories-first --time-style=long-iso")
+  (dired-mouse-drag-files t)
   (dired-recursive-copies 'always)
   (dired-recursive-deletes 'always)
-  :hook
-  (dired-mode . dired-hide-details-mode))
-
-;; dired-aux
-(use-package dired-aux
-  :custom
-  (dired-create-destination-dirs 'ask)
-  (dired-isearch-filenames 'dwim)
   (dired-vc-rename-file t)
   :bind
   (:map dired-mode-map
-        ("C-+" . dired-create-empty-file)))
+        ("-"   . dired-up-directory)
+        ("C-+" . dired-create-empty-file)
+        ("I"   . dired-info))
+  :hook
+  (dired-mode . dired-hide-details-mode)
+  (dired-mode . dired-omit-mode))
 
 ;; dired-x
 (use-package dired-x
   :custom
-  (dired-bind-info nil)
-  (dired-bind-man nil)
-  (dired-clean-confirm-killing-deleted-buffers t)
-  (dired-clean-up-buffers-too t)
-  (dired-guess-shell-alist-user '(("\\.pdf$" "xdg-open * &")))
-  (dired-x-hands-off-my-keys t)
-  :bind
-  (:map dired-mode-map
-        ("I" . dired-info)))
+  (dired-x-hands-off-my-keys t))
 
 ;; image-dired
 (use-package image-dired

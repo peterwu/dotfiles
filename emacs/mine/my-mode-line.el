@@ -169,35 +169,35 @@
                           'mouse-face 'mode-line-highlight))))))
 (put 'my-mode-line-percent-position 'risky-local-variable t)
 
-(setq-default mode-line-format
-              '(:eval
-                (my-mode-line-render
-                 ;; left hand side
-                 (list
-                  "%e"
-                  my-evil-mode-line-tag
-                  " "
-                  my-mode-line-buffer-identification
-                  " "
-                  my-mode-line-git-status)
+(setopt mode-line-format
+        '(:eval
+          (my-mode-line-render
+           ;; left hand side
+           (list
+            "%e"
+            my-evil-mode-line-tag
+            " "
+            my-mode-line-buffer-identification
+            " "
+            my-mode-line-git-status)
 
-                 ;; centre
-                 (list
-                  my-mode-line-centre-place-holder)
+           ;; centre
+           (list
+            my-mode-line-centre-place-holder)
 
-                 ;; right hand side
-                 (cond
-                  ((mode-line-window-selected-p)
-                   (list
-                    my-mode-line-buffer-size
-                    " "
-                    my-mode-line-modes
-                    my-mode-line-percent-position
-                    " "))
-                  (t
-                   (list
-                    " "
-                    my-mode-line-percent-position
-                    " "))))))
+           ;; right hand side
+           (cond
+            ((mode-line-window-selected-p)
+             (list
+              my-mode-line-buffer-size
+              " "
+              my-mode-line-modes
+              my-mode-line-percent-position
+              " "))
+            (t
+             (list
+              " "
+              my-mode-line-percent-position
+              " "))))))
 
 (provide 'my-mode-line)
