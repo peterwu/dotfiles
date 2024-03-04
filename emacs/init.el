@@ -83,17 +83,6 @@
                nil
                t))))
 
-(use-package corfu
-  :ensure t
-  :custom
-  (corfu-auto t)
-  (corfu-cycle t)
-  (corfu-scroll-margin 5)
-  :config
-  (corfu-history-mode +1)
-  (corfu-popupinfo-mode +1)
-  (global-corfu-mode +1))
-
 (use-package display-line-numbers
   :after evil
   :custom
