@@ -439,17 +439,6 @@
   :hook
   (python-mode . my-pyvenv-auto-activate))
 
-(use-package rainbow-mode
-  :ensure t
-  :custom
-  (rainbow-ansi-colors nil)
-  (rainbow-x-colors nil)
-  :hook prog-mode)
-
-(use-package rainbow-delimiters
-  :ensure t
-  :hook prog-mode)
-
 (use-package recentf
   :custom
   (recentf-exclude '(".gz" ".xz" ".zip" "/elpa/" "/ssh:" "/sudo:"))
@@ -511,6 +500,7 @@
                  (setq-local global-hl-line-mode nil))))
 
 (use-package time
+  :after evil
   :commands world-clock
   :custom
   (display-time-default-load-average nil)
@@ -561,12 +551,8 @@
   (uniquify-buffer-name-style 'forward)
   (uniquify-strip-common-suffix t))
 
-(use-package which-key
-  :ensure t
-  :config
-  (which-key-mode +1))
-
 (use-package whitespace
+  :after evil
   :hook
   (before-save . whitespace-cleanup)
   :bind
