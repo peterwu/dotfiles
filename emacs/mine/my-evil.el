@@ -93,9 +93,9 @@
 
   :bind
   (:map evil-motion-state-map
-        :prefix "<SPC>" :prefix-map my-evil-leader-motion-state-map)
+        :prefix "<leader>" :prefix-map my-evil-leader-motion-state-map)
   (:map evil-normal-state-map
-        :prefix "<SPC>" :prefix-map my-evil-leader-normal-state-map)
+        :prefix "<leader>" :prefix-map my-evil-leader-normal-state-map)
 
   :bind
   (:map my-evil-leader-normal-state-map
@@ -125,16 +125,13 @@
   (:map my-evil-leader-motion-state-map
         ("y" . my-evil-yank-to-clipboard)
         ("Y" . my-evil-yank-line-to-clipboard))
-
   (:map my-evil-leader-normal-state-map
         ("p" . my-evil-paste-after-from-clipboard)
         ("P" . my-evil-paste-before-from-clipboard)
         ("z" . text-scale-adjust))
-
   (:map evil-insert-state-map
         ("C-x C-n" . evil-complete-next-line)
         ("C-x C-p" . evil-complete-previous-line))
-
   (:map evil-normal-state-map
         ("] SPC" . (lambda (number-of-lines)
                      (interactive "P")
@@ -146,11 +143,13 @@
                      (dotimes (_ (or number-of-lines 1))
                        (evil-insert-newline-above)
                        (evil-next-visual-line)))))
-
   :init
   (my-propertize-evil-state-tags)
   :hook
   (evil-after-load . (lambda ()
+                       (evil-set-leader '(normal motion) (kbd "SPC"))
+                       (evil-set-leader '(normal motion) (kbd ",") t)
+
                        (evil-define-operator my-evil-yank-to-clipboard (beg end type register yank-handler)
                          :move-point nil
                          :repeat nil
@@ -178,12 +177,10 @@
         ("a" . evil-inner-arg))
   (:map evil-outer-text-objects-map
         ("a" . evil-outer-arg))
-
   (:map evil-normal-state-map
         ("H" . evil-backward-arg)
         ("L" . evil-forward-arg)
         ("K" . evil-jump-out-args))
-
   (:map evil-motion-state-map
         ("H" . evil-backward-arg)
         ("L" . evil-forward-arg)))
