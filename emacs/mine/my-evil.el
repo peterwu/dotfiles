@@ -14,19 +14,21 @@
 
   (defmacro my-evil-paste-from-clipboard (position)
     (let ((my-evil-paste-command (intern (concat "my-evil-paste-" (symbol-name position) "-from-clipboard")))
-          (evil-paste-command (intern (concat "evil-paste-" (symbol-name position)))))
+          (evil-paste-command (intern (concat "evil-paste-" (symbol-name position))))
+          (cli-paste-command (split-string my-cli-paste-command)))
       `(evil-define-command ,my-evil-paste-command (count &optional register yank-handler)
          :suppress-operator t
          (interactive "*P<x>")
          (with-temp-buffer
-           (call-process my-cli-paste-command nil t nil)
+           (call-process ,(car cli-paste-command) nil t nil ,@(cdr cli-paste-command))
            (evil-set-register ?\" (buffer-string)))
          (,evil-paste-command count ?\" yank-handler))))
 
-  (defun my-evil-copy-to-clipboard ()
-    (with-temp-buffer
-      (insert (evil-get-register ?\"))
-      (call-process-region (point-min) (point-max) my-cli-copy-command nil 0 nil)))
+  (defmacro my-evil-copy-to-clipboard ()
+    (let ((cli-copy-command (split-string my-cli-copy-command)))
+      `(with-temp-buffer
+         (insert (evil-get-register ?\"))
+         (call-process-region (point-min) (point-max) ,(car cli-copy-command) nil 0 nil ,@(cdr cli-copy-command)))))
 
   (defun my-propertize-evil-state-tags ()
     (let ((white "#FFFFFF"))
