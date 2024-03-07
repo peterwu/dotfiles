@@ -225,6 +225,7 @@
 ;; evil-surround
 (use-package evil-surround
   :ensure t
+  :pin melpa
   :config
   (global-evil-surround-mode +1))
 
