@@ -12,6 +12,9 @@
 ;; global settings
 (setopt auto-save-default nil)
 (setopt auto-save-list-file-prefix nil)
+(setopt bookmark-default-file (expand-file-name
+                               "cache/bookmarks"
+                               user-emacs-directory))
 (setopt confirm-kill-emacs #'yes-or-no-p)
 (setopt fill-column 80)
 (setopt indent-tabs-mode nil)
