@@ -120,7 +120,8 @@
                         'left))
 
     (with-selected-window my-dired-explorer-window
-      (my-dired-explorer-show-directory "."))
+      (my-dired-explorer-show-directory default-directory)
+      (set-window-dedicated-p (selected-window) t))
     (other-window 1)))
 
 (defun my-dired-explorer-hide-window ()
@@ -148,8 +149,22 @@
   :keymap (define-keymap
             "RET" #'my-dired-explorer-find-file-at-point
             "-"   #'my-dired-explorer-find-up-directory
-            "^"   #'my-dired-explorer-find-up-directory)
+            "^"   #'my-dired-explorer-find-up-directory
+            "C-x C-f" (lambda nil (interactive)
+                        (call-interactively #'find-file)))
 
   (dired-hide-details-mode +1))
+
+(defun my-dired-explorer-advice (orig-fn &rest args)
+  (when (window-live-p my-dired-explorer-window)
+    (set-window-dedicated-p my-dired-explorer-window nil))
+  (apply orig-fn args)
+  (when (window-live-p my-dired-explorer-window)
+    (set-window-dedicated-p my-dired-explorer-window t)))
+
+(advice-add #'my-dired-explorer-find-file-at-point
+            :around #'my-dired-explorer-advice)
+(advice-add #'my-dired-explorer-find-up-directory
+            :around #'my-dired-explorer-advice)
 
 (provide 'my-dired)
