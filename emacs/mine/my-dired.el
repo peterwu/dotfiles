@@ -92,6 +92,13 @@
       (when (file-directory-p file)
         (kill-buffer buffer)))))
 
+(defun my-dired-explorer-mouse-find-file-at-point (event)
+  (interactive "e")
+  (with-selected-window my-dired-explorer-window
+    (let ((pos (posn-point (event-end event))))
+      (goto-char pos)
+      (call-interactively #'my-dired-explorer-find-file-at-point))))
+
 (defun my-dired-explorer-find-up-directory ()
   (interactive)
   (with-selected-window my-dired-explorer-window
@@ -147,9 +154,13 @@
 (define-minor-mode my-dired-explorer-mode
   "Get your foos in the right places."
   :keymap (define-keymap
-            "RET" #'my-dired-explorer-find-file-at-point
-            "-"   #'my-dired-explorer-find-up-directory
-            "^"   #'my-dired-explorer-find-up-directory
+            "<remap> <find-file>" #'my-dired-explorer-find-file-at-point
+            "<remap> <find-file-other-window>" #'my-dired-explorer-find-file-at-point
+            "<remap> <dired-find-file>" #'my-dired-explorer-find-file-at-point
+            "<remap> <dired-find-file-other-window>" #'my-dired-explorer-find-file-at-point
+            "<remap> <dired-mouse-find-file>" #'my-dired-explorer-mouse-find-file-at-point
+            "<remap> <dired-mouse-find-file-other-window>" #'my-dired-explorer-mouse-find-file-at-point
+            "<remap> <dired-up-directory>" #'my-dired-explorer-find-up-directory
             "C-x C-f" (lambda nil (interactive)
                         (call-interactively #'find-file)))
 
