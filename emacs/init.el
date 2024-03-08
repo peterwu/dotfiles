@@ -410,7 +410,8 @@
   :hook
   (term-mode . (lambda()
                  (evil-set-initial-state 'term-mode 'emacs)
-                 (setq-local global-hl-line-mode nil))))
+                 (setq-local global-hl-line-mode nil)
+                 (term-set-escape-char ?\C-x))))
 
 (use-package time
   :after evil
