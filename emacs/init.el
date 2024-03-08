@@ -118,8 +118,6 @@
             (propertize prompt 'face `(:foreground "dark green"))
           (propertize prompt 'face `(:foreground "dark red"))))
       " ")))
-  :bind
-  ("<f12>" . eshell)
   :hook
   (eshell-mode . (lambda ()
                    (setq-local global-hl-line-mode nil))))
@@ -407,6 +405,9 @@
   :after evil
   :custom
   (explicit-shell-file-name "/bin/bash --login")
+  :bind
+  ([f12] . (lambda () (interactive)
+               (term explicit-shell-file-name)))
   :hook
   (term-mode . (lambda()
                  (evil-set-initial-state 'term-mode 'emacs)

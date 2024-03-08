@@ -145,7 +145,7 @@
       (my-dired-explorer-hide-window)
     (my-dired-explorer-show-window)))
 
-(keymap-global-set "<f9>" #'my-dired-explorer-toggle-window)
+(bind-key [f9] #'my-dired-explorer-toggle-window)
 
 ;; autoload
 (autoload-do-load #'my-dired-explorer-toggle-window)
