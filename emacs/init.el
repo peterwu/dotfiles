@@ -67,8 +67,8 @@
   (ediff-window-setup-function 'ediff-setup-windows-plain))
 
 (use-package eldoc
-  :hook
-  (emacs-lisp-mode-hook ielm-mode-hook lisp-interaction-mode-hook))
+  :config
+  (global-eldoc-mode +1))
 
 (use-package electric
   :custom
