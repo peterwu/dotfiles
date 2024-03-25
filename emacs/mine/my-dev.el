@@ -61,14 +61,10 @@
 
 ;; python
 (use-package python
-  :custom
-  (python-check-command "pylint"))
-
-(use-package pyvenv
-  :ensure t
-  :demand t
   :preface
   (defconst my-pyvenv-dirs '(".venv" "venv"))
+  (defvar my-pyvenv-virtual-env nil)
+
   (defun my-pyvenv-auto-activate ()
     (when-let
         ((venv-dir
@@ -89,9 +85,16 @@
                                    (file-name-as-directory parent-dir)
                                    dir))))
                             my-pyvenv-dirs)))
-         (match (not (equal venv-dir pyvenv-virtual-env))))
-      (pyvenv-activate venv-dir)
-      (message "pyvenv activated %s." venv-dir)))
+         (match (not (equal venv-dir my-pyvenv-virtual-env))))
+
+      (let ((venv-bin-dir
+             (concat (file-name-as-directory venv-dir) "bin")))
+        (setenv "VIRTUAL_ENV" venv-dir)
+        (setenv "PYTHONHOME" nil)
+        (setq exec-path (append `(,venv-bin-dir) exec-path))
+        (setq my-pyvenv-virtual-env venv-dir))))
+  :custom
+  (python-check-command "pylint")
   :hook
   (python-mode . my-pyvenv-auto-activate))
 
