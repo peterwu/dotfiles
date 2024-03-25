@@ -186,8 +186,6 @@
   (ido-enable-flex-matching t)
   (ido-everywhere t)
   (ido-max-prospects 8)
-  (ido-save-directory-list-file
-   (expand-file-name "cache/ido.last" user-emacs-directory))
   (ido-show-dot-for-dired t)
   (ido-use-virtual-buffers t)
   :hook
@@ -303,7 +301,6 @@
 
 (use-package project
   :custom
-  (project-list-file (expand-file-name "cache/projects" user-emacs-directory))
   (project-switch-commands
    '((?f "File" project-find-file)
      (?g "Grep" project-find-regexp)
@@ -354,7 +351,6 @@
   :custom
   (recentf-exclude '(".gz" ".xz" ".zip" "/elpa/" "/ssh:" "/sudo:"))
   (recentf-max-saved-items 200)
-  (recentf-save-file (expand-file-name "cache/recentf" user-emacs-directory))
   :config
   (recentf-mode +1))
 
@@ -362,14 +358,12 @@
   :custom
   (history-delete-duplicates t)
   (history-length 1000)
-  (savehist-file (expand-file-name "cache/savehist" user-emacs-directory))
   (savehist-save-minibuffer-history t)
   :config
   (savehist-mode +1))
 
 (use-package saveplace
   :custom
-  (save-place-file (expand-file-name "cache/places" user-emacs-directory))
   (save-place-forget-unreadable-files t)
   :config
   (save-place-mode +1))
@@ -456,9 +450,7 @@
 
 (use-package tramp
   :custom
-  (tramp-default-method "sshx")
-  (tramp-persistency-file-name
-   (expand-file-name "cache/tramp" user-emacs-directory)))
+  (tramp-default-method "sshx"))
 
 (use-package uniquify
   :custom

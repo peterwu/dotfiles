@@ -12,9 +12,6 @@
 ;; global settings
 (setopt auto-save-default nil)
 (setopt auto-save-list-file-prefix nil)
-(setopt bookmark-default-file (expand-file-name
-                               "cache/bookmarks"
-                               user-emacs-directory))
 (setopt confirm-kill-emacs #'yes-or-no-p)
 (setopt fill-column 80)
 (setopt indent-tabs-mode nil)
@@ -24,10 +21,6 @@
 (setopt initial-major-mode 'org-mode)
 (setopt initial-scratch-message nil)
 (setopt make-backup-files nil)
-(setopt nsm-settings-file
-              (expand-file-name
-               "cache/network-security.data"
-               user-emacs-directory))
 (setopt scroll-conservatively 10000)
 (setopt scroll-margin 1)
 (setopt scroll-preserve-screen-position t)
@@ -43,22 +36,12 @@
 
 (setq-default backup-inhibited t)
 (setq-default bidi-inhibit-bpa t)
+(setq-default create-lockfiles nil)
 (setq-default frame-title-format
               '((:eval
                  (if (buffer-file-name)
                      (abbreviate-file-name (buffer-file-name))
                    "%b"))))
-
-;; custom.el
-(defconst my-custom-file
-  (expand-file-name "cache/custom.el" user-emacs-directory))
-(setopt custom-file my-custom-file)
-(add-hook 'after-init-hook
-          (lambda ()
-            (let ((file my-custom-file))
-              (unless (file-exists-p file)
-                (make-empty-file file))
-              (load-file file))))
 
 ;; blinking
 (setopt blink-cursor-blinks 20)
