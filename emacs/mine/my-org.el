@@ -2,7 +2,6 @@
 
 ;; org
 (use-package org
-  :after evil
   :custom
   (org-ellipsis " ▾")
   (org-export-headline-levels 5)
@@ -28,7 +27,7 @@
      ("j" "Journal" entry (file+olp+datetree "~/Documents/Org/journal.org")
       "* %?\nEntered on %U\n  %i\n  %a")))
   :bind
-  (:map my-evil-org-map
+  (:map my-org-map
         ("a" . org-agenda)
         ("c" . org-capture))
   :hook

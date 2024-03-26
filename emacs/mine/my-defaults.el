@@ -18,7 +18,6 @@
 (setopt inhibit-startup-buffer-menu t)
 (setopt inhibit-startup-echo-area-message (user-login-name))
 (setopt inhibit-startup-screen t)
-(setopt initial-major-mode 'org-mode)
 (setopt initial-scratch-message nil)
 (setopt make-backup-files nil)
 (setopt scroll-conservatively 10000)

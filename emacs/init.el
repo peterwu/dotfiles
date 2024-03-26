@@ -7,11 +7,12 @@
 (use-package my-defaults)
 (use-package my-msft)
 (use-package my-mode-line)
+(use-package my-keymaps)
 (use-package my-theme)
 (use-package my-dev)
 (use-package my-dired)
-(use-package my-evil)
-(use-package my-gnus)
+;; (use-package my-evil)
+;; (use-package my-gnus)
 (use-package my-org)
 (use-package my-window)
 
@@ -24,13 +25,13 @@
 
 (use-package avy
   :ensure t
-  :after evil
+;;  :after evil
   :custom
   (avy-background t)
   :bind
   (:map isearch-mode-map
         ("C-'" . avy-isearch))
-  (:map my-evil-jump-map
+  (:map my-jump-map
         ("f" .  avy-goto-char)
         ("r" .  avy-resume)
         ("s" .  avy-goto-char-2)
@@ -39,7 +40,6 @@
         ("W" .  avy-goto-word-0)))
 
 (use-package battery
-  :after evil
   :custom
   (battery-load-low 20)
   (battery-load-critical 10)
@@ -47,18 +47,17 @@
   (battery-mode-line-limit 95)
   (battery-update-interval 180)
   :bind
-  (:map my-evil-toggle-map
+  (:map my-toggle-map
         ("b" . display-battery-mode))
   :config
   (display-battery-mode -1))
 
 (use-package display-line-numbers
-  :after evil
   :custom
   (display-line-numbers-type 'relative)
   :hook (text-mode prog-mode)
   :bind
-  (:map my-evil-toggle-map
+  (:map my-toggle-map
         ("n" . display-line-numbers-mode)))
 
 (use-package ediff
@@ -241,21 +240,19 @@
 (use-package keycast
   :ensure t
   :pin melpa
-  :after evil
   :custom
   (keycast-mode-line-format "%k%c%R")
   (keycast-mode-line-insert-after 'my-mode-line-centre-place-holder)
   (keycast-mode-line-remove-tail-elements nil)
   :bind
-  (:map my-evil-toggle-map
+  (:map my-toggle-map
         ("k" .  keycast-mode-line-mode)))
 
 (use-package magit
   :ensure t
-  :after evil
   :bind
   ("C-x g" . magit-status)
-  (:map my-evil-magit-map
+  (:map my-magit-map
         ("g" . magit-status)
         ("j" . magit-dispatch)
         ("J" . magit-file-dispatch)
@@ -311,7 +308,7 @@
      (?e "Eshell" project-eshell))))
 
 (use-package pulse
-  :after evil
+  :disabled
   :preface
   (defconst my-pulse-duration 0.200)
 
@@ -390,13 +387,12 @@
                             dired-sidebar-mode
                             help-mode))
   :bind
-  (:map my-evil-toggle-map
+  (:map my-toggle-map
         ("t" . global-tab-line-mode ))
   :config
   (global-tab-line-mode -1))
 
 (use-package term
-  :after evil
   :custom
   (explicit-shell-file-name "/bin/bash --login")
   :bind
@@ -404,12 +400,10 @@
                (term explicit-shell-file-name)))
   :hook
   (term-mode . (lambda()
-                 (evil-set-initial-state 'term-mode 'emacs)
                  (setq-local global-hl-line-mode nil)
                  (term-set-escape-char ?\C-x))))
 
 (use-package time
-  :after evil
   :commands world-clock
   :custom
   (display-time-default-load-average nil)
@@ -429,7 +423,7 @@
   (world-clock-time-format "%R %z  %A %d %B")
   (world-clock-timer-second 60)
   :bind
-  (:map my-evil-toggle-map
+  (:map my-toggle-map
         ("c" . display-time-mode)
         ("g" . world-clock))
   :config
@@ -459,11 +453,10 @@
   (uniquify-strip-common-suffix t))
 
 (use-package whitespace
-  :after evil
   :hook
   (before-save . whitespace-cleanup)
   :bind
-  (:map my-evil-toggle-map
+  (:map my-toggle-map
         ("w" . whitespace-mode)))
 
 (use-package xt-mouse
