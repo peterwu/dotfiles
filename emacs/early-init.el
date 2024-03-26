@@ -71,9 +71,9 @@
 (when (native-comp-available-p)
   (setopt native-comp-async-report-warnings-errors 'silent))
 
-(set-face-attribute 'default        nil :family "Iosevka Fusion"  :height 135 :weight 'normal)
-(set-face-attribute 'fixed-pitch    nil :family "Iosevka Fusion"  :height 135 :weight 'normal)
-(set-face-attribute 'variable-pitch nil :family "Liberation Sans" :height 135 :weight 'normal)
+(set-face-attribute 'default        nil :family "Iosevka Fusion"  :height 140 :weight 'normal)
+(set-face-attribute 'fixed-pitch    nil :family "Iosevka Fusion"  :height 140 :weight 'normal)
+(set-face-attribute 'variable-pitch nil :family "Liberation Sans" :height 140 :weight 'normal)
 
 ;; start maximized (cross-platform)
 (add-hook 'window-setup-hook 'toggle-frame-maximized t)
