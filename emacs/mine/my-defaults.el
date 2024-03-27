@@ -47,7 +47,6 @@
 (setopt blink-cursor-delay 0.2)
 (setopt blink-cursor-interval 0.5)
 (setopt cursor-in-non-selected-windows 'hollow)
-(setopt cursor-type '(hbar . 3))
 (blink-cursor-mode +1)
 
 ;; hl-line
@@ -84,6 +83,6 @@
 (add-hook 'text-mode-hook #'turn-on-auto-fill)
 
 ;; key binds
-(keymap-set mode-specific-map "RET" #'pp-macroexpand-last-sexp)
+(bind-key "C-c RET" #'pp-macroexpand-last-sexp)
 
 (provide 'my-defaults)

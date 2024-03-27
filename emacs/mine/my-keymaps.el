@@ -16,6 +16,10 @@
 (bind-keys :prefix-map my-toggle-map
            :prefix "C-c t")
 
+;; my-window-map
+(bind-keys :prefix-map my-window-map
+           :prefix "C-c w")
+
 ;; system clipboard operations: cut/copy/paste
 (defvar my-cli-copy-command
   (cond ((eq system-type 'darwin) "pbcopy")
