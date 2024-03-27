@@ -158,8 +158,8 @@
   (ibuffer-show-empty-filter-groups nil)
   (ibuffer-use-header-line t)
   (ibuffer-use-other-window nil)
-  :hook
-  (ibuffer-mode . #'hl-line-mode))
+  :bind
+  ([remap list-buffers] . ibuffer))
 
 (use-package icomplete
   :custom
