@@ -31,14 +31,14 @@
   (avy-background t)
   :bind
   (:map isearch-mode-map
-    ("C-'" . avy-isearch))
+        ("C-'" . avy-isearch))
   (:map my-jump-map
-    ("f" .  avy-goto-char)
-    ("r" .  avy-resume)
-    ("s" .  avy-goto-char-2)
-    ("j" .  avy-goto-char-timer)
-    ("w" .  avy-goto-word-1)
-    ("W" .  avy-goto-word-0)))
+        ("f" .  avy-goto-char)
+        ("r" .  avy-resume)
+        ("s" .  avy-goto-char-2)
+        ("j" .  avy-goto-char-timer)
+        ("w" .  avy-goto-word-1)
+        ("W" .  avy-goto-word-0)))
 
 (use-package battery
   :custom
@@ -49,7 +49,7 @@
   (battery-update-interval 180)
   :bind
   (:map my-toggle-map
-    ("b" . display-battery-mode))
+        ("b" . display-battery-mode))
   :config
   (display-battery-mode -1))
 
@@ -59,7 +59,7 @@
   :hook (text-mode prog-mode)
   :bind
   (:map my-toggle-map
-    ("n" . display-line-numbers-mode)))
+        ("n" . display-line-numbers-mode)))
 
 (use-package ediff
   :custom
@@ -114,13 +114,13 @@
       "\n"
       "└ "
       (let ((prompt (if (= (user-uid) 0) "#" "$")))
-    (if (= eshell-last-command-status 0)
-        (propertize prompt 'face `(:foreground "dark green"))
-      (propertize prompt 'face `(:foreground "dark red"))))
+        (if (= eshell-last-command-status 0)
+            (propertize prompt 'face `(:foreground "dark green"))
+          (propertize prompt 'face `(:foreground "dark red"))))
       " ")))
   :hook
   (eshell-mode . (lambda ()
-           (setq-local global-hl-line-mode nil))))
+                   (setq-local global-hl-line-mode nil))))
 
 (use-package ispell
   :unless (eq system-type 'windows-nt)
@@ -147,15 +147,15 @@
   (ibuffer-expert t)
   (ibuffer-formats
    '((mark modified read-only locked " "
-       (name 30 30 :left :elide)
-       " "
-       (size 9 -1 :right)
-       " "
-       (mode 16 16 :left :elide)
-       " " filename-and-process)
+           (name 30 30 :left :elide)
+           " "
+           (size 9 -1 :right)
+           " "
+           (mode 16 16 :left :elide)
+           " " filename-and-process)
      (mark " "
-       (name 16 -1)
-       " " filename)))
+           (name 16 -1)
+           " " filename)))
   (ibuffer-movement-cycle nil)
   (ibuffer-old-time 48)
   (ibuffer-saved-filter-groups nil)
@@ -175,34 +175,6 @@
   (icomplete-with-completion-tables t)
   :config
   (fido-vertical-mode +1))
-
-(use-package ido
-  :custom
-  (ido-default-buffer-method 'selected-window)
-  (ido-default-file-method 'selected-window)
-  (ido-enable-flex-matching t)
-  (ido-everywhere t)
-  (ido-max-prospects 8)
-  (ido-show-dot-for-dired t)
-  (ido-use-virtual-buffers t)
-  :hook
-  (ido-minibuffer-setup .
-            (lambda ()
-              (setf (nth 0 ido-decorations) "\n")
-              (setf (nth 1 ido-decorations) "")
-              (setf (nth 2 ido-decorations)
-                (propertize "\n" 'face 'shadow))
-              (setf (nth 3 ido-decorations)
-                (propertize
-                 (concat "\n"
-                     (if (char-displayable-p ?…) "…" "..."))
-                 'face 'shadow))
-              (setf (nth 4 ido-decorations)
-                (propertize "\n" 'face 'shadow))
-              (setf (nth 5 ido-decorations)
-                (propertize "" 'face 'shadow))))
-  :config
-  (ido-mode +1))
 
 (use-package imenu
   :custom
@@ -233,7 +205,7 @@
   ("C-g" . isearch-cancel)
   ("M-/" . isearch-complete)
   (:map minibuffer-local-isearch-map
-    ("M-/" . isearch-complete-edit)))
+        ("M-/" . isearch-complete-edit)))
 
 (use-package keycast
   :ensure t
@@ -244,17 +216,17 @@
   (keycast-mode-line-remove-tail-elements nil)
   :bind
   (:map my-toggle-map
-    ("k" .  keycast-mode-line-mode)))
+        ("k" .  keycast-mode-line-mode)))
 
 (use-package magit
   :ensure t
   :bind
   ("C-x g" . magit-status)
   (:map my-magit-map
-    ("g" . magit-status)
-    ("j" . magit-dispatch)
-    ("J" . magit-file-dispatch)
-    ("r" . vc-refresh-state)))
+        ("g" . magit-status)
+        ("j" . magit-dispatch)
+        ("J" . magit-file-dispatch)
+        ("r" . vc-refresh-state)))
 
 (use-package minions
   :ensure t
@@ -327,11 +299,11 @@
 
   (defun my-pulse-commands ()
     (dolist (construct '((kill-region             . my-cut-advice)
-             (kill-ring-save          . my-copy-advice)
-             (yank                    . my-paste-advice)
-             (my-cut-to-clipboard     . my-cut-advice)
-             (my-copy-to-clipboard    . my-copy-advice)
-             (my-paste-from-clipboard . my-paste-advice)))
+                         (kill-ring-save          . my-copy-advice)
+                         (yank                    . my-paste-advice)
+                         (my-cut-to-clipboard     . my-cut-advice)
+                         (my-copy-to-clipboard    . my-copy-advice)
+                         (my-paste-from-clipboard . my-paste-advice)))
       (advice-add (car construct) :around (cdr construct))))
   :config
   (my-pulse-commands))
@@ -339,7 +311,9 @@
 (use-package recentf
   :custom
   (recentf-exclude '(".gz" ".xz" ".zip" "/elpa/" "/ssh:" "/sudo:"))
-  (recentf-max-saved-items 200)
+  (recentf-max-saved-items 50)
+  :bind
+  ("C-x C-r" . recentf-open)
   :config
   (recentf-mode +1))
 
@@ -376,11 +350,11 @@
   (tab-line-new-button-show nil)
   (tab-line-close-button-show nil)
   (tab-line-exclude-modes '(completion-list-mode
-                dired-sidebar-mode
-                help-mode))
+                            dired-sidebar-mode
+                            help-mode))
   :bind
   (:map my-toggle-map
-    ("t" . global-tab-line-mode ))
+        ("t" . global-tab-line-mode ))
   :config
   (global-tab-line-mode -1))
 
@@ -389,11 +363,11 @@
   (explicit-shell-file-name "/bin/bash --login")
   :bind
   ([f12] . (lambda () (interactive)
-           (term explicit-shell-file-name)))
+             (term explicit-shell-file-name)))
   :hook
   (term-mode . (lambda()
-         (setq-local global-hl-line-mode nil)
-         (term-set-escape-char ?\C-x))))
+                 (setq-local global-hl-line-mode nil)
+                 (term-set-escape-char ?\C-x))))
 
 (use-package time
   :commands world-clock
@@ -416,8 +390,8 @@
   (world-clock-timer-second 60)
   :bind
   (:map my-toggle-map
-    ("c" . display-time-mode)
-    ("g" . world-clock))
+        ("c" . display-time-mode)
+        ("g" . world-clock))
   :config
   (display-time-mode -1))
 
@@ -449,7 +423,7 @@
   (before-save . whitespace-cleanup)
   :bind
   (:map my-toggle-map
-    ("w" . whitespace-mode)))
+        ("w" . whitespace-mode)))
 
 (use-package xt-mouse
   :unless (display-graphic-p)
