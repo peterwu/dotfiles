@@ -153,6 +153,7 @@
 (setopt mode-line-format
         '(:eval
           (my-mode-line-render
+           ;; left
            (list
             " "
             mode-line-mule-info
@@ -164,15 +165,18 @@
             " "
             my-mode-line-vc-mode)
 
+           ;; centre
            (list
             my-mode-line-centre-place-holder)
 
-           (list
-            mode-line-misc-info
-            my-mode-line-buffer-size
-            " "
-            my-mode-line-modes
-            my-mode-line-percent-position
-            " "))))
+           ;; right
+           (when (mode-line-window-selected-p)
+             (list
+              mode-line-misc-info
+              my-mode-line-buffer-size
+              " "
+              my-mode-line-modes
+              my-mode-line-percent-position
+              " ")))))
 
 (provide 'my-mode-line)
