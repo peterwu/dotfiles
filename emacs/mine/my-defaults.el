@@ -49,6 +49,9 @@
 (setopt cursor-in-non-selected-windows 'hollow)
 (blink-cursor-mode +1)
 
+;; delete-selection
+(delete-selection-mode +1)
+
 ;; hl-line
 (global-hl-line-mode +1)
 
