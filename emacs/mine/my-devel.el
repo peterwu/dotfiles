@@ -98,4 +98,4 @@
   :hook
   (python-mode . my-pyvenv-auto-activate))
 
-(provide 'my-dev)
+(provide 'my-devel)

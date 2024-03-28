@@ -7,9 +7,13 @@
 (use-package my-defaults)
 (use-package my-msft :when (eq system-type 'windows-nt))
 (use-package my-mode-line)
-(use-package my-keymaps)
 (use-package my-theme)
-(use-package my-dev)
+
+(use-package my-keymaps)
+(use-package my-clipboard)
+(use-package my-markers)
+
+(use-package my-devel)
 (use-package my-dired)
 (use-package my-org)
 (use-package my-window)
