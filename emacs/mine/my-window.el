@@ -8,6 +8,11 @@
         ("<left>"  . windmove-left)
         ("<right>" . windmove-right)
         ("<up>"    . windmove-up)
+        ("<down>"  . windmove-down))
+  (:repeat-map my-window-repeat-map
+        ("<left>"  . windmove-left)
+        ("<right>" . windmove-right)
+        ("<up>"    . windmove-up)
         ("<down>"  . windmove-down)))
 
 (use-package window
@@ -44,6 +49,9 @@
   (winner-dont-bind-my-keys t)
   :bind
   (:map my-window-map
+        ("u" . winner-undo)
+        ("U" . winner-redo))
+  (:repeat-map my-window-repeat-map
         ("u" . winner-undo)
         ("U" . winner-redo))
   :config

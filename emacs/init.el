@@ -317,6 +317,10 @@
   :config
   (recentf-mode +1))
 
+(use-package repeat
+  :config
+  (repeat-mode +1))
+
 (use-package savehist
   :custom
   (history-delete-duplicates t)
