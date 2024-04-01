@@ -1,6 +1,6 @@
 ;;; init.el -*- lexical-binding: t; -*-
 
-(add-to-list 'load-path (locate-user-emacs-file "mine"))
+(add-to-list 'load-path (locate-user-emacs-file "lisp"))
 
 (use-package my-package)
 
