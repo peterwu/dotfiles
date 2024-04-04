@@ -757,20 +757,48 @@ let g:lion_squeeze_spaces = 1
 
 " lsp
 call s:paq_add('yegappan/lsp', {'as' : 'lsp'})
-
 let lsp_opts = #{autoHighlightDiags: v:true}
+let lsp_servers = []
 
-let lsp_servers = [#{
-            \	  name: 'pylsp',
-            \	  filetype: 'python',
-            \	  path: 'pylsp',
-            \	  args: []
-            \ }]
+if executable('clangd')
+    call add(lsp_servers, #{
+                \ name: 'clangd',
+                \ filetype: ['c', 'cpp'],
+                \ path: 'clangd',
+                \ args: ['--background-index']
+                \ })
+endif
+
+if executable('pylsp')
+    call add(lsp_servers, #{
+                \ name: 'pylsp',
+                \ filetype: 'python',
+                \ path: 'pylsp',
+                \ args: []
+                \ })
+endif
 
 augroup lsp_setup | autocmd!
     autocmd User LspSetup call LspOptionsSet(lsp_opts)
     autocmd User LspSetup call LspAddServer(lsp_servers)
 augroup END
+
+augroup lsp_attached | autocmd!
+    autocmd User LspAttached call s:set_lsp_keymaps()
+augroup END
+
+function! s:set_lsp_keymaps() abort
+    nnoremap <buffer> gd <Cmd>LspGotoDefinition<CR>
+    nnoremap <buffer> gp <Cmd>LspPeekDefinition<CR>
+    nnoremap <buffer> gr <Cmd>LspPeekReferences<CR>
+    nnoremap <buffer> gi <Cmd>LspGotoImpl<CR>
+    nnoremap <buffer> gt <Cmd>LspGotoTypeDef<CR>
+    nnoremap <buffer> gR <Cmd>LspRename<CR>
+    nnoremap <buffer> go <Cmd>LspDocumentSymbol<CR>
+    nnoremap <buffer> [g <Cmd>LspDiag prev<CR>
+    nnoremap <buffer> ]g <Cmd>LspDiag next<CR>
+    nnoremap <buffer> K  <Cmd>LspHover<CR>
+endfunction
 
 " rainbow
 call s:paq_add('luochen1990/rainbow')
