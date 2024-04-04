@@ -210,22 +210,13 @@ xnoremap *     y/\V<C-R>"<CR>
 xnoremap #     y?\V<C-R>"<CR>
 nnoremap &     <Cmd>&&<CR>
 
-" use platform-specific copy/paste cli commands
-if has('linux')
-    let copy_cmd = 'wl-copy'
-    let paste_cmd = 'wl-paste'
-elseif has('mac')
-    let copy_cmd = 'pbcopy'
-    let paste_cmd = 'pbpaste'
-endif
-
 " copy to clipboard
 if has('clipboard')
     nnoremap <silent> <Leader>y  "+y
     xnoremap <silent> <Leader>y  "+y
     nnoremap <silent> <Leader>Y  "+yg_
     nnoremap <silent> <Leader>yy "+y_
-elseif executable(copy_cmd)
+elseif executable('wl-copy')
     vnoremap <silent> <Leader>y  <Cmd>set opfunc=CopyToClipboard<CR>g@
     nnoremap <silent> <Leader>y  <Cmd>set opfunc=CopyToClipboard<CR>g@
     nnoremap <silent> <Leader>Y  <Cmd>set opfunc=CopyToClipboard<CR>g@g_
@@ -264,7 +255,7 @@ elseif executable(copy_cmd)
             let &clipboard = cb_save
         endif
 
-        call system(copy_cmd, getreg(reg))
+        call system('wl-copy', getreg(reg))
 
         call setreg(reg,reg_save,reg_type)
         let &selection = sel_save
@@ -278,11 +269,11 @@ if has('clipboard')
     nnoremap <silent> <Leader>P "+P
     xnoremap <silent> <Leader>p "+p
     xnoremap <silent> <Leader>P "+P
-elseif executable(paste_cmd)
-    nnoremap <silent> <Leader>p <Cmd>let @"=system(paste_cmd)<CR>""p
-    nnoremap <silent> <Leader>P <Cmd>let @"=system(paste_cmd)<CR>""P
-    vnoremap <silent> <Leader>p <Cmd>let @"=system(paste_cmd)<CR>""p
-    vnoremap <silent> <Leader>P <Cmd>let @"=system(paste_cmd)<CR>""P
+elseif executable('wl-paste')
+    nnoremap <silent> <Leader>p <Cmd>let @"=system('wl-paste')<CR>""p
+    nnoremap <silent> <Leader>P <Cmd>let @"=system('wl-paste')<CR>""P
+    vnoremap <silent> <Leader>p <Cmd>let @"=system('wl-paste')<CR>""p
+    vnoremap <silent> <Leader>P <Cmd>let @"=system('wl-paste')<CR>""P
 endif
 
 " force saving files that otherwise require sudoedit
