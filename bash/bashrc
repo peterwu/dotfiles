@@ -8,6 +8,8 @@ if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]; then
     PATH="$HOME/.local/bin:$HOME/bin:$PATH"
 fi
 
+export MANPAGER="vim -c 'set laststatus=0' -M +MANPAGER --not-a-term -"
+
 # Don't put duplicate lines or lines starting with space in the history.
 # See `man bash` for more options.
 HISTCONTROL=ignoreboth
@@ -21,9 +23,6 @@ HISTFILESIZE=20000
 
 # User specific aliases and functions
 alias emacs="emacs -nw"
-
-export VI_HOME="$HOME/.config/vi"
-alias vi="vi -S $VI_HOME/virc"
 
 alias ls="ls --color=auto --group-directories-first --indicator-style=slash --time-style=long-iso -v"
 alias ll="ls -l --classify --size"
