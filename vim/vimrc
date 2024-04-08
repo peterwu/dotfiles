@@ -100,8 +100,7 @@ set wildoptions=pum,tagfile
 " keymaps {{{
 
 " leaders
-let g:mapleader      = " "
-let g:maplocalleader = ","
+let g:mapleader = ' '
 
 " vimrc
 nnoremap <silent> <Leader>cd <Cmd>cd     %:p:h<Bar>pwd<CR>
@@ -285,14 +284,6 @@ nnoremap <Leader>w!
 " terminal
 tnoremap <Esc> <C-\><C-N>
 nnoremap <C-`> <Cmd>belowright terminal<CR>
-
-" diff mode
-if &diff
-    " layout = "(LOCAL,BASE,REMOTE)/MERGED"
-    nnoremap <LocalLeader>g1 <Cmd>diffget LO<CR>
-    nnoremap <LocalLeader>g2 <Cmd>diffget BA<CR>
-    nnoremap <LocalLeader>g3 <Cmd>diffget RE<CR>
-endif
 
 " }}}
 
@@ -633,16 +624,21 @@ function! s:paq_update() abort
         let l:as  = paq[0]
         let l:dir = paq[1].dir
         let l:url = paq[1].url
+        let l:sed_rm_ansi_esc_chars = 'sed
+                    \ -e "s/[^[:print:]]\[[0-9;]*[a-zA-Z]//g"
+                    \ -e "s/[[:cntrl:]]//g"'
 
         " check if it has been git cloned already
         if finddir('.git', l:dir)->empty()
             let l:git_clone_cmd =
                         \ 'git clone --depth=1 ' .. l:url .. ' ' .. l:dir
+                        \ .. '|' .. l:sed_rm_ansi_esc_chars
             silent! let l:git_cmd_result =
                         \ system(l:git_clone_cmd)->split('\n')
         else
             let l:git_pull_cmd =
-                        \ 'git -C ' .. l:dir .. ' ' .. 'pull --depth=1'
+                        \ 'git -C ' .. l:dir .. ' pull --depth=1 ' .. '2>&1'
+                        \ .. '|' .. l:sed_rm_ansi_esc_chars
             silent! let l:git_cmd_result =
                         \ system(l:git_pull_cmd)->split('\n')
         endif
