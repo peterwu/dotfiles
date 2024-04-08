@@ -726,8 +726,6 @@ call s:paq_add('tpope/vim-commentary',
             \ {'as' : 'commentary'})
 call s:paq_add('tommcdo/vim-exchange',
             \ {'as' : 'exchange'})
-call s:paq_add('tpope/vim-fugitive',
-            \ {'as' : 'fugitive'})
 call s:paq_add('machakann/vim-highlightedyank',
             \ {'as' : 'highlighted-yank'})
 call s:paq_add('tpope/vim-repeat',
