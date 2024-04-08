@@ -25,3 +25,6 @@
     prompt = false
     keepBackup = false
     trustExitCode = true
+[alias]
+    co = checkout
+    tree = log --all --graph --decorate --oneline
