@@ -276,10 +276,14 @@ elseif executable('wl-paste')
 endif
 
 " force saving files that otherwise require sudoedit
-nnoremap <Leader>w!
-            \ <Cmd>execute 'silent! write !sudo tee % >/dev/null'
-            \ <Bar>edit!
-            \ <Bar>echo expand('%:p') .. ' saved!'<CR>
+command -nargs=0 SudoWrite call s:sudo_write()
+nnoremap <Leader>w! <Cmd>SudoWrite<CR>
+
+function s:sudo_write()
+    silent! write !sudo tee % > /dev/null
+    edit!
+    echo expand('%:p') .. ' saved!'
+endfunction
 
 " terminal
 tnoremap <Esc> <C-\><C-N>
