@@ -287,7 +287,7 @@ endfunction
 
 " terminal
 tnoremap <Esc> <C-\><C-N>
-nnoremap <C-`> <Cmd>belowright terminal<CR>
+nnoremap <C-`> <Cmd>belowright terminal bash<CR>
 
 " }}}
 
