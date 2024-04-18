@@ -38,6 +38,22 @@
             (list (format (format "%%%ds" available-width-right) ""))
             right)))
 
+(defvar-local my-mode-line-window-status-tag
+    '(:eval
+      (let ((tag " ")
+            (selected (mode-line-window-selected-p))
+            (dedicated (window-dedicated-p)))
+        (cond
+         ((and selected dedicated)
+          (propertize tag 'face '(:inherit modus-themes-active-red)))
+         ((and selected (not dedicated))
+          (propertize tag 'face '(:inherit modus-themes-active-blue)))
+         ((and (not selected) dedicated)
+          (propertize tag 'face '(:inherit modus-themes-subtle-red)))
+         ((and (not selected) (not dedicated))
+          (propertize tag 'face '(:inherit modus-themes-subtle-blue)))))))
+(put 'my-mode-line-window-status-tag 'risky-local-variable t)
+
 (defvar-local my-mode-line-buffer-identification
     '(:eval (if (buffer-file-name)
                 (propertize (my-ellipsize-file-name
@@ -155,6 +171,7 @@
           (my-mode-line-render
            ;; left
            (list
+            my-mode-line-window-status-tag
             " "
             mode-line-mule-info
             mode-line-client
