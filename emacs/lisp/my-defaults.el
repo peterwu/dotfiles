@@ -14,6 +14,7 @@
 (setopt auto-save-list-file-prefix nil)
 (setopt confirm-kill-emacs #'yes-or-no-p)
 (setopt fill-column 80)
+(setopt help-window-select t)
 (setopt indent-tabs-mode nil)
 (setopt inhibit-startup-buffer-menu t)
 (setopt inhibit-startup-echo-area-message (user-login-name))
