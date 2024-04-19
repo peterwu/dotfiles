@@ -71,42 +71,48 @@
 
 (defun my-window-numbering-update ()
   (setq my-window-numbering-windows-alist
-        (let ((result)
-              (index 1)
-              (windows (window-list nil 0 (frame-first-window))))
-          (dolist (window windows result)
-            (setq result (append result `(,(cons index window))))
-            (setq index (1+ index))))))
+        (seq-map-indexed (lambda (elt idx)
+                           (cons (1+ idx) elt))
+                         (window-list nil 0 (frame-first-window)))))
 
-(add-hook 'minibuffer-setup-hook 'my-window-numbering-update)
+(add-hook 'minibuffer-setup-hook
+          #'my-window-numbering-update)
 (add-hook 'window-configuration-change-hook
-          'my-window-numbering-update)
+          #'my-window-numbering-update)
+
 (dolist (frame (frame-list))
   (select-frame frame)
   (my-window-numbering-update))
 
 (defun my-select-window (&optional number)
-  (interactive "p")
-  (my-window-numbering-select-window number))
+  (interactive "P")
+  (if (numberp number)
+      (my-window-numbering-select-window number)
+    (other-window 1)))
 
-;; define interactive functions for keymap
-(dolist (i (number-sequence 1 9))
-  (eval `(defun ,(intern (format "my-select-window-%s" i)) ()
-           ,(format "Select the window with number %i." i)
-           (interactive)
-           (my-select-window ,i))))
+(defmacro my-select-window-n-keybind (n)
+  (let ((my-select-window-n (intern (format "my-select-window-%s" n))))
+    `(progn
+       (defun ,my-select-window-n ()
+         ,(format "Select the window with number %i." n)
+         (interactive)
+         (my-select-window ,n))
+
+       (bind-keys
+        :map my-window-map
+        (,(number-to-string n) . ,my-select-window-n)
+        :repeat-map my-window-repeat-map
+        (,(number-to-string n) . ,my-select-window-n)))))
 
 ;; key binds
-(bind-key "w" #'my-select-window my-window-map)
+(bind-keys
+ :map my-window-map
+ ("w" . my-select-window)
+ :repeat-map my-window-repeat-map
+ ("w" . my-select-window))
 
-(bind-key "1" #'my-select-window-1 my-window-map)
-(bind-key "2" #'my-select-window-2 my-window-map)
-(bind-key "3" #'my-select-window-3 my-window-map)
-(bind-key "4" #'my-select-window-4 my-window-map)
-(bind-key "5" #'my-select-window-5 my-window-map)
-(bind-key "6" #'my-select-window-6 my-window-map)
-(bind-key "7" #'my-select-window-7 my-window-map)
-(bind-key "8" #'my-select-window-8 my-window-map)
-(bind-key "9" #'my-select-window-9 my-window-map)
+(dolist (n (number-sequence 1 9))
+  (eval
+   `(my-select-window-n-keybind ,n)))
 
 (provide 'my-window)
