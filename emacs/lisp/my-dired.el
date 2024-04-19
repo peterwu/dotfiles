@@ -60,19 +60,6 @@
 (defvar my-dired-explorer-window nil)
 (defvar my-dired-explorer-window-width-in-percentage 30)
 
-(defvar-local my-dired-explorer-mode-line-dedicated-window-tag
-    '(:eval
-      (let ((tag "  ")
-            (selected (mode-line-window-selected-p)))
-        (cond (selected
-               (propertize tag 'face '(:inherit modus-themes-active-red)))
-              (t
-               (propertize tag 'face `(:foreground
-                                       ,(face-background 'mode-line-inactive)
-                                       :background
-                                       ,(face-background 'modus-themes-subtle-red))))))))
-(put 'my-dired-explorer-mode-line-dedicated-window-tag 'risky-local-variable t)
-
 (defvar-local my-dired-explorer-mode-line-directory-identification
   '(:eval (propertize (concat ":" (my-ellipsize-file-name
                                    (abbreviate-file-name default-directory)
@@ -89,9 +76,9 @@
   (setq-local mode-line-format
               '(:eval
                 (list
-                  my-dired-explorer-mode-line-dedicated-window-tag
-                  " "
-                  my-dired-explorer-mode-line-directory-identification)))
+                 my-mode-line-window-status-tag
+                 " "
+                 my-dired-explorer-mode-line-directory-identification)))
   (force-mode-line-update)
 
   (dired-advertise))

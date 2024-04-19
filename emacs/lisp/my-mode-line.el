@@ -40,14 +40,16 @@
 
 (defvar-local my-mode-line-window-status-tag
     '(:eval
-      (let ((tag " ")
+      (let ((tag (concat " "
+                         (number-to-string (my-window-numbering-get-number))
+                         " "))
             (selected (mode-line-window-selected-p))
             (dedicated (window-dedicated-p)))
         (cond
          ((and selected dedicated)
-          (propertize tag 'face '(:inherit modus-themes-active-red)))
+          (propertize tag 'face '(:inherit modus-themes-active-red :weight bold)))
          ((and selected (not dedicated))
-          (propertize tag 'face '(:inherit modus-themes-active-blue)))
+          (propertize tag 'face '(:inherit modus-themes-active-blue :weight bold)))
          ((and (not selected) dedicated)
           (propertize tag 'face '(:inherit modus-themes-subtle-red)))
          ((and (not selected) (not dedicated))
