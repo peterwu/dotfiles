@@ -2,7 +2,21 @@
 
 " commons {{{
 
-const s:vim_home = expand('<sfile>:p:h')
+const s:home = getenv('HOME')
+for [vim_var, env_var, default_dir] in [
+            \ ['s:vim_cache_home',  'XDG_CACHE_HOME',  '.cache'],
+            \ ['s:vim_config_home', 'XDG_CONFIG_HOME', '.config'],
+            \ ['s:vim_data_home',   'XDG_DATA_HOME',   '.local/share'],
+            \ ['s:vim_state_home',  'XDG_STATE_HOME',  '.local/state']
+            \ ]
+    let s:env_var = getenv(env_var)
+    let s:env_var_home = s:env_var ? s:env_var : s:home .. '/' .. default_dir
+    let s:vim_var_home = s:env_var_home .. '/vim'
+
+    call mkdir(s:vim_var_home, 'p', 0o700)
+
+    execute ('const ' .. vim_var .. '="' .. s:vim_var_home .. '"')
+endfor
 
 function! s:highlight(group, fg='NONE', bg='NONE', style='NONE') abort
     execute 'highlight '         .. a:group
@@ -27,22 +41,19 @@ source $VIMRUNTIME/defaults.vim
 " ---------
 " work dirs
 " ---------
-call mkdir(s:vim_home .. '/backup', 'p', 0o700)
-call mkdir(s:vim_home .. '/cache',  'p', 0o700)
-call mkdir(s:vim_home .. '/swap',   'p', 0o700)
-call mkdir(s:vim_home .. '/undo',   'p', 0o700)
-call mkdir(s:vim_home .. '/view',   'p', 0o700)
+call mkdir(s:vim_state_home .. '/swap', 'p', 0o700)
+call mkdir(s:vim_state_home .. '/undo', 'p', 0o700)
+call mkdir(s:vim_state_home .. '/view', 'p', 0o700)
 
 " -------
 " options
 " -------
 set autoindent
 set autoread
-let &backupdir=s:vim_home .. '/backup'
 set complete-=i
 set completeopt=menu,menuone,noinsert,noselect
 set cursorline
-let &directory=s:vim_home .. '/swap'
+let &directory=s:vim_state_home .. '/swap'
 set encoding=utf-8
 set expandtab
 set fileformats=unix,dos,mac
@@ -86,12 +97,12 @@ set termguicolors
 set textwidth=80
 set timeoutlen=777
 set ttimeoutlen=77
-let &undodir=s:vim_home .. '/undo'
+let &undodir=s:vim_state_home .. '/undo'
 set undofile
-let &viewdir=s:vim_home .. '/view'
+let &viewdir=s:vim_state_home .. '/view'
 set viewoptions=cursor,folds
 set viminfo=%,<800,'10,/50,:100,h,f0
-let &viminfofile=s:vim_home .. '/cache/viminfo'
+let &viminfofile=s:vim_state_home .. '/viminfo'
 set virtualedit=block
 set wildoptions=pum,tagfile
 
@@ -595,8 +606,9 @@ endfunction
 " plugins {{{
 
 let s:package = 'plugged'
-let s:package_start_dir = s:vim_home .. '/pack/' .. s:package .. '/start'
-let s:package_opt_dir   = s:vim_home .. '/pack/' .. s:package .. '/opt'
+let &packpath = &packpath->substitute(&runtimepath->split(',')[0], s:vim_data_home, 'g')
+let s:package_start_dir = s:vim_data_home .. '/pack/' .. s:package .. '/start'
+let s:package_opt_dir   = s:vim_data_home .. '/pack/' .. s:package .. '/opt'
 
 " paq:
 " {
