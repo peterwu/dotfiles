@@ -58,18 +58,23 @@
   (winner-mode +1))
 
 ;; window numbering
-(defvar my-window-numbering-indexed-windows-alist nil)
+(defvar my-window-numbering-indexed-windows-alist nil
+  "This alist keeps track of the displayed windows on the selected frame
+in the form of ((index . #window-name) ... ), where index begins at 1.")
 
 (defun my-window-numbering-get-number (&optional window)
+  "Return the number of the WINDOW. If WINDOW is omitted, the currently selected window is assumed."
   (let ((window (or window (selected-window))))
     (car (rassq window my-window-numbering-indexed-windows-alist))))
 
 (defun my-window-numbering-select-window (number)
+  "Select the window indicated by NUMBER."
   (let ((window (cdr (assq number my-window-numbering-indexed-windows-alist))))
     (when (window-live-p window)
       (select-window window))))
 
 (defun my-window-numbering-update ()
+  "Update the window numbers."
   (setq my-window-numbering-indexed-windows-alist
         (seq-map-indexed (lambda (elt idx)
                            (cons (1+ idx) elt))
@@ -85,12 +90,14 @@
   (my-window-numbering-update))
 
 (defun my-select-window (&optional number)
+  "Select window by NUMBER. If NUMBER is omitted, the next window is selected."
   (interactive "P")
   (if (numberp number)
       (my-window-numbering-select-window number)
     (other-window 1)))
 
 (defmacro my-select-window-n-keybind (n)
+  "Create my-select-window-N functions and respective key binds, where N indicates the number assigned to window."
   (let ((my-select-window-n (intern (format "my-select-window-%s" n))))
     `(progn
        (defun ,my-select-window-n ()
