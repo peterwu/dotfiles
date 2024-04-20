@@ -57,17 +57,21 @@
   (wdired-create-parent-directories t))
 
 ;; my-dired-explorer
-(defvar my-dired-explorer-window nil)
-(defvar my-dired-explorer-window-width-in-percentage 30)
+(defvar my-dired-explorer-window nil
+  "Define the window as my-dired-explorer.")
+(defvar my-dired-explorer-window-width-in-percentage 30
+  "Set the default window width in percentage.")
 
 (defvar-local my-dired-explorer-mode-line-directory-identification
   '(:eval (propertize (concat ":" (my-ellipsize-file-name
                                    (abbreviate-file-name default-directory)
                                    32))
-                      'face '(:inherit mode-line-buffer-id))))
+                      'face '(:inherit mode-line-buffer-id)))
+  "Return an ellipsized file name when applicable.")
 (put 'my-dired-explorer-mode-line-directory-identification 'risky-local-variable t)
 
 (defun my-dired-explorer-show-directory (dir)
+  "Display the contents of DIR in my-dired-explorer window."
   (interactive)
   (dired dir)
 
@@ -84,6 +88,7 @@
   (dired-advertise))
 
 (defun my-dired-explorer-find-file-at-point ()
+  "Open the file under point."
   (interactive)
   (with-selected-window my-dired-explorer-window
     (let ((buffer (current-buffer))
@@ -93,6 +98,7 @@
         (kill-buffer buffer)))))
 
 (defun my-dired-explorer-mouse-find-file-at-point (event)
+  "Open the file under mouse."
   (interactive "e")
   (with-selected-window my-dired-explorer-window
     (let ((pos (posn-point (event-end event))))
@@ -100,6 +106,7 @@
       (call-interactively #'my-dired-explorer-find-file-at-point))))
 
 (defun my-dired-explorer-find-up-directory ()
+  "Go up one level of the directory."
   (interactive)
   (with-selected-window my-dired-explorer-window
     (let ((buffer (current-buffer))
@@ -110,12 +117,14 @@
         (kill-buffer buffer)))))
 
 (defun my-dired-explorer-find-file (file)
+  "Open the FILE."
   (interactive)
   (if (file-directory-p file)
       (my-dired-explorer-show-directory file)
     (call-interactively #'dired-find-file-other-window)))
 
 (defun my-dired-explorer-show-window ()
+  "Show my-dired-explorer window."
   (interactive)
   (unless (window-live-p my-dired-explorer-window)
     (setq my-dired-explorer-window
@@ -132,6 +141,7 @@
     (other-window 1)))
 
 (defun my-dired-explorer-hide-window ()
+  "Hide my-dired-explorer window."
   (interactive)
   (when (window-live-p my-dired-explorer-window)
     (with-selected-window my-dired-explorer-window
@@ -140,6 +150,7 @@
 
 ;;;###autoload
 (defun my-dired-explorer-toggle-window ()
+  "Toggle the appearance of my-dired-explorer window."
   (interactive)
   (if (window-live-p my-dired-explorer-window)
       (my-dired-explorer-hide-window)
@@ -167,6 +178,7 @@
   (dired-hide-details-mode +1))
 
 (defun my-dired-explorer-advice (orig-fn &rest args)
+  "Set my-dired-explorer window as dedicated after ORIG-FN is invoked with ARGs."
   (when (window-live-p my-dired-explorer-window)
     (set-window-dedicated-p my-dired-explorer-window nil))
   (apply orig-fn args)
