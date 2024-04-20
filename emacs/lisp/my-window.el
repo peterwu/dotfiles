@@ -58,19 +58,19 @@
   (winner-mode +1))
 
 ;; window numbering
-(defvar my-window-numbering-windows-alist nil)
+(defvar my-window-numbering-indexed-windows-alist nil)
 
 (defun my-window-numbering-get-number (&optional window)
   (let ((window (or window (selected-window))))
-    (car (rassq window my-window-numbering-windows-alist))))
+    (car (rassq window my-window-numbering-indexed-windows-alist))))
 
 (defun my-window-numbering-select-window (number)
-  (let ((window (cdr (assq number my-window-numbering-windows-alist))))
+  (let ((window (cdr (assq number my-window-numbering-indexed-windows-alist))))
     (when (window-live-p window)
       (select-window window))))
 
 (defun my-window-numbering-update ()
-  (setq my-window-numbering-windows-alist
+  (setq my-window-numbering-indexed-windows-alist
         (seq-map-indexed (lambda (elt idx)
                            (cons (1+ idx) elt))
                          (window-list nil 0 (frame-first-window)))))
