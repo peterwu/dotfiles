@@ -1,40 +1,47 @@
 ;; my simulation of vim visual commands
 (defun my-mark-line ()
+  "Mark the visual line under point."
   (interactive)
   (beginning-of-visual-line)
   (push-mark nil nil t)
   (end-of-visual-line))
 
 (defun my-mark-letter ()
+  "Mark the letter under point."
   (interactive)
   (push-mark nil nil t)
   (forward-char))
 
 (defun my-mark-word ()
+  "Mark the word under point."
   (interactive)
   (backward-word)
   (push-mark nil nil t)
   (forward-word))
 
 (defun my-mark-sentence ()
+  "Mark the sentence under point."
   (interactive)
   (backward-sentence)
   (push-mark nil nil t)
   (forward-sentence))
 
 (defun my-mark-paragraph ()
+  "Mark the paragraph under point."
   (interactive)
   (backward-paragraph)
   (push-mark nil nil t)
   (forward-paragraph))
 
 (defun my-mark-buffer ()
+  "Mark the entire buffer."
   (interactive)
   (beginning-of-buffer)
   (push-mark nil nil t)
   (end-of-buffer))
 
 (defun my-mark-sexp ()
+  "Mark the sexp under point."
   (interactive)
   (backward-sexp)
   (push-mark nil nil t)
@@ -48,6 +55,8 @@
 
 ;; https://github.com/mkleehammer/surround/blob/main/surround.el
 (defun my-find-char-nestable (char other dir)
+  "Find the matching CHAR and OTHER.
+If DIR is 1, search forward; if DIR is -1, search backward."
   (if (looking-at (regexp-quote char))
       (when (= dir 1)
         (forward-char 1))
@@ -82,9 +91,11 @@
     (square-bracket . ("[" "]"))
 
     (single-quote . ("\'" "\'"))
-    (double-quote . ("\"" "\""))))
+    (double-quote . ("\"" "\"")))
+  "Define a list of opening and closing delimiters.")
 
 (defmacro my-mark-delimiter (delimiter)
+  "Mark the text between DELIMITERs."
   (let ((mark-fn (intern (concat "my-mark-" (symbol-name delimiter)))))
     `(defun ,mark-fn (&optional arg)
        (interactive "*P")
@@ -96,6 +107,7 @@
               (p1 (point))
               (p2 (point)))
 
+         ;; If opening and closing delimiters are the same, perform a simple search.
          (if (string= open-delimiter close-delimiter)
              (progn
                (when (search-backward open-delimiter nil t 1)
@@ -108,6 +120,7 @@
                  (unless arg (backward-char))
                  (setq p2 (point))))
 
+           ;; If opening and closing delimiters are different, perform a nestable search.
            (progn
              (goto-char (my-find-char-nestable open-delimiter close-delimiter -1))
              (unless arg (forward-char))
