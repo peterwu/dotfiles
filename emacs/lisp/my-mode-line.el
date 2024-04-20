@@ -2,6 +2,7 @@
 
 ;; mode-line
 (defun my-ellipsize-file-name (file-name max-length)
+  "Ellipsize FILE-NAME if its length exceeds MAX-LENGTH."
   (let* ((ellipsis (if (char-displayable-p ?…) "…" "..."))
          (left (/ max-length 2))
          (center (length ellipsis))
@@ -53,7 +54,12 @@
          ((and (not selected) dedicated)
           (propertize tag 'face '(:inherit modus-themes-subtle-red)))
          ((and (not selected) (not dedicated))
-          (propertize tag 'face '(:inherit modus-themes-subtle-blue)))))))
+          (propertize tag 'face '(:inherit modus-themes-subtle-blue))))))
+  "Return the status for window.
+Active red suggests the window is both selected and dedicated;
+Active blue suggests the window is selected but not dedicated;
+Subtle red suggests the window is not selected but dedicated;
+Subtle blue suggests the window is neither selected nor dedicated.")
 (put 'my-mode-line-window-status-tag 'risky-local-variable t)
 
 (defvar-local my-mode-line-buffer-identification
@@ -67,7 +73,8 @@
               (propertize (buffer-name)
                           'help-echo "Buffer name"
                           'face '(:inherit mode-line-buffer-id)
-                          'mouse-face 'mode-line-highlight))))
+                          'mouse-face 'mode-line-highlight)))
+  "Return an enhanced buffer-identification with ellipsized file name when the file name is too long.")
 (put 'my-mode-line-buffer-identification 'risky-local-variable t)
 
 (defvar-local my-mode-line-vc-mode
@@ -124,22 +131,19 @@
                   (propertize git-mode-line-status
                               'face '(:inherit vc-missing-state :weight bold)
                               'mouse-face 'mode-line-highlight))
-                 ((t git-mode-line-status)))))))
+                 ((t git-mode-line-status))))))
+  "Return git status.")
 (put 'my-mode-line-vc-mode 'risky-local-variable t)
 
-(defvar-local my-mode-line-centre-place-holder "")
+(defvar-local my-mode-line-centre-place-holder ""
+  "Serve as a place holder for centrally aligned mode-line elements.")
 (put 'my-mode-line-centre-place-holder 'risky-local-variable t)
-
-(defvar-local my-mode-line-position
-    '(:propertize "(%l,%C)"
-                  help-echo "(Line,Column)"
-                  mouse-face mode-line-highlight))
-(put 'my-mode-line-position 'risky-local-variable t)
 
 (defvar-local my-mode-line-buffer-size
     '(:propertize "%I"
                   help-echo "Size"
-                  mouse-face mode-line-highlight))
+                  mouse-face mode-line-highlight)
+  "Return the size of the buffer.")
 (put 'my-mode-line-buffer-size 'risky-local-variable t)
 
 (defvar-local my-mode-line-modes
@@ -150,7 +154,8 @@
                      (setq mode-name
                            (propertize mode-name
                                        'face '(:inherit mode-line-emphasis))))
-                 minions-mode-line-modes)))
+                 minions-mode-line-modes))
+  "Return the modes information by utilizing the minions package.")
 (put 'my-mode-line-modes 'risky-local-variable t)
 
 (defvar-local my-mode-line-percent-position
@@ -165,7 +170,8 @@
                (t
                 (propertize (concat p  "%%")
                             'help-echo "Position"
-                            'mouse-face 'mode-line-highlight))))))
+                            'mouse-face 'mode-line-highlight)))))
+  "Return a slightly modified position information where Bottom is renamed to Bot.")
 (put 'my-mode-line-percent-position 'risky-local-variable t)
 
 (setopt mode-line-format
