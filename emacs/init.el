@@ -11,7 +11,7 @@
 
 (use-package my-keymaps)
 (use-package my-clipboard)
-(use-package my-markers)
+(use-package my-editing)
 
 (use-package my-devel)
 (use-package my-dired)

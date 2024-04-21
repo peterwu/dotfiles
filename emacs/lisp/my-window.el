@@ -105,18 +105,16 @@ in the form of ((index . #window-name) ... ), where index begins at 1.")
          (interactive)
          (my-select-window ,n))
 
-       (bind-keys
-        :map my-window-map
-        (,(number-to-string n) . ,my-select-window-n)
-        :repeat-map my-window-repeat-map
-        (,(number-to-string n) . ,my-select-window-n)))))
+       (bind-keys :map my-window-map
+                  (,(number-to-string n) . ,my-select-window-n)
+                  :repeat-map my-window-repeat-map
+                  (,(number-to-string n) . ,my-select-window-n)))))
 
 ;; key binds
-(bind-keys
- :map my-window-map
- ("w" . my-select-window)
- :repeat-map my-window-repeat-map
- ("w" . my-select-window))
+(bind-keys :map my-window-map
+           ("w" . my-select-window)
+           :repeat-map my-window-repeat-map
+           ("w" . my-select-window))
 
 (dolist (n (number-sequence 1 9))
   (eval
