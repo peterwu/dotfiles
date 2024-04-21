@@ -313,7 +313,7 @@
   (recentf-exclude '(".gz" ".xz" ".zip" "/elpa/" "/ssh:" "/sudo:"))
   (recentf-max-saved-items 50)
   :bind
-  ("C-x C-r" . recentf-open)
+  ("C-c C-r" . recentf-open)
   :config
   (recentf-mode +1))
 
