@@ -10,10 +10,6 @@
 ;; C-c SPC : mark textobj
 ;; C-c y   : yank/copy textobj to kill ring
 ;; C-c M-y : yank/copy textobj to system clipboard
-;; C-c p   : paste after point
-;; C-c P   : paste before point
-;; C-c M-p : paste after point from system clipboard
-;; C-c M-P : paste before point from system clipboard
 
 ;; For example:
 ;; C-c d w       : delete a word
@@ -245,9 +241,9 @@ If DIR is 1, search forward; if DIR is -1, search backward."
               (end (cdr textobj)))
          (cond
           ((eq ',action 'mark)
-           (goto-char start)
-           (push-mark nil nil t)
-           (goto-char end))
+           (push-mark start nil t)
+           (goto-char end)
+           (exchange-point-and-mark))
 
           ((eq ',action 'delete)
            (delete-region start end))
