@@ -16,10 +16,10 @@
 ;; C-c M-P : paste before point from system clipboard
 
 ;; For example:
-;; C-c d w : delete a word
+;; C-c d w       : delete a word
 ;; C-u 3 C-c d w : delete 3 words
-;; C-c y " : yank text surrounded by a pair of double quotes
-;; C-u 3 C-c y " : yank text surrounded by the region after expanded 3 times
+;; C-c y "       : yank text surrounded by a pair of double quotes
+;; C-u 3 C-c y " : yank text surrounded by a pair of double quotes after being expanded 3 times
 ;;
 ;; Look at this example:
 ;; ( ( ( a b c _ ) ) )
@@ -47,7 +47,7 @@
 ;; s : sentence
 ;; p : paragraph
 ;; x : sexp
-;; for line, simply repeat the last used letter
+;; for line, simply repeat the last used key
 ;; e.g.
 ;; C-c SPC SPC : mark the line
 ;; C-c d d     : delete the line
@@ -63,6 +63,24 @@
     (single-quote . ("\'" "\'"))
     (double-quote . ("\"" "\"")))
   "Define a list of opening and closing delimiters.")
+
+(defconst my-editing--thing-list
+  '(letter
+    word
+    line
+    sentence
+    paragraph
+    sexp)
+  "Define a list of things.")
+
+(defconst my-editing--action-list
+  '(mark
+    delete
+    kill
+    KILL
+    yank
+    YANK)
+  "Define a list of actions.")
 
 (defun my-editing--find-distance (p1 p2)
   "Return the absolute distance between the positions P1 to P2."
@@ -108,8 +126,8 @@ If DIR is 1, search forward; if DIR is -1, search backward."
        (interactive)
 
        (let* ((delimiters ',(alist-get delimiter my-editing--delimiter-alist))
-              (open-delimiter (nth 0 delimiters))
-              (close-delimiter (nth 1 delimiters))
+              (open-delimiter (car delimiters))
+              (close-delimiter (cadr delimiters))
               (point (point))
               (start)
               (end))
@@ -142,7 +160,7 @@ If DIR is 1, search forward; if DIR is -1, search backward."
 (mapc (lambda (delimiter)
         (eval
          `(my-editing--textobj-delimiter ,delimiter)))
-      (mapcar 'car my-editing--delimiter-alist))
+      (mapcar #'car my-editing--delimiter-alist))
 
 (defun my-editing--textobj-letter (&optional n)
   "Return N letters."
@@ -216,9 +234,8 @@ If DIR is 1, search forward; if DIR is -1, search backward."
       (setq end (point)))
     (cons start end)))
 
-;; action : mark, delete, kill, yank
-;; textobj : letter, word, line, sentence, paragraph, sexp
 (defmacro my-editing-action-textobj (action textobj)
+  "Generate my-editing-action-textobj functions."
   (let ((edit-fn (intern (format "my-editing-%s-%s" (symbol-name action) (symbol-name textobj))))
         (textobj-fn (intern (format "my-editing--textobj-%s" (symbol-name textobj)))))
     `(defun ,edit-fn (&optional n)
@@ -238,25 +255,24 @@ If DIR is 1, search forward; if DIR is -1, search backward."
           ((eq ',action 'kill)
            (kill-region start end))
 
+          ((eq ',action 'KILL)
+           (my-copy-to-clipboard start end))
+
           ((eq ',action 'yank)
-           (kill-ring-save start end)))))))
+           (kill-ring-save start end))
+
+          ((eq ',action 'YANK)
+           (my-copy-to-clipboard start end)))))))
 
 ;; Generate all the action-textobj paired functions
-(let ((actions '(mark
-                 delete
-                 kill
-                 yank))
+(let ((actions my-editing--action-list)
       (textobjs (append
                  ;; delimiters
-                 (mapcar 'car my-editing--delimiter-alist)
+                 (mapcar #'car my-editing--delimiter-alist)
 
                  ;; other text objects
-                 '(letter
-                   word
-                   line
-                   sentence
-                   paragraph
-                   sexp))))
+                 my-editing--thing-list)))
+
   (mapc (lambda (action)
           (mapc (lambda (textobj)
                   (eval
@@ -264,7 +280,56 @@ If DIR is 1, search forward; if DIR is -1, search backward."
                 textobjs))
         actions))
 
-;; key binds
+;; Create a macro to ease key binds
+(defmacro my-editing--bind-keys (action line-key)
+  (let ((map (intern (format "my-%s-map" (symbol-name action))))
 
+        ;; my-editing-action-textobj
+        (my-editing-action-line (intern (format "my-editing-%s-line" action)))
+        (my-editing-action-letter (intern (format "my-editing-%s-letter" action)))
+        (my-editing-action-word (intern (format "my-editing-%s-word" action)))
+        (my-editing-action-sentence (intern (format "my-editing-%s-sentence" action)))
+        (my-editing-action-paragraph (intern (format "my-editing-%s-paragraph" action)))
+        (my-editing-action-sexp (intern (format "my-editing-%s-sexp" action)))
+
+        (my-editing-action-single-quote (intern (format "my-editing-%s-single-quote" action)))
+        (my-editing-action-double-quote (intern (format "my-editing-%s-double-quote" action)))
+        (my-editing-action-angle-bracket (intern (format "my-editing-%s-angle-bracket" action)))
+        (my-editing-action-curly-bracket (intern (format "my-editing-%s-curly-bracket" action)))
+        (my-editing-action-round-bracket (intern (format "my-editing-%s-round-bracket" action)))
+        (my-editing-action-square-bracket (intern (format "my-editing-%s-square-bracket" action))))
+
+    `(bind-keys :map ,map
+                (,line-key . ,my-editing-action-line)
+
+                ("l" . ,my-editing-action-letter)
+                ("w" . ,my-editing-action-word)
+                ("s" . ,my-editing-action-sentence)
+                ("p" . ,my-editing-action-paragraph)
+                ("x" . ,my-editing-action-sexp)
+
+                ("\'" . ,my-editing-action-single-quote)
+                ("\"" . ,my-editing-action-double-quote)
+                ("<"  . ,my-editing-action-angle-bracket)
+                (">"  . ,my-editing-action-angle-bracket)
+                ("{"  . ,my-editing-action-curly-bracket)
+                ("}"  . ,my-editing-action-curly-bracket)
+                ("("  . ,my-editing-action-round-bracket)
+                (")"  . ,my-editing-action-round-bracket)
+                ("["  . ,my-editing-action-square-bracket)
+                ("]"  . ,my-editing-action-square-bracket))))
+
+;; Bind keys to action and its line-key performed on the line textobj
+(mapc (lambda (cons)
+        (let ((action (car cons))
+              (line-key (cdr cons)))
+          (eval
+           `(my-editing--bind-keys ,action ,line-key))))
+      '((mark   . "SPC")
+        (delete . "d")
+        (kill   . "k")
+        (KILL   . "M-k")
+        (yank   . "y")
+        (YANK   . "M-y")))
 
 (provide 'my-editing)
