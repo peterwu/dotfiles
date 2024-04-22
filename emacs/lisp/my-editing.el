@@ -199,7 +199,7 @@ If DIR is 1, search forward; if DIR is -1, search backward."
       (beginning-of-visual-line)
       (setq beg (point))
       (end-of-visual-line n)
-      (setq end (point)))
+      (setq end (1+ (point))))
     (cons beg end)))
 
 (defun my-editing--textobj-sentence (&optional n)
