@@ -378,39 +378,43 @@ If DIR is 1, search forward; if DIR is -1, search backward."
 (defun my-editing-surround-change (delimiter1 delimiter2)
   "Change surrounding DELIMITER1 to DELIMITER2."
   (interactive "cChange surround from:\ncChange surround to:")
-  (let* ((cons1 (my-editing--get-delimiter-cons (string delimiter1)))
-         (textobj1 (symbol-name (car cons1)))
+  (save-excursion
+    (let* ((cons1 (my-editing--get-delimiter-cons (string delimiter1)))
+           (textobj1 (symbol-name (car cons1)))
 
-         (cons2 (my-editing--get-delimiter-cons (string delimiter2)))
-         (pair2 (cdr cons2))
-         (opening2 (car pair2))
-         (closing2 (cadr pair2))
+           (cons2 (my-editing--get-delimiter-cons (string delimiter2)))
+           (pair2 (cdr cons2))
+           (opening2 (car pair2))
+           (closing2 (cadr pair2))
 
-         (textobj1-fn (intern (format "my-editing--textobj-%s" textobj1)))
-         (bounds (funcall textobj1-fn 1))
-         (beg (car bounds))
-         (end (cdr bounds)))
-    (goto-char end)
-    (delete-char -1)
-    (insert closing2)
-    (goto-char beg)
-    (delete-char 1)
-    (insert opening2)))
+           (textobj1-fn (intern (format "my-editing--textobj-%s" textobj1)))
+           (bounds (funcall textobj1-fn 1))
+           (beg (car bounds))
+           (end (cdr bounds)))
+
+      (goto-char end)
+      (delete-char -1)
+      (insert closing2)
+      (goto-char beg)
+      (delete-char 1)
+      (insert opening2))))
 
 (defun my-editing-surround-delete (delimiter)
   "Delete surrounding DELIMITERs."
   (interactive "cDelete surround:")
-  (let* ((cons (my-editing--get-delimiter-cons (string delimiter)))
-         (textobj (symbol-name (car cons)))
-         (textobj-fn (intern (format "my-editing--textobj-%s" textobj)))
-         (bounds (funcall textobj-fn 1))
-         (beg (car bounds))
-         (end (cdr bounds)))
-    (goto-char end)
-    (delete-char -1)
+  (save-excursion
+    (let* ((cons (my-editing--get-delimiter-cons (string delimiter)))
+           (textobj (symbol-name (car cons)))
+           (textobj-fn (intern (format "my-editing--textobj-%s" textobj)))
+           (bounds (funcall textobj-fn 1))
+           (beg (car bounds))
+           (end (cdr bounds)))
 
-    (goto-char beg)
-    (delete-char 1)))
+      (goto-char end)
+      (delete-char -1)
+
+      (goto-char beg)
+      (delete-char 1))))
 
 (defmacro my-editing--surround (textobj)
   "Surround textobj."
@@ -423,19 +427,21 @@ If DIR is 1, search forward; if DIR is -1, search backward."
        ,docstring
        (interactive "cSurround with:\nP")
 
-       (let* ((cons (my-editing--get-delimiter-cons (string delimiter)))
-              (pair (cdr cons))
-              (opening (car pair))
-              (closing (cadr pair))
+       (save-excursion
+         (let* ((cons (my-editing--get-delimiter-cons (string delimiter)))
+                (pair (cdr cons))
+                (opening (car pair))
+                (closing (cadr pair))
 
-              (textobj-fn (intern (format "my-editing--textobj-%s" ,textobj)))
-              (bounds (funcall textobj-fn arg))
-              (beg (car bounds))
-              (end (cdr bounds)))
-         (goto-char end)
-         (insert closing)
-         (goto-char beg)
-         (insert opening)))))
+                (textobj-fn (intern (format "my-editing--textobj-%s" ,textobj)))
+                (bounds (funcall textobj-fn arg))
+                (beg (car bounds))
+                (end (cdr bounds)))
+
+           (goto-char end)
+           (insert closing)
+           (goto-char beg)
+           (insert opening))))))
 
 (mapc (lambda (textobj)
         (eval
