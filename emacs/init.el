@@ -5,7 +5,7 @@
 (use-package my-package)
 
 (use-package my-defaults)
-(use-package my-msft :when (eq system-type 'windows-nt))
+(use-package my-platforms)
 (use-package my-mode-line)
 (use-package my-theme)
 
