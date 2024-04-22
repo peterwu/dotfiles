@@ -84,6 +84,7 @@
          (a2 (abs (or p2 most-positive-fixnum))))
     (- (max a1 a2) (min a1 a2))))
 
+;; https://github.com/mkleehammer/surround/blob/main/surround.el
 (defun my-editing--find-char-nestable (char other dir)
   "Find the matching CHAR and OTHER.
 If DIR is 1, search forward; if DIR is -1, search backward."

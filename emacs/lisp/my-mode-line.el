@@ -1,22 +1,20 @@
 ;;; my-mode-line.el -*- lexical-binding: t; -*-
 
 ;; mode-line
-(defun my-ellipsize-file-name (file-name max-length)
+(defun my-mode-line-ellipsize-file-name (file-name max-length)
   "Ellipsize FILE-NAME if its length exceeds MAX-LENGTH."
   (let* ((ellipsis (if (char-displayable-p ?…) "…" "..."))
          (left (/ max-length 2))
          (center (length ellipsis))
          (right (- max-length left center)))
     (if (> (length file-name) max-length)
-        (concat
-         (substring file-name 0 (1- left))
-         " "
-         ellipsis
-         " "
-         (substring file-name (- (length file-name) (1- right))))
+        (format "%s %s %s"
+                (substring file-name 0 (1- left))
+                ellipsis
+                (substring file-name (- (length file-name) (1- right))))
       file-name)))
 
-(defun my-mode-line-render (left centre right)
+(defun my-mode-line--render (left centre right)
   "Return a string of `window-total-width' length.
     Containing LEFT, CENTRE and RIGHT aligned respectively."
   (let* ((left-width (string-width (format-mode-line left)))
@@ -39,11 +37,9 @@
             (list (format (format "%%%ds" available-width-right) ""))
             right)))
 
-(defvar-local my-mode-line-window-status-tag
+(defvar-local my-mode-line--window-status-tag
     '(:eval
-      (let ((tag (concat " "
-                         (number-to-string (my-window-numbering-get-number))
-                         " "))
+      (let ((tag (format " %i " (my-window-numbering-get-number)))
             (selected (mode-line-window-selected-p))
             (dedicated (window-dedicated-p)))
         (cond
@@ -60,11 +56,11 @@ Active red suggests the window is both selected and dedicated;
 Active blue suggests the window is selected but not dedicated;
 Subtle red suggests the window is not selected but dedicated;
 Subtle blue suggests the window is neither selected nor dedicated.")
-(put 'my-mode-line-window-status-tag 'risky-local-variable t)
+(put 'my-mode-line--window-status-tag 'risky-local-variable t)
 
-(defvar-local my-mode-line-buffer-identification
+(defvar-local my-mode-line--buffer-identification
     '(:eval (if (buffer-file-name)
-                (propertize (my-ellipsize-file-name
+                (propertize (my-mode-line-ellipsize-file-name
                              (file-name-nondirectory (buffer-file-name))
                              36)
                             'help-echo (abbreviate-file-name (buffer-file-name))
@@ -75,9 +71,9 @@ Subtle blue suggests the window is neither selected nor dedicated.")
                           'face '(:inherit mode-line-buffer-id)
                           'mouse-face 'mode-line-highlight)))
   "Return an enhanced buffer-identification with ellipsized file name when the file name is too long.")
-(put 'my-mode-line-buffer-identification 'risky-local-variable t)
+(put 'my-mode-line--buffer-identification 'risky-local-variable t)
 
-(defvar-local my-mode-line-vc-mode
+(defvar-local my-mode-line--vc-mode
     ;; Format: (defun vc-default-mode-line-string (backend file) in vc-hooks.el
     ;;   \"BACKEND-REV\"        if the file is up-to-date
     ;;   \"BACKEND:REV\"        if the file is edited (or locked by the calling user)
@@ -133,20 +129,20 @@ Subtle blue suggests the window is neither selected nor dedicated.")
                               'mouse-face 'mode-line-highlight))
                  ((t git-mode-line-status))))))
   "Return git status.")
-(put 'my-mode-line-vc-mode 'risky-local-variable t)
+(put 'my-mode-line--vc-mode 'risky-local-variable t)
 
-(defvar-local my-mode-line-centre-place-holder ""
+(defvar-local my-mode-line--centre-place-holder ""
   "Serve as a place holder for centrally aligned mode-line elements.")
-(put 'my-mode-line-centre-place-holder 'risky-local-variable t)
+(put 'my-mode-line--centre-place-holder 'risky-local-variable t)
 
-(defvar-local my-mode-line-buffer-size
+(defvar-local my-mode-line--buffer-size
     '(:propertize "%I"
                   help-echo "Size"
                   mouse-face mode-line-highlight)
   "Return the size of the buffer.")
-(put 'my-mode-line-buffer-size 'risky-local-variable t)
+(put 'my-mode-line--buffer-size 'risky-local-variable t)
 
-(defvar-local my-mode-line-modes
+(defvar-local my-mode-line--modes
     '(:eval (and (or (and (consp mode-name)
                           (setcar mode-name
                                   (propertize (car mode-name)
@@ -156,9 +152,9 @@ Subtle blue suggests the window is neither selected nor dedicated.")
                                        'face '(:inherit mode-line-emphasis))))
                  minions-mode-line-modes))
   "Return the modes information by utilizing the minions package.")
-(put 'my-mode-line-modes 'risky-local-variable t)
+(put 'my-mode-line--modes 'risky-local-variable t)
 
-(defvar-local my-mode-line-percent-position
+(defvar-local my-mode-line--percent-position
     '(:eval (let ((p (format-mode-line "%p")))
               (cond
                ((string-equal p "All")
@@ -168,40 +164,40 @@ Subtle blue suggests the window is neither selected nor dedicated.")
                ((string-equal p "Bottom")
                 (propertize "Bot" 'help-echo p 'mouse-face 'mode-line-highlight))
                (t
-                (propertize (concat p  "%%")
+                (propertize (concat p "%%")
                             'help-echo "Position"
                             'mouse-face 'mode-line-highlight)))))
   "Return a slightly modified position information where Bottom is renamed to Bot.")
-(put 'my-mode-line-percent-position 'risky-local-variable t)
+(put 'my-mode-line--percent-position 'risky-local-variable t)
 
 (setopt mode-line-format
         '(:eval
-          (my-mode-line-render
+          (my-mode-line--render
            ;; left
            (list
-            my-mode-line-window-status-tag
+            my-mode-line--window-status-tag
             " "
             mode-line-mule-info
             mode-line-client
             mode-line-modified
             mode-line-remote
             " "
-            my-mode-line-buffer-identification
+            my-mode-line--buffer-identification
             " "
-            my-mode-line-vc-mode)
+            my-mode-line--vc-mode)
 
            ;; centre
            (list
-            my-mode-line-centre-place-holder)
+            my-mode-line--centre-place-holder)
 
            ;; right
            (when (mode-line-window-selected-p)
              (list
               mode-line-misc-info
-              my-mode-line-buffer-size
+              my-mode-line--buffer-size
               " "
-              my-mode-line-modes
-              my-mode-line-percent-position
+              my-mode-line--modes
+              my-mode-line--percent-position
               " ")))))
 
 (provide 'my-mode-line)

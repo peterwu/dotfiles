@@ -59,16 +59,17 @@
 ;; my-dired-explorer
 (defvar my-dired-explorer-window nil
   "Define the window as my-dired-explorer.")
+
 (defvar my-dired-explorer-window-width-in-percentage 30
   "Set the default window width in percentage.")
 
-(defvar-local my-dired-explorer-mode-line-directory-identification
-  '(:eval (propertize (concat ":" (my-ellipsize-file-name
+(defvar-local my-dired-explorer--mode-line-directory-identification
+  '(:eval (propertize (concat ":" (my-mode-line-ellipsize-file-name
                                    (abbreviate-file-name default-directory)
                                    32))
                       'face '(:inherit mode-line-buffer-id)))
   "Return an ellipsized file name when applicable.")
-(put 'my-dired-explorer-mode-line-directory-identification 'risky-local-variable t)
+(put 'my-dired-explorer--mode-line-directory-identification 'risky-local-variable t)
 
 (defun my-dired-explorer-show-directory (dir)
   "Display the contents of DIR in my-dired-explorer window."
@@ -80,9 +81,9 @@
   (setq-local mode-line-format
               '(:eval
                 (list
-                 my-mode-line-window-status-tag
+                 my-mode-line--window-status-tag
                  " "
-                 my-dired-explorer-mode-line-directory-identification)))
+                 my-dired-explorer--mode-line-directory-identification)))
   (force-mode-line-update)
 
   (dired-advertise))
