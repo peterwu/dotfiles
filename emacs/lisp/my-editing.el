@@ -70,7 +70,6 @@
 ;; Things:
 ;; l : letter
 ;; w : word
-;; s : sentence
 ;; p : paragraph
 ;; x : sexp
 ;; for line, simply repeat the last used key
@@ -86,7 +85,7 @@
     (round-bracket  . ("(" ")"))
     (square-bracket . ("[" "]"))
 
-    (single-quote . ("\'" "\'"))
+    (single-quote . ("'" "'"))
     (double-quote . ("\"" "\"")))
   "Define a list of opening and closing delimiters.")
 
@@ -94,7 +93,6 @@
   '(letter
     word
     line
-    sentence
     paragraph
     sexp)
   "Define a list of things.")
@@ -145,6 +143,15 @@ If DIR is 1, search forward; if DIR is -1, search backward."
 
   (point))
 
+(defun my-editing--get-delimiter-cons (delimiter)
+  "Return the textobj symbol name of DELIMITER."
+  (seq-some
+   (lambda (cons)
+     (let ((pair (cdr cons)))
+       (when (member delimiter pair)
+         cons)))
+   my-editing--delimiter-alist))
+
 (defmacro my-editing--textobj-delimiter (delimiter)
   "Define the textobj between DELIMITERs."
   (let* ((fn (intern (format "my-editing--textobj-%s" (symbol-name delimiter))))
@@ -154,18 +161,18 @@ If DIR is 1, search forward; if DIR is -1, search backward."
          (close-delimiter (cadr delimiters)))
     ;; If opening and closing delimiters are the same, perform a simple search.
     (if (string= open-delimiter close-delimiter)
-        `(defun ,fn (&optional n)
+        `(defun ,fn (&optional arg)
            ,docstring
            (interactive)
            (let* ((point (point))
                   (beg)
                   (end))
-             (when (search-backward ,open-delimiter nil t n)
+             (when (search-backward ,open-delimiter nil t 1)
                (setq beg (point)))
 
              (goto-char point)
 
-             (when (search-forward ,close-delimiter nil t n)
+             (when (search-forward ,close-delimiter nil t 1)
                (setq end (point)))
 
              ;; select the region
@@ -173,19 +180,20 @@ If DIR is 1, search forward; if DIR is -1, search backward."
                (cons beg end))))
 
       ;; If opening and closing delimiters are different, perform a nestable search.
-      `(defun ,fn (&optional n)
+      `(defun ,fn (&optional arg)
          ,docstring
          (interactive)
          (let* ((point (point))
                 (beg)
                 (end))
 
-           (dotimes (_ n)
-             (goto-char (my-editing--find-char-nestable ,open-delimiter ,close-delimiter -1))
-             (setq beg (point))
+           (goto-char (my-editing--find-char-nestable ,open-delimiter ,close-delimiter -1))
+           (unless arg (forward-char))
+           (setq beg (point))
 
-             (goto-char (my-editing--find-char-nestable ,close-delimiter ,open-delimiter +1))
-             (setq end (point)))
+           (goto-char (my-editing--find-char-nestable ,close-delimiter ,open-delimiter +1))
+           (unless arg (backward-char))
+           (setq end (point))
 
            ;; select the region
            (unless (equal beg end)
@@ -232,18 +240,6 @@ If DIR is 1, search forward; if DIR is -1, search backward."
       (setq beg (point))
       (end-of-visual-line n)
       (setq end (1+ (point))))
-    (cons beg end)))
-
-(defun my-editing--textobj-sentence (&optional n)
-  "Return N sentences."
-  (interactive)
-  (let ((beg)
-        (end))
-    (save-excursion
-      (backward-sentence)
-      (setq beg (point))
-      (forward-sentence n)
-      (setq end (point)))
     (cons beg end)))
 
 (defun my-editing--textobj-paragraph (&optional n)
@@ -304,10 +300,10 @@ If DIR is 1, search forward; if DIR is -1, search backward."
                                    action
                                  (capitalize action))
                                textobj)))
-    `(defun ,fn (&optional n)
+    `(defun ,fn (&optional arg)
        ,fn-docstring
-       (interactive "p")
-       (let* ((textobj (,textobj-fn n))
+       (interactive "P")
+       (let* ((textobj (,textobj-fn arg))
               (beg (car textobj))
               (end (cdr textobj)))
          (,action-fn beg end)))))
@@ -336,7 +332,6 @@ If DIR is 1, search forward; if DIR is -1, search backward."
         (my-editing-action-line (intern (format "my-editing-%s-line" action)))
         (my-editing-action-letter (intern (format "my-editing-%s-letter" action)))
         (my-editing-action-word (intern (format "my-editing-%s-word" action)))
-        (my-editing-action-sentence (intern (format "my-editing-%s-sentence" action)))
         (my-editing-action-paragraph (intern (format "my-editing-%s-paragraph" action)))
         (my-editing-action-sexp (intern (format "my-editing-%s-sexp" action)))
 
@@ -352,11 +347,10 @@ If DIR is 1, search forward; if DIR is -1, search backward."
 
                 ("l" . ,my-editing-action-letter)
                 ("w" . ,my-editing-action-word)
-                ("s" . ,my-editing-action-sentence)
                 ("p" . ,my-editing-action-paragraph)
                 ("x" . ,my-editing-action-sexp)
 
-                ("\'" . ,my-editing-action-single-quote)
+                ("'"  . ,my-editing-action-single-quote)
                 ("\"" . ,my-editing-action-double-quote)
                 ("<"  . ,my-editing-action-angle-bracket)
                 (">"  . ,my-editing-action-angle-bracket)
@@ -379,5 +373,100 @@ If DIR is 1, search forward; if DIR is -1, search backward."
         (KILL   . "M-k")
         (yank   . "y")
         (YANK   . "M-y")))
+
+;; surround
+(defun my-editing-surround-change (delimiter1 delimiter2)
+  "Change surrounding DELIMITER1 to DELIMITER2."
+  (interactive "cChange surround from:\ncChange surround to:")
+  (let* ((cons1 (my-editing--get-delimiter-cons (string delimiter1)))
+         (textobj1 (symbol-name (car cons1)))
+
+         (cons2 (my-editing--get-delimiter-cons (string delimiter2)))
+         (pair2 (cdr cons2))
+         (opening2 (car pair2))
+         (closing2 (cadr pair2))
+
+         (textobj1-fn (intern (format "my-editing--textobj-%s" textobj1)))
+         (bounds (funcall textobj1-fn 1))
+         (beg (car bounds))
+         (end (cdr bounds)))
+    (goto-char end)
+    (delete-char -1)
+    (insert closing2)
+    (goto-char beg)
+    (delete-char 1)
+    (insert opening2)))
+
+(defun my-editing-surround-delete (delimiter)
+  "Delete surrounding DELIMITERs."
+  (interactive "cDelete surround:")
+  (let* ((cons (my-editing--get-delimiter-cons (string delimiter)))
+         (textobj (symbol-name (car cons)))
+         (textobj-fn (intern (format "my-editing--textobj-%s" textobj)))
+         (bounds (funcall textobj-fn 1))
+         (beg (car bounds))
+         (end (cdr bounds)))
+    (goto-char end)
+    (delete-char -1)
+
+    (goto-char beg)
+    (delete-char 1)))
+
+(defmacro my-editing--surround (textobj)
+  "Surround textobj."
+  (let ((textobj (symbol-name textobj))
+        (textobj-fn (intern (format "my-editing--textobj-%s" textobj)))
+        (fn (intern (format "my-editing-surround-%s" textobj)))
+        (docstring (format "Surround %s with delimiters." textobj)))
+
+    `(defun ,fn (delimiter &optional arg)
+       ,docstring
+       (interactive "cSurround with:\nP")
+
+       (let* ((cons (my-editing--get-delimiter-cons (string delimiter)))
+              (pair (cdr cons))
+              (opening (car pair))
+              (closing (cadr pair))
+
+              (textobj-fn (intern (format "my-editing--textobj-%s" ,textobj)))
+              (bounds (funcall textobj-fn arg))
+              (beg (car bounds))
+              (end (cdr bounds)))
+         (goto-char end)
+         (insert closing)
+         (goto-char beg)
+         (insert opening)))))
+
+(mapc (lambda (textobj)
+        (eval
+         `(my-editing--surround ,textobj)))
+
+      (append
+       ;; delimiters
+       (mapcar #'car my-editing--delimiter-alist)
+
+       ;; other text objects
+       my-editing--thing-list))
+
+(bind-keys :map my-surround-map
+           ("c" . my-editing-surround-change)
+           ("d" . my-editing-surround-delete)
+
+           ("s" . my-editing-surround-line)
+           ("l" . my-editing-surround-letter)
+           ("w" . my-editing-surround-word)
+           ("p" . my-editing-surround-paragraph)
+           ("x" . my-editing-surround-sexp)
+
+           ("'"  . my-editing-surround-single-quote)
+           ("\"" . my-editing-surround-double-quote)
+           ("<"  . my-editing-surround-angle-bracket)
+           (">"  . my-editing-surround-angle-bracket)
+           ("{"  . my-editing-surround-curly-bracket)
+           ("}"  . my-editing-surround-curly-bracket)
+           ("("  . my-editing-surround-round-bracket)
+           (")"  . my-editing-surround-round-bracket)
+           ("["  . my-editing-surround-square-bracket)
+           ("]"  . my-editing-surround-square-bracket))
 
 (provide 'my-editing)

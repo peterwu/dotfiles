@@ -52,4 +52,8 @@
 (bind-keys :prefix-map my-YANK-map
            :prefix "C-c M-y")
 
+;; my-surround-map
+(bind-keys :prefix-map my-surround-map
+           :prefix "C-c s")
+
 (provide 'my-keymaps)
