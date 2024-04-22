@@ -2,7 +2,7 @@
 
 ;; Editing functionalities inspired by VIM key binds
 ;; C-c to lead normal edits
-;; C-u C-c to allow pass number of operations
+;; C-u C-c to allow pass applicable argument
 ;; C-c SPC {textobj} : mark textobj
 ;; C-c d   {textobj} : delete textobj to black hole
 ;; C-c k   {textobj} : kill textobj to kill ring
@@ -210,8 +210,8 @@ If DIR is 1, search forward; if DIR is -1, search backward."
   (let ((beg)
         (end))
     (save-excursion
-      (backward-to-word 1)
-      (forward-to-word 1)
+      (forward-char)
+      (backward-word)
       (setq beg (point))
       (forward-word n)
       (setq end (point)))
@@ -226,7 +226,7 @@ If DIR is 1, search forward; if DIR is -1, search backward."
       (beginning-of-visual-line)
       (setq beg (point))
       (end-of-visual-line n)
-      (setq end (1+ (point))))
+      (setq end (point)))
     (cons beg end)))
 
 (defun my-editing--textobj-paragraph (&optional n)
