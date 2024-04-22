@@ -3,13 +3,12 @@
 ;; Editing functionalities inspired by VIM key binds
 ;; C-c to lead normal edits
 ;; C-u C-c to allow pass number of operations
-
-;; C-c d   : delete textobj to black hole
-;; C-c k   : kill textobj to kill ring
-;; C-c M-k : kill textobj to system clipboard
-;; C-c SPC : mark textobj
-;; C-c y   : yank/copy textobj to kill ring
-;; C-c M-y : yank/copy textobj to system clipboard
+;; C-c SPC {textobj} : mark textobj
+;; C-c d   {textobj} : delete textobj to black hole
+;; C-c k   {textobj} : kill textobj to kill ring
+;; C-c M-k {textobj} : kill textobj to system clipboard
+;; C-c y   {textobj} : yank/copy textobj to kill ring
+;; C-c M-y {textobj} : yank/copy textobj to system clipboard
 
 ;; For example:
 ;; C-c d w       : delete a word
@@ -24,7 +23,38 @@
 ;; "C-u 3 C-c y (" expands the selection to the text surrounded by the outer
 ;; most round brackets as if the "C-c y (" were performed 3 times.
 
-;; Text Objects
+;; Surround operations
+;; C-c s s {textobj} {delimiter}
+;;     : surround textobj with delimiter (e.g. "C-c s s w [" )
+;; C-c s c {delimiter1} {delimiter2}
+;;     : change surrounding delimiters (e.g. "C-c s c [ {" )
+;; C-c s d {delimiter}
+;;     : delete surrounding delimiters (e.g. "C-c s d [" )
+;;
+;; For surround commands (C-c s s), C-u has different uses depending on the
+;; textobj it works on.
+;;
+;; If the textobj is a delimiter, then C-u suggests an outer surround.
+;; e.g. "C-u C-c s s ( [" would result:
+;; (abc_) ==> [(abc_)]
+;; The same result can be achieved by using a closing delimiter if different
+;; from its opening counterpart.
+;; e.g. "C-c s s ( ]" would produce the same result.
+;; Hence, the following keys yield the same result, which is an outer surround.
+;; "C-u C-c s s ( ["
+;; "C-u C-c s s ( ]"
+;; "C-c s s ( ]"
+;;
+;; If the textobj is a thing, then C-u may carry a number, indicating how many
+;; things are to be worked on.
+;;
+;; e.g. "C-u 2 C-c s s w [" would result in 2 words being surrounded with []
+;;
+;; "C-c s c" and "C-c s d" commands do not support C-u.
+
+;;
+;; Text Objects include Delimiters and Things
+;;
 ;; Delimiters:
 ;; ' : single-quote
 ;; " : double-quote
@@ -37,7 +67,7 @@
 ;; [ : square-bracket
 ;; ] : square-bracket
 
-;; Others:
+;; Things:
 ;; l : letter
 ;; w : word
 ;; s : sentence
@@ -167,6 +197,7 @@ If DIR is 1, search forward; if DIR is -1, search backward."
          `(my-editing--textobj-delimiter ,delimiter)))
       (mapcar #'car my-editing--delimiter-alist))
 
+;; thing text objects
 (defun my-editing--textobj-letter (&optional n)
   "Return N letters."
   (interactive)
@@ -239,73 +270,47 @@ If DIR is 1, search forward; if DIR is -1, search backward."
       (setq end (point)))
     (cons beg end)))
 
+;; actions
+(defun my-editing--mark (beg end)
+  (push-mark beg nil t)
+  (goto-char end)
+  (exchange-point-and-mark))
+
+(defun my-editing--delete (beg end)
+  (delete-region beg end))
+
+(defun my-editing--kill (beg end)
+  (kill-region beg end))
+
+(defun my-editing--KILL (beg end)
+  (my-copy-to-clipboard beg end)
+  (delete-region beg end))
+
+(defun my-editing--yank (beg end)
+  (kill-ring-save beg end))
+
+(defun my-editing--YANK (beg end)
+  (my-copy-to-clipboard beg end))
+
 (defmacro my-editing-action-textobj (action textobj)
-  "Generate my-editing-action-textobj functions."
-  (let* ((action-symbol-name (symbol-name action))
-         (textobj-symbol-name (symbol-name textobj))
-         (edit-fn (intern (format "my-editing-%s-%s" action-symbol-name textobj-symbol-name textobj)))
-         (edit-fn-docstring (format "%s N %ss."
-                                    (if (equal (upcase action-symbol-name) action-symbol-name)
-                                        action-symbol-name
-                                      (capitalize action-symbol-name))
-                                    textobj-symbol-name))
-         (textobj-fn (intern (format "my-editing--textobj-%s" textobj-symbol-name))))
-    (cond
-     ((eq action 'mark)
-      `(defun ,edit-fn (&optional n)
-         ,edit-fn-docstring
-         (interactive "p")
-         (let* ((textobj (,textobj-fn n))
-                (beg (car textobj))
-                (end (cdr textobj)))
-           (push-mark beg nil t)
-           (goto-char end)
-           (exchange-point-and-mark))))
-
-     ((eq action 'delete)
-      `(defun ,edit-fn (&optional n)
-         ,edit-fn-docstring
-         (interactive "p")
-         (let* ((textobj (,textobj-fn n))
-                (beg (car textobj))
-                (end (cdr textobj)))
-           (delete-region beg end))))
-
-     ((eq action 'kill)
-      `(defun ,edit-fn (&optional n)
-         (interactive "p")
-         ,edit-fn-docstring
-         (let* ((textobj (,textobj-fn n))
-                (beg (car textobj))
-                (end (cdr textobj)))
-           (kill-region beg end))))
-
-     ((eq action 'KILL)
-      `(defun ,edit-fn (&optional n)
-         ,edit-fn-docstring
-         (interactive "p")
-         (let* ((textobj (,textobj-fn n))
-                (beg (car textobj))
-                (end (cdr textobj)))
-           (my-copy-to-clipboard beg end))))
-
-     ((eq action 'yank)
-      `(defun ,edit-fn (&optional n)
-         ,edit-fn-docstring
-         (interactive "p")
-         (let* ((textobj (,textobj-fn n))
-                (beg (car textobj))
-                (end (cdr textobj)))
-           (kill-ring-save beg end))))
-
-     ((eq action 'YANK)
-      `(defun ,edit-fn (&optional n)
-         ,edit-fn-docstring
-         (interactive "p")
-         (let* ((textobj (,textobj-fn n))
-                (beg (car textobj))
-                (end (cdr textobj)))
-           (my-copy-to-clipboard beg end)))))))
+  "Generate my-editing-ACTION-TEXTOBJ commands."
+  (let* ((action (symbol-name action))
+         (textobj (symbol-name textobj))
+         (action-fn (intern (format "my-editing--%s" action)))
+         (textobj-fn (intern (format "my-editing--textobj-%s" textobj)))
+         (fn (intern (format "my-editing-%s-%s" action textobj)))
+         (fn-docstring (format "%s N %ss."
+                               (if (equal (upcase action) action)
+                                   action
+                                 (capitalize action))
+                               textobj)))
+    `(defun ,fn (&optional n)
+       ,fn-docstring
+       (interactive "p")
+       (let* ((textobj (,textobj-fn n))
+              (beg (car textobj))
+              (end (cdr textobj)))
+         (,action-fn beg end)))))
 
 ;; Generate all the action-textobj paired functions
 (let ((actions my-editing--action-list)
