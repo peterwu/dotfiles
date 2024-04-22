@@ -255,9 +255,8 @@ If DIR is 1, search forward; if DIR is -1, search backward."
 
 ;; actions
 (defun my-editing--mark (beg end)
-  (push-mark beg nil t)
-  (goto-char end)
-  (exchange-point-and-mark))
+  (push-mark end nil t)
+  (goto-char beg))
 
 (defun my-editing--delete (beg end)
   (delete-region beg end))
