@@ -116,41 +116,49 @@ If DIR is 1, search forward; if DIR is -1, search backward."
 
 (defmacro my-editing--textobj-delimiter (delimiter)
   "Define the textobj between DELIMITERs."
-  (let ((editing-fn (intern (format "my-editing--textobj-%s" (symbol-name delimiter)))))
-    `(defun ,editing-fn (&optional n)
-       ,(format "Expand regions surrounded by %ss N times." (symbol-name delimiter))
-       (interactive)
+  (let* ((fn (intern (format "my-editing--textobj-%s" (symbol-name delimiter))))
+         (docstring (format "Expand regions surrounded by %ss N times." (symbol-name delimiter)))
+         (delimiters (alist-get delimiter my-editing--delimiter-alist))
+         (open-delimiter (car delimiters))
+         (close-delimiter (cadr delimiters)))
+    ;; If opening and closing delimiters are the same, perform a simple search.
+    (if (string= open-delimiter close-delimiter)
+        `(defun ,fn (&optional n)
+           ,docstring
+           (interactive)
+           (let* ((point (point))
+                  (beg)
+                  (end))
+             (when (search-backward ,open-delimiter nil t n)
+               (setq beg (point)))
 
-       (let* ((delimiters ',(alist-get delimiter my-editing--delimiter-alist))
-              (open-delimiter (car delimiters))
-              (close-delimiter (cadr delimiters))
-              (point (point))
-              (start)
-              (end))
+             (goto-char point)
 
-         ;; If opening and closing delimiters are the same, perform a simple search.
-         (if (string= open-delimiter close-delimiter)
-             (progn
-               (when (search-backward open-delimiter nil t n)
-                 (setq start (point)))
+             (when (search-forward ,close-delimiter nil t n)
+               (setq end (point)))
 
-               (goto-char point)
+             ;; select the region
+             (unless (equal beg end)
+               (cons beg end))))
 
-               (when (search-forward close-delimiter nil t n)
-                 (setq end (point))))
+      ;; If opening and closing delimiters are different, perform a nestable search.
+      `(defun ,fn (&optional n)
+         ,docstring
+         (interactive)
+         (let* ((point (point))
+                (beg)
+                (end))
 
-           ;; If opening and closing delimiters are different, perform a nestable search.
-           (progn
-             (dotimes (_ n)
-               (goto-char (my-editing--find-char-nestable open-delimiter close-delimiter -1))
-               (setq start (point))
+           (dotimes (_ n)
+             (goto-char (my-editing--find-char-nestable ,open-delimiter ,close-delimiter -1))
+             (setq beg (point))
 
-               (goto-char (my-editing--find-char-nestable close-delimiter open-delimiter +1))
-               (setq end (point)))))
+             (goto-char (my-editing--find-char-nestable ,close-delimiter ,open-delimiter +1))
+             (setq end (point)))
 
-         ;; select the region
-         (unless (equal start end)
-           (cons start end))))))
+           ;; select the region
+           (unless (equal beg end)
+             (cons beg end)))))))
 
 ;; Generate all the delimiter text objects
 (mapc (lambda (delimiter)
@@ -161,104 +169,142 @@ If DIR is 1, search forward; if DIR is -1, search backward."
 (defun my-editing--textobj-letter (&optional n)
   "Return N letters."
   (interactive)
-  (let ((start)
+  (let ((beg)
         (end))
     (save-excursion
-      (setq start (point))
+      (setq beg (point))
       (forward-char n)
       (setq end (point)))
-    (cons start end)))
+    (cons beg end)))
 
 (defun my-editing--textobj-word (&optional n)
   "Return N words."
   (interactive)
-  (let ((start)
+  (let ((beg)
         (end))
     (save-excursion
       (backward-to-word 1)
       (forward-to-word 1)
-      (setq start (point))
+      (setq beg (point))
       (forward-word n)
       (setq end (point)))
-    (cons start end)))
+    (cons beg end)))
 
 (defun my-editing--textobj-line (&optional n)
   "Return N visual lines."
   (interactive)
-  (let ((start)
+  (let ((beg)
         (end))
     (save-excursion
       (beginning-of-visual-line)
-      (setq start (point))
+      (setq beg (point))
       (end-of-visual-line n)
       (setq end (point)))
-    (cons start end)))
+    (cons beg end)))
 
 (defun my-editing--textobj-sentence (&optional n)
   "Return N sentences."
   (interactive)
-  (let ((start)
+  (let ((beg)
         (end))
     (save-excursion
       (backward-sentence)
-      (setq start (point))
+      (setq beg (point))
       (forward-sentence n)
       (setq end (point)))
-    (cons start end)))
+    (cons beg end)))
 
 (defun my-editing--textobj-paragraph (&optional n)
   "Return N paragraphs."
   (interactive)
-  (let ((start)
+  (let ((beg)
         (end))
     (save-excursion
       (backward-paragraph)
-      (setq start (point))
+      (setq beg (point))
       (forward-paragraph n)
       (setq end (point)))
-    (cons start end)))
+    (cons beg end)))
 
 (defun my-editing--textobj-sexp (&optional n)
   "Return N sexps."
   (interactive)
-  (let ((start)
+  (let ((beg)
         (end))
     (save-excursion
       (backward-sexp)
-      (setq start (point))
+      (setq beg (point))
       (forward-sexp n)
       (setq end (point)))
-    (cons start end)))
+    (cons beg end)))
 
 (defmacro my-editing-action-textobj (action textobj)
   "Generate my-editing-action-textobj functions."
-  (let ((edit-fn (intern (format "my-editing-%s-%s" (symbol-name action) (symbol-name textobj))))
-        (textobj-fn (intern (format "my-editing--textobj-%s" (symbol-name textobj)))))
-    `(defun ,edit-fn (&optional n)
-       (interactive "p")
-       (let* ((textobj (,textobj-fn n))
-              (start (car textobj))
-              (end (cdr textobj)))
-         (cond
-          ((eq ',action 'mark)
-           (push-mark start nil t)
+  (let* ((action-symbol-name (symbol-name action))
+         (textobj-symbol-name (symbol-name textobj))
+         (edit-fn (intern (format "my-editing-%s-%s" action-symbol-name textobj-symbol-name textobj)))
+         (edit-fn-docstring (format "%s N %ss."
+                                    (if (equal (upcase action-symbol-name) action-symbol-name)
+                                        action-symbol-name
+                                      (capitalize action-symbol-name))
+                                    textobj-symbol-name))
+         (textobj-fn (intern (format "my-editing--textobj-%s" textobj-symbol-name))))
+    (cond
+     ((eq action 'mark)
+      `(defun ,edit-fn (&optional n)
+         ,edit-fn-docstring
+         (interactive "p")
+         (let* ((textobj (,textobj-fn n))
+                (beg (car textobj))
+                (end (cdr textobj)))
+           (push-mark beg nil t)
            (goto-char end)
-           (exchange-point-and-mark))
+           (exchange-point-and-mark))))
 
-          ((eq ',action 'delete)
-           (delete-region start end))
+     ((eq action 'delete)
+      `(defun ,edit-fn (&optional n)
+         ,edit-fn-docstring
+         (interactive "p")
+         (let* ((textobj (,textobj-fn n))
+                (beg (car textobj))
+                (end (cdr textobj)))
+           (delete-region beg end))))
 
-          ((eq ',action 'kill)
-           (kill-region start end))
+     ((eq action 'kill)
+      `(defun ,edit-fn (&optional n)
+         (interactive "p")
+         ,edit-fn-docstring
+         (let* ((textobj (,textobj-fn n))
+                (beg (car textobj))
+                (end (cdr textobj)))
+           (kill-region beg end))))
 
-          ((eq ',action 'KILL)
-           (my-copy-to-clipboard start end))
+     ((eq action 'KILL)
+      `(defun ,edit-fn (&optional n)
+         ,edit-fn-docstring
+         (interactive "p")
+         (let* ((textobj (,textobj-fn n))
+                (beg (car textobj))
+                (end (cdr textobj)))
+           (my-copy-to-clipboard beg end))))
 
-          ((eq ',action 'yank)
-           (kill-ring-save start end))
+     ((eq action 'yank)
+      `(defun ,edit-fn (&optional n)
+         ,edit-fn-docstring
+         (interactive "p")
+         (let* ((textobj (,textobj-fn n))
+                (beg (car textobj))
+                (end (cdr textobj)))
+           (kill-ring-save beg end))))
 
-          ((eq ',action 'YANK)
-           (my-copy-to-clipboard start end)))))))
+     ((eq action 'YANK)
+      `(defun ,edit-fn (&optional n)
+         ,edit-fn-docstring
+         (interactive "p")
+         (let* ((textobj (,textobj-fn n))
+                (beg (car textobj))
+                (end (cdr textobj)))
+           (my-copy-to-clipboard beg end)))))))
 
 ;; Generate all the action-textobj paired functions
 (let ((actions my-editing--action-list)
