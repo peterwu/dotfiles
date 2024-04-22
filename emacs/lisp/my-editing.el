@@ -75,6 +75,15 @@
     sexp)
   "Define a list of things.")
 
+(defconst my-editing--textobj-list
+  (append
+   ;; delimiters
+   (mapcar #'car my-editing--delimiter-alist)
+
+   ;; things
+   my-editing--thing-list)
+  "Define a list of text objects.")
+
 (defconst my-editing--action-list
   '(mark
     delete
@@ -288,12 +297,7 @@ If DIR is 1, search forward; if DIR is -1, search backward."
 
 ;; Generate all the action-textobj paired functions
 (let ((actions my-editing--action-list)
-      (textobjs (append
-                 ;; delimiters
-                 (mapcar #'car my-editing--delimiter-alist)
-
-                 ;; other text objects
-                 my-editing--thing-list)))
+      (textobjs my-editing--textobj-list))
 
   (mapc (lambda (action)
           (mapc (lambda (textobj)
@@ -424,13 +428,7 @@ If DIR is 1, search forward; if DIR is -1, search backward."
 (mapc (lambda (textobj)
         (eval
          `(my-editing--surround ,textobj)))
-
-      (append
-       ;; delimiters
-       (mapcar #'car my-editing--delimiter-alist)
-
-       ;; other text objects
-       my-editing--thing-list))
+      my-editing--textobj-list)
 
 (bind-keys :map my-surround-map
            ("c" . my-editing-surround-change)
