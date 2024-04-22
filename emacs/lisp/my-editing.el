@@ -10,49 +10,27 @@
 ;; C-c y   {textobj} : yank/copy textobj to kill ring
 ;; C-c M-y {textobj} : yank/copy textobj to system clipboard
 
-;; For example:
-;; C-c d w       : delete a word
-;; C-u 3 C-c d w : delete 3 words
-;; C-c y "       : yank text surrounded by a pair of double quotes
-;; C-u 3 C-c y " : yank text surrounded by a pair of double quotes after being expanded 3 times
-;;
-;; Look at this example:
-;; ( ( ( a b c _ ) ) )
-;; , where _ indicates where the point is.
-;;
-;; "C-u 3 C-c y (" expands the selection to the text surrounded by the outer
-;; most round brackets as if the "C-c y (" were performed 3 times.
-
 ;; Surround operations
-;; C-c s s {textobj} {delimiter}
-;;     : surround textobj with delimiter (e.g. "C-c s s w [" )
+;; C-c s {textobj} {delimiter}
+;;     : surround textobj with delimiter (e.g. "C-c s w [" )
 ;; C-c s c {delimiter1} {delimiter2}
 ;;     : change surrounding delimiters (e.g. "C-c s c [ {" )
 ;; C-c s d {delimiter}
 ;;     : delete surrounding delimiters (e.g. "C-c s d [" )
-;;
-;; For surround commands (C-c s s), C-u has different uses depending on the
-;; textobj it works on.
-;;
-;; If the textobj is a delimiter, then C-u suggests an outer surround.
-;; e.g. "C-u C-c s s ( [" would result:
-;; (abc_) ==> [(abc_)]
-;; The same result can be achieved by using a closing delimiter if different
-;; from its opening counterpart.
-;; e.g. "C-c s s ( ]" would produce the same result.
-;; Hence, the following keys yield the same result, which is an outer surround.
-;; "C-u C-c s s ( ["
-;; "C-u C-c s s ( ]"
-;; "C-c s s ( ]"
-;;
-;; If the textobj is a thing, then C-u may carry a number, indicating how many
-;; things are to be worked on.
-;;
-;; e.g. "C-u 2 C-c s s w [" would result in 2 words being surrounded with []
-;;
-;; "C-c s c" and "C-c s d" commands do not support C-u.
 
-;;
+;; For example:
+;; C-c d w       : delete a word
+;; C-u 3 C-c d w : delete 3 words
+;; C-c y "       : yank text within surrounding ""
+;; C-u C-c y "   : yank text around surrounding ""
+;; C-c s c ' "   : change surrounding ' to "
+;; C-c s d [     : delete surrounding []
+;; C-c s w [     : surround word with []
+;; C-u 3 s w [   : surround 3 words with []
+;; C-c s ) }     : surround inner text surrounded by () with {}
+;; C-u C-c s ) } : surround outer text surrounded by () with {}
+
+
 ;; Text Objects include Delimiters and Things
 ;;
 ;; Delimiters:
