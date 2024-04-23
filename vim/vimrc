@@ -15,7 +15,7 @@ for [vim_var, env_var, default_dir] in [
 
     call mkdir(s:vim_var_home, 'p', 0o700)
 
-    execute ('const ' .. vim_var .. '="' .. s:vim_var_home .. '"')
+    execute 'const ' .. vim_var .. '="' .. s:vim_var_home .. '"'
 endfor
 
 function! s:highlight(group, fg='NONE', bg='NONE', style='NONE') abort
