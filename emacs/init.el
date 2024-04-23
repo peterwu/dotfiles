@@ -92,13 +92,6 @@
   (electric-pair-mode +1)
   (electric-quote-mode +1))
 
-(use-package erc
-  :custom
-  (erc-nick "ixlxi")
-  (erc-user-full-name "iExcel")
-  (erc-server "irc.libera.chat")
-  (erc-port "6697"))
-
 (use-package eshell
   :custom
   (eshell-highlight-prompt nil)
