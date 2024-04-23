@@ -54,10 +54,10 @@
   (interactive "p")
   (my-numbers-increment-at-point (* -1 n)))
 
-(bind-keys :map mode-specific-map
+(bind-keys :map my-ctl-z-map
            ("C-a" . my-numbers-increment-at-point)
            ("C-x" . my-numbers-decrement-at-point)
-           :repeat-map ctl-c-repeat-map
+           :repeat-map my-ctl-z-repeat-map
            ("C-a" . my-numbers-increment-at-point)
            ("C-x" . my-numbers-decrement-at-point))
 

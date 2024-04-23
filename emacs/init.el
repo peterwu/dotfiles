@@ -303,11 +303,13 @@
   (my-pulse-commands))
 
 (use-package recentf
+  :after my-keymaps
   :custom
   (recentf-exclude '(".gz" ".xz" ".zip" "/elpa/" "/ssh:" "/sudo:"))
   (recentf-max-saved-items 50)
   :bind
-  ("C-c C-r" . recentf-open)
+  (:map my-ctl-z-map
+        ("C-r" . recentf-open))
   :config
   (recentf-mode +1))
 

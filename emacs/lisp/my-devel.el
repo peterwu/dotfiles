@@ -1,5 +1,8 @@
 ;;; my-lang.el -*- lexical-binding: t; -*-
 
+;; expand macros
+(bind-key "RET" #'pp-macroexpand-last-sexp my-ctl-z-map)
+
 ;; globals
 (use-package eglot
   :hook
@@ -15,10 +18,11 @@
   (flymake-suppress-zero-counters t)
   (flymake-wrap-around nil)
   :bind
-  ("C-c ! s" . flymake-start)
-  ("C-c ! d" . flymake-show-diagnostics-buffer)
-  ("C-c ! n" . flymake-goto-next-error)
-  ("C-c ! p" . flymake-goto-prev-error))
+  (:map my-flymake-map
+        ("s" . flymake-start)
+        ("d" . flymake-show-diagnostics-buffer)
+        ("n" . flymake-goto-next-error)
+        ("p" . flymake-goto-prev-error)))
 
 ;; c/c++
 (use-package clang-format

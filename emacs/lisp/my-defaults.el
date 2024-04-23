@@ -87,7 +87,4 @@
 ;; hooks
 (add-hook 'text-mode-hook #'turn-on-auto-fill)
 
-;; key binds
-(bind-key "C-c RET" #'pp-macroexpand-last-sexp)
-
 (provide 'my-defaults)

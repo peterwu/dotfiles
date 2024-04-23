@@ -37,9 +37,10 @@ If ARG is omitted, point will not change; otherwise, point will move to the begi
     (goto-char (prog1 (mark t)
                  (set-marker (mark-marker) (point) (current-buffer))))))
 
-(bind-keys
- ("C-c C-w" . my-cut-to-clipboard)
- ("C-c M-w" . my-copy-to-clipboard)
- ("C-c C-y" . my-paste-from-clipboard))
+
+(bind-keys :map my-ctl-z-map
+           ("C-w" . my-cut-to-clipboard)
+           ("M-w" . my-copy-to-clipboard)
+           ("C-y" . my-paste-from-clipboard))
 
 (provide 'my-clipboard)
