@@ -9,7 +9,7 @@
         ("<right>" . windmove-right)
         ("<up>"    . windmove-up)
         ("<down>"  . windmove-down))
-  (:repeat-map my-window-repeat-map
+  (:repeat-map my-window-windmove-repeat-map
                ("<left>"  . windmove-left)
                ("<right>" . windmove-right)
                ("<up>"    . windmove-up)
@@ -51,7 +51,7 @@
   (:map my-window-map
         ("u" . winner-undo)
         ("U" . winner-redo))
-  (:repeat-map my-window-repeat-map
+  (:repeat-map my-window-winner-repeat-map
                ("u" . winner-undo)
                ("U" . winner-redo))
   :config
@@ -69,7 +69,7 @@ in the form of ((index . #window-name) ... ), where index begins at 1.")
 
 (defun my-window-numbering-select-window (number)
   "Select the window indicated by NUMBER."
-  (let ((window (cdr (assq number my-window--numbering-indexed-windows-alist))))
+  (let ((window (cdr (assq number my-window-numbering--indexed-windows-alist))))
     (when (window-live-p window)
       (select-window window))))
 
@@ -107,13 +107,13 @@ in the form of ((index . #window-name) ... ), where index begins at 1.")
 
        (bind-keys :map my-window-map
                   (,(number-to-string n) . ,my-select-window-n)
-                  :repeat-map my-window-repeat-map
+                  :repeat-map my-window-numbering-repeat-map
                   (,(number-to-string n) . ,my-select-window-n)))))
 
 ;; key binds
 (bind-keys :map my-window-map
            ("w" . my-select-window)
-           :repeat-map my-window-repeat-map
+           :repeat-map my-window-switch-repeat-map
            ("w" . my-select-window))
 
 (dolist (n (number-sequence 1 9))
