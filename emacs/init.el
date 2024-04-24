@@ -275,32 +275,29 @@
   :preface
   (defconst my-pulse-duration 0.200)
 
-  (defun my-cut-advice (orig-fn beg end &rest region)
+  (defun my-pulse--cut-advice (orig-fn beg end &rest region)
     (pulse-momentary-highlight-region beg end)
     (sit-for my-pulse-duration)
     (apply orig-fn beg end region))
 
-  (defun my-copy-advice (orig-fn beg end &rest region)
+  (defun my-pulse--copy-advice (orig-fn beg end &rest region)
     (pulse-momentary-highlight-region beg end)
     (apply orig-fn beg end region))
 
-  (defun my-paste-advice (orig-fn &rest args)
+  (defun my-pulse--paste-advice (orig-fn &rest args)
     (let (beg end)
       (setq beg (point))
       (apply orig-fn args)
       (setq end (point))
       (pulse-momentary-highlight-region beg end)))
-
-  (defun my-pulse-commands ()
-    (dolist (construct '((kill-region             . my-cut-advice)
-                         (kill-ring-save          . my-copy-advice)
-                         (yank                    . my-paste-advice)
-                         (my-cut-to-clipboard     . my-cut-advice)
-                         (my-copy-to-clipboard    . my-copy-advice)
-                         (my-paste-from-clipboard . my-paste-advice)))
-      (advice-add (car construct) :around (cdr construct))))
   :config
-  (my-pulse-commands))
+  (dolist (construct '((kill-region             . my-pulse--cut-advice)
+                       (kill-ring-save          . my-pulse--copy-advice)
+                       (yank                    . my-pulse--paste-advice)
+                       (my-cut-to-clipboard     . my-pulse--cut-advice)
+                       (my-copy-to-clipboard    . my-pulse--copy-advice)
+                       (my-paste-from-clipboard . my-pulse--paste-advice)))
+    (advice-add (car construct) :around (cdr construct))))
 
 (use-package recentf
   :after my-keymaps
