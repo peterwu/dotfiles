@@ -1,9 +1,10 @@
 ;;; my-keymaps.el -*- lexical-binding: t; -*-
 
-;; use C-z for my personal key maps to avoid conflicts with
+;; Use C-z for my personal key maps to avoid conflicts with
 ;; C-c keybinds defined by certain packages
-(unbind-key "C-z")
-(bind-keys :prefix-map my-ctl-z-map
+(bind-keys :map global-map
+           ("C-z" . nil)
+           :prefix-map my-ctl-z-map
            :prefix "C-z")
 
 ;; my-magit-map
