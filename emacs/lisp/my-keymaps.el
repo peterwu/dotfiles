@@ -11,11 +11,6 @@
            :prefix-map my-magit-map
            :prefix "g")
 
-;; my-jump-map
-(bind-keys :map my-ctl-z-map
-           :prefix-map my-jump-map
-           :prefix "j")
-
 ;; my-org-map
 (bind-keys :map my-ctl-z-map
            :prefix-map my-org-map

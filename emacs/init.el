@@ -26,21 +26,6 @@
   :config
   (global-auto-revert-mode +1))
 
-(use-package avy
-  :ensure t
-  :custom
-  (avy-background t)
-  :bind
-  (:map isearch-mode-map
-        ("C-'" . avy-isearch))
-  (:map my-jump-map
-        ("f" .  avy-goto-char)
-        ("r" .  avy-resume)
-        ("s" .  avy-goto-char-2)
-        ("j" .  avy-goto-char-timer)
-        ("w" .  avy-goto-word-1)
-        ("W" .  avy-goto-word-0)))
-
 (use-package battery
   :custom
   (battery-load-low 20)
