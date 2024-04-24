@@ -164,9 +164,7 @@
   (imenu-max-item-length 100)
   (imenu-space-replacement " ")
   (imenu-use-markers t)
-  (imenu-use-popup-menu nil)
-  :bind
-  ("M-i" . imenu))
+  (imenu-use-popup-menu nil))
 
 (use-package isearch
   :custom
@@ -176,15 +174,10 @@
   (isearch-lazy-highlight t)
   (isearch-regexp-lax-whitespace nil)
   (isearch-yank-on-move 'shift)
-  (lazy-count-prefix-format nil)
-  (lazy-count-suffix-format " (%s/%s)")
+  (lazy-count-prefix-format "[%s/%s] ")
+  (lazy-count-suffix-format nil)
   (search-highlight t)
-  (search-whitespace-regexp ".*?")
-  :bind
-  ("C-g" . isearch-cancel)
-  ("M-/" . isearch-complete)
-  (:map minibuffer-local-isearch-map
-        ("M-/" . isearch-complete-edit)))
+  (search-whitespace-regexp ".*?"))
 
 (use-package keycast
   :ensure t
@@ -200,7 +193,6 @@
 (use-package magit
   :ensure t
   :bind
-  ("C-x g" . magit-status)
   (:map my-magit-map
         ("g" . magit-status)
         ("j" . magit-dispatch)
