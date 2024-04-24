@@ -1,34 +1,36 @@
 ;;; my-editing.el -*- lexical-binding: t; -*-
 
 ;; Editing functionalities inspired by VIM key binds
-;; C-c to lead normal edits
-;; C-u C-c to allow pass applicable argument
-;; C-c SPC {textobj} : mark textobj
-;; C-c d   {textobj} : delete textobj to black hole
-;; C-c k   {textobj} : kill textobj to kill ring
-;; C-c M-k {textobj} : kill textobj to system clipboard
-;; C-c y   {textobj} : yank/copy textobj to kill ring
-;; C-c M-y {textobj} : yank/copy textobj to system clipboard
+;; C-z to lead normal edits
+;; C-u C-z to allow pass applicable argument
+;; C-z SPC {textobj} : mark textobj
+;; C-z d   {textobj} : delete textobj to black hole
+;; C-z k   {textobj} : kill textobj to kill ring
+;; C-z M-k {textobj} : kill textobj to system clipboard
+;; C-z y   {textobj} : yank/copy textobj to kill ring
+;; C-z M-y {textobj} : yank/copy textobj to system clipboard
 
 ;; Surround operations
-;; C-c s {textobj} {delimiter}
-;;     : surround textobj with delimiter (e.g. "C-c s w [" )
-;; C-c s c {delimiter1} {delimiter2}
-;;     : change surrounding delimiters (e.g. "C-c s c [ {" )
-;; C-c s d {delimiter}
-;;     : delete surrounding delimiters (e.g. "C-c s d [" )
+;; C-z s {textobj} {delimiter}
+;;     : surround textobj with delimiter (e.g. "C-z s w [" )
+;; C-z s c {delimiter1} {delimiter2}
+;;     : change surrounding delimiters (e.g. "C-z s c [ {" )
+;; C-z s d {delimiter}
+;;     : delete surrounding delimiters (e.g. "C-z s d [" )
 
 ;; For example:
-;; C-c d w       : delete a word
-;; C-u 3 C-c d w : delete 3 words
-;; C-c y "       : yank text within surrounding ""
-;; C-u C-c y "   : yank text around surrounding ""
-;; C-c s c ' "   : change surrounding ' to "
-;; C-c s d [     : delete surrounding []
-;; C-c s w [     : surround word with []
-;; C-u 3 s w [   : surround 3 words with []
-;; C-c s ) }     : surround inner text surrounded by () with {}
-;; C-u C-c s ) } : surround outer text surrounded by () with {}
+;; C-z d w         : delete a word
+;; C-u 3 C-z d w   : delete 3 words
+;; C-u C-z d w     : delete 4 words
+;; C-u C-u C-z d w : delete 16 words as universal argument works
+;; C-z y "         : yank text within surrounding ""
+;; C-u C-z y "     : yank text around surrounding ""
+;; C-z s c ' "     : change surrounding ' to "
+;; C-z s d [       : delete surrounding []
+;; C-z s w [       : surround word with []
+;; C-u 3 s w [     : surround 3 words with []
+;; C-z s ) }       : surround inner text surrounded by () with {}
+;; C-u C-z s ) }   : surround outer text surrounded by () with {}
 
 
 ;; Text Objects include Delimiters and Things
@@ -52,10 +54,10 @@
 ;; x : sexp
 ;; for line, simply repeat the last used key
 ;; e.g.
-;; C-c SPC SPC : mark the line
-;; C-c d d     : delete the line
-;; C-c y y     : yank the line to kill ring
-;; C-c M-y M-y : yank the line to system clipboard
+;; C-z SPC SPC : mark the line
+;; C-z d d     : delete the line
+;; C-z y y     : yank the line to kill ring
+;; C-z M-y M-y : yank the line to system clipboard
 
 (defconst my-editing--delimiter-alist
   '((angle-bracket  . ("<" ">"))
@@ -276,7 +278,10 @@ If DIR is 1, search forward; if DIR is -1, search backward."
 
 (defmacro my-editing-action-textobj (action textobj)
   "Generate my-editing-ACTION-TEXTOBJ commands."
-  (let* ((action (symbol-name action))
+  (let* ((code (if (member textobj my-editing--thing-list)
+                   "p"
+                 "P"))
+         (action (symbol-name action))
          (textobj (symbol-name textobj))
          (action-fn (intern (format "my-editing--%s" action)))
          (textobj-fn (intern (format "my-editing--textobj-%s" textobj)))
@@ -288,7 +293,7 @@ If DIR is 1, search forward; if DIR is -1, search backward."
                                textobj)))
     `(defun ,fn (&optional arg)
        ,fn-docstring
-       (interactive "P")
+       (interactive ,code)
        (let* ((textobj (,textobj-fn arg))
               (beg (car textobj))
               (end (cdr textobj)))
@@ -297,7 +302,6 @@ If DIR is 1, search forward; if DIR is -1, search backward."
 ;; Generate all the action-textobj paired functions
 (let ((actions my-editing--action-list)
       (textobjs my-editing--textobj-list))
-
   (mapc (lambda (action)
           (mapc (lambda (textobj)
                   (eval
@@ -399,15 +403,16 @@ If DIR is 1, search forward; if DIR is -1, search backward."
 
 (defmacro my-editing--surround (textobj)
   "Surround textobj."
-  (let ((textobj (symbol-name textobj))
+  (let ((code (if (member textobj my-editing--thing-list)
+                  "p"
+                "P"))
+        (textobj (symbol-name textobj))
         (textobj-fn (intern (format "my-editing--textobj-%s" textobj)))
         (fn (intern (format "my-editing-surround-%s" textobj)))
         (docstring (format "Surround %s with delimiters." textobj)))
-
     `(defun ,fn (delimiter &optional arg)
        ,docstring
-       (interactive "cSurround with:\nP")
-
+       (interactive ,(format "cSurround with:\n%s" code))
        (save-excursion
          (let* ((cons (my-editing--get-delimiter-cons (string delimiter)))
                 (pair (cdr cons))
