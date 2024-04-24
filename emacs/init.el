@@ -173,6 +173,7 @@
   (isearch-lazy-count t)
   (isearch-lazy-highlight t)
   (isearch-regexp-lax-whitespace nil)
+  (isearch-repeat-on-direction-change t)
   (isearch-yank-on-move 'shift)
   (lazy-count-prefix-format "[%s/%s] ")
   (lazy-count-suffix-format nil)
