@@ -131,9 +131,9 @@ Subtle blue suggests the window is neither selected nor dedicated.")
   "Return git status.")
 (put 'my-mode-line--vc-mode 'risky-local-variable t)
 
-(defvar-local my-mode-line--centre-place-holder ""
+(defvar-local my-mode-line-centre-place-holder ""
   "Serve as a place holder for centrally aligned mode-line elements.")
-(put 'my-mode-line--centre-place-holder 'risky-local-variable t)
+(put 'my-mode-line-centre-place-holder 'risky-local-variable t)
 
 (defvar-local my-mode-line--buffer-size
     '(:propertize "%I"
@@ -188,7 +188,7 @@ Subtle blue suggests the window is neither selected nor dedicated.")
 
            ;; centre
            (list
-            my-mode-line--centre-place-holder)
+            my-mode-line-centre-place-holder)
 
            ;; right
            (when (mode-line-window-selected-p)

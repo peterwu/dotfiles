@@ -308,7 +308,7 @@
                             help-mode))
   :bind
   (:map my-toggle-map
-        ("t" . global-tab-line-mode ))
+        ("t" . global-tab-line-mode))
   :config
   (global-tab-line-mode -1))
 
