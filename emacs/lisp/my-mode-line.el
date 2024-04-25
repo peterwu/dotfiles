@@ -157,12 +157,12 @@ Subtle blue suggests the window is neither selected nor dedicated.")
 (defvar-local my-mode-line--percent-position
     '(:eval (let ((p (format-mode-line "%p")))
               (cond
-               ((string-equal p "All")
-                (propertize "All" 'help-echo p 'mouse-face 'mode-line-highlight))
-               ((string-equal p "Top")
-                (propertize "Top" 'help-echo p 'mouse-face 'mode-line-highlight))
-               ((string-equal p "Bottom")
-                (propertize "Bot" 'help-echo p 'mouse-face 'mode-line-highlight))
+               ((or (string-equal p "All")
+                    (string-equal p "Top")
+                    (string-equal p "Bottom"))
+                (propertize (substring-no-properties p 0 3)
+                            'help-echo p
+                            'mouse-face 'mode-line-highlight))
                (t
                 (propertize (concat p "%%")
                             'help-echo "Position"
