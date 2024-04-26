@@ -180,13 +180,6 @@
         ("J" . magit-file-dispatch)
         ("r" . vc-refresh-state)))
 
-(use-package minions
-  :ensure t
-  :custom
-  (minions-mode-line-delimiters '("" . ""))
-  (minions-mode-line-face 'mode-line-emphasis)
-  (minions-mode-line-lighter (if (char-displayable-p ?…) "…" "...")))
-
 (use-package mouse
   :if (display-graphic-p)
   :custom

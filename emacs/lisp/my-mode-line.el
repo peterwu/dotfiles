@@ -142,17 +142,23 @@ Subtle blue suggests the window is neither selected nor dedicated.")
   "Return the size of the buffer.")
 (put 'my-mode-line--buffer-size 'risky-local-variable t)
 
-(defvar-local my-mode-line--modes
-    '(:eval (and (or (and (consp mode-name)
-                          (setcar mode-name
-                                  (propertize (car mode-name)
-                                              'face '(:inherit mode-line-emphasis))))
-                     (setq mode-name
-                           (propertize mode-name
-                                       'face '(:inherit mode-line-emphasis))))
-                 minions-mode-line-modes))
-  "Return the modes information by utilizing the minions package.")
-(put 'my-mode-line--modes 'risky-local-variable t)
+(defvar-local my-mode-line--major-mode
+    (let ((recursive-edit-help-echo "Recursive edit, type C-M-c to get out"))
+      (list (propertize "%["
+                        'help-echo recursive-edit-help-echo)
+            '(:propertize ("" mode-name)
+                          face (:inherit mode-line-emphasis)
+                          help-echo "Major mode"
+                          mouse-face mode-line-highlight)
+            '("" mode-line-process)
+            (propertize "%n"
+                        'help-echo "mouse-2: Remove narrowing from buffer"
+                        'mouse-face 'mode-line-highlight
+                        'local-map (make-mode-line-mouse-map
+                                    'mouse-2 #'mode-line-widen))
+            (propertize "%]" 'help-echo recursive-edit-help-echo)))
+  "Return the major mode information.")
+(put 'my-mode-line--major-mode 'risky-local-variable t)
 
 (defvar-local my-mode-line--percent-position
     '(:eval (let ((p (format-mode-line "%p")))
@@ -196,7 +202,8 @@ Subtle blue suggests the window is neither selected nor dedicated.")
               mode-line-misc-info
               my-mode-line--buffer-size
               " "
-              my-mode-line--modes
+              my-mode-line--major-mode
+              " "
               my-mode-line--percent-position
               " ")))))
 
