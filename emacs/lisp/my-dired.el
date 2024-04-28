@@ -6,9 +6,9 @@
   (when (eq system-type 'darwin)
     (setq-default insert-directory-program "gls"))
   :custom
+  (delete-by-moving-to-trash t)
   (dired-bind-info nil)
   (dired-bind-man nil)
-  (delete-by-moving-to-trash t)
   (dired-clean-confirm-killing-deleted-buffers t)
   (dired-clean-up-buffers-too t)
   (dired-create-destination-dirs 'ask)
@@ -21,12 +21,13 @@
   (dired-mouse-drag-files t)
   (dired-recursive-copies 'always)
   (dired-recursive-deletes 'always)
+  (dired-use-ls-dired t)
   (dired-vc-rename-file t)
   :bind
   (:map dired-mode-map
         ("-"   . dired-up-directory)
         ("C-+" . dired-create-empty-file)
-        ("I"   . dired-info))
+        ("I"   . dired-do-info))
   :hook
   (dired-mode . dired-hide-details-mode)
   (dired-mode . dired-omit-mode))
