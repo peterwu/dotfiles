@@ -50,7 +50,7 @@
 ;; my-KILL-map (kill-to-clipboard)
 (bind-keys :map my-ctl-z-map
            :prefix-map my-KILL-map
-           :prefix "M-k")
+           :prefix "K")
 
 ;; my-yank-map (yank-to-ring)
 (bind-keys :map my-ctl-z-map
@@ -60,7 +60,7 @@
 ;; my-YANK-map (yank-to-clipboard)
 (bind-keys :map my-ctl-z-map
            :prefix-map my-YANK-map
-           :prefix "M-y")
+           :prefix "Y")
 
 ;; my-surround-map
 (bind-keys :map my-ctl-z-map

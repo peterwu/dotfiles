@@ -6,9 +6,9 @@
 ;; C-z SPC {textobj} : mark textobj
 ;; C-z d   {textobj} : delete textobj to black hole
 ;; C-z k   {textobj} : kill textobj to kill ring
-;; C-z M-k {textobj} : kill textobj to system clipboard
+;; C-z K   {textobj} : kill textobj to system clipboard
 ;; C-z y   {textobj} : yank/copy textobj to kill ring
-;; C-z M-y {textobj} : yank/copy textobj to system clipboard
+;; C-z Y   {textobj} : yank/copy textobj to system clipboard
 
 ;; Surround operations
 ;; C-z s {textobj} {delimiter}
@@ -57,7 +57,7 @@
 ;; C-z SPC SPC : mark the line
 ;; C-z d d     : delete the line
 ;; C-z y y     : yank the line to kill ring
-;; C-z M-y M-y : yank the line to system clipboard
+;; C-z Y Y     : yank the line to system clipboard
 
 (defconst my-editing--delimiter-alist
   '((angle-bracket  . ("<" ">"))
@@ -355,9 +355,9 @@ If DIR is 1, search forward; if DIR is -1, search backward."
       '((mark   . "SPC")
         (delete . "d")
         (kill   . "k")
-        (KILL   . "M-k")
+        (KILL   . "K")
         (yank   . "y")
-        (YANK   . "M-y")))
+        (YANK   . "Y")))
 
 ;; surround
 (defun my-editing-surround-change (delimiter1 delimiter2)
