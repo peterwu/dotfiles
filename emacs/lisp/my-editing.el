@@ -403,13 +403,12 @@ If DIR is 1, search forward; if DIR is -1, search backward."
 
 (defmacro my-editing--surround (textobj)
   "Surround textobj."
-  (let ((code (if (member textobj my-editing--thing-list)
-                  "p"
-                "P"))
-        (textobj (symbol-name textobj))
-        (textobj-fn (intern (format "my-editing--textobj-%s" textobj)))
-        (fn (intern (format "my-editing-surround-%s" textobj)))
-        (docstring (format "Surround %s with delimiters." textobj)))
+  (let* ((code (if (member textobj my-editing--thing-list)
+                   "p"
+                 "P"))
+         (textobj (symbol-name textobj))
+         (fn (intern (format "my-editing-surround-%s" textobj)))
+         (docstring (format "Surround %s with delimiters." textobj)))
     `(defun ,fn (delimiter &optional arg)
        ,docstring
        (interactive ,(format "cSurround with:\n%s" code))
