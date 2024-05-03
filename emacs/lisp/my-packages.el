@@ -180,6 +180,10 @@
         ("J" . magit-file-dispatch)
         ("r" . vc-refresh-state)))
 
+(use-package markdown-mode
+  :ensure t
+  :mode ("\\.md\\'" . markdown-mode))
+
 (use-package mouse
   :if (display-graphic-p)
   :custom
