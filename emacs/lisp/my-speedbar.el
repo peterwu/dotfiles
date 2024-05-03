@@ -1,0 +1,107 @@
+;;; my-speedbar.el -*- lexical-binding: t; -*-
+
+(require 'speedbar)
+
+(defvar-local my-speedbar--mode-line-directory-identification
+    '(:eval (propertize (concat ":" (my-mode-line-ellipsize-file-name
+                                     (abbreviate-file-name default-directory)
+                                     32))
+                        'face '(:inherit mode-line-buffer-id)))
+  "Return an ellipsized file name when applicable.")
+(put 'my-speedbar--mode-line-directory-identification 'risky-local-variable t)
+
+(defconst my-speedbar-buffer-name "*MY-SPEEDBAR*"
+  "The buffer name of my-speedbar")
+
+(defvar my-speedbar-window nil
+  "Define my-speedbar window")
+
+(defconst my-speedbar-window-width-in-percentage 30
+  "Set the default window width in percentage.")
+
+;;;###autoload
+(defun my-speedbar-toggle ()
+  "Toggle my-speedbar window"
+  (interactive)
+  (if (my-speedbar-exists-p)
+      (my-speedbar-hide)
+    (my-speedbar-show)))
+
+;;;###autoload
+(defun my-speedbar-show ()
+  "Show my-speedbar window"
+  (interactive)
+  (unless (my-speedbar-exists-p)
+    (setq my-speedbar-window
+          (split-window (frame-root-window)
+                        (- (window-total-width (frame-root-window))
+                           (truncate (/ (* (window-total-width (frame-root-window))
+                                           my-speedbar-window-width-in-percentage)
+                                        100)))
+                        'left))
+    (setq speedbar-buffer (generate-new-buffer my-speedbar-buffer-name)
+          speedbar-frame (selected-frame)
+          dframe-attached-frame (selected-frame)
+          speedbar-select-frame-method 'attached
+          speedbar-verbosity-level 0
+          speedbar-last-selected-file nil)
+    (set-buffer speedbar-buffer)
+    (buffer-disable-undo speedbar-buffer)
+    (speedbar-mode)
+    (speedbar-reconfigure-keymaps)
+    (speedbar-update-contents)
+
+    (set-window-buffer my-speedbar-window speedbar-buffer)
+    (set-window-dedicated-p my-speedbar-window t)
+    (select-window my-speedbar-window)
+
+    (setq-local mode-line-format
+                '(:eval
+                  (list
+                   my-mode-line--window-status-tag
+                   " "
+                   my-speedbar--mode-line-directory-identification)))
+    (force-mode-line-update)))
+
+;;;###autoload
+(defun my-speedbar-hide ()
+  "Hide my-speedbar window"
+  (interactive)
+  (when (my-speedbar-exists-p)
+    (let ((current-window (selected-window)))
+      (with-selected-window my-speedbar-window
+        (kill-buffer-and-window))
+      (setq my-speedbar-window nil)
+      (setq speedbar-buffer nil
+            speedbar-frame nil
+            dframe-attached-frame nil
+            speedbar-last-selected-file nil)
+      (and current-window
+           (window-live-p current-window)
+           (select-window current-window)))))
+
+(defun my-speedbar-exists-p ()
+  "Return `non-nil' if `my-speedbar' exists.
+Otherwise return nil."
+  (and (my-speedbar-buffer-exists-p)
+       (my-speedbar-window-exists-p)))
+
+(defun my-speedbar-window-exists-p ()
+  "Return `non-nil' if my-speedbar window exists.
+Otherwise return nil."
+  (and my-speedbar-window
+       (window-live-p my-speedbar-window)))
+
+(defun my-speedbar-buffer-exists-p ()
+  "Return `non-nil' if my-speedbar buffer exists.
+Otherwise return nil."
+  (and speedbar-buffer
+       (buffer-live-p speedbar-buffer)))
+
+(bind-keys :map global-map
+           ([f9] . my-speedbar-toggle)
+           :map speedbar-mode-map
+           ("^" . speedbar-up-directory)
+           ("q" . my-speedbar-hide))
+
+(provide 'my-speedbar)
