@@ -83,16 +83,26 @@
   (interactive)
   (when (my-speedbar-exists-p)
     (let ((current-window (selected-window)))
-      (with-selected-window my-speedbar-window
-        (kill-buffer-and-window))
-      (setq my-speedbar-window nil)
-      (setq speedbar-buffer nil
-            speedbar-frame nil
-            dframe-attached-frame nil
-            speedbar-last-selected-file nil)
+      (delete-window my-speedbar-window)
       (and current-window
            (window-live-p current-window)
            (select-window current-window)))))
+
+(defun my-speedbar--kill-buffer-on-deleted-window ()
+  "Kill my-speedbar buffer after my-speedbar window is deleted."
+  (when (and (my-speedbar-buffer-exists-p)
+             (not (my-speedbar-window-exists-p)))
+
+    (kill-buffer my-speedbar-buffer-name)
+
+    (setq my-speedbar-window nil)
+    (setq speedbar-buffer nil
+          speedbar-frame nil
+          dframe-attached-frame nil
+          speedbar-last-selected-file nil)))
+
+(add-hook 'window-configuration-change-hook
+          #'my-speedbar--kill-buffer-on-deleted-window)
 
 (defun my-speedbar-exists-p ()
   "Return `non-nil' if `my-speedbar' exists.
