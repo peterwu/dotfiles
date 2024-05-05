@@ -19,6 +19,19 @@
 (defconst my-speedbar-window-width-in-percentage 30
   "Set the default window width in percentage.")
 
+(defun my-speedbar-set-mode-line-format-advice ()
+  "Override the default mode-line-format."
+  (setq-local mode-line-format
+              '(:eval
+                (list
+                 my-mode-line--window-status-tag
+                 " "
+                 my-speedbar--mode-line-directory-identification)))
+  (force-mode-line-update))
+
+(advice-add #'speedbar-set-mode-line-format
+            :override #'my-speedbar-set-mode-line-format-advice)
+
 ;;;###autoload
 (defun my-speedbar-toggle ()
   "Toggle my-speedbar window"
@@ -53,15 +66,7 @@
 
     (set-window-buffer my-speedbar-window speedbar-buffer)
     (set-window-dedicated-p my-speedbar-window t)
-    (select-window my-speedbar-window)
-
-    (setq-local mode-line-format
-                '(:eval
-                  (list
-                   my-mode-line--window-status-tag
-                   " "
-                   my-speedbar--mode-line-directory-identification)))
-    (force-mode-line-update)))
+    (select-window my-speedbar-window)))
 
 ;;;###autoload
 (defun my-speedbar-hide ()
