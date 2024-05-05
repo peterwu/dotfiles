@@ -32,6 +32,15 @@
 (advice-add #'speedbar-set-mode-line-format
             :override #'my-speedbar-set-mode-line-format-advice)
 
+(defun my-speedbar-toggle-show-all-files-advice ()
+  "Toggle the appearance of level 2 hidden files."
+  (if speedbar-show-unknown-files
+      (setq-local speedbar-directory-unshown-regexp "^\\(\\..*\\)\\'")
+    (setq-local speedbar-directory-unshown-regexp "^\(\.\.*$\)\'")))
+
+(advice-add #'speedbar-toggle-show-all-files
+            :before #'my-speedbar-toggle-show-all-files-advice)
+
 ;;;###autoload
 (defun my-speedbar-toggle ()
   "Toggle my-speedbar window"
@@ -107,6 +116,7 @@ Otherwise return nil."
            ([f9] . my-speedbar-toggle)
            :map speedbar-mode-map
            ("^" . speedbar-up-directory)
+           ("." . speedbar-toggle-show-all-files)
            ("q" . my-speedbar-hide))
 
 (provide 'my-speedbar)
