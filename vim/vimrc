@@ -733,7 +733,13 @@ function! s:vinegarize_netrw() abort
 endfunction
 
 " termdebug
-let g:termdebug_wide = 1
+packadd! termdebug
+let g:termdebug_config = {
+            \ 'sign'   : '>>',
+            \ 'wide'   : 1,
+            \ 'winbar' : 0
+            \ }
+nnoremap <silent> <F5> <Cmd>Termdebug<CR>
 
 " personal plugins
 call s:paq_add('chrisbra/colorizer',
