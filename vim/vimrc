@@ -149,10 +149,29 @@ nnoremap <silent> ]b <Cmd>bnext<CR>
 nnoremap <silent> [B <Cmd>bfirst<CR>
 nnoremap <silent> ]B <Cmd>blast<CR>
 
+nnoremap <silent> [l <Cmd>lprevious<CR>
+nnoremap <silent> ]l <Cmd>lnext<CR>
+nnoremap <silent> [L <Cmd>lfirst<CR>
+nnoremap <silent> ]L <Cmd>llast<CR>
+
 nnoremap <silent> [q <Cmd>cprevious<CR>
 nnoremap <silent> ]q <Cmd>cnext<CR>
 nnoremap <silent> [Q <Cmd>cfirst<CR>
 nnoremap <silent> ]Q <Cmd>clast<CR>
+
+" open/close location list window
+nnoremap <silent> <Leader>lo <Cmd>lopen<CR>
+nnoremap <silent> <Leader>lc <Cmd>lclose<CR>
+nnoremap <silent> <Leader>ll <Cmd>call <SID>toggle_location_list_window()<CR>
+
+function! s:toggle_location_list_window() abort
+    let l:nr1 = winnr('$')
+    lopen
+    let l:nr2 = winnr('$')
+    if l:nr1 == l:nr2
+        lclose
+    endif
+endfunction
 
 " open/close quickfix window
 nnoremap <silent> <Leader>qo <Cmd>copen<CR>
@@ -286,8 +305,22 @@ elseif executable('wl-paste')
     vnoremap <silent> <Leader>P <Cmd>let @"=system('wl-paste')<CR>""P
 endif
 
+" terminal
+tnoremap <Esc> <C-\><C-N>
+nnoremap <C-`> <Cmd>belowright terminal bash<CR>
+
+" }}}
+
+" commands {{{
+
+command! -nargs=+ -complete=file Grep
+            \ execute 'silent grep! <args>'<Bar>redraw!<Bar>cfirst
+
+command! -nargs=+ -complete=file LGrep
+            \ execute 'silent lgrep! <args>'<Bar>redraw!<Bar>lfirst
+
 " force saving files that otherwise require sudoedit
-command -nargs=0 SudoWrite call s:sudo_write()
+command! -nargs=0 SudoWrite call s:sudo_write()
 nnoremap <Leader>w! <Cmd>SudoWrite<CR>
 
 function s:sudo_write()
@@ -295,10 +328,6 @@ function s:sudo_write()
     edit!
     echo expand('%:p') .. ' saved!'
 endfunction
-
-" terminal
-tnoremap <Esc> <C-\><C-N>
-nnoremap <C-`> <Cmd>belowright terminal bash<CR>
 
 " }}}
 
