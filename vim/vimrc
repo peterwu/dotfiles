@@ -313,14 +313,23 @@ nnoremap <C-`> <Cmd>belowright terminal bash<CR>
 
 " commands {{{
 
-command! -nargs=+ -complete=file Grep
-            \ execute 'silent grep! <args>'<Bar>redraw!<Bar>cfirst
+" instant grep + quickfix
+function! s:grep(...)
+    let l:args = expandcmd(join(a:000, ' '))
+    let l:cmd = substitute(&grepprg, '\$\*', l:args, '')
+    return system(l:cmd)
+endfunction
 
-command! -nargs=+ -complete=file LGrep
-            \ execute 'silent lgrep! <args>'<Bar>redraw!<Bar>lfirst
+command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr <SID>grep(<f-args>)
+command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr <SID>grep(<f-args>)
+
+augroup quickfix | autocmd!
+    autocmd QuickFixCmdPost cgetexpr cwindow
+    autocmd QuickFixCmdPost lgetexpr lwindow
+augroup END
 
 " force saving files that otherwise require sudoedit
-command! -nargs=0 SudoWrite call s:sudo_write()
+command! -nargs=0 SudoWrite call <SID>sudo_write()
 nnoremap <Leader>w! <Cmd>SudoWrite<CR>
 
 function s:sudo_write()
