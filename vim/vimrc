@@ -314,25 +314,20 @@ nnoremap <C-`> <Cmd>belowright terminal bash<CR>
 " commands {{{
 
 " instant grep + quickfix
+command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr s:grep(<f-args>)
+command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr s:grep(<f-args>)
+
 function! s:grep(...)
     let l:args = expandcmd(join(a:000, ' '))
     let l:cmd = substitute(&grepprg, '\$\*', l:args, '')
     return system(l:cmd)
 endfunction
 
-command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr <SID>grep(<f-args>)
-command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr <SID>grep(<f-args>)
-
-augroup quickfix | autocmd!
-    autocmd QuickFixCmdPost cgetexpr cwindow
-    autocmd QuickFixCmdPost lgetexpr lwindow
-augroup END
-
 " force saving files that otherwise require sudoedit
-command! -nargs=0 SudoWrite call <SID>sudo_write()
+command! -nargs=0 SudoWrite call s:sudo_write()
 nnoremap <Leader>w! <Cmd>SudoWrite<CR>
 
-function s:sudo_write()
+function! s:sudo_write()
     silent! write !sudo tee % > /dev/null
     edit!
     echo expand('%:p') .. ' saved!'
@@ -342,14 +337,15 @@ endfunction
 
 " autos {{{
 
+augroup auto_clang_format | autocmd!
+    if executable('clang-format')
+        autocmd FileType c,cpp,objc setlocal equalprg=clang-format
+    endif
+augroup END
+
 augroup auto_save_folds | autocmd!
     autocmd BufWinLeave,BufLeave,BufWritePost ?* ++nested silent! mkview!
     autocmd BufWinEnter ?* silent! loadview
-augroup END
-
-augroup show_listchars_when_insert | autocmd!
-    autocmd InsertEnter * set list
-    autocmd InsertLeave * set nolist
 augroup END
 
 augroup no_number_for_old_term | autocmd!
@@ -360,14 +356,13 @@ augroup no_trailing_whitespaces | autocmd!
     autocmd BufWritePre * :%s/\s\+$//e
 augroup END
 
-augroup auto_clang_format | autocmd!
-    if executable('clang-format')
-        autocmd FileType c,cpp,objc setlocal equalprg=clang-format
-    endif
-augroup END
-
 augroup setup_quickfix | autocmd!
-    autocmd WinLeave * if &buftype == "quickfix" | cclose | endif
+    autocmd QuickFixCmdPost cgetexpr cwindow
+    autocmd QuickFixCmdPost lgetexpr lwindow
+
+    autocmd WinLeave * if win_gettype() == "quickfix" | cclose | endif
+    autocmd WinLeave * if win_gettype() == "loclist"  | lclose | endif
+
     autocmd Filetype qf
                 \ setlocal norelativenumber statusline=%!DrawQfStatusLine()
 augroup END
@@ -389,13 +384,14 @@ function! DrawQfStatusLine() abort
                 \ ], '')
 endfunction
 
-augroup use_as_man_pager | autocmd!
-    autocmd FileType man setlocal textwidth=0 | match none
-augroup END
-
 augroup show_color_column_per_line | autocmd!
     autocmd FileType * execute 'match ColorColumn'
                 \ '/\%' .. (&textwidth ? &textwidth + 1 : 0) .. 'v./'
+augroup END
+
+augroup show_listchars_when_insert | autocmd!
+    autocmd InsertEnter * set list
+    autocmd InsertLeave * set nolist
 augroup END
 
 augroup override_colors | autocmd!
@@ -410,6 +406,10 @@ augroup update_status_line | autocmd!
     autocmd BufEnter,BufWritePost,WinEnter,VimEnter *
                 \ call s:highlight_status_line()
     autocmd ModeChanged,VimResized * redrawstatus!
+augroup END
+
+augroup use_as_man_pager | autocmd!
+    autocmd FileType man setlocal textwidth=0 | match none
 augroup END
 
 " }}}
