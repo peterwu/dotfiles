@@ -361,9 +361,6 @@ augroup setup_quickfix | autocmd!
     autocmd QuickFixCmdPost cgetexpr cwindow
     autocmd QuickFixCmdPost lgetexpr lwindow
 
-    autocmd WinLeave * if win_gettype() == "quickfix" | cclose | endif
-    autocmd WinLeave * if win_gettype() == "loclist"  | lclose | endif
-
     autocmd Filetype qf
                 \ setlocal norelativenumber statusline=%!DrawQfStatusLine()
 augroup END
