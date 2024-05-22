@@ -162,28 +162,29 @@ nnoremap <silent> ]Q <Cmd>clast<CR>
 " open/close location list window
 nnoremap <silent> <Leader>lo <Cmd>lopen<CR>
 nnoremap <silent> <Leader>lc <Cmd>lclose<CR>
-nnoremap <silent> <Leader>ll <Cmd>call <SID>toggle_location_list_window()<CR>
-
-function! s:toggle_location_list_window() abort
-    let l:nr1 = winnr('$')
-    lopen
-    let l:nr2 = winnr('$')
-    if l:nr1 == l:nr2
-        lclose
-    endif
-endfunction
+nnoremap <silent> <Leader>ll <Cmd>call <SID>toggle_quickfix_window('ll')<CR>
 
 " open/close quickfix window
 nnoremap <silent> <Leader>qo <Cmd>copen<CR>
 nnoremap <silent> <Leader>qc <Cmd>cclose<CR>
-nnoremap <silent> <Leader>qq <Cmd>call <SID>toggle_quickfix_window()<CR>
+nnoremap <silent> <Leader>qq <Cmd>call <SID>toggle_quickfix_window('qf')<CR>
 
-function! s:toggle_quickfix_window() abort
-    let l:nr1 = winnr('$')
-    copen
-    let l:nr2 = winnr('$')
-    if l:nr1 == l:nr2
-        cclose
+function! s:toggle_quickfix_window(type) abort
+    let l:value = ''
+    let l:prefix = ''
+
+    if a:type == 'qf'
+        let l:value = 'v:val.quickfix'
+        let l:prefix = 'c'
+    elseif a:type == 'll'
+        let l:value = 'v:val.loclist'
+        let l:prefix = 'l'
+    endif
+
+    if getwininfo()->filter(l:value)->empty()
+        execute 'silent! ' .. l:prefix .. 'open'
+    else
+        execute 'silent! ' .. l:prefix .. 'close'
     endif
 endfunction
 
