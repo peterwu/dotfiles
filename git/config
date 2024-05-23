@@ -27,4 +27,5 @@
     trustExitCode = true
 [alias]
     co = checkout
-    tree = log --all --graph --decorate --oneline
+    find = log --oneline --name-status --regexp-ignore-case --grep
+    tree = log --all --decorate --graph --oneline
