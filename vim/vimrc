@@ -743,6 +743,9 @@ endfunction
 " -------
 " system plugins
 
+" comment
+packadd! comment
+
 " matchit
 packadd! matchit
 
@@ -780,8 +783,6 @@ nnoremap <silent> <F5> <Cmd>Termdebug<CR>
 " personal plugins
 call s:paq_add('chrisbra/colorizer',
             \ {'as' : 'colorizer'})
-call s:paq_add('tpope/vim-commentary',
-            \ {'as' : 'commentary'})
 call s:paq_add('tommcdo/vim-exchange',
             \ {'as' : 'exchange'})
 call s:paq_add('machakann/vim-highlightedyank',
