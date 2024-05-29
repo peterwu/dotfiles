@@ -394,10 +394,11 @@ augroup END
 
 augroup override_colors | autocmd!
     autocmd ColorScheme *
-                \ call s:highlight('ColorColumn', 'NONE',  'LightMagenta') |
-                \ call s:highlight('TabLine',     'Black', 'LightGray')    |
-                \ call s:highlight('TabLineFill', 'Black', 'White')        |
-                \ call s:highlight('TabLineSel',  'White', 'DarkBlue', 'bold')
+                \ call s:highlight('ColorColumn', 'NONE', 'LightMagenta')     |
+                \ call s:highlight('TabLine', 'Black', 'LightGray')           |
+                \ call s:highlight('TabLineFill', 'Black', 'White')           |
+                \ call s:highlight('TabLineSel', 'White', 'DarkBlue', 'bold') |
+                \ call s:highlight_status_line()
 augroup END
 
 augroup update_status_line | autocmd!
