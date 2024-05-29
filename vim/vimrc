@@ -781,8 +781,6 @@ let g:termdebug_config = {
 nnoremap <silent> <F5> <Cmd>Termdebug<CR>
 
 " personal plugins
-call s:paq_add('chrisbra/colorizer',
-            \ {'as' : 'colorizer'})
 call s:paq_add('tommcdo/vim-exchange',
             \ {'as' : 'exchange'})
 call s:paq_add('machakann/vim-highlightedyank',
@@ -791,10 +789,6 @@ call s:paq_add('tpope/vim-repeat',
             \ {'as' : 'repeat'})
 call s:paq_add('tpope/vim-surround',
             \ {'as' : 'surround'})
-
-" auto-pairs
-call s:paq_add('LunarWatcher/auto-pairs')
-let g:AutoPairsCompleteOnlyOnSpace = 1
 
 " lion
 call s:paq_add('tommcdo/vim-lion', {'as' : 'lion'})
