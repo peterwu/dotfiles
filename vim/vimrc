@@ -766,10 +766,8 @@ augroup vinegarize_netrw | autocmd!
 augroup END
 
 function! s:vinegarize_netrw() abort
-    nnoremap <buffer> <silent> <nowait> <LocalLeader>cd
-                \ <Cmd>execute 'cd ' .. b:netrw_curdir<Bar>pwd<CR>
-    nnoremap <buffer> <silent> <nowait> - k^
-    nnoremap <buffer> <silent> <nowait> ~ <Cmd>edit ~/<CR>
+    nnoremap <buffer> <silent> <nowait> ~
+                \ <Cmd>execute 'Ntree ' .. expand('~')<CR>
 endfunction
 
 " termdebug
