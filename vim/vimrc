@@ -766,8 +766,10 @@ augroup vinegarize_netrw | autocmd!
 augroup END
 
 function! s:vinegarize_netrw() abort
+    nnoremap <buffer> <silent> <nowait> ^ <Plug>NetrwBrowseUpDir()
+    nnoremap <buffer> <silent> <nowait> - k
     nnoremap <buffer> <silent> <nowait> ~
-                \ <Cmd>execute 'Ntree ' .. expand('~')<CR>
+                \ <Cmd>execute ':Ntree ' .. expand('~/')<CR>
 endfunction
 
 " termdebug
