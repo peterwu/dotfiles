@@ -1,335 +1,937 @@
 vim9script
-############
-# defaults #
-############
+# let the fun begin
+
+# commons {{{
+
+const home = getenv('HOME')
+var env_var_home = ''
+var vim_var_home = ''
+
+var vim_cache_home = ''
+var vim_config_home = ''
+var vim_data_home = ''
+var vim_state_home = ''
+
+for [vim_var, env_var, default_dir] in [
+        ['vim_cache_home',  'XDG_CACHE_HOME',  '.cache'],
+        ['vim_config_home', 'XDG_CONFIG_HOME', '.config'],
+        ['vim_data_home',   'XDG_DATA_HOME',   '.local/share'],
+        ['vim_state_home',  'XDG_STATE_HOME',  '.local/state']
+        ]
+    env_var_home = getenv(env_var) ?? home .. '/' .. default_dir
+    vim_var_home = env_var_home .. '/vim'
+
+    mkdir(vim_var_home, 'p', 0o700)
+
+    execute vim_var .. ' = "' .. vim_var_home .. '"'
+endfor
+
+def Highlight(group: string, fg='NONE', bg='NONE', style='NONE'): void
+    execute 'highlight ' .. group
+        .. ' ctermfg=' .. fg
+        .. ' ctermbg=' .. bg
+        .. ' cterm='   .. style
+        .. ' guifg='   .. fg
+        .. ' guibg='   .. bg
+        .. ' gui='     .. style
+enddef
+
+# }}}
+
+# options {{{
+
+# --------
+# defaults
+# --------
+unlet! g:skip_defaults_vim
 source $VIMRUNTIME/defaults.vim
 
-#############
-# work dirs #
-#############
-mkdir($HOME .. "/.vim/cache", "p")
-mkdir($HOME .. "/.vim/undo",  "p")
+# ---------
+# work dirs
+# ---------
+mkdir(vim_state_home .. '/swap', 'p', 0o700)
+mkdir(vim_state_home .. '/undo', 'p', 0o700)
+mkdir(vim_state_home .. '/view', 'p', 0o700)
 
-###########
-# options #
-###########
-set background=light
+# -------
+# options
+# -------
+set autoindent
+set autoread
+set complete-=i
 set completeopt=menu,menuone,noinsert,noselect
 set cursorline
+&directory = vim_state_home .. '/swap'
+set encoding=utf-8
 set expandtab
+set fileformats=unix,dos,mac
+set foldmethod=marker
+set formatoptions=tcqj
 set hidden
+set history=1000
 set hlsearch
 set ignorecase
 set laststatus=2
 set lazyredraw
 set listchars=trail:·,tab:»·
 set mouse=a
+set mousemodel=popup_setpos
 set nolist
 set noshowmode
 set notitle
 set number
-set path+=**
+set path=.,,**
 set pumheight=7
 set relativenumber
-set sessionoptions=folds
+set scrolloff=1
+set sessionoptions-=options
+set shiftround
 set shiftwidth=4
 set shortmess+=Ic
 set showmatch
+set sidescroll=1
+set sidescrolloff=2
 set smartcase
 set smartindent
+set smarttab
+set smoothscroll
 set softtabstop=0
 set splitbelow
 set splitright
+set switchbuf=uselast
 set tabstop=8
+set termencoding=utf-8
 set termguicolors
+set textwidth=80
 set timeoutlen=777
-set undodir=$HOME/.vim/undo
+set ttimeoutlen=77
+&undodir = vim_state_home .. '/undo'
 set undofile
+&viewdir = vim_state_home .. '/view'
 set viewoptions=cursor,folds
-set viminfo=%,<800,'10,/50,:100,h,f0,n$HOME/.vim/cache/viminfo
+set viminfo=%,<800,'10,/50,:100,h,f0
+&viminfofile = vim_state_home .. '/viminfo'
+set virtualedit=block
+set wildoptions=pum,tagfile
 
-colorscheme lunaperche
+# }}}
 
-################
-# key mappings #
-################
+# keymaps {{{
+
 # leaders
-g:mapleader      = " "
-g:maplocalleader = ","
+g:mapleader = ' '
 
 # vimrc
-nnoremap <silent> <Leader>cd <Cmd>cd     %:p:h<CR><Cmd>pwd<CR>
+nnoremap <silent> <Leader>cd <Cmd>cd     %:p:h<Bar>pwd<CR>
 nnoremap <silent> <Leader>ev <Cmd>edit   $MYVIMRC<CR>
 nnoremap <silent> <Leader>sv <Cmd>source $MYVIMRC<CR>
 
-# minpac
-nnoremap <silent> <Leader>qu <Cmd>PackUpdate<CR>
-nnoremap <silent> <Leader>qc <Cmd>PackClean<CR>
-nnoremap <silent> <Leader>qs <Cmd>PackStatus<CR>
+# disable arrow keys
+noremap <Up>    <Nop>
+noremap <Down>  <Nop>
+noremap <Left>  <Nop>
+noremap <Right> <Nop>
 
-# disable arrow keys in normal mode
-map <Up>    <Nop>
-map <Down>  <Nop>
-map <Left>  <Nop>
-map <Right> <Nop>
-
-# disable arrow keys in insert mode
-imap <Up>    <Nop>
-imap <Down>  <Nop>
-imap <Left>  <Nop>
-imap <Right> <Nop>
+inoremap <Up>    <Nop>
+inoremap <Down>  <Nop>
+inoremap <Left>  <Nop>
+inoremap <Right> <Nop>
 
 # swap j/k <-> gj/gk
 nnoremap <expr> j (v:count ? 'j' : 'gj')
 nnoremap <expr> k (v:count ? 'k' : 'gk')
-vnoremap <expr> j (v:count ? 'j' : 'gj')
-vnoremap <expr> k (v:count ? 'k' : 'gk')
+xnoremap <expr> j (v:count ? 'j' : 'gj')
+xnoremap <expr> k (v:count ? 'k' : 'gk')
+
+# unimpaired
+nnoremap <silent> [<Space> O<Esc>j
+nnoremap <silent> ]<Space> o<Esc>k
+
+nnoremap <silent> [a <Cmd>previous<CR>
+nnoremap <silent> ]a <Cmd>next<CR>
+nnoremap <silent> [A <Cmd>first<CR>
+nnoremap <silent> ]A <Cmd>last<CR>
+
+nnoremap <silent> [b <Cmd>bprevious<CR>
+nnoremap <silent> ]b <Cmd>bnext<CR>
+nnoremap <silent> [B <Cmd>bfirst<CR>
+nnoremap <silent> ]B <Cmd>blast<CR>
+
+nnoremap <silent> [l <Cmd>lprevious<CR>
+nnoremap <silent> ]l <Cmd>lnext<CR>
+nnoremap <silent> [L <Cmd>lfirst<CR>
+nnoremap <silent> ]L <Cmd>llast<CR>
+
+nnoremap <silent> [q <Cmd>cprevious<CR>
+nnoremap <silent> ]q <Cmd>cnext<CR>
+nnoremap <silent> [Q <Cmd>cfirst<CR>
+nnoremap <silent> ]Q <Cmd>clast<CR>
+
+# open/close location list window
+nnoremap <silent> <Leader>lo <Cmd>lopen<CR>
+nnoremap <silent> <Leader>lc <Cmd>lclose<CR>
+nnoremap <silent> <Leader>ll <Cmd>call <SID>ToggleQuickfixWindow('ll')<CR>
+
+# open/close quickfix window
+nnoremap <silent> <Leader>qo <Cmd>copen<CR>
+nnoremap <silent> <Leader>qc <Cmd>cclose<CR>
+nnoremap <silent> <Leader>qq <Cmd>call <SID>ToggleQuickfixWindow('qf')<CR>
+
+def ToggleQuickfixWindow(type: string): void
+    var value = ''
+    var prefix = ''
+
+    if type == 'qf'
+        value = 'v:val.quickfix'
+        prefix = 'c'
+    elseif type == 'll'
+        value = 'v:val.loclist'
+        prefix = 'l'
+    endif
+
+    if getwininfo()->filter(value)->empty()
+        execute 'silent! ' .. prefix .. 'open'
+    else
+        execute 'silent! ' .. prefix .. 'close'
+    endif
+enddef
+
+# use quickfix to show args
+nnoremap <silent> <Leader>fa <Cmd>silent! call setqflist([], ' ',
+            \ {
+            \   'items': argv()->copy()
+            \             ->map({ -> { 'filename': v:val->expand(':p') }}),
+            \   'quickfixtextfunc': '<SID>FormatQuickfixItems'
+            \ })<Bar>copen<CR>
+
+# use quickfix to show buffers
+nnoremap <silent> <Leader>fb <Cmd>silent! call setqflist([], ' ',
+            \ {
+            \   'items': range(1, bufnr('$'))
+            \             ->filter('buflisted(v:val)')
+            \             ->map({ -> { 'bufnr': v:val }}),
+            \   'quickfixtextfunc': '<SID>FormatQuickfixItems'
+            \ })<Bar>copen<CR>
+
+# use quickfix to show oldfiles
+nnoremap <silent> <Leader>fo <Cmd>silent! call setqflist([], ' ',
+            \ {
+            \   'items': v:oldfiles->copy()
+            \             ->map({ -> { 'filename': v:val->expand(':p') }}),
+            \   'quickfixtextfunc' : '<SID>FormatQuickfixItems'
+            \ })<Bar>copen<CR>
+
+def FormatQuickfixItems(info: dict<number>): list<string>
+    var items = getqflist({ id: info.id, items: 1 }).items
+    var list = []
+    for idx in range(info.start_idx - 1, info.end_idx - 1)
+        var bufname = bufname(items[idx].bufnr)
+        if bufname->empty()
+            add(list, "[No Name]")
+        else
+            add(list, fnamemodify(bufname, ':~'))
+        endif
+    endfor
+    return list
+enddef
+
+# use tab to select from popup menu
+inoremap <expr> <Tab>   (pumvisible() ? '<C-N>' : '<Tab>')
+inoremap <expr> <S-Tab> (pumvisible() ? '<C-P>' : '<C-H>')
+
+# stolen from neovim defaults
+nnoremap Y     yg_
+nnoremap <C-L> <Cmd>nohlsearch<Bar>diffupdate<Bar>normal! <C-L><CR>
+inoremap <C-U> <C-G>u<C-U>
+inoremap <C-W> <C-G>u<C-W>
+xnoremap *     y/\V<C-R>"<CR>
+xnoremap #     y?\V<C-R>"<CR>
+nnoremap &     <Cmd>&&<CR>
 
 # copy to clipboard
-nnoremap Y yg_
-
 if has('clipboard')
-    vnoremap <silent> <Leader>y  "+y
     nnoremap <silent> <Leader>y  "+y
+    xnoremap <silent> <Leader>y  "+y
     nnoremap <silent> <Leader>Y  "+yg_
     nnoremap <silent> <Leader>yy "+y_
-elseif executable('/usr/bin/xsel')
+elseif executable('wl-copy')
     vnoremap <silent> <Leader>y  <Cmd>set opfunc=<SID>CopyToClipboard<CR>g@
     nnoremap <silent> <Leader>y  <Cmd>set opfunc=<SID>CopyToClipboard<CR>g@
     nnoremap <silent> <Leader>Y  <Cmd>set opfunc=<SID>CopyToClipboard<CR>g@g_
     nnoremap <silent> <Leader>yy <Cmd>set opfunc=<SID>CopyToClipboard<CR>g@_
+endif
 
-    def CopyToClipboard(type: string, ...args: list<any>)
-        var reg = '"'
-        var sel_save = &selection
-        &selection = "inclusive"
-        var cb_save  = &clipboard
-        var reg_save = getreg(reg)
-        var reg_type = getregtype(reg)
-        if type ==# "char"
-            silent execute 'normal! v`[o`]"' .. reg .. 'y'
-        elseif type ==# "line"
-            silent execute 'normal! `[V`]"' .. reg .. 'y'
-        elseif type ==# "v" || type ==# "V" || type ==# "\<C-V>" || type ==# "block"
-            &selection = sel_save
-            var ve = &virtualedit
-            if !type || !get(args, 0, false)
-                set virtualedit=none
-            endif
-            silent execute 'normal! gv"' .. reg .. 'y'
-            &virtualedit = ve
-        elseif type =~ '^\d\+$'
-            silent execute 'normal! ^v' .. type .. '$h"' .. reg .. 'y'
-            if mode() ==# 'v'
-                normal! v
-            endif
-        else
-            &selection = sel_save
-            &clipboard = cb_save
+def CopyToClipboard(type: string, ...args: list<string>): void
+    var reg = '"'
+    var sel_save = &selection
+    &selection = "inclusive"
+    var cb_save  = &clipboard
+    var reg_save = getreg(reg)
+    var reg_type = getregtype(reg)
+    var type_save = type
+    if type == "char"
+        silent execute 'normal! v`[o`]"' .. reg .. 'y'
+        type_save = 'v'
+    elseif type == "line"
+        silent execute 'normal! `[V`]"' .. reg .. 'y'
+        type_save = 'V'
+    elseif type ==# "v" || type ==# "V" || type ==# "\<C-V>" || type == "block"
+        &selection = sel_save
+        var ve = &virtualedit
+        # if !(!args[0]->empty() && !args[1]->empty())
+        if args[0]->empty() || args[1]->empty()
+            set virtualedit=
         endif
-
-        system('/usr/bin/xsel -i -b -l /dev/null', getreg(reg))
-
-        setreg(reg, reg_save, reg_type)
+        silent execute 'normal! gv"' .. reg .. 'y'
+        &virtualedit = ve
+    elseif type =~ '^\d\+$'
+        type_save = 'v'
+        silent execute 'normal! ^v' .. type .. '$h"' .. reg .. 'y'
+        if mode() ==# 'v'
+            normal! v
+        endif
+    else
         &selection = sel_save
         &clipboard = cb_save
-    enddef
-endif
+    endif
+
+    system('wl-copy', getreg(reg))
+
+    setreg(reg, reg_save, reg_type)
+    &selection = sel_save
+    &clipboard = cb_save
+enddef
 
 # paste from clipboard
 if has('clipboard')
     nnoremap <silent> <Leader>p "+p
     nnoremap <silent> <Leader>P "+P
-    vnoremap <silent> <Leader>p "+p
-    vnoremap <silent> <Leader>P "+P
-elseif executable('/usr/bin/xsel')
-    nnoremap <silent> <Leader>p <Cmd>let @"=system('xsel -o -b -l /dev/null')<CR>""p
-    nnoremap <silent> <Leader>P <Cmd>let @"=system('xsel -o -b -l /dev/null')<CR>""P
-    vnoremap <silent> <Leader>p <Cmd>let @"=system('xsel -o -b -l /dev/null')<CR>""p
-    vnoremap <silent> <Leader>P <Cmd>let @"=system('xsel -o -b -l /dev/null')<CR>""P
-endif
-
-# use <C-L> to clear the highlighting of :set hlsearch.
-if maparg('<C-L>', 'n') ==# ''
-    nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
+    xnoremap <silent> <Leader>p "+p
+    xnoremap <silent> <Leader>P "+P
+elseif executable('wl-paste')
+    nnoremap <silent> <Leader>p <Cmd>let @"=system('wl-paste')<CR>""p
+    nnoremap <silent> <Leader>P <Cmd>let @"=system('wl-paste')<CR>""P
+    vnoremap <silent> <Leader>p <Cmd>let @"=system('wl-paste')<CR>""p
+    vnoremap <silent> <Leader>P <Cmd>let @"=system('wl-paste')<CR>""P
 endif
 
 # terminal
 tnoremap <Esc> <C-\><C-N>
-nnoremap <silent> <Leader>tt <Cmd>belowright terminal<CR>
-nnoremap <silent> <Leader>tv <Cmd>belowright vertical terminal<CR>
-nnoremap <silent> <Leader>tT <Cmd>botright terminal<CR>
-nnoremap <silent> <Leader>tV <Cmd>botright vertical terminal<CR>
+nnoremap <C-`> <Cmd>belowright terminal bash<CR>
 
-##################
-# initialization #
-##################
-augroup AutoSaveFolds | autocmd!
+# }}}
+
+# commands {{{
+
+# instant grep + quickfix
+command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<f-args>)
+command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr Grep(<f-args>)
+
+def Grep(...params: list<string>): string
+    var args = expandcmd(join(params, ' '))
+    var cmd = substitute(&grepprg, '\$\*', args, '')
+    return system(cmd)
+enddef
+
+# force saving files that otherwise require sudoedit
+command! -nargs=0 SudoWrite {
+    silent! write !sudo tee % > /dev/null
+    edit!
+    echo expand('%:p') .. ' saved!'
+}
+
+# }}}
+
+# autos {{{
+
+augroup auto_clang_format | autocmd!
+    if executable('clang-format')
+        autocmd FileType c,cpp,objc setlocal equalprg=clang-format
+    endif
+augroup END
+
+augroup auto_save_folds | autocmd!
     autocmd BufWinLeave,BufLeave,BufWritePost ?* ++nested silent! mkview!
     autocmd BufWinEnter ?* silent! loadview
 augroup END
 
-augroup AutoSetList | autocmd!
-    autocmd InsertEnter,InsertLeave * set list!
+augroup highlight_yank | autocmd!
+    autocmd TextYankPost * HighlightYank()
 augroup END
 
-augroup NoNumberForOldTerm | autocmd!
+def HighlightYank(hlgroup = 'IncSearch', duration = 300, in_visual = true)
+    if v:event.operator ==? 'y'
+        if !in_visual && visualmode() != null_string
+            visualmode(1)
+            return
+        endif
+        var [beg, end] = [getpos("'["), getpos("']")]
+        var type = v:event.regtype ?? 'v'
+        var pos = getregionpos(beg, end, {type: type})
+        var end_offset = (type == 'V' || v:event.inclusive) ? 1 : 0
+        var m = matchaddpos(hlgroup, pos->mapnew((_, v) => {
+            var col_beg = v[0][2] + v[0][3]
+            var col_end = v[1][2] + v[1][3] + end_offset
+            return [v[0][1], col_beg, col_end - col_beg]
+        }))
+        var winid = win_getid()
+        timer_start(duration, (_) => m->matchdelete(winid))
+    endif
+enddef
+
+augroup no_number_for_old_term | autocmd!
     autocmd TerminalWinOpen * setlocal nonumber norelativenumber
 augroup END
 
-augroup NoTrailingWhitespaces | autocmd!
+augroup no_trailing_whitespaces | autocmd!
     autocmd BufWritePre * :%s/\s\+$//e
 augroup END
 
-###################
-# plugin settings #
-###################
-# fzf
-g:fzf_layout = { 'down': '40%' }
-g:fzf_preview_window = []
+augroup setup_quickfix | autocmd!
+    autocmd QuickFixCmdPost cgetexpr cwindow
+    autocmd QuickFixCmdPost lgetexpr lwindow
 
-nnoremap <Leader>ff <Cmd>Files<CR>
-nnoremap <Leader>fo <Cmd>History<CR>
-nnoremap <Leader>f: <Cmd>Hisotry:<CR>
-nnoremap <Leader>f/ <Cmd>Hisotry/<CR>
-nnoremap <Leader>fb <Cmd>Buffers<CR>
-nnoremap <Leader>fh <Cmd>Helptags<CR>
+    autocmd Filetype qf
+                \ setlocal norelativenumber statusline=%!DrawQfStatusLine()
+augroup END
 
-# lightline
-g:lightline = {
-    colorscheme: 'solarized',
-    active: {
-        left: [
-            [ 'mode', 'paste' ],
-            [ 'gitbranch', 'readonly', 'filename', 'modified' ]
-        ]
-    },
-    component_function: {
-        gitbranch: 'FugitiveHead'
-    },
+def g:DrawQfStatusLine(): string
+    return join([
+        '%#StatusVimMode#',
+        ' ',
+        GetVimMode(),
+        ' ',
+        '%#StatusFileName#',
+        ' ',
+        '%<%F',
+        '%=',
+        ' ',
+        '%#StatusPercent#',
+        '%l/%L',
+        ' '
+    ], '')
+enddef
+
+augroup show_color_column_per_line | autocmd!
+    autocmd FileType * execute 'match ColorColumn'
+                \ '/\%' .. (&textwidth > 0 ? &textwidth + 1 : 0) .. 'v./'
+augroup END
+
+augroup show_listchars_when_insert | autocmd!
+    autocmd InsertEnter * set list
+    autocmd InsertLeave * set nolist
+augroup END
+
+augroup override_colors | autocmd!
+    autocmd ColorScheme * Highlight('ColorColumn', 'NONE', 'LightMagenta')
+    autocmd ColorScheme * Highlight('TabLine', 'Black', 'LightGray')
+    autocmd ColorScheme * Highlight('TabLineFill', 'Black', 'White')
+    autocmd ColorScheme * Highlight('TabLineSel', 'White', 'DarkBlue', 'bold')
+    autocmd ColorScheme * HighlightStatusLine()
+augroup END
+
+augroup update_status_line | autocmd!
+    autocmd BufEnter,BufWritePost,WinEnter,VimEnter * HighlightStatusLine()
+    autocmd ModeChanged,VimResized * redrawstatus!
+augroup END
+
+augroup use_as_man_pager | autocmd!
+    autocmd FileType man setlocal textwidth=0 | match none
+augroup END
+
+# }}}
+
+# status line {{{
+
+def HighlightStatusLine(): void
+    HighlightGitBranchStatus()
+
+    Highlight('StatusBlank',      'Black',    'LightGray', 'NONE')
+    Highlight('StatusFileName',   'Black',    'LightGray', 'bold')
+    Highlight('StatusFileState',  'Brown',    'LightGray', 'bold')
+    Highlight('StatusFileSize',   'Black',    'LightGray', 'NONE')
+    Highlight('StatusFileFormat', 'Black',    'Gray',      'NONE')
+    Highlight('StatusFileEncode', 'Black',    'Gray',      'NONE')
+    Highlight('StatusPercent',    'Black',    'LightGray', 'NONE')
+    Highlight('StatusWinNR',      'DarkBlue', 'Gray',      'bold')
+enddef
+
+def GetVimMode(): string
+    # :help mode()
+    const mode_color_map = {
+        N: 'DarkBlue',
+        O: 'DarkYellow',
+        V: 'DarkCyan',
+        S: 'DarkMagenta',
+        I: 'DarkGreen',
+        R: 'DarkRed',
+        C: 'Brown',
+        T: 'Black'
+    }
+
+    var mode = mode()->toupper()
+
+    if mode ==# 'N' && state() =~# '[o]'
+        mode = 'O'
+    elseif mode =~# "[vV\<C-V>]"
+        mode = 'V'
+    elseif mode =~# "[sS\<C-S>]"
+        mode = 'S'
+    endif
+
+    var color = mode_color_map[mode]
+    Highlight('StatusVimMode', color, 'White', 'bold,inverse')
+    return mode
+enddef
+
+def HighlightGitBranchStatus(): void
+    if executable('git') < 1 | return | endif
+
+    var git_icon = ''
+    var git_dir = expand('%:p:h:S')
+    var git_cmd = 'git -C ' .. git_dir .. ' status --branch --porcelain=2'
+    silent! var git_cmd_result = system(git_cmd)->split('\n')
+
+    # Line                                  Notes
+    # ------------------------------------------------------------
+    # branch.oid <commit> | (initial)       Current commit.
+    # branch.head <branch> | (detached)     Current branch.
+    # branch.upstream <upstream_branch>     If upstream is set.
+    # branch.ab +<ahead> -<behind>          If upstream is set and
+    #                                       the commit is present.
+    # ------------------------------------------------------------
+
+    var git_branch = ''
+    var git_status = []
+    var git_color = ''
+
+    if v:shell_error > 0
+        Highlight('StatusGitBranchStatus', 'Black', 'LightGray')
+        b:git_branch_status = ''
+    else
+        git_branch = git_cmd_result->copy()
+            ->filter('v:val =~ "^# branch.head"')[0]->split()[2]
+        git_status = git_cmd_result->copy()
+            ->filter('v:val !~ "^# "')
+
+        if git_status->empty()
+            # clean branch
+            git_color = 'DarkGreen'
+        else
+            # dirty branch
+            git_color = 'DarkRed'
+        endif
+
+        Highlight('StatusGitBranchStatus', git_color, 'LightGray')
+        b:git_branch_status = git_icon .. ' ' .. git_branch
+    endif
+enddef
+
+def GetFileSize(): string
+    var file = expand('%:p')
+    var bytes = 0
+
+    if file->len() > 0
+        bytes = file->getfsize()
+    else
+        # it's a buffer
+        bytes = wordcount().bytes
+    endif
+
+    if bytes == 0 || bytes == -1 || bytes == -2
+        return ''
+    endif
+
+    const _1K = 1024
+    const _1M = 1024 * _1K
+    const _1G = 1024 * _1M
+    const _1T = 1024 * _1G
+    const _1P = 1024 * _1T
+    const _1E = 1024 * _1P
+
+    if bytes < _1K
+        return printf('%dB',   bytes)
+    elseif bytes < _1M
+        return printf('%.1fK', bytes / _1K)
+    elseif bytes < _1G
+        return printf('%.1fM', bytes / _1M)
+    elseif bytes < _1T
+        return printf('%.1fG', bytes / _1G)
+    elseif bytes < _1P
+        return printf('%.1fT', bytes / _1T)
+    elseif bytes < _1E
+        return printf('%.1fP', bytes / _1P)
+    else # math.maxinteger = 2^63 -1
+        return printf('%.1fE', bytes / _1E)
+    endif
+enddef
+
+HighlightStatusLine()
+set statusline=%!DrawStatusLine()
+def g:DrawStatusLine(): string
+    if g:statusline_winid != win_getid()
+        return join([
+            '%#StatusWinNR#',
+            ' ',
+            winnr(),
+            ' ',
+            '%#StatusFileName#',
+            ' ',
+            '%<%F',
+            '%=',
+            ' ',
+            '%#StatusPercent#',
+            '%P',
+            ' '
+        ], '')
+    else
+        return join([
+            '%#StatusVimMode#',
+            ' ',
+            GetVimMode(),
+            ' ',
+            '%#StatusBlank#',
+            ' ',
+            '%#StatusFileName#',
+            '%<%F',
+            '%#StatusBlank#',
+            ' ',
+            '%#StatusFileState#',
+            '%m%r%h%w%q',
+            '%#StatusBlank#',
+            ' ',
+            '%#StatusGitBranchStatus#',
+            '%{b:->get("git_branch_status", "")}',
+            '%#StatusBlank#',
+            '%=',
+            ' ',
+            '%#StatusFileSize#',
+            GetFileSize(),
+            '%#StatusBlank#',
+            ' ',
+            '%#StatusFileFormat#',
+            ' ',
+            '%{&fileformat}',
+            ' | ',
+            '%#StatusFileEncode#',
+            #'%{&fileencoding ?? &encoding}',
+            ' ',
+            '%#StatusBlank#',
+            ' ',
+            '%#StatusPercent#',
+            '%P',
+            ' '
+        ], '')
+    endif
+enddef
+
+# }}}
+
+# tab line {{{
+
+set tabline=%!DrawTabLine()
+def g:DrawTabLine(): string
+    var tabline = ''
+    var selected_tab_nr = tabpagenr()
+    var last_tab_nr = tabpagenr('$')
+
+    for i in range(1, last_tab_nr)
+        # select the highlighting
+        if i == selected_tab_nr
+            tabline ..= '%#TabLineSel#'
+        else
+            tabline ..= '%#TabLine#'
+        endif
+
+        # set the tab page number (for mouse clicks)
+        tabline ..= '%' .. i .. 'T'
+
+        # the label consists of tab # and bufname of active window
+        var buflist = tabpagebuflist(i)
+        var winnr = tabpagewinnr(i)
+        var buf = buflist[winnr - 1]
+        var bufname = bufname(buf)->fnamemodify(':~')->pathshorten()
+
+        tabline ..= ' ' .. i .. ':' .. bufname .. ' '
+
+        # if buffer is modified
+        var buf_modified = getbufvar(buf, '&modified')
+        if buf_modified | tabline ..= '[+] ' | endif
+
+        if i != last_tab_nr
+            tabline ..= '%#TabLineFill#' .. ' '
+        endif
+    endfor
+
+    # after the last tab fill with TabLineFill and reset tab page nr
+    tabline ..= '%#TabLineFill#%T'
+
+    return tabline
+enddef
+
+# }}}
+
+# plugins {{{
+
+var package = 'plugged'
+&packpath = &packpath->substitute(&runtimepath->split(',')[0], vim_data_home, 'g')
+var package_start_dir = vim_data_home .. '/pack/' .. package .. '/start'
+var package_opt_dir   = vim_data_home .. '/pack/' .. package .. '/opt'
+
+# paq:
+# {
+#    'paq_name' : { 'dir' : dir, 'url' : url }
+# }
+var paqs = {}
+
+# Paq management functions
+def PaqInit(): void
+    mkdir(package_start_dir, 'p')
+    mkdir(package_opt_dir,   'p')
+enddef
+
+def PaqAdd(name: string, args = {}): void
+    var url = 'https://github.com/' .. name
+    var as = args->get('as', name->split('/')[1])
+
+    var dir = ''
+    if args->get('opt', false)
+        dir = package_opt_dir   .. '/' .. as
+    else
+        dir = package_start_dir .. '/' .. as
+    endif
+
+    paqs[as] = {
+        dir: dir,
+        url: url
+    }
+enddef
+
+def PaqUpdate(): void
+    for paq in paqs->items()
+        var as  = paq[0]
+        var dir = paq[1].dir
+        var url = paq[1].url
+        var sed_rm_ansi_esc_chars = 'sed'
+            .. ' -e "s/[^[:print:]]\[[0-9;]*[a-zA-Z]//g"'
+            .. ' -e "s/[[:cntrl:]]//g"'
+
+        # check if it has been git cloned already
+        var git_cmd = ''
+        var git_cmd_result = []
+        if finddir('.git', dir)->empty()
+            git_cmd =  'git clone --depth=1 ' .. url .. ' ' .. dir
+                .. '|' .. sed_rm_ansi_esc_chars
+        else
+            git_cmd = 'git -C ' .. dir .. ' pull --depth=1 ' .. '2>&1'
+                .. '|' .. sed_rm_ansi_esc_chars
+        endif
+        git_cmd_result = system(git_cmd)->split('\n')
+
+        var doc_dir = dir .. '/doc'
+        if doc_dir->isdirectory()
+            execute 'helptags ' ..  doc_dir
+        endif
+
+        echo printf("%11s: %s", as, git_cmd_result[0])
+    endfor
+enddef
+
+def PaqClean(): void
+    var dirs = []
+    for dir in [ package_start_dir, package_opt_dir ]
+        dirs += glob(dir .. '/*', true, true)
+    endfor
+
+    var idx = 0
+    while idx < dirs->len()
+        for dir in paqs->values()->map((_, val) => val.dir )
+            if dirs[idx] == dir
+                dirs[idx] = ''
+                break
+            endif
+        endfor
+
+        idx += 1
+    endwhile
+
+    if dirs->filter('v:val != ""')->empty()
+        redraw! | echo 'Package [' .. package .. '] is clean.'
+    else
+        var prompt = "WARNING:"
+            .. "\nThe following folder(s) will be deleted.\n"
+            .. "\n" .. dirs->join("\n") .. "\n"
+            .. "\n" .. "Are you sure? [y/N] "
+        if 'y' == input(prompt)->tolower()
+            for dir in dirs
+                delete(dir, 'rf')
+            endfor
+        endif
+    endif
+enddef
+
+# -------
+# plugins
+# -------
+# system plugins
+
+# comment
+packadd! comment
+
+# matchit
+packadd! matchit
+
+# netrw
+g:netrw_banner       = 0
+g:netrw_browse_split = 4
+g:netrw_dirhistmax   = 0
+g:netrw_keepdir      = 0
+g:netrw_list_hide    = '\(^\|\s\s\)\zs\.\S\+'
+g:netrw_liststyle    = 3
+g:netrw_winsize      = 29
+
+nnoremap <silent> <F9> <Cmd>Lexplore<CR>
+
+augroup vinegarize_netrw | autocmd!
+    autocmd filetype netrw VinegarizeNetrw()
+augroup END
+
+def VinegarizeNetrw(): void
+    nnoremap <buffer> <silent> <nowait> ^ <Plug>NetrwBrowseUpDir()
+    nnoremap <buffer> <silent> <nowait> - k
+    nnoremap <buffer> <silent> <nowait> ~
+                \ <Cmd>execute ':Ntree ' .. expand('~/')<CR>
+enddef
+
+# termdebug
+packadd! termdebug
+g:termdebug_config = {
+    sign: '>>',
+    wide: 1,
+    winbar: 0
 }
+nnoremap <silent> <F5> <Cmd>Termdebug<CR>
+
+# personal plugins
+PaqAdd('tommcdo/vim-exchange', {as: 'exchange'})
+PaqAdd('tpope/vim-repeat', {as: 'repeat'})
+PaqAdd('tpope/vim-surround', {as: 'surround'})
 
 # lion
+PaqAdd('tommcdo/vim-lion', {as: 'lion'})
 g:lion_squeeze_spaces = 1
 
 # lsp
-g:lsp_diagnostics_echo_cursor = 1
+PaqAdd('yegappan/lsp', {as: 'lsp'})
+var lsp_opts = { autoHighlightDiags: true }
+var lsp_servers: list<dict<any>>
 
-augroup LspClangd | autocmd!
-    autocmd User lsp_setup call lsp#register_server({
-                \ name: 'clangd',
-                \ cmd: (server_info) => 'clangd',
-                \ allowlist: [ 'c', 'cpp', 'objc', 'objcpp' ]
-                \ })
+if executable('clangd')
+    lsp_servers->add({
+        name: 'clangd',
+        filetype: ['c', 'cpp'],
+        path: 'clangd',
+        args: ['--background-index']
+    })
+endif
+
+if executable('pylsp')
+    lsp_servers->add({
+        name: 'pylsp',
+        filetype: 'python',
+        path: 'pylsp',
+        args: []
+    })
+endif
+
+augroup lsp_setup | autocmd!
+    autocmd User LspSetup g:LspOptionsSet(lsp_opts)
+    autocmd User LspSetup g:LspAddServer(lsp_servers)
 augroup END
 
-augroup LspInstall | autocmd!
-    # call OnLspBufferEnabled only for languages that has the server registered.
-    autocmd User lsp_buffer_enabled call OnLspBufferEnabled()
+augroup lsp_attached | autocmd!
+    autocmd User LspAttached SetLspKeymaps()
 augroup END
 
-def OnLspBufferEnabled()
-    b:vcm_tab_complete = "omni"
-    setlocal omnifunc=lsp#complete
-    setlocal signcolumn=yes
-    if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
-
-    SetLspMappings()
-enddef
-
-def SetLspMappings()
-    nmap <buffer> gd <plug>(lsp-definition)
-    nmap <buffer> gr <plug>(lsp-references)
-    nmap <buffer> gi <plug>(lsp-implementation)
-    nmap <buffer> gt <plug>(lsp-type-definition)
-    nmap <buffer> gR <plug>(lsp-rename)
-    nmap <buffer> [g <plug>(lsp-previous-diagnostic)
-    nmap <buffer> ]g <plug>(lsp-next-diagnostic)
-    nmap <buffer> K <plug>(lsp-hover)
-
-    # refer to doc to add more commands
-enddef
-
-# netrw
-g:netrw_dirhistmax   = 0
-g:netrw_liststyle    = 3
-g:netrw_banner       = 0
-g:netrw_browse_split = 4
-g:netrw_winsize      = 29
-g:netrw_list_hide    = '\(^\|\s\s\)\zs\.\S\+'
-g:netrw_keepdir      = 0
-
-nmap <silent> <F9> <Cmd>Lexplore<CR>
-
-# remap cd to be global
-augroup NetrwGroup | autocmd!
-    autocmd filetype netrw call NetrwMapping()
-augroup END
-
-def NetrwMapping()
-    nmap <buffer> <silent> <nowait> <LocalLeader>cd <Cmd>execute "cd ".b:netrw_curdir<CR>:pwd<CR>
+def SetLspKeymaps(): void
+    nnoremap <buffer> gd <Cmd>LspGotoDefinition<CR>
+    nnoremap <buffer> gp <Cmd>LspPeekDefinition<CR>
+    nnoremap <buffer> gr <Cmd>LspPeekReferences<CR>
+    nnoremap <buffer> gi <Cmd>LspGotoImpl<CR>
+    nnoremap <buffer> gt <Cmd>LspGotoTypeDef<CR>
+    nnoremap <buffer> gR <Cmd>LspRename<CR>
+    nnoremap <buffer> go <Cmd>LspDocumentSymbol<CR>
+    nnoremap <buffer> [g <Cmd>LspDiag prev<CR>
+    nnoremap <buffer> ]g <Cmd>LspDiag next<CR>
+    nnoremap <buffer> K  <Cmd>LspHover<CR>
 enddef
 
 # rainbow
+PaqAdd('luochen1990/rainbow')
 g:rainbow_active = 1
+g:rainbow_conf = {
+    guifgs: ['DarkBlue',
+        'DarkYellow',
+        'DarkGreen',
+        'DarkRed',
+        'DarkCyan',
+        'DarkMagenta'],
+    ctermfgs: ['DarkBlue',
+        'DarkYellow',
+        'DarkGreen',
+        'DarkRed',
+        'DarkCyan',
+        'DarkMagenta'],
+    operators: '_,_'
+}
 
 # sneak
+PaqAdd('justinmk/vim-sneak', {as: 'sneak'})
 g:sneak#label = 1
 
-map <Leader>s <Plug>Sneak_s
-map <Leader>S <Plug>Sneak_S
+nnoremap s <Plug>Sneak_s
+nnoremap S <Plug>Sneak_S
 
-map f <Plug>Sneak_f
-map F <Plug>Sneak_F
-map t <Plug>Sneak_t
-map T <Plug>Sneak_T
+nnoremap f <Plug>Sneak_f
+nnoremap F <Plug>Sneak_F
+nnoremap t <Plug>Sneak_t
+nnoremap T <Plug>Sneak_T
 
-# vinegar
-noremap - k^
+# update/clean plugins
+nnoremap <silent> <Leader>Qu
+            \ <Cmd>call <SID>PaqInit()
+            \ <Bar>call <SID>PaqUpdate()<CR>
+nnoremap <silent> <Leader>Qc
+            \ <Cmd>call <SID>PaqInit()
+            \ <Bar>call <SID>PaqClean()<CR>
 
-# termdebug
-g:termdebug_wide = 1
+# }}}
 
-##################
-# minpac plugins #
-##################
-def PackInit()
-    packadd minpac
+# color scheme {{{
 
-    minpac#init()
-    minpac#add('k-takata/minpac',                     {'type': 'opt'})
+colorscheme wildcharm
 
-    minpac#add('jiangmiao/auto-pairs')
-    minpac#add('tpope/vim-commentary',                {'name': 'commentary'})
-    minpac#add('tommcdo/vim-exchange',                {'name': 'exchange'})
-    minpac#add('machakann/vim-highlightedyank',       {'name': 'highlighted-yank'})
-    minpac#add('tommcdo/vim-lion',                    {'name': 'lion'})
-    minpac#add('tpope/vim-repeat',                    {'name': 'repeat'})
-    minpac#add('justinmk/vim-sneak',                  {'name': 'sneak'})
-    minpac#add('tpope/vim-surround',                  {'name': 'surround'})
-    minpac#add('tpope/vim-unimpaired',                {'name': 'unimpaired'})
+if (has('termguicolors') && &termguicolors) || has('gui_running')
+    # use terminal's color scheme
+    g:terminal_ansi_colors = [
+        '#000000',
+        '#a60000',
+        '#006800',
+        '#6f5500',
+        '#0031a9',
+        '#721045',
+        '#00538b',
+        '#e1e1e1',
 
-    minpac#add('tpope/vim-eunuch',                    {'name': 'eunuch'})
-    minpac#add('tpope/vim-fugitive',                  {'name': 'fugitive'})
-    minpac#add('tpope/vim-vinegar',                   {'name': 'vinegar'})
+        '#585858',
+        '#972500',
+        '#316500',
+        '#884900',
+        '#354fcf',
+        '#531ab6',
+        '#005a5f',
+        '#ffffff'
+    ]
+endif
 
-    minpac#add('chrisbra/colorizer',                  {'name': 'colorizer'})
-    minpac#add('itchyny/lightline.vim',               {'name': 'lightline'})
-    minpac#add('luochen1990/rainbow')
-
-    minpac#add('junegunn/fzf.vim',                    {'name': 'fzf'})
-    minpac#add('ackyshake/VimCompletesMe',            {'name': 'vcm'})
-
-    minpac#add('prabirshrestha/vim-lsp',              {'name': 'lsp'})
-    minpac#add('mattn/vim-lsp-settings',              {'name': 'lsp-settings'})
-
-    minpac#add('prabirshrestha/asyncomplete.vim',     {'name': 'asyncomplete'})
-    minpac#add('prabirshrestha/asyncomplete-lsp.vim', {'name': 'asyncomplete-lsp'})
-enddef
-
-# Define user commands for updating/cleaning the plugins.
-# Each of them loads minpac, reloads .vimrc to register the
-# information of plugins, then performs the task.
-command! PackUpdate source $MYVIMRC | call <SID>PackInit() | call minpac#update()
-command! PackClean  source $MYVIMRC | call <SID>PackInit() | call minpac#clean()
-command! PackStatus source $MYVIMRC | call <SID>PackInit() | call minpac#status()
+# }}}
