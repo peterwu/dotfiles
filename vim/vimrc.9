@@ -399,8 +399,10 @@ augroup setup_quickfix | autocmd!
     autocmd QuickFixCmdPost cgetexpr cwindow
     autocmd QuickFixCmdPost lgetexpr lwindow
 
-    autocmd Filetype qf
-                \ setlocal norelativenumber statusline=%!DrawQfStatusLine()
+    autocmd Filetype qf {
+        setlocal norelativenumber
+        setlocal statusline=%!DrawQfStatusLine()
+    }
 augroup END
 
 def g:DrawQfStatusLine(): string
@@ -431,11 +433,14 @@ augroup show_listchars_when_insert | autocmd!
 augroup END
 
 augroup override_colors | autocmd!
-    autocmd ColorScheme * Highlight('ColorColumn', 'NONE', 'LightMagenta')
-    autocmd ColorScheme * Highlight('TabLine', 'Black', 'LightGray')
-    autocmd ColorScheme * Highlight('TabLineFill', 'Black', 'White')
-    autocmd ColorScheme * Highlight('TabLineSel', 'White', 'DarkBlue', 'bold')
-    autocmd ColorScheme * HighlightStatusLine()
+    autocmd ColorScheme * {
+        Highlight('ColorColumn', 'NONE', 'LightMagenta')
+        Highlight('TabLine', 'Black', 'LightGray')
+        Highlight('TabLineFill', 'Black', 'White')
+        Highlight('TabLineSel', 'White', 'DarkBlue', 'bold')
+
+        HighlightStatusLine()
+    }
 augroup END
 
 augroup update_status_line | autocmd!
