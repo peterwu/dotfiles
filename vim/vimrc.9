@@ -27,13 +27,21 @@ for [vim_var, env_var, default_dir] in [
 endfor
 
 def Highlight(group: string, fg='NONE', bg='NONE', style='NONE'): void
-    execute 'highlight ' .. group
-        .. ' ctermfg=' .. fg
-        .. ' ctermbg=' .. bg
-        .. ' cterm='   .. style
-        .. ' guifg='   .. fg
-        .. ' guibg='   .. bg
-        .. ' gui='     .. style
+    var style_dict: dict<bool>
+
+    style->split(',')->mapnew((_, v) => {
+        style_dict[v] = true
+    })
+
+    hlset([{
+        name: group,
+        ctermfg: fg,
+        ctermbg: bg,
+        cterm: style_dict,
+        guifg: fg,
+        guibg: bg,
+        gui: style_dict
+    }])
 enddef
 
 # }}}
