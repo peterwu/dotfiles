@@ -726,11 +726,13 @@ def PaqAdd(name: string, args = {}): void
 enddef
 
 def PaqUpdate(): void
+    const max = paqs->mapnew((k, _) => len(k))->max()
+
     for paq in paqs->items()
-        var as  = paq[0]
-        var dir = paq[1].dir
-        var url = paq[1].url
-        var sed_rm_ansi_esc_chars = 'sed'
+        const as  = paq[0]
+        const dir = paq[1].dir
+        const url = paq[1].url
+        const sed_rm_ansi_esc_chars = 'sed'
             .. ' -e "s/[^[:print:]]\[[0-9;]*[a-zA-Z]//g"'
             .. ' -e "s/[[:cntrl:]]//g"'
 
@@ -746,12 +748,13 @@ def PaqUpdate(): void
         endif
         git_cmd_result = system(git_cmd)->split('\n')
 
-        var doc_dir = dir .. '/doc'
+        const doc_dir = dir .. '/doc'
         if doc_dir->isdirectory()
             execute 'helptags ' ..  doc_dir
         endif
 
-        echo printf("%11s: %s", as, git_cmd_result[0])
+        const fmt = "%" .. (max + 1) .. "s: %s"
+        echo printf(fmt, as, git_cmd_result[0])
     endfor
 enddef
 
@@ -811,15 +814,13 @@ g:netrw_winsize      = 29
 nnoremap <silent> <F9> <Cmd>Lexplore<CR>
 
 augroup vinegarize_netrw | autocmd!
-    autocmd filetype netrw VinegarizeNetrw()
+    autocmd filetype netrw {
+        nnoremap <buffer> <silent> <nowait> ^ <Plug>NetrwBrowseUpDir()
+        nnoremap <buffer> <silent> <nowait> - k
+        nnoremap <buffer> <silent> <nowait> ~
+                    \ <Cmd>execute 'Ntree ' .. expand('~/')<CR>
+    }
 augroup END
-
-def VinegarizeNetrw(): void
-    nnoremap <buffer> <silent> <nowait> ^ <Plug>NetrwBrowseUpDir()
-    nnoremap <buffer> <silent> <nowait> - k
-    nnoremap <buffer> <silent> <nowait> ~
-                \ <Cmd>execute ':Ntree ' .. expand('~/')<CR>
-enddef
 
 # termdebug
 packadd! termdebug
