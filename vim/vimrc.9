@@ -34,13 +34,13 @@ def Highlight(group: string, fg='NONE', bg='NONE', style='NONE'): void
     })
 
     hlset([{
-        name: group,
+        name:    group,
         ctermfg: fg,
         ctermbg: bg,
-        cterm: style_dict,
-        guifg: fg,
-        guibg: bg,
-        gui: style_dict
+        cterm:   style_dict,
+        guifg:   fg,
+        guibg:   bg,
+        gui:     style_dict
     }])
 enddef
 
@@ -440,6 +440,7 @@ augroup END
 augroup override_colors | autocmd!
     autocmd ColorScheme * {
         Highlight('ColorColumn', 'NONE', 'LightMagenta')
+        Highlight('CursorLine', '', '', 'NONE')
         Highlight('TabLine', 'Black', 'LightGray')
         Highlight('TabLineFill', 'Black', 'White')
         Highlight('TabLineSel', 'White', 'DarkBlue', 'bold')
