@@ -205,29 +205,34 @@ def ToggleQuickfixWindow(type: string): void
 enddef
 
 # use quickfix to show args
-nnoremap <silent> <Leader>fa <Cmd>silent! call setqflist([], ' ',
-            \ {
-            \   'items': argv()->copy()
-            \             ->map({ -> { 'filename': v:val->expand(':p') }}),
-            \   'quickfixtextfunc': '<SID>FormatQuickfixItems'
-            \ })<Bar>copen<CR>
+def QfShowArguments(): void
+    setqflist([], ' ', {
+        items: argv()->mapnew((_, v) => ({ filename: v->fnamemodify(':p') })),
+        quickfixtextfunc: '<SID>FormatQuickfixItems'
+    })
+enddef
+nnoremap <silent> <Leader>fa <Cmd>call <SID>QfShowArguments()<Bar>copen<CR>
 
 # use quickfix to show buffers
-nnoremap <silent> <Leader>fb <Cmd>silent! call setqflist([], ' ',
-            \ {
-            \   'items': range(1, bufnr('$'))
-            \             ->filter('buflisted(v:val)')
-            \             ->map({ -> { 'bufnr': v:val }}),
-            \   'quickfixtextfunc': '<SID>FormatQuickfixItems'
-            \ })<Bar>copen<CR>
+def QfShowBuffers(): void
+    setqflist([], ' ', {
+        items: range(1, bufnr('$'))
+            ->filter('buflisted(v:val)')
+            ->map((_, v) => ({ bufnr: v })),
+        quickfixtextfunc: '<SID>FormatQuickfixItems'
+    })
+enddef
+nnoremap <silent> <Leader>fb <Cmd>call <SID>QfShowBuffers()<Bar>copen<CR>
 
 # use quickfix to show oldfiles
-nnoremap <silent> <Leader>fo <Cmd>silent! call setqflist([], ' ',
-            \ {
-            \   'items': v:oldfiles->copy()
-            \             ->map({ -> { 'filename': v:val->expand(':p') }}),
-            \   'quickfixtextfunc' : '<SID>FormatQuickfixItems'
-            \ })<Bar>copen<CR>
+def QfShowOldFiles(): void
+    setqflist([], ' ', {
+        items: v:oldfiles
+            ->mapnew((_, v) => ({ filename: v->fnamemodify(':p') })),
+        quickfixtextfunc: '<SID>FormatQuickfixItems'
+    })
+enddef
+nnoremap <silent> <Leader>fo <Cmd>call <SID>QfShowOldFiles()<Bar>copen<CR>
 
 def FormatQuickfixItems(info: dict<number>): list<string>
     var items = getqflist({ id: info.id, items: 1 }).items
