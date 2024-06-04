@@ -146,10 +146,10 @@ inoremap <Left>  <Nop>
 inoremap <Right> <Nop>
 
 # swap j/k <-> gj/gk
-nnoremap <expr> j (v:count ? 'j' : 'gj')
-nnoremap <expr> k (v:count ? 'k' : 'gk')
-xnoremap <expr> j (v:count ? 'j' : 'gj')
-xnoremap <expr> k (v:count ? 'k' : 'gk')
+nnoremap <expr> j (v:count > 0 ? 'j' : 'gj')
+nnoremap <expr> k (v:count > 0 ? 'k' : 'gk')
+xnoremap <expr> j (v:count > 0 ? 'j' : 'gj')
+xnoremap <expr> k (v:count > 0 ? 'k' : 'gk')
 
 # unimpaired
 nnoremap <silent> [<Space> O<Esc>j
@@ -237,14 +237,16 @@ nnoremap <silent> <Leader>fo <Cmd>call <SID>QfShowOldFiles()<Bar>copen<CR>
 def FormatQuickfixItems(info: dict<number>): list<string>
     var items = getqflist({ id: info.id, items: 1 }).items
     var list = []
-    for idx in range(info.start_idx - 1, info.end_idx - 1)
-        var bufname = bufname(items[idx].bufnr)
+
+    items->foreach((_, v) => {
+        var bufname = bufname(v.bufnr)
         if bufname->empty()
             add(list, "[No Name]")
         else
             add(list, fnamemodify(bufname, ':~'))
         endif
-    endfor
+    })
+
     return list
 enddef
 
@@ -729,10 +731,10 @@ enddef
 def PaqUpdate(): void
     const max = paqs->mapnew((k, _) => len(k))->max()
 
-    for paq in paqs->items()
-        const as  = paq[0]
-        const dir = paq[1].dir
-        const url = paq[1].url
+    paqs->foreach((k, v) => {
+        const as  = k
+        const dir = v.dir
+        const url = v.url
         const sed_rm_ansi_esc_chars = 'sed'
             .. ' -e "s/[^[:print:]]\[[0-9;]*[a-zA-Z]//g"'
             .. ' -e "s/[[:cntrl:]]//g"'
@@ -756,7 +758,7 @@ def PaqUpdate(): void
 
         const fmt = "%" .. (max + 1) .. "s: %s"
         echo printf(fmt, as, git_cmd_result[0])
-    endfor
+    })
 enddef
 
 def PaqClean(): void
@@ -765,17 +767,14 @@ def PaqClean(): void
         dirs += glob(dir .. '/*', true, true)
     endfor
 
-    var idx = 0
-    while idx < dirs->len()
+    dirs->foreach((k, v) => {
         for dir in paqs->values()->map((_, val) => val.dir )
-            if dirs[idx] == dir
-                dirs[idx] = ''
+            if v == dir
+                dirs[k] = ''
                 break
             endif
         endfor
-
-        idx += 1
-    endwhile
+    })
 
     if dirs->filter('v:val != ""')->empty()
         redraw! | echo 'Package [' .. package .. '] is clean.'
@@ -865,8 +864,10 @@ if executable('pylsp')
 endif
 
 augroup lsp_setup | autocmd!
-    autocmd User LspSetup g:LspOptionsSet(lsp_opts)
-    autocmd User LspSetup g:LspAddServer(lsp_servers)
+    autocmd User LspSetup {
+        g:LspOptionsSet(lsp_opts)
+        g:LspAddServer(lsp_servers)
+    }
 augroup END
 
 augroup lsp_attached | autocmd!
