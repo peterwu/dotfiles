@@ -326,8 +326,8 @@ if has('clipboard')
 elseif executable('wl-paste')
     nnoremap <silent> <Leader>p <Cmd>let @"=system('wl-paste')<CR>""p
     nnoremap <silent> <Leader>P <Cmd>let @"=system('wl-paste')<CR>""P
-    vnoremap <silent> <Leader>p <Cmd>let @"=system('wl-paste')<CR>""p
-    vnoremap <silent> <Leader>P <Cmd>let @"=system('wl-paste')<CR>""P
+    xnoremap <silent> <Leader>p <Cmd>let @"=system('wl-paste')<CR>""p
+    xnoremap <silent> <Leader>P <Cmd>let @"=system('wl-paste')<CR>""P
 endif
 
 # terminal
@@ -481,9 +481,9 @@ def GetVimMode(): string
     # :help mode()
     const mode_color_map = {
         N: 'DarkBlue',
-        O: 'DarkYellow',
         V: 'DarkCyan',
-        S: 'DarkMagenta',
+        O: 'DarkMagenta',
+        S: 'DarkYellow',
         I: 'DarkGreen',
         R: 'DarkRed',
         C: 'Brown',
@@ -492,11 +492,11 @@ def GetVimMode(): string
 
     var mode = mode()->toupper()
 
-    if mode ==# 'N' && state() =~# '[o]'
+    if mode == 'N' && state() =~ '[o]'
         mode = 'O'
-    elseif mode =~# "[vV\<C-V>]"
+    elseif mode =~ "[vV\<C-V>]"
         mode = 'V'
-    elseif mode =~# "[sS\<C-S>]"
+    elseif mode =~ "[sS\<C-S>]"
         mode = 'S'
     endif
 
