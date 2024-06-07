@@ -933,8 +933,7 @@ nnoremap <silent> <Leader>Qc
 
 # color scheme {{{
 
-colorscheme wildcharm
-
+# default terminal colors if not provided by chosen colorscheme
 if (has('termguicolors') && &termguicolors) || has('gui_running')
     # use terminal's color scheme
     g:terminal_ansi_colors = [
@@ -957,5 +956,7 @@ if (has('termguicolors') && &termguicolors) || has('gui_running')
         '#ffffff'
     ]
 endif
+
+colorscheme wildcharm
 
 # }}}
