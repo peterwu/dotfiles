@@ -270,39 +270,37 @@ if has('clipboard')
     nnoremap <silent> <Leader>Y  "+yg_
     nnoremap <silent> <Leader>yy "+y_
 elseif executable('wl-copy')
-    vnoremap <silent> <Leader>y  <Cmd>set opfunc=<SID>CopyToClipboard<CR>g@
-    nnoremap <silent> <Leader>y  <Cmd>set opfunc=<SID>CopyToClipboard<CR>g@
-    nnoremap <silent> <Leader>Y  <Cmd>set opfunc=<SID>CopyToClipboard<CR>g@g_
-    nnoremap <silent> <Leader>yy <Cmd>set opfunc=<SID>CopyToClipboard<CR>g@_
+    nnoremap <silent> <Leader>y  <Cmd>set opfunc=<SID>YankToClipboard<CR>g@
+    xnoremap <silent> <Leader>y  <Cmd>set opfunc=<SID>YankToClipboard<CR>g@
+    nnoremap <silent> <Leader>Y  <Cmd>set opfunc=<SID>YankToClipboard<CR>g@g_
+    nnoremap <silent> <Leader>yy <Cmd>set opfunc=<SID>YankToClipboard<CR>g@_
 endif
 
-def CopyToClipboard(type: string, ...args: list<string>): void
+def YankToClipboard(type: string, ...args: list<string>): void
     var reg = '"'
     var sel_save = &selection
     &selection = "inclusive"
     var cb_save  = &clipboard
     var reg_save = getreg(reg)
     var reg_type = getregtype(reg)
-    var type_save = type
+
     if type == "char"
         silent execute 'normal! v`[o`]"' .. reg .. 'y'
-        type_save = 'v'
     elseif type == "line"
         silent execute 'normal! `[V`]"' .. reg .. 'y'
-        type_save = 'V'
-    elseif type ==# "v" || type ==# "V" || type ==# "\<C-V>" || type == "block"
+    elseif type == "block" || type == "v" || type == "V" || type == "\<C-V>"
         &selection = sel_save
         var ve = &virtualedit
-        # if !(!args[0]->empty() && !args[1]->empty())
+
         if args[0]->empty() || args[1]->empty()
             set virtualedit=
         endif
+
         silent execute 'normal! gv"' .. reg .. 'y'
         &virtualedit = ve
     elseif type =~ '^\d\+$'
-        type_save = 'v'
         silent execute 'normal! ^v' .. type .. '$h"' .. reg .. 'y'
-        if mode() ==# 'v'
+        if mode() == 'v'
             normal! v
         endif
     else
