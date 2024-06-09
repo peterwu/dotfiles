@@ -178,12 +178,12 @@ nnoremap <silent> ]Q <Cmd>clast<CR>
 # open/close location list window
 nnoremap <silent> <Leader>lo <Cmd>lopen<CR>
 nnoremap <silent> <Leader>lc <Cmd>lclose<CR>
-nnoremap <silent> <Leader>ll <Cmd>call <SID>ToggleQuickfixWindow('ll')<CR>
+nnoremap <silent> <Leader>ll <ScriptCmd>ToggleQuickfixWindow('ll')<CR>
 
 # open/close quickfix window
 nnoremap <silent> <Leader>qo <Cmd>copen<CR>
 nnoremap <silent> <Leader>qc <Cmd>cclose<CR>
-nnoremap <silent> <Leader>qq <Cmd>call <SID>ToggleQuickfixWindow('qf')<CR>
+nnoremap <silent> <Leader>qq <ScriptCmd>ToggleQuickfixWindow('qf')<CR>
 
 def ToggleQuickfixWindow(type: string): void
     var value = ''
@@ -211,7 +211,7 @@ def QfShowArguments(): void
         quickfixtextfunc: '<SID>FormatQuickfixItems'
     })
 enddef
-nnoremap <silent> <Leader>fa <Cmd>call <SID>QfShowArguments()<Bar>copen<CR>
+nnoremap <silent> <Leader>fa <ScriptCmd>QfShowArguments()<Bar>copen<CR>
 
 # use quickfix to show buffers
 def QfShowBuffers(): void
@@ -222,7 +222,7 @@ def QfShowBuffers(): void
         quickfixtextfunc: '<SID>FormatQuickfixItems'
     })
 enddef
-nnoremap <silent> <Leader>fb <Cmd>call <SID>QfShowBuffers()<Bar>copen<CR>
+nnoremap <silent> <Leader>fb <ScriptCmd>QfShowBuffers()<Bar>copen<CR>
 
 # use quickfix to show oldfiles
 def QfShowOldFiles(): void
@@ -232,7 +232,7 @@ def QfShowOldFiles(): void
         quickfixtextfunc: '<SID>FormatQuickfixItems'
     })
 enddef
-nnoremap <silent> <Leader>fo <Cmd>call <SID>QfShowOldFiles()<Bar>copen<CR>
+nnoremap <silent> <Leader>fo <ScriptCmd>QfShowOldFiles()<Bar>copen<CR>
 
 def FormatQuickfixItems(info: dict<number>): list<string>
     var items = getqflist({ id: info.id, items: 1 }).items
@@ -241,9 +241,9 @@ def FormatQuickfixItems(info: dict<number>): list<string>
     items->foreach((_, v) => {
         var bufname = bufname(v.bufnr)
         if bufname->empty()
-            add(list, "[No Name]")
+            list->add("[No Name]")
         else
-            add(list, fnamemodify(bufname, ':~'))
+            list->add(fnamemodify(bufname, ':~'))
         endif
     })
 
@@ -270,10 +270,10 @@ if has('clipboard')
     nnoremap <silent> <Leader>Y  "+yg_
     nnoremap <silent> <Leader>yy "+y_
 elseif executable('wl-copy')
-    nnoremap <silent> <Leader>y  <Cmd>set opfunc=<SID>YankToClipboard<CR>g@
-    xnoremap <silent> <Leader>y  <Cmd>set opfunc=<SID>YankToClipboard<CR>g@
-    nnoremap <silent> <Leader>Y  <Cmd>set opfunc=<SID>YankToClipboard<CR>g@g_
-    nnoremap <silent> <Leader>yy <Cmd>set opfunc=<SID>YankToClipboard<CR>g@_
+    nnoremap <silent> <Leader>y  <ScriptCmd>set opfunc=YankToClipboard<CR>g@
+    xnoremap <silent> <Leader>y  <ScriptCmd>set opfunc=YankToClipboard<CR>g@
+    nnoremap <silent> <Leader>Y  <ScriptCmd>set opfunc=YankToClipboard<CR>g@g_
+    nnoremap <silent> <Leader>yy <ScriptCmd>set opfunc=YankToClipboard<CR>g@_
 endif
 
 def YankToClipboard(type: string, ...args: list<string>): void
@@ -322,10 +322,10 @@ if has('clipboard')
     xnoremap <silent> <Leader>p "+p
     xnoremap <silent> <Leader>P "+P
 elseif executable('wl-paste')
-    nnoremap <silent> <Leader>p <Cmd>let @"=system('wl-paste')<CR>""p
-    nnoremap <silent> <Leader>P <Cmd>let @"=system('wl-paste')<CR>""P
-    xnoremap <silent> <Leader>p <Cmd>let @"=system('wl-paste')<CR>""p
-    xnoremap <silent> <Leader>P <Cmd>let @"=system('wl-paste')<CR>""P
+    nnoremap <silent> <Leader>p <ScriptCmd>@" = system('wl-paste')<CR>""p
+    nnoremap <silent> <Leader>P <ScriptCmd>@" = system('wl-paste')<CR>""P
+    xnoremap <silent> <Leader>p <ScriptCmd>@" = system('wl-paste')<CR>""p
+    xnoremap <silent> <Leader>P <ScriptCmd>@" = system('wl-paste')<CR>""P
 endif
 
 # terminal
@@ -341,8 +341,8 @@ command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<f-args>)
 command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr Grep(<f-args>)
 
 def Grep(...params: list<string>): string
-    var args = expandcmd(join(params, ' '))
-    var cmd = substitute(&grepprg, '\$\*', args, '')
+    var args = params->join(' ')->expandcmd()
+    var cmd = &grepprg->substitute('\$\*', args, '')
     return system(cmd)
 enddef
 
@@ -428,8 +428,10 @@ def g:DrawQfStatusLine(): string
 enddef
 
 augroup show_color_column_per_line | autocmd!
-    autocmd FileType * execute 'match ColorColumn'
-                \ '/\%' .. (&textwidth > 0 ? &textwidth + 1 : 0) .. 'v./'
+    autocmd FileType * {
+        const tw = &textwidth > 0 ? &textwidth + 1 : 0
+        execute 'match ColorColumn /\%' .. tw .. 'v./'
+    }
 augroup END
 
 augroup show_listchars_when_insert | autocmd!
@@ -814,10 +816,9 @@ nnoremap <silent> <F9> <Cmd>Lexplore<CR>
 
 augroup vinegarize_netrw | autocmd!
     autocmd filetype netrw {
-        nnoremap <buffer> <silent> <nowait> ^ <Plug>NetrwBrowseUpDir()
-        nnoremap <buffer> <silent> <nowait> - k
-        nnoremap <buffer> <silent> <nowait> ~
-                    \ <Cmd>execute 'Ntree ' .. expand('~/')<CR>
+        nnoremap <buffer> <silent> ^ <Plug>NetrwBrowseUpDir()
+        nnoremap <buffer> <silent> - k
+        nnoremap <buffer> <silent> ~ <Cmd>execute 'Ntree ' .. expand('~/')<CR>
     }
 augroup END
 
@@ -922,12 +923,8 @@ nnoremap t <Plug>Sneak_t
 nnoremap T <Plug>Sneak_T
 
 # update/clean plugins
-nnoremap <silent> <Leader>Qu
-            \ <Cmd>call <SID>PaqInit()
-            \ <Bar>call <SID>PaqUpdate()<CR>
-nnoremap <silent> <Leader>Qc
-            \ <Cmd>call <SID>PaqInit()
-            \ <Bar>call <SID>PaqClean()<CR>
+nnoremap <silent> <Leader>Qu <ScriptCmd>PaqInit()<Bar>PaqUpdate()<CR>
+nnoremap <silent> <Leader>Qc <ScriptCmd>PaqInit()<Bar>PaqClean()<CR>
 
 # }}}
 
