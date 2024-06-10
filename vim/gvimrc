@@ -8,6 +8,8 @@ set guioptions-=e
 nnoremap <Leader>egv <Cmd>edit   $MYGVIMRC<CR>
 nnoremap <Leader>sgv <Cmd>source $MYGVIMRC<CR>
 
+tnoremap <Esc> <C-\><C-N>
+
 nnoremap <C-F1> <Cmd>silent! call <SID>toggle_gui_option('m')<CR>
 nnoremap <C-F2> <Cmd>silent! call <SID>toggle_gui_option('T')<CR>
 nnoremap <C-F3> <Cmd>silent! call <SID>toggle_gui_option('r')<CR>
