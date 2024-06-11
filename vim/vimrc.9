@@ -3,27 +3,21 @@ vim9script
 
 # commons {{{
 
-const home = getenv('HOME')
-var env_var_home = ''
-var vim_var_home = ''
-
-var vim_cache_home = ''
-var vim_config_home = ''
-var vim_data_home = ''
-var vim_state_home = ''
-
-for [vim_var, env_var, default_dir] in [
-        ['vim_cache_home',  'XDG_CACHE_HOME',  '.cache'],
-        ['vim_config_home', 'XDG_CONFIG_HOME', '.config'],
-        ['vim_data_home',   'XDG_DATA_HOME',   '.local/share'],
-        ['vim_state_home',  'XDG_STATE_HOME',  '.local/state']
+const HOME = getenv('HOME')
+for [xdg_env_var, default_dir] in [
+        ['XDG_CACHE_HOME',  HOME .. '/.cache'],
+        ['XDG_CONFIG_HOME', HOME .. '/.config'],
+        ['XDG_DATA_HOME',   HOME .. '/.local/share'],
+        ['XDG_STATE_HOME',  HOME .. '/.local/state']
         ]
-    env_var_home = getenv(env_var) ?? home .. '/' .. default_dir
-    vim_var_home = env_var_home .. '/vim'
 
-    mkdir(vim_var_home, 'p', 0o700)
+    const xdg_base_dir = getenv(xdg_env_var) ?? default_dir
+    const vim_base_dir = xdg_base_dir .. '/vim'
 
-    execute vim_var .. ' = "' .. vim_var_home .. '"'
+    const vim_env_var = xdg_env_var->substitute('XDG', 'VIM', 'g')
+    setenv(vim_env_var, vim_base_dir)
+
+    mkdir(vim_base_dir, 'p', 0o700)
 endfor
 
 def Highlight(group: string, fg='NONE', bg='NONE', style='NONE'): void
@@ -57,9 +51,9 @@ source $VIMRUNTIME/defaults.vim
 # ---------
 # work dirs
 # ---------
-mkdir(vim_state_home .. '/swap', 'p', 0o700)
-mkdir(vim_state_home .. '/undo', 'p', 0o700)
-mkdir(vim_state_home .. '/view', 'p', 0o700)
+mkdir(getenv('VIM_STATE_HOME') .. '/swap', 'p', 0o700)
+mkdir(getenv('VIM_STATE_HOME') .. '/undo', 'p', 0o700)
+mkdir(getenv('VIM_STATE_HOME') .. '/view', 'p', 0o700)
 
 # -------
 # options
@@ -69,7 +63,7 @@ set autoread
 set complete-=i
 set completeopt=menu,menuone,noinsert,noselect
 set cursorline
-&directory = vim_state_home .. '/swap'
+set directory=$VIM_STATE_HOME/swap
 set encoding=utf-8
 set expandtab
 set fileformats=unix,dos,mac
@@ -113,12 +107,12 @@ set termguicolors
 set textwidth=80
 set timeoutlen=777
 set ttimeoutlen=77
-&undodir = vim_state_home .. '/undo'
+set undodir=$VIM_STATE_HOME/undo
 set undofile
-&viewdir = vim_state_home .. '/view'
+set viewdir=$VIM_STATE_HOME/view
 set viewoptions=cursor,folds
 set viminfo=%,<800,'10,/50,:100,h,f0
-&viminfofile = vim_state_home .. '/viminfo'
+set viminfofile=$VIM_STATE_HOME/viminfo
 set virtualedit=block
 set wildoptions=pum,tagfile
 
@@ -693,6 +687,7 @@ enddef
 
 # plugins {{{
 
+var vim_data_home = getenv('VIM_DATA_HOME')
 var package = 'plugged'
 &packpath = &packpath
     ->substitute(&runtimepath->split(',')[0], vim_data_home, 'g')
