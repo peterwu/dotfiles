@@ -264,49 +264,44 @@ if has('clipboard')
     nnoremap <silent> <Leader>Y  "+yg_
     nnoremap <silent> <Leader>yy "+y_
 elseif executable('wl-copy')
-    nnoremap <silent> <Leader>y  <ScriptCmd>set opfunc=YankToClipboard<CR>g@
-    xnoremap <silent> <Leader>y  <ScriptCmd>set opfunc=YankToClipboard<CR>g@
-    nnoremap <silent> <Leader>Y  <ScriptCmd>set opfunc=YankToClipboard<CR>g@g_
-    nnoremap <silent> <Leader>yy <ScriptCmd>set opfunc=YankToClipboard<CR>g@_
+    nnoremap <expr> <silent> <Leader>y  YankToClipboard()
+    xnoremap <expr> <silent> <Leader>y  YankToClipboard()
+    nnoremap <expr> <silent> <Leader>Y  YankToClipboard('g_')
+    nnoremap <expr> <silent> <Leader>yy YankToClipboard('_')
 endif
 
-def YankToClipboard(type: string, ...args: list<string>): void
-    var reg = '"'
-    var sel_save = &selection
-    &selection = "inclusive"
-    var cb_save  = &clipboard
-    var reg_save = getreg(reg)
-    var reg_type = getregtype(reg)
+def YankToClipboard(arg = ''): string
+    &operatorfunc = (type: string, ...args: list<string>) => {
+        var reg = '"'
+        var save_selection = &selection
+        var save_clipboard = &clipboard
+        var save_register = getreginfo(reg)
+        &selection = 'inclusive'
 
-    if type == "char"
-        silent execute 'normal! v`[o`]"' .. reg .. 'y'
-    elseif type == "line"
-        silent execute 'normal! `[V`]"' .. reg .. 'y'
-    elseif type == "block" || type == "v" || type == "V" || type == "\<C-V>"
-        &selection = sel_save
-        var ve = &virtualedit
-
-        if args[0]->empty() || args[1]->empty()
-            set virtualedit=
+        if type == 'char'
+            silent execute 'normal! v`[o`]"' .. reg .. 'y'
+        elseif type == 'line'
+            silent execute 'normal! `[V`]"' .. reg .. 'y'
+        elseif type == 'block' || type == 'v' || type == 'V' || type == "\<C-V>"
+            silent execute 'normal! gv"' .. reg .. 'y'
+        elseif type =~ '^\d\+$'
+            silent execute 'normal! ^v' .. type .. '$h"' .. reg .. 'y'
+            if mode() == 'v'
+                normal! v
+            endif
+        else
+            &selection = save_selection
+            &clipboard = save_clipboard
         endif
 
-        silent execute 'normal! gv"' .. reg .. 'y'
-        &virtualedit = ve
-    elseif type =~ '^\d\+$'
-        silent execute 'normal! ^v' .. type .. '$h"' .. reg .. 'y'
-        if mode() == 'v'
-            normal! v
-        endif
-    else
-        &selection = sel_save
-        &clipboard = cb_save
-    endif
+        system('wl-copy', getreg(reg))
 
-    system('wl-copy', getreg(reg))
+        setreg(reg, save_register)
+        &selection = save_selection
+        &clipboard = save_clipboard
+    }
 
-    setreg(reg, reg_save, reg_type)
-    &selection = sel_save
-    &clipboard = cb_save
+    return 'g@' .. arg
 enddef
 
 # paste from clipboard
