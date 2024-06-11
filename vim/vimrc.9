@@ -496,7 +496,7 @@ enddef
 def HighlightGitBranchStatus(): void
     if executable('git') < 1 | return | endif
 
-    var git_icon = ''
+    var git_icon = '*'
     var git_dir = expand('%:p:h:S')
     var git_cmd = 'git -C ' .. git_dir .. ' status --branch --porcelain=2'
     silent! var git_cmd_result = system(git_cmd)->split('\n')
