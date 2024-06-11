@@ -3,12 +3,11 @@ vim9script
 
 # commons {{{
 
-const HOME = getenv('HOME')
 for [xdg_env_var, default_dir] in [
-        ['XDG_CACHE_HOME',  HOME .. '/.cache'],
-        ['XDG_CONFIG_HOME', HOME .. '/.config'],
-        ['XDG_DATA_HOME',   HOME .. '/.local/share'],
-        ['XDG_STATE_HOME',  HOME .. '/.local/state']
+        ['XDG_CACHE_HOME',  $HOME .. '/.cache'],
+        ['XDG_CONFIG_HOME', $HOME .. '/.config'],
+        ['XDG_DATA_HOME',   $HOME .. '/.local/share'],
+        ['XDG_STATE_HOME',  $HOME .. '/.local/state']
         ]
 
     const xdg_base_dir = getenv(xdg_env_var) ?? default_dir
@@ -51,9 +50,9 @@ source $VIMRUNTIME/defaults.vim
 # ---------
 # work dirs
 # ---------
-mkdir(getenv('VIM_STATE_HOME') .. '/swap', 'p', 0o700)
-mkdir(getenv('VIM_STATE_HOME') .. '/undo', 'p', 0o700)
-mkdir(getenv('VIM_STATE_HOME') .. '/view', 'p', 0o700)
+mkdir($VIM_STATE_HOME .. '/swap', 'p', 0o700)
+mkdir($VIM_STATE_HOME .. '/undo', 'p', 0o700)
+mkdir($VIM_STATE_HOME .. '/view', 'p', 0o700)
 
 # -------
 # options
@@ -82,6 +81,7 @@ set nolist
 set noshowmode
 set notitle
 set number
+set packpath^=$VIM_DATA_HOME
 set path=.,,**
 set pumheight=7
 set relativenumber
@@ -687,34 +687,32 @@ enddef
 
 # plugins {{{
 
-var vim_data_home = getenv('VIM_DATA_HOME')
-var package = 'plugged'
-&packpath = &packpath
-    ->substitute(&runtimepath->split(',')[0], vim_data_home, 'g')
-var package_start_dir = vim_data_home .. '/pack/' .. package .. '/start'
-var package_opt_dir   = vim_data_home .. '/pack/' .. package .. '/opt'
+final pack = {}
+pack.name      = 'plugged'
+pack.start_dir = $VIM_DATA_HOME .. '/pack/' .. pack.name .. '/start'
+pack.opt_dir   = $VIM_DATA_HOME .. '/pack/' .. pack.name .. '/opt'
 
 # paq:
 # {
 #    'paq_name' : { 'dir' : dir, 'url' : url }
 # }
-var paqs = {}
+final paqs = {}
 
 # Paq management functions
 def PaqInit(): void
-    mkdir(package_start_dir, 'p')
-    mkdir(package_opt_dir,   'p')
+    mkdir(pack.start_dir, 'p')
+    mkdir(pack.opt_dir,   'p')
 enddef
 
 def PaqAdd(name: string, args = {}): void
     var url = 'https://github.com/' .. name
     var as = args->get('as', name->split('/')[1])
 
-    var dir = ''
+    var dir: string
     if args->get('opt', false)
-        dir = package_opt_dir   .. '/' .. as
+        dir = pack.opt_dir   .. '/' .. as
     else
-        dir = package_start_dir .. '/' .. as
+        dir = pack.start_dir .. '/' .. as
     endif
 
     paqs[as] = {
@@ -758,7 +756,7 @@ enddef
 
 def PaqClean(): void
     var dirs = []
-    for dir in [ package_start_dir, package_opt_dir ]
+    for dir in [ pack.start_dir, pack.opt_dir ]
         dirs += glob(dir .. '/*', true, true)
     endfor
 
@@ -772,7 +770,7 @@ def PaqClean(): void
     })
 
     if dirs->filter('v:val != ""')->empty()
-        redraw! | echo 'Package [' .. package .. '] is clean.'
+        redraw! | echo 'Pack [' .. pack.name .. '] is clean.'
     else
         var prompt = "WARNING:"
             .. "\nThe following folder(s) will be deleted.\n"
