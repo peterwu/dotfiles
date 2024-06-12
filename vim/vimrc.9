@@ -272,36 +272,79 @@ endif
 
 def YankToClipboard(arg = ''): string
     &operatorfunc = (type: string, ...args: list<string>) => {
-        var reg = '"'
-        var save_selection = &selection
-        var save_clipboard = &clipboard
-        var save_register = getreginfo(reg)
-        &selection = 'inclusive'
+        var selection = &selection
+        var clipboard = &clipboard
+        var register = getreginfo(v:register)
+        var visual_marks = [getpos("'<"), getpos("'>")]
+
+        set selection=inclusive
 
         if type == 'char'
-            silent execute 'normal! v`[o`]"' .. reg .. 'y'
+            silent execute 'normal! v`[o`]"' .. v:register .. 'y'
         elseif type == 'line'
-            silent execute 'normal! `[V`]"' .. reg .. 'y'
+            silent execute 'normal! `[V`]"' .. v:register .. 'y'
         elseif type == 'block' || type == 'v' || type == 'V' || type == "\<C-V>"
-            silent execute 'normal! gv"' .. reg .. 'y'
+            silent execute 'normal! gv"' .. v:register .. 'y'
         elseif type =~ '^\d\+$'
-            silent execute 'normal! ^v' .. type .. '$h"' .. reg .. 'y'
+            silent execute 'normal! ^v' .. type .. '$h"' .. v:register .. 'y'
             if mode() == 'v'
                 normal! v
             endif
-        else
-            &selection = save_selection
-            &clipboard = save_clipboard
         endif
 
-        system('wl-copy', getreg(reg))
+        var orig_text  = getreg(v:register)
+        var b64_text   = orig_text->B64Encode()
+        var osc52_text = printf("\x1b]52;c;%s\x07", b64_text)
 
-        setreg(reg, save_register)
-        &selection = save_selection
-        &clipboard = save_clipboard
+        if filewritable('/dev/fd/2')
+            writefile([osc52_text], '/dev/fd/2', 'b')
+        else
+            execute "silent! !echo " .. shellescape(osc52_text)
+            redraw!
+        endif
+
+        &selection = selection
+        &clipboard = clipboard
+        setreg(v:register, register)
+        setpos("'<", visual_marks[0])
+        setpos("'>", visual_marks[1])
     }
 
     return 'g@' .. arg
+enddef
+
+def B64Encode(str: string): string
+    const b64_table = [
+        "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
+        "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
+        "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
+        "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
+        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "+", "/"
+    ]
+
+    var bytes = str->len()->range()->map((_, v) => (str[v]->char2nr()))
+    var b64 = []
+
+    for i in range(0, len(bytes) - 1, 3)
+        var n = bytes[i] * 0x10000
+            + get(bytes, i + 1, 0) * 0x100
+            + get(bytes, i + 2, 0)
+        b64->add(b64_table[n / 0x40000])
+        b64->add(b64_table[n / 0x1000 % 0x40])
+        b64->add(b64_table[n / 0x40 % 0x40])
+        b64->add(b64_table[n % 0x40])
+    endfor
+
+    if len(bytes) % 3 == 1
+        b64[-1] = '='
+        b64[-2] = '='
+    endif
+
+    if len(bytes) % 3 == 2
+        b64[-1] = '='
+    endif
+
+    return b64->join('')
 enddef
 
 # paste from clipboard
