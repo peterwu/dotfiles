@@ -143,10 +143,10 @@ show_bash_prompt() {
     # use appropriate prompt to reflect effective uid
     if [[ $(id -u) -eq 0 ]]; then
         # root
-        prompt+="Λ"
+        prompt+="#"
     else
         # non-root
-        prompt+="λ"
+        prompt+="$"
     fi
 
     # reset colors
