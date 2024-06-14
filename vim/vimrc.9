@@ -4,14 +4,14 @@ vim9script
 # commons {{{
 
 for [xdg_env_var, default_dir] in [
-        ['XDG_CACHE_HOME',  $HOME .. '/.cache'],
-        ['XDG_CONFIG_HOME', $HOME .. '/.config'],
-        ['XDG_DATA_HOME',   $HOME .. '/.local/share'],
-        ['XDG_STATE_HOME',  $HOME .. '/.local/state']
+        ['XDG_CACHE_HOME',  $'{$HOME}/.cache'],
+        ['XDG_CONFIG_HOME', $'{$HOME}/.config'],
+        ['XDG_DATA_HOME',   $'{$HOME}/.local/share'],
+        ['XDG_STATE_HOME',  $'{$HOME}/.local/state']
         ]
 
     const xdg_base_dir = getenv(xdg_env_var) ?? default_dir
-    const vim_base_dir = xdg_base_dir .. '/vim'
+    const vim_base_dir = $'{xdg_base_dir}/vim'
 
     const vim_env_var = xdg_env_var->substitute('XDG', 'VIM', 'g')
     setenv(vim_env_var, vim_base_dir)
@@ -50,9 +50,9 @@ source $VIMRUNTIME/defaults.vim
 # ---------
 # work dirs
 # ---------
-mkdir($VIM_STATE_HOME .. '/swap', 'p', 0o700)
-mkdir($VIM_STATE_HOME .. '/undo', 'p', 0o700)
-mkdir($VIM_STATE_HOME .. '/view', 'p', 0o700)
+mkdir($'{$VIM_STATE_HOME}/swap', 'p', 0o700)
+mkdir($'{$VIM_STATE_HOME}/undo', 'p', 0o700)
+mkdir($'{$VIM_STATE_HOME}/view', 'p', 0o700)
 
 # -------
 # options
@@ -192,9 +192,9 @@ def ToggleQuickfixWindow(type: string): void
     endif
 
     if getwininfo()->filter(value)->empty()
-        execute 'silent! ' .. prefix .. 'open'
+        execute $'silent! {prefix}open'
     else
-        execute 'silent! ' .. prefix .. 'close'
+        execute $'silent! {prefix}close'
     endif
 enddef
 
@@ -263,7 +263,7 @@ if has('clipboard')
     xnoremap <silent> <Leader>y  "+y
     nnoremap <silent> <Leader>Y  "+yg_
     nnoremap <silent> <Leader>yy "+y_
-elseif executable('wl-copy')
+else
     nnoremap <expr> <silent> <Leader>y  YankToClipboard()
     xnoremap <expr> <silent> <Leader>y  YankToClipboard()
     nnoremap <expr> <silent> <Leader>Y  YankToClipboard('g_')
@@ -280,13 +280,13 @@ def YankToClipboard(arg = ''): string
         set selection=inclusive
 
         if type == 'char'
-            silent execute 'normal! v`[o`]"' .. v:register .. 'y'
+            silent execute $'normal! v`[o`]"{v:register}y'
         elseif type == 'line'
-            silent execute 'normal! `[V`]"' .. v:register .. 'y'
+            silent execute $'normal! `[V`]"{v:register}y'
         elseif type == 'block' || type == 'v' || type == 'V' || type == "\<C-V>"
-            silent execute 'normal! gv"' .. v:register .. 'y'
+            silent execute $'normal! gv"{v:register}y'
         elseif type =~ '^\d\+$'
-            silent execute 'normal! ^v' .. type .. '$h"' .. v:register .. 'y'
+            silent execute $'normal! ^v{type}$h"{v:register}y'
             if mode() == 'v'
                 normal! v
             endif
@@ -294,14 +294,9 @@ def YankToClipboard(arg = ''): string
 
         var orig_text  = getreg(v:register)
         var b64_text   = orig_text->B64Encode()
-        var osc52_text = printf("\x1b]52;c;%s\x07", b64_text)
+        var osc52_text = $"\x1b]52;c;{b64_text}\x07"
 
-        if filewritable('/dev/fd/2')
-            writefile([osc52_text], '/dev/fd/2', 'b')
-        else
-            execute "silent! !echo " .. shellescape(osc52_text)
-            redraw!
-        endif
+        echoraw(osc52_text)
 
         &selection = selection
         &clipboard = clipboard
@@ -381,7 +376,7 @@ enddef
 command! -nargs=0 SudoWrite {
     silent! write !sudo tee % > /dev/null
     edit!
-    echo expand('%:p') .. ' saved!'
+    echo $'{expand('%:p')} saved!'
 }
 
 # }}}
@@ -460,8 +455,8 @@ enddef
 
 augroup show_color_column_per_line | autocmd!
     autocmd FileType * {
-        const tw = &textwidth > 0 ? &textwidth + 1 : 0
-        execute 'match ColorColumn /\%' .. tw .. 'v./'
+        const textwidth = &textwidth > 0 ? &textwidth + 1 : 0
+        execute $'match ColorColumn /\%{textwidth}v./'
     }
 augroup END
 
@@ -541,7 +536,7 @@ def HighlightGitBranchStatus(): void
 
     var git_icon = '*'
     var git_dir = expand('%:p:h:S')
-    var git_cmd = 'git -C ' .. git_dir .. ' status --branch --porcelain=2'
+    var git_cmd = $'git -C {git_dir} status --branch --porcelain=2'
     silent! var git_cmd_result = system(git_cmd)->split('\n')
 
     # Line                                  Notes
@@ -727,8 +722,8 @@ enddef
 
 final pack = {}
 pack.name      = 'plugged'
-pack.start_dir = $VIM_DATA_HOME .. '/pack/' .. pack.name .. '/start'
-pack.opt_dir   = $VIM_DATA_HOME .. '/pack/' .. pack.name .. '/opt'
+pack.start_dir = $'{$VIM_DATA_HOME}/pack/{pack.name}/start'
+pack.opt_dir   = $'{$VIM_DATA_HOME}/pack/{pack.name}/opt'
 
 # paq:
 # {
@@ -774,20 +769,18 @@ def PaqUpdate(): void
         var git_cmd = ''
         var git_cmd_result = []
         if finddir('.git', dir)->empty()
-            git_cmd =  'git clone --depth=1 ' .. url .. ' ' .. dir
-                .. '|' .. sed_rm_ansi_esc_chars
+            git_cmd =  $'git clone --depth=1 {url} {dir}|{sed_rm_ansi_esc_chars}'
         else
-            git_cmd = 'git -C ' .. dir .. ' pull --depth=1 ' .. '2>&1'
-                .. '|' .. sed_rm_ansi_esc_chars
+            git_cmd = $'git -C {dir} pull --depth=1 2>&1|{sed_rm_ansi_esc_chars}'
         endif
         git_cmd_result = system(git_cmd)->split('\n')
 
-        const doc_dir = dir .. '/doc'
+        const doc_dir = $'{dir}/doc'
         if doc_dir->isdirectory()
-            execute 'helptags ' ..  doc_dir
+            execute $'helptags {doc_dir}'
         endif
 
-        const fmt = "%" .. (max + 1) .. "s: %s"
+        const fmt = $'%{max + 1}s: %s'
         echo printf(fmt, as, git_cmd_result[0])
     })
 enddef
@@ -795,7 +788,7 @@ enddef
 def PaqClean(): void
     var dirs = []
     for dir in [ pack.start_dir, pack.opt_dir ]
-        dirs += glob(dir .. '/*', true, true)
+        dirs += glob($'{dir}/*', true, true)
     endfor
 
     dirs->foreach((k, v) => {
@@ -808,7 +801,7 @@ def PaqClean(): void
     })
 
     if dirs->filter('v:val != ""')->empty()
-        redraw! | echo 'Pack [' .. pack.name .. '] is clean.'
+        redraw! | echo $'Pack [{pack.name}] is clean.'
     else
         var prompt = "WARNING:"
             .. "\nThe following folder(s) will be deleted.\n"
@@ -848,7 +841,7 @@ augroup vinegarize_netrw | autocmd!
     autocmd filetype netrw {
         nnoremap <buffer> <silent> ^ <Plug>NetrwBrowseUpDir()
         nnoremap <buffer> <silent> - k
-        nnoremap <buffer> <silent> ~ <Cmd>execute 'Ntree ' .. expand('~/')<CR>
+        nnoremap <buffer> <silent> ~ <Cmd>execute $"Ntree {expand('~/')}"<CR>
     }
 augroup END
 
