@@ -322,8 +322,8 @@ def B64Encode(str: string): string
 
     for i in range(0, len(bytes) - 1, 3)
         var n = bytes[i] * 0x10000
-            + get(bytes, i + 1, 0) * 0x100
-            + get(bytes, i + 2, 0)
+            + bytes->get(i + 1, 0) * 0x100
+            + bytes->get(i + 2, 0)
         b64->add(b64_table[n / 0x40000])
         b64->add(b64_table[n / 0x1000 % 0x40])
         b64->add(b64_table[n / 0x40 % 0x40])

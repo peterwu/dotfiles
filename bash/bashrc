@@ -131,12 +131,12 @@ show_bash_prompt() {
     if [[ ${last_command_status} -eq 0 ]]; then
         # success -> GREEN
         prompt+="\001"
-        prompt+=$(tput sgr0; tput bold; tput setaf 2)
+        prompt+=$(tput sgr0; tput sitm; tput setaf 2)
         prompt+="\002"
     else
         # error -> RED
         prompt+="\001"
-        prompt+=$(tput sgr0; tput bold; tput setaf 1)
+        prompt+=$(tput sgr0; tput sitm; tput setaf 1)
         prompt+="\002"
     fi
 
