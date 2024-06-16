@@ -320,6 +320,13 @@
                  (setq-local global-hl-line-mode nil)
                  (term-set-escape-char ?\C-x))))
 
+(use-package term/xterm
+  :unless (display-graphic-p)
+  :custom
+  (xterm-extra-capabilities '(getSelection setSelection))
+  :config
+  (terminal-init-xterm))
+
 (use-package time
   :commands world-clock
   :custom
