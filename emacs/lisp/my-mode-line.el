@@ -181,7 +181,9 @@ Subtle blue suggests the window is neither selected nor dedicated.")
           (my-mode-line--render
            ;; left
            (list
-            my-mode-line--window-status-tag
+            (if (mode-line-window-selected-p)
+                evil-mode-line-tag
+              my-mode-line--window-status-tag)
             " "
             mode-line-mule-info
             mode-line-client

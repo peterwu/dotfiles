@@ -81,6 +81,9 @@
   (eshell-mode . (lambda ()
                    (setq-local global-hl-line-mode nil))))
 
+(use-package goto-chg
+  :ensure t)
+
 (use-package ispell
   :unless (eq system-type 'windows-nt)
   :if (locate-file "hunspell" exec-path exec-suffixes 1)
@@ -162,7 +165,6 @@
 
 (use-package keycast
   :ensure t
-  :pin melpa
   :custom
   (keycast-mode-line-format "%k%c%R")
   (keycast-mode-line-insert-after 'my-mode-line-centre-place-holder)
