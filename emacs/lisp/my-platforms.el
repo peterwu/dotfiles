@@ -6,7 +6,6 @@
   (setopt w32-get-true-file-attributes nil)
   (setq-default inhibit-compacting-font-caches t))
  ((eq system-type 'darwin)
-  (setopt mac-command-modifier 'meta)
-  (setopt mac-option-modifier nil)))
+  (setopt mac-option-modifier 'meta)))
 
 (provide 'my-platforms)
