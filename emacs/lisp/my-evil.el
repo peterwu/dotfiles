@@ -72,6 +72,9 @@
   (:map evil-normal-state-map
         :prefix "<leader>" :prefix-map my-evil-leader-normal-state-map)
   :bind
+  (:map evil-motion-state-map
+        ("gl" . my-evil-align-simple)
+        ("gL" . my-evil-align-complex))
   (:map my-evil-leader-motion-state-map
         ("y" . my-evil-yank-to-clipboard)
         ("Y" . my-evil-yank-line-to-clipboard))
@@ -116,6 +119,20 @@
                            (evil-set-register ?\" (buffer-string)))
                          (evil-paste-before count ?\" yank-handler))
 
+                       (evil-define-operator my-evil-align-simple (beg end)
+                         :move-point nil
+                         :repeat t
+                         (interactive "<r>")
+                         (evil-with-active-region beg end
+                           (call-interactively #'my-align-simple)))
+
+                       (evil-define-operator my-evil-align-complex (beg end)
+                         :move-point nil
+                         :repeat t
+                         (interactive "<r>")
+                         (evil-with-active-region beg end
+                           (call-interactively #'my-align-complex)))
+
                        (evil-define-operator my-evil-yank-to-clipboard (beg end type register yank-handler)
                          :move-point nil
                          :repeat nil
@@ -143,12 +160,6 @@
   :ensure t
   :config
   (evil-exchange-install))
-
-;; evil-lion
-(use-package evil-lion
-  :ensure t
-  :config
-  (evil-lion-mode +1))
 
 ;; evil-matchit
 (use-package evil-matchit

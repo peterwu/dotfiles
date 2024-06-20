@@ -1,6 +1,25 @@
 ;;; my-packages.el -*- lexical-binding: t; -*-
 
 ;; built-in packages
+(use-package align
+  :preface
+  (defun my-align-simple(beg end word)
+    (interactive "r\nsSimple align with word: ")
+    (let ((regexp (concat "\\(\\s-*\\)" word))
+          (group 1)
+          (spacing 1)
+          (repeat t))
+      (align-regexp beg end regexp group spacing repeat)))
+
+  (defun my-align-complex()
+    (interactive)
+    (setq current-prefix-arg t)
+    (call-interactively #'align-regexp))
+  :bind
+  (:map my-go-map
+        ("l" . my-align-simple)
+        ("L" . my-align-complex)))
+
 (use-package autorevert
   :custom
   (auto-revert-verbose t)
