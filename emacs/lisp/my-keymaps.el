@@ -1,5 +1,10 @@
 ;;; my-keymaps.el -*- lexical-binding: t; -*-
 
+;; my-magit-map
+(bind-keys :map ctl-x-map
+           :prefix-map my-magit-map
+           :prefix "g")
+
 ;; Use C-z for my personal key maps to avoid conflicts with
 ;; C-c keybinds defined by certain packages
 (bind-keys :map global-map
@@ -7,9 +12,9 @@
            :prefix-map my-ctl-z-map
            :prefix "C-z")
 
-;; my-magit-map
+;; my-go-map
 (bind-keys :map my-ctl-z-map
-           :prefix-map my-magit-map
+           :prefix-map my-go-map
            :prefix "g")
 
 ;; my-org-map
@@ -32,39 +37,5 @@
            :prefix-map my-window-map
            :prefix "w")
 
-;; my-mark-map
-(bind-keys :map my-ctl-z-map
-           :prefix-map my-mark-map
-           :prefix "SPC")
-
-;; my-delete-map
-(bind-keys :map my-ctl-z-map
-           :prefix-map my-delete-map
-           :prefix "d")
-
-;; my-kill-map (kill-to-ring)
-(bind-keys :map my-ctl-z-map
-           :prefix-map my-kill-map
-           :prefix "k")
-
-;; my-KILL-map (kill-to-clipboard)
-(bind-keys :map my-ctl-z-map
-           :prefix-map my-KILL-map
-           :prefix "K")
-
-;; my-yank-map (yank-to-ring)
-(bind-keys :map my-ctl-z-map
-           :prefix-map my-yank-map
-           :prefix "y")
-
-;; my-YANK-map (yank-to-clipboard)
-(bind-keys :map my-ctl-z-map
-           :prefix-map my-YANK-map
-           :prefix "Y")
-
-;; my-surround-map
-(bind-keys :map my-ctl-z-map
-           :prefix-map my-surround-map
-           :prefix "s")
 
 (provide 'my-keymaps)
