@@ -1,5 +1,6 @@
 ;;; my-packages.el -*- lexical-binding: t; -*-
 
+;; built-in packages
 (use-package autorevert
   :custom
   (auto-revert-verbose t)
@@ -81,9 +82,6 @@
   (eshell-mode . (lambda ()
                    (setq-local global-hl-line-mode nil))))
 
-(use-package goto-chg
-  :ensure t)
-
 (use-package ispell
   :unless (eq system-type 'windows-nt)
   :if (locate-file "hunspell" exec-path exec-suffixes 1)
@@ -162,29 +160,6 @@
   (lazy-count-suffix-format nil)
   (search-highlight t)
   (search-whitespace-regexp ".*?"))
-
-(use-package keycast
-  :ensure t
-  :custom
-  (keycast-mode-line-format "%k%c%R")
-  (keycast-mode-line-insert-after 'my-mode-line-centre-place-holder)
-  (keycast-mode-line-remove-tail-elements nil)
-  :bind
-  (:map my-toggle-map
-        ("k" .  keycast-mode-line-mode)))
-
-(use-package magit
-  :ensure t
-  :bind
-  (:map my-magit-map
-        ("g" . magit-status)
-        ("j" . magit-dispatch)
-        ("J" . magit-file-dispatch)
-        ("r" . vc-refresh-state)))
-
-(use-package markdown-mode
-  :ensure t
-  :mode ("\\.md\\'" . markdown-mode))
 
 (use-package mouse
   :if (display-graphic-p)
@@ -392,5 +367,32 @@
   ("<mouse-5>" . scroll-up-line)
   :config
   (xterm-mouse-mode +1))
+
+;; 3rd party packages
+(use-package goto-chg
+  :ensure t)
+
+(use-package keycast
+  :ensure t
+  :custom
+  (keycast-mode-line-format "%k%c%R")
+  (keycast-mode-line-insert-after 'my-mode-line-centre-place-holder)
+  (keycast-mode-line-remove-tail-elements nil)
+  :bind
+  (:map my-toggle-map
+        ("k" .  keycast-mode-line-mode)))
+
+(use-package magit
+  :ensure t
+  :bind
+  (:map my-magit-map
+        ("g" . magit-status)
+        ("j" . magit-dispatch)
+        ("J" . magit-file-dispatch)
+        ("r" . vc-refresh-state)))
+
+(use-package markdown-mode
+  :ensure t
+  :mode ("\\.md\\'" . markdown-mode))
 
 (provide 'my-packages)
