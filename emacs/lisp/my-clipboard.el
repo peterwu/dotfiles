@@ -1,14 +1,4 @@
 ;; system clipboard operations: cut/copy/paste
-(defvar my-cli-copy-command
-  (cond ((eq system-type 'darwin) "pbcopy")
-        ((eq system-type 'gnu/linux) "wl-copy"))
-  "Define the command line utility to perform copy operation.")
-
-(defvar my-cli-paste-command
-  (cond ((eq system-type 'darwin) "pbpaste")
-        ((eq system-type 'gnu/linux) "wl-paste"))
-  "Define the command line utility to perform paste operation.")
-
 (defun my-cut-to-clipboard (beg end)
   "Cut to the clipboard from BEG to END."
   (interactive "r")
