@@ -76,12 +76,11 @@
         ("gl" . my-evil-align-simple)
         ("gL" . my-evil-align-complex))
   (:map my-evil-leader-motion-state-map
-        ("y" . my-evil-yank-to-clipboard)
-        ("Y" . my-evil-yank-line-to-clipboard))
+        ("y" . my-evil-yank-to-clipboard))
   (:map my-evil-leader-normal-state-map
         ("p" . my-evil-paste-after-from-clipboard)
         ("P" . my-evil-paste-before-from-clipboard)
-        ("z" . text-scale-adjust))
+        ("Y" . my-evil-yank-eol-to-clipboard))
   (:map evil-insert-state-map
         ("C-x C-n" . evil-complete-next-line)
         ("C-x C-p" . evil-complete-previous-line))
@@ -103,21 +102,21 @@
                        (evil-set-leader '(normal motion) (kbd "SPC"))
                        (evil-set-leader '(normal motion) (kbd ",") t)
 
-                       (evil-define-command my-evil-paste-after-from-clipboard (count &optional register yank-handler)
+                       (evil-define-command my-evil-paste-after-from-clipboard (count)
                          :suppress-operator t
-                         (interactive "*P<x>")
+                         (interactive "*P")
                          (with-temp-buffer
                            (my-paste-from-clipboard)
                            (evil-set-register ?\" (buffer-string)))
-                         (evil-paste-after count ?\" yank-handler))
+                         (evil-paste-after count))
 
-                       (evil-define-command my-evil-paste-before-from-clipboard (count &optional register yank-handler)
+                       (evil-define-command my-evil-paste-before-from-clipboard (count)
                          :suppress-operator t
-                         (interactive "*P<x>")
+                         (interactive "*P")
                          (with-temp-buffer
                            (my-paste-from-clipboard)
                            (evil-set-register ?\" (buffer-string)))
-                         (evil-paste-before count ?\" yank-handler))
+                         (evil-paste-before count))
 
                        (evil-define-operator my-evil-align-simple (beg end)
                          :move-point nil
@@ -133,19 +132,20 @@
                          (evil-with-active-region beg end
                            (call-interactively #'my-align-complex)))
 
-                       (evil-define-operator my-evil-yank-to-clipboard (beg end type register yank-handler)
+                       (evil-define-operator my-evil-yank-to-clipboard (beg end)
                          :move-point nil
                          :repeat nil
-                         (interactive "<R><x><y>")
-                         (evil-yank beg end type ?\" yank-handler)
+                         (interactive "<r>")
+                         (evil-yank beg end)
                          (my-copy-to-clipboard beg end))
 
-                       (evil-define-operator my-evil-yank-line-to-clipboard (beg end type register)
-                         :motion evil-line-or-visual-line
-                         :move-point nil
-                         (interactive "<R><x>")
-                         (evil-yank-line beg end type ?\")
-                         (my-copy-to-clipboard beg end))))
+                       (evil-define-command my-evil-yank-eol-to-clipboard ()
+                         :suppress-operator t
+                         (interactive)
+                         (let ((beg (point))
+                               (end (pos-eol)))
+                           (evil-yank beg end)
+                           (my-copy-to-clipboard beg end)))))
   :config
   (evil-mode +1))
 

@@ -9,23 +9,19 @@
         ((eq system-type 'gnu/linux) "wl-paste"))
   "Define the command line utility to perform paste operation.")
 
-(defun my-cut-to-clipboard (beg end &optional region)
-  "Cut to the clipboard the REGION from BEG to END."
-  (interactive (let ((beg (mark))
-                     (end (point)))
-                 (unless (and beg end)
-                   (user-error "The mark is not set now, so there is no region"))
-                 (list beg end 'region)))
+(defun my-cut-to-clipboard (beg end)
+  "Cut to the clipboard from BEG to END."
+  (interactive "r")
   (if (display-graphic-p)
-      (clipboard-kill-region beg end region)
+      (clipboard-kill-region beg end)
     (gui-set-selection 'CLIPBOARD
                        (buffer-substring-no-properties beg end))))
 
-(defun my-copy-to-clipboard (beg end &optional region)
-  "Copy to the clipboard the REGION from BEG to END."
-  (interactive (list (mark) (point) 'region))
+(defun my-copy-to-clipboard (beg end)
+  "Copy to the clipboard from BEG to END."
+  (interactive "r")
   (if (display-graphic-p)
-      (clipboard-kill-ring-save beg end region)
+      (clipboard-kill-ring-save beg end)
     (gui-set-selection 'CLIPBOARD
                        (buffer-substring-no-properties beg end))))
 
