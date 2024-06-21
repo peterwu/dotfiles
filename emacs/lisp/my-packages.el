@@ -373,8 +373,12 @@
   (uniquify-strip-common-suffix t))
 
 (use-package whitespace
+  :custom
+  (whitespace-line-column fill-column)
+  (whitespace-style '(face lines-char trailing))
   :hook
   (before-save . whitespace-cleanup)
+  ((conf-mode prog-mode text-mode) . whitespace-mode)
   :bind
   (:map my-toggle-map
         ("w" . whitespace-mode)))
