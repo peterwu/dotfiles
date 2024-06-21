@@ -156,12 +156,6 @@
   :config
   (evil-mode +1))
 
-;; evil-exchange
-(use-package evil-exchange
-  :ensure t
-  :config
-  (evil-exchange-install))
-
 ;; evil-matchit
 (use-package evil-matchit
   :ensure t
