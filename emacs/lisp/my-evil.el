@@ -73,6 +73,7 @@
         :prefix "<leader>" :prefix-map my-evil-leader-normal-state-map)
   :bind
   (:map evil-motion-state-map
+        ("gc" . my-evil-commentary)
         ("gl" . my-evil-align-simple)
         ("gL" . my-evil-align-complex))
   (:map my-evil-leader-motion-state-map
@@ -132,6 +133,12 @@
                          (evil-with-active-region beg end
                            (call-interactively #'my-align-complex)))
 
+                       (evil-define-operator my-evil-commentary (beg end)
+                         :move-point nil
+                         :repeat t
+                         (interactive "<r>")
+                         (comment-or-uncomment-region beg end))
+
                        (evil-define-operator my-evil-yank-to-clipboard (beg end)
                          :move-point nil
                          :repeat nil
@@ -148,12 +155,6 @@
                            (my-copy-to-clipboard beg end)))))
   :config
   (evil-mode +1))
-
-;; evil-commentary
-(use-package evil-commentary
-  :ensure t
-  :config
-  (evil-commentary-mode +1))
 
 ;; evil-exchange
 (use-package evil-exchange
