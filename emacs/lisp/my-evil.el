@@ -5,46 +5,46 @@
   :ensure t
   :preface
   (defun my-propertize-evil-state-tags ()
-    (let ((white "#FFFFFF"))
+    (let ((face-defaults '(:foreground "#FFFFFF" :weight bold)))
       (setq-default evil-normal-state-tag
                     (propertize " N "
-                                'face `(:foreground ,white :background "dark blue" :weight bold)))
+                                'face `(,@face-defaults :background "dark blue")))
 
       (setq-default evil-insert-state-tag
                     (propertize " I "
-                                'face `(:foreground ,white :background "dark green" :weight bold)))
+                                'face `(,@face-defaults :background "dark green")))
 
       (setq-default evil-visual-char-tag
                     (propertize " V "
-                                'face `(:foreground ,white :background "dark cyan" :weight bold)))
+                                'face `(,@face-defaults :background "dark cyan")))
 
       (setq-default evil-visual-line-tag
                     (propertize " L "
-                                'face `(:foreground ,white :background "dark cyan" :weight bold)))
+                                'face `(,@face-defaults :background "dark cyan")))
 
       (setq-default evil-visual-screen-line-tag
                     (propertize " S "
-                                'face `(:foreground ,white :background "dark cyan" :weight bold)))
+                                'face `(,@face-defaults :background "dark cyan")))
 
       (setq-default evil-visual-block-tag
                     (propertize " B "
-                                'face `(:foreground ,white :background "dark cyan" :weight bold)))
+                                'face `(,@face-defaults :background "dark cyan")))
 
       (setq-default evil-operator-state-tag
                     (propertize " O "
-                                'face `(:foreground ,white :background "magenta" :weight bold)))
+                                'face `(,@face-defaults :background "magenta")))
 
       (setq-default evil-replace-state-tag
                     (propertize " R "
-                                'face `(:foreground ,white :background "dark red" :weight bold)))
+                                'face `(,@face-defaults :background "dark red")))
 
       (setq-default evil-motion-state-tag
                     (propertize " M "
-                                'face `(:foreground ,white :background "black" :weight bold)))
+                                'face `(,@face-defaults :background "black")))
 
       (setq-default evil-emacs-state-tag
                     (propertize " E "
-                                'face `(:foreground ,white :background "dark violet" :weight bold)))))
+                                'face `(,@face-defaults :background "dark violet")))))
   :init
   (setopt evil-default-state 'emacs)
   (setopt evil-emacs-state-modes nil)
