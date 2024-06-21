@@ -256,9 +256,15 @@
   (dolist (construct '((kill-region             . my-pulse--cut-advice)
                        (kill-ring-save          . my-pulse--copy-advice)
                        (yank                    . my-pulse--paste-advice)
+
                        (my-cut-to-clipboard     . my-pulse--cut-advice)
                        (my-copy-to-clipboard    . my-pulse--copy-advice)
-                       (my-paste-from-clipboard . my-pulse--paste-advice)))
+                       (my-paste-from-clipboard . my-pulse--paste-advice)
+
+                       (evil-delete             . my-pulse--cut-advice)
+                       (evil-yank               . my-pulse--copy-advice)
+                       (evil-paste-after        . my-pulse--paste-advice)
+                       (evil-paste-before       . my-pulse--paste-advice)))
     (advice-add (car construct) :around (cdr construct))))
 
 (use-package recentf
