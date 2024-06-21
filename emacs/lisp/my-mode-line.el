@@ -95,7 +95,7 @@ Subtle blue suggests the window is neither selected nor dedicated.")
                      (branch
                       (if locked?  (match-string 1 status)
                         (substring status 1)))
-                     (git-mode-line-status (concat " " branch)))
+                     (git-mode-line-status (concat "* " branch)))
                 (cond
                  ;; up-to-date
                  ((string-equal "-" class)
