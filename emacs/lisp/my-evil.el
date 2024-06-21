@@ -156,12 +156,6 @@
   :config
   (evil-mode +1))
 
-;; evil-matchit
-(use-package evil-matchit
-  :ensure t
-  :config
-  (global-evil-matchit-mode +1))
-
 ;; evil-numbers
 (use-package evil-numbers
   :ensure t
