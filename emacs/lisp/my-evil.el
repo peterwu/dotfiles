@@ -156,16 +156,6 @@
   :config
   (evil-mode +1))
 
-;; evil-numbers
-(use-package evil-numbers
-  :ensure t
-  :bind
-  (:map my-ctl-z-map
-        ("C-a" . evil-numbers/inc-at-pt)
-        ("C-x" . evil-numbers/dec-at-pt)
-        ("M-a" . evil-numbers/inc-at-pt-incremental)
-        ("M-x" . evil-numbers/dec-at-pt-incremental)))
-
 ;; evil-surround
 (use-package evil-surround
   :ensure t
