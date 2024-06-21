@@ -63,7 +63,8 @@
 in the form of ((index . #window-name) ... ), where index begins at 1.")
 
 (defun my-window-numbering-get-number (&optional window)
-  "Return the number of the WINDOW. If WINDOW is omitted, the currently selected window is assumed."
+  "Return the number of the WINDOW. If WINDOW is omitted, the currently selected
+window is assumed."
   (let ((window (or window (selected-window))))
     (car (rassq window my-window-numbering--indexed-windows-alist))))
 
@@ -97,7 +98,8 @@ in the form of ((index . #window-name) ... ), where index begins at 1.")
     (other-window 1)))
 
 (defmacro my-select-window-n-keybind (n)
-  "Create my-select-window-N functions and respective key binds, where N indicates the number assigned to window."
+  "Create my-select-window-N functions and respective key binds, where N
+indicates the number assigned to window."
   (let ((my-select-window-n (intern (format "my-select-window-%s" n))))
     `(progn
        (defun ,my-select-window-n ()

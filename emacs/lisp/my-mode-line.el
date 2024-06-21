@@ -45,7 +45,12 @@
             (dedicated (window-dedicated-p)))
         (cond
          ((and selected dedicated)
-          (propertize lock-tag 'face '(:inherit modus-themes-active-red :foreground "#FFFFFF" :weight bold)))
+          (propertize
+           lock-tag
+           'face
+           '(:inherit modus-themes-active-red
+                      :foreground "#FFFFFF"
+                      :weight bold)))
          ((and selected (not dedicated)) evil-mode-line-tag)
          ((and (not selected) dedicated)
           (propertize number-tag 'face '(:inherit modus-themes-subtle-red)))
@@ -70,64 +75,67 @@ Subtle blue suggests the window is neither selected nor dedicated.")
                           'help-echo "Buffer name"
                           'face '(:inherit mode-line-buffer-id)
                           'mouse-face 'mode-line-highlight)))
-  "Return an enhanced buffer-identification with ellipsized file name when the file name is too long.")
+  "Return an enhanced buffer-identification with ellipsized file name when the
+  file name is too long.")
 (put 'my-mode-line--buffer-identification 'risky-local-variable t)
 
 (defvar-local my-mode-line--vc-mode
     ;; Format: (defun vc-default-mode-line-string (backend file) in vc-hooks.el
     ;;   \"BACKEND-REV\"        if the file is up-to-date
-    ;;   \"BACKEND:REV\"        if the file is edited (or locked by the calling user)
+    ;;   \"BACKEND:REV\"        if the file is edited (or locked by the caller)
     ;;   \"BACKEND:LOCKER:REV\" if the file is locked by somebody else
     ;;   \"BACKEND@REV\"        if the file was locally added
     ;;   \"BACKEND!REV\"        if the file contains conflicts or was removed
     ;;   \"BACKEND?REV\"        if the file is under VC, but is missing
 
-    '(:eval (when vc-mode
-              (let* ((mode (substring-no-properties vc-mode))
-                     (status (replace-regexp-in-string "^ Git" "" mode))
-                     (class (substring-no-properties status 0 1))
-                     (locked? (string-match
-                               (rx (and
-                                    line-start ":"
-                                    (one-or-more alnum) ":"
-                                    (group (one-or-more alnum))))
-                               status))
-                     (branch
-                      (if locked?  (match-string 1 status)
-                        (substring status 1)))
-                     (git-mode-line-status (concat "* " branch)))
-                (cond
-                 ;; up-to-date
-                 ((string-equal "-" class)
-                  (propertize git-mode-line-status
-                              'face '(:inherit vc-up-to-date-state :weight bold)
-                              'mouse-face 'mode-line-highlight))
-                 ;; locked
-                 (locked?
-                  (propertize git-mode-line-status
-                              'face '(:inherit vc-locked-state :weight bold)
-                              'mouse-face 'mode-line-highlight))
-                 ;; edited
-                 ((string-equal ":" class)
-                  (propertize git-mode-line-status
-                              'face '(:inherit vc-edited-state :weight bold)
-                              'mouse-face 'mode-line-highlight))
-                 ;; locally added
-                 ((string-equal "@" class)
-                  (propertize git-mode-line-status
-                              'face '(:inherit vc-locally-added-state :weight bold)
-                              'mouse-face 'mode-line-highlight))
-                 ;; removed or conflicting
-                 ((string-equal "!" class)
-                  (propertize git-mode-line-status
-                              'face '(:inherit vc-removed-state :weight bold)
-                              'mouse-face 'mode-line-highlight))
-                 ;; missing
-                 ((string-equal "?" class)
-                  (propertize git-mode-line-status
-                              'face '(:inherit vc-missing-state :weight bold)
-                              'mouse-face 'mode-line-highlight))
-                 ((t git-mode-line-status))))))
+    '(:eval
+      (when vc-mode
+        (let* ((mode (substring-no-properties vc-mode))
+               (status (replace-regexp-in-string "^ Git" "" mode))
+               (class (substring-no-properties status 0 1))
+               (locked? (string-match
+                         (rx (and
+                              line-start ":"
+                              (one-or-more alnum) ":"
+                              (group (one-or-more alnum))))
+                         status))
+               (branch
+                (if locked?  (match-string 1 status)
+                  (substring status 1)))
+               (git-icon "*")
+               (git-mode-line-status (format "%s %s" git-icon branch)))
+          (cond
+           ;; up-to-date
+           ((string-equal "-" class)
+            (propertize git-mode-line-status
+                        'face '(:inherit vc-up-to-date-state :weight bold)
+                        'mouse-face 'mode-line-highlight))
+           ;; locked
+           (locked?
+            (propertize git-mode-line-status
+                        'face '(:inherit vc-locked-state :weight bold)
+                        'mouse-face 'mode-line-highlight))
+           ;; edited
+           ((string-equal ":" class)
+            (propertize git-mode-line-status
+                        'face '(:inherit vc-edited-state :weight bold)
+                        'mouse-face 'mode-line-highlight))
+           ;; locally added
+           ((string-equal "@" class)
+            (propertize git-mode-line-status
+                        'face '(:inherit vc-locally-added-state :weight bold)
+                        'mouse-face 'mode-line-highlight))
+           ;; removed or conflicting
+           ((string-equal "!" class)
+            (propertize git-mode-line-status
+                        'face '(:inherit vc-removed-state :weight bold)
+                        'mouse-face 'mode-line-highlight))
+           ;; missing
+           ((string-equal "?" class)
+            (propertize git-mode-line-status
+                        'face '(:inherit vc-missing-state :weight bold)
+                        'mouse-face 'mode-line-highlight))
+           ((t git-mode-line-status))))))
   "Return git status.")
 (put 'my-mode-line--vc-mode 'risky-local-variable t)
 
@@ -173,7 +181,7 @@ Subtle blue suggests the window is neither selected nor dedicated.")
                 (propertize (concat p "%%")
                             'help-echo "Position"
                             'mouse-face 'mode-line-highlight)))))
-  "Return a slightly modified position information where Bottom is renamed to Bot.")
+  "Return a slightly modified position where Bottom is renamed to Bot.")
 (put 'my-mode-line--percent-position 'risky-local-variable t)
 
 (setopt mode-line-format

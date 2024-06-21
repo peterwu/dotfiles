@@ -1,6 +1,9 @@
 ;;; my-packages.el -*- lexical-binding: t; -*-
 
-;; built-in packages
+;;;;;;;;;;;;;;;;;;;;;;;
+;; built-in packages ;;
+;;;;;;;;;;;;;;;;;;;;;;;
+
 (use-package align
   :preface
   (defun my-align-simple(beg end word)
@@ -85,11 +88,19 @@
    (lambda ()
      (concat
       "┌ "
-      (propertize (format-time-string "%H:%M" (current-time)) 'face `(:foreground "dark magenta"))
+      (propertize
+       (format-time-string "%H:%M" (current-time))
+       'face `(:foreground "dark magenta"))
       " "
-      (propertize (user-login-name)  'face `(:foreground "dark blue"))
-      (propertize (concat  "@" (system-name) ":") 'face `(:foreground "sienna"))
-      (propertize (abbreviate-file-name (eshell/pwd)) 'face `(:foreground "dark blue" :weight bold))
+      (propertize
+       (user-login-name)
+       'face `(:foreground "dark blue"))
+      (propertize
+       (concat  "@" (system-name) ":")
+       'face `(:foreground "sienna"))
+      (propertize
+       (abbreviate-file-name (eshell/pwd))
+       'face `(:foreground "dark blue" :weight bold))
       "\n"
       "└ "
       (let ((prompt (if (= (user-uid) 0) "#" "$")))
@@ -391,7 +402,10 @@
   :config
   (xterm-mouse-mode +1))
 
-;; 3rd party packages
+;;;;;;;;;;;;;;;;;;;;;;;;
+;; 3rd party packages ;;
+;;;;;;;;;;;;;;;;;;;;;;;;
+
 (use-package goto-chg
   :ensure t)
 

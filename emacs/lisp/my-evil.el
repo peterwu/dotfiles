@@ -5,46 +5,56 @@
   :ensure t
   :preface
   (defun my-propertize-evil-state-tags ()
-    (let ((face-defaults '(:foreground "#FFFFFF" :weight bold)))
-      (setq-default evil-normal-state-tag
-                    (propertize " N "
-                                'face `(,@face-defaults :background "dark blue")))
+    (let ((defaults '(:foreground "#FFFFFF" :weight bold)))
+      (setq-default
+       evil-normal-state-tag
+       (propertize " N "
+                   'face `(,@defaults :background "dark blue")))
 
-      (setq-default evil-insert-state-tag
-                    (propertize " I "
-                                'face `(,@face-defaults :background "dark green")))
+      (setq-default
+       evil-insert-state-tag
+       (propertize " I "
+                   'face `(,@defaults :background "dark green")))
 
-      (setq-default evil-visual-char-tag
-                    (propertize " V "
-                                'face `(,@face-defaults :background "dark cyan")))
+      (setq-default
+       evil-visual-char-tag
+       (propertize " V "
+                   'face `(,@defaults :background "dark cyan")))
 
-      (setq-default evil-visual-line-tag
-                    (propertize " L "
-                                'face `(,@face-defaults :background "dark cyan")))
+      (setq-default
+       evil-visual-line-tag
+       (propertize " L "
+                   'face `(,@defaults :background "dark cyan")))
 
-      (setq-default evil-visual-screen-line-tag
-                    (propertize " S "
-                                'face `(,@face-defaults :background "dark cyan")))
+      (setq-default
+       evil-visual-screen-line-tag
+       (propertize " S "
+                   'face `(,@defaults :background "dark cyan")))
 
-      (setq-default evil-visual-block-tag
-                    (propertize " B "
-                                'face `(,@face-defaults :background "dark cyan")))
+      (setq-default
+       evil-visual-block-tag
+       (propertize " B "
+                   'face `(,@defaults :background "dark cyan")))
 
-      (setq-default evil-operator-state-tag
-                    (propertize " O "
-                                'face `(,@face-defaults :background "magenta")))
+      (setq-default
+       evil-operator-state-tag
+       (propertize " O "
+                   'face `(,@defaults :background "magenta")))
 
-      (setq-default evil-replace-state-tag
-                    (propertize " R "
-                                'face `(,@face-defaults :background "dark red")))
+      (setq-default
+       evil-replace-state-tag
+       (propertize " R "
+                   'face `(,@defaults :background "dark red")))
 
-      (setq-default evil-motion-state-tag
-                    (propertize " M "
-                                'face `(,@face-defaults :background "black")))
+      (setq-default
+       evil-motion-state-tag
+       (propertize " M "
+                   'face `(,@defaults :background "black")))
 
-      (setq-default evil-emacs-state-tag
-                    (propertize " E "
-                                'face `(,@face-defaults :background "dark violet")))))
+      (setq-default
+       evil-emacs-state-tag
+       (propertize " E "
+                   'face `(,@defaults :background "dark violet")))))
   :init
   (setopt evil-default-state 'emacs)
   (setopt evil-emacs-state-modes nil)
@@ -99,60 +109,62 @@
   :init
   (my-propertize-evil-state-tags)
   :hook
-  (evil-after-load . (lambda ()
-                       (evil-set-leader '(normal motion) (kbd "SPC"))
-                       (evil-set-leader '(normal motion) (kbd ",") t)
+  (evil-after-load
+   .
+   (lambda ()
+     (evil-set-leader '(normal motion) (kbd "SPC"))
+     (evil-set-leader '(normal motion) (kbd ",") t)
 
-                       (evil-define-command my-evil-paste-after-from-clipboard (count)
-                         :suppress-operator t
-                         (interactive "*P")
-                         (with-temp-buffer
-                           (my-paste-from-clipboard)
-                           (evil-set-register ?\" (buffer-string)))
-                         (evil-paste-after count))
+     (evil-define-command my-evil-paste-after-from-clipboard (count)
+       :suppress-operator t
+       (interactive "*P")
+       (with-temp-buffer
+         (my-paste-from-clipboard)
+         (evil-set-register ?\" (buffer-string)))
+       (evil-paste-after count))
 
-                       (evil-define-command my-evil-paste-before-from-clipboard (count)
-                         :suppress-operator t
-                         (interactive "*P")
-                         (with-temp-buffer
-                           (my-paste-from-clipboard)
-                           (evil-set-register ?\" (buffer-string)))
-                         (evil-paste-before count))
+     (evil-define-command my-evil-paste-before-from-clipboard (count)
+       :suppress-operator t
+       (interactive "*P")
+       (with-temp-buffer
+         (my-paste-from-clipboard)
+         (evil-set-register ?\" (buffer-string)))
+       (evil-paste-before count))
 
-                       (evil-define-operator my-evil-align-simple (beg end)
-                         :move-point nil
-                         :repeat t
-                         (interactive "<r>")
-                         (evil-with-active-region beg end
-                           (call-interactively #'my-align-simple)))
+     (evil-define-operator my-evil-align-simple (beg end)
+       :move-point nil
+       :repeat t
+       (interactive "<r>")
+       (evil-with-active-region beg end
+         (call-interactively #'my-align-simple)))
 
-                       (evil-define-operator my-evil-align-complex (beg end)
-                         :move-point nil
-                         :repeat t
-                         (interactive "<r>")
-                         (evil-with-active-region beg end
-                           (call-interactively #'my-align-complex)))
+     (evil-define-operator my-evil-align-complex (beg end)
+       :move-point nil
+       :repeat t
+       (interactive "<r>")
+       (evil-with-active-region beg end
+         (call-interactively #'my-align-complex)))
 
-                       (evil-define-operator my-evil-commentary (beg end)
-                         :move-point nil
-                         :repeat t
-                         (interactive "<r>")
-                         (comment-or-uncomment-region beg end))
+     (evil-define-operator my-evil-commentary (beg end)
+       :move-point nil
+       :repeat t
+       (interactive "<r>")
+       (comment-or-uncomment-region beg end))
 
-                       (evil-define-operator my-evil-yank-to-clipboard (beg end)
-                         :move-point nil
-                         :repeat nil
-                         (interactive "<r>")
-                         (evil-yank beg end)
-                         (my-copy-to-clipboard beg end))
+     (evil-define-operator my-evil-yank-to-clipboard (beg end)
+       :move-point nil
+       :repeat nil
+       (interactive "<r>")
+       (evil-yank beg end)
+       (my-copy-to-clipboard beg end))
 
-                       (evil-define-command my-evil-yank-eol-to-clipboard ()
-                         :suppress-operator t
-                         (interactive)
-                         (let ((beg (point))
-                               (end (pos-eol)))
-                           (evil-yank beg end)
-                           (my-copy-to-clipboard beg end)))))
+     (evil-define-command my-evil-yank-eol-to-clipboard ()
+       :suppress-operator t
+       (interactive)
+       (let ((beg (point))
+             (end (pos-eol)))
+         (evil-yank beg end)
+         (my-copy-to-clipboard beg end)))))
   :config
   (evil-mode +1))
 

@@ -17,7 +17,8 @@
 
 (defun my-paste-from-clipboard (&optional arg)
   "Paste from the clipboard.
-If ARG is omitted, point will not change; otherwise, point will move to the beginning of the pasted text."
+If ARG is omitted, point will not change; otherwise, point will move to the
+beginning of the pasted text."
   (interactive "*P")
   (if (display-graphic-p)
       (clipboard-yank)

@@ -50,13 +50,13 @@ Increment each number by COUNT."
 
 (defun my-numbers--increment-at-point (beg end count)
   "BEG and END are the start position and end position in a row of
-the active rectangle.
-Increment each number by COUNT."
+the active rectangle. Increment each number by COUNT."
   (my-numbers--search-for-number beg end)
   (skip-chars-backward "[0-9]+")
   (or (looking-at "[0-9]+")
       (error "No number at point"))
-  (replace-match (number-to-string (+ count (string-to-number (match-string 0))))))
+  (replace-match
+   (number-to-string (+ count (string-to-number (match-string 0))))))
 
 ;;;###autoload
 (defun my-numbers-increment-at-point (count)
@@ -74,13 +74,15 @@ Increment each number by COUNT."
 (defun my-numbers-increment-at-point-sequentially (beg end count)
   "Increment the number at point from BEG to END by COUNT sequentially."
   (interactive "r\np")
-  (apply-on-rectangle #'my-numbers--increment-at-point-with-cols beg end count))
+  (apply-on-rectangle
+   #'my-numbers--increment-at-point-with-cols beg end count))
 
 ;;;###autoload
 (defun my-numbers-decrement-at-point-sequentially (beg end count)
   "Decrement the number at point from BEG to END by COUNT sequentially."
   (interactive "r\np")
-  (apply-on-rectangle #'my-numbers--increment-at-point-with-cols beg end (- count)))
+  (apply-on-rectangle
+   #'my-numbers--increment-at-point-with-cols beg end (- count)))
 
 (bind-keys :map my-ctl-z-map
            ("C-a" . my-numbers-increment-at-point)

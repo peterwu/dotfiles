@@ -3,10 +3,11 @@
 (require 'speedbar)
 
 (defvar-local my-speedbar--mode-line-directory-identification
-    '(:eval (propertize (concat ":" (my-mode-line-ellipsize-file-name
-                                     (abbreviate-file-name default-directory)
-                                     32))
-                        'face '(:inherit mode-line-buffer-id)))
+    '(:eval (propertize
+             (concat ":" (my-mode-line-ellipsize-file-name
+                          (abbreviate-file-name default-directory)
+                          32))
+             'face '(:inherit mode-line-buffer-id)))
   "Return an ellipsized file name when applicable.")
 (put 'my-speedbar--mode-line-directory-identification 'risky-local-variable t)
 
@@ -55,12 +56,13 @@
   (interactive)
   (unless (my-speedbar-exists-p)
     (setq my-speedbar-window
-          (split-window (frame-root-window)
-                        (- (window-total-width (frame-root-window))
-                           (truncate (/ (* (window-total-width (frame-root-window))
-                                           my-speedbar-window-width-in-percentage)
-                                        100)))
-                        'left))
+          (split-window
+           (frame-root-window)
+           (- (window-total-width (frame-root-window))
+              (truncate (/ (* (window-total-width (frame-root-window))
+                              my-speedbar-window-width-in-percentage)
+                           100)))
+           'left))
     (setq speedbar-buffer (generate-new-buffer my-speedbar-buffer-name)
           speedbar-frame (selected-frame)
           dframe-attached-frame (selected-frame)
