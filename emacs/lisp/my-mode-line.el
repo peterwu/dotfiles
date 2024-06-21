@@ -39,18 +39,18 @@
 
 (defvar-local my-mode-line--window-status-tag
     '(:eval
-      (let ((tag (format " %i " (my-window-numbering-get-number)))
+      (let ((number-tag (format " %i " (my-window-numbering-get-number)))
+            (lock-tag " X ")
             (selected (mode-line-window-selected-p))
             (dedicated (window-dedicated-p)))
         (cond
          ((and selected dedicated)
-          (propertize tag 'face '(:inherit modus-themes-active-red :weight bold)))
-         ((and selected (not dedicated))
-          (propertize tag 'face '(:inherit modus-themes-active-blue :weight bold)))
+          (propertize lock-tag 'face '(:inherit modus-themes-active-red :foreground "#FFFFFF" :weight bold)))
+         ((and selected (not dedicated)) evil-mode-line-tag)
          ((and (not selected) dedicated)
-          (propertize tag 'face '(:inherit modus-themes-subtle-red)))
+          (propertize number-tag 'face '(:inherit modus-themes-subtle-red)))
          ((and (not selected) (not dedicated))
-          (propertize tag 'face '(:inherit modus-themes-subtle-blue))))))
+          (propertize number-tag 'face '(:inherit modus-themes-subtle-blue))))))
   "Return the status for window.
 Active red suggests the window is both selected and dedicated;
 Active blue suggests the window is selected but not dedicated;
@@ -181,9 +181,7 @@ Subtle blue suggests the window is neither selected nor dedicated.")
           (my-mode-line--render
            ;; left
            (list
-            (if (mode-line-window-selected-p)
-                evil-mode-line-tag
-              my-mode-line--window-status-tag)
+            my-mode-line--window-status-tag
             " "
             mode-line-mule-info
             mode-line-client
