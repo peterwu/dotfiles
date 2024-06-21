@@ -32,7 +32,7 @@
 
       (setq-default evil-operator-state-tag
                     (propertize " O "
-                                'face `(:foreground ,white :background "dark orange" :weight bold)))
+                                'face `(:foreground ,white :background "magenta" :weight bold)))
 
       (setq-default evil-replace-state-tag
                     (propertize " R "
@@ -44,7 +44,7 @@
 
       (setq-default evil-emacs-state-tag
                     (propertize " E "
-                                'face `(:foreground ,white :background "dark magenta" :weight bold)))))
+                                'face `(:foreground ,white :background "dark violet" :weight bold)))))
   :init
   (setopt evil-default-state 'emacs)
   (setopt evil-emacs-state-modes nil)
@@ -72,10 +72,6 @@
   (:map evil-normal-state-map
         :prefix "<leader>" :prefix-map my-evil-leader-normal-state-map)
   :bind
-  (:map evil-motion-state-map
-        ("gc" . my-evil-commentary)
-        ("gl" . my-evil-align-simple)
-        ("gL" . my-evil-align-complex))
   (:map my-evil-leader-motion-state-map
         ("y" . my-evil-yank-to-clipboard))
   (:map my-evil-leader-normal-state-map
@@ -85,15 +81,19 @@
   (:map evil-insert-state-map
         ("C-x C-n" . evil-complete-next-line)
         ("C-x C-p" . evil-complete-previous-line))
+  (:map evil-motion-state-map
+        ("gc" . my-evil-commentary)
+        ("gl" . my-evil-align-simple)
+        ("gL" . my-evil-align-complex))
   (:map evil-normal-state-map
         ("] SPC" . (lambda (number-of-lines)
-                     (interactive "P")
-                     (dotimes (_ (or number-of-lines 1))
+                     (interactive "p")
+                     (dotimes (_ number-of-lines)
                        (evil-insert-newline-below)
                        (evil-previous-visual-line))))
         ("[ SPC" . (lambda (number-of-lines)
-                     (interactive "P")
-                     (dotimes (_ (or number-of-lines 1))
+                     (interactive "p")
+                     (dotimes (_ number-of-lines)
                        (evil-insert-newline-above)
                        (evil-next-visual-line)))))
   :init
