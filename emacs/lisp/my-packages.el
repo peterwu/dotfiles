@@ -8,7 +8,7 @@
   :preface
   (defun my-align-simple(beg end word)
     (interactive "r\nsSimple align with word: ")
-    (let ((regexp (concat "\\(\\s-*\\)" word))
+    (let ((regexp (format "\\(\\s-*\\) %s" word))
           (group 1)
           (spacing 1)
           (repeat t))
