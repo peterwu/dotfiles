@@ -47,6 +47,10 @@
   :config
   (display-battery-mode -1))
 
+(use-package delsel
+  :config
+  (delete-selection-mode +1))
+
 (use-package display-line-numbers
   :custom
   (display-line-numbers-type 'relative)
@@ -116,6 +120,25 @@
   :hook
   (eshell-mode . (lambda ()
                    (setq-local global-hl-line-mode nil))))
+
+(use-package frame
+  :custom
+  (frame-title-format
+   '((:eval
+      (if (buffer-file-name)
+          (abbreviate-file-name (buffer-file-name))
+        "%b"))))
+
+  (blink-cursor-blinks 20)
+  (blink-cursor-delay 0.2)
+  (blink-cursor-interval 0.5)
+  (cursor-in-non-selected-windows 'hollow)
+  :config
+  (blink-cursor-mode +1))
+
+(use-package hl-line
+  :config
+  (global-hl-line-mode +1))
 
 (use-package ispell
   :unless (eq system-type 'windows-nt)
@@ -196,6 +219,21 @@
   (search-highlight t)
   (search-whitespace-regexp ".*?"))
 
+(use-package minibuffer
+  :custom
+  (completion-cycle-threshold 3)
+  (completions-detailed t)
+  (completions-format 'one-column)
+  (completion-styles '(initials partial-completion flex))
+  (enable-recursive-minibuffers t)
+  (minibuffer-eldef-shorten-default t)
+  (read-buffer-completion-ignore-case t)
+  (read-file-name-completion-ignore-case t)
+  (resize-mini-windows t)
+  :config
+  (minibuffer-depth-indicate-mode +1)
+  (minibuffer-electric-default-mode +1))
+
 (use-package mouse
   :if (display-graphic-p)
   :custom
@@ -218,6 +256,17 @@
   (show-paren-when-point-inside-paren nil)
   :config
   (show-paren-mode +1))
+
+(use-package pixel-scroll
+  :custom
+  (pixel-scroll-precision-interpolate-page t)
+
+  (scroll-conservatively 10000)
+  (scroll-margin 1)
+  (scroll-preserve-screen-position t)
+  (scroll-step 1)
+  :config
+  (pixel-scroll-precision-mode +1))
 
 (use-package proced
   :commands proceed
@@ -338,6 +387,22 @@ Enable `recentf-mode' if it isn't already."
   (save-place-forget-unreadable-files t)
   :config
   (save-place-mode +1))
+
+(use-package simple
+  :custom
+  (fill-column 80)
+  (indent-tabs-mode nil)
+  :hook
+  (text-mode . auto-fill-mode)
+  :config
+  (column-number-mode      +1)
+  (global-visual-line-mode +1)
+  (prettify-symbols-mode   +1)
+  (size-indication-mode    +1))
+
+(use-package so-long
+  :config
+  (global-so-long-mode +1))
 
 (use-package tab-bar
   :custom
@@ -471,6 +536,8 @@ Enable `recentf-mode' if it isn't already."
 
 (use-package magit
   :ensure t
+  :custom
+  (vc-follow-symlinks t)
   :bind
   (:map my-ctl-z-g-map
         ("g" . magit-status)

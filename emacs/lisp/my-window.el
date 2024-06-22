@@ -19,6 +19,7 @@
   :custom
   (even-window-sizes 'height-only)
   (switch-to-buffer-in-dedicated-window 'pop)
+  (switch-to-buffer-obey-display-actions t)
   (window-combination-resize t)
   (window-sides-vertical nil)
   :custom
