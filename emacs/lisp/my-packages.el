@@ -268,12 +268,51 @@
     (advice-add (car construct) :around (cdr construct))))
 
 (use-package recentf
+  :preface
+  (defun my-recentf-open-other-window (file)
+    "Prompt for FILE in `recentf-list' and visit it in other window.
+Enable `recentf-mode' if it isn't already."
+    (interactive
+     (list
+      (progn (unless recentf-mode (recentf-mode 1))
+             (completing-read (format-prompt "Open recent file in other window" nil)
+                              recentf-list nil t))))
+    (when file
+      (funcall #'find-file-other-window file)))
+
+  (defun my-recentf-open-other-tab (file)
+    "Prompt for FILE in `recentf-list' and visit it in other tab.
+Enable `recentf-mode' if it isn't already."
+    (interactive
+     (list
+      (progn (unless recentf-mode (recentf-mode 1))
+             (completing-read (format-prompt "Open recent file in other tab" nil)
+                              recentf-list nil t))))
+    (when file
+      (funcall #'find-file-other-tab file)))
+
+  (defun my-recentf-open-other-frame (file)
+    "Prompt for FILE in `recentf-list' and visit it in other frame.
+Enable `recentf-mode' if it isn't already."
+    (interactive
+     (list
+      (progn (unless recentf-mode (recentf-mode 1))
+             (completing-read (format-prompt "Open recent file in other frame" nil)
+                              recentf-list nil t))))
+    (when file
+      (funcall #'find-file-other-frame file)))
   :custom
   (recentf-exclude '(".gz" ".xz" ".zip" "/elpa/" "/ssh:" "/sudo:"))
   (recentf-max-saved-items 50)
   :bind
   (:map my-ctl-z-map
         ("C-r" . recentf-open))
+  (:map my-ctl-z-4-map
+        ("C-r" . my-recentf-open-other-window))
+  (:map my-ctl-z-tab-map
+        ("C-r" . my-recentf-open-other-tab))
+  (:map my-ctl-z-5-map
+        ("C-r" . my-recentf-open-other-frame))
   :config
   (recentf-mode +1))
 
