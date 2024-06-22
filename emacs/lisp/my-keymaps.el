@@ -12,6 +12,16 @@
            :prefix-map my-ctl-z-map
            :prefix "C-z")
 
+;; my-ctl-z-4-map
+(bind-keys :map my-ctl-z-map
+           :prefix-map my-ctl-z-4-map
+           :prefix "4")
+
+;; my-ctl-z-5-map
+(bind-keys :map my-ctl-z-map
+           :prefix-map my-ctl-z-5-map
+           :prefix "5")
+
 ;; my-go-map
 (bind-keys :map my-ctl-z-map
            :prefix-map my-go-map
@@ -22,9 +32,9 @@
            :prefix-map my-org-map
            :prefix "o")
 
-;; my-toggle-map
+;; my-tab-map
 (bind-keys :map my-ctl-z-map
-           :prefix-map my-toggle-map
+           :prefix-map my-tab-map
            :prefix "t")
 
 ;; my-flymake-map
@@ -37,5 +47,9 @@
            :prefix-map my-window-map
            :prefix "w")
 
+;; my-toggle-map
+(bind-keys :map my-ctl-z-map
+           :prefix-map my-toggle-map
+           :prefix "~")
 
 (provide 'my-keymaps)
