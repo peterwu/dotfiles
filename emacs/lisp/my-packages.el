@@ -10,14 +10,19 @@
     (interactive "r\nsSimple align with word: ")
     (let ((regexp (format "\\(\\s-*\\) %s" word))
           (group 1)
-          (spacing 1)
+          (spacing 0)
           (repeat t))
-      (align-regexp beg end regexp group spacing repeat)))
+      (align-regexp beg end regexp group spacing repeat)
+      (indent-region beg end)))
 
-  (defun my-align-complex()
-    (interactive)
+  (defun my-align-complex(beg end)
+    (interactive "r")
     (setq current-prefix-arg t)
-    (call-interactively #'align-regexp))
+    (call-interactively #'align-regexp)
+    (indent-region beg end))
+  :custom
+  (align-default-spacing 0)
+  (align-indent-before-aligning t)
   :bind
   (:map my-ctl-z-g-map
         ("l" . my-align-simple)
