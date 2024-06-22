@@ -4,7 +4,7 @@
   :custom
   (windmove-create-window nil)
   :bind
-  (:map my-window-map
+  (:map my-ctl-z-w-map
         ("<left>"  . windmove-left)
         ("<right>" . windmove-right)
         ("<up>"    . windmove-up)
@@ -48,7 +48,7 @@
   :custom
   (winner-dont-bind-my-keys t)
   :bind
-  (:map my-window-map
+  (:map my-ctl-z-w-map
         ("u" . winner-undo)
         ("U" . winner-redo))
   (:repeat-map my-window-winner-repeat-map
@@ -107,13 +107,13 @@ indicates the number assigned to window."
          (interactive)
          (my-select-window ,n))
 
-       (bind-keys :map my-window-map
+       (bind-keys :map my-ctl-z-w-map
                   (,(number-to-string n) . ,my-select-window-n)
                   :repeat-map my-window-numbering-repeat-map
                   (,(number-to-string n) . ,my-select-window-n)))))
 
 ;; key binds
-(bind-keys :map my-window-map
+(bind-keys :map my-ctl-z-w-map
            ("w" . my-select-window)
            :repeat-map my-window-switch-repeat-map
            ("w" . my-select-window))

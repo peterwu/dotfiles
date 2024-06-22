@@ -19,7 +19,7 @@
     (setq current-prefix-arg t)
     (call-interactively #'align-regexp))
   :bind
-  (:map my-go-map
+  (:map my-ctl-z-g-map
         ("l" . my-align-simple)
         ("L" . my-align-complex)))
 
@@ -37,7 +37,7 @@
   (battery-mode-line-limit 95)
   (battery-update-interval 180)
   :bind
-  (:map my-toggle-map
+  (:map my-ctl-z-t-map
         ("b" . display-battery-mode))
   :config
   (display-battery-mode -1))
@@ -47,7 +47,7 @@
   (display-line-numbers-type 'relative)
   :hook (text-mode prog-mode)
   :bind
-  (:map my-toggle-map
+  (:map my-ctl-z-t-map
         ("n" . display-line-numbers-mode)))
 
 (use-package ediff
@@ -309,7 +309,7 @@ Enable `recentf-mode' if it isn't already."
         ("C-r" . recentf-open))
   (:map my-ctl-z-4-map
         ("C-r" . my-recentf-open-other-window))
-  (:map my-ctl-z-tab-map
+  (:map my-ctl-z-t-map
         ("C-r" . my-recentf-open-other-tab))
   (:map my-ctl-z-5-map
         ("C-r" . my-recentf-open-other-frame))
@@ -356,7 +356,7 @@ Enable `recentf-mode' if it isn't already."
                             dired-sidebar-mode
                             help-mode))
   :bind
-  (:map my-toggle-map
+  (:map my-ctl-z-t-map
         ("t" . global-tab-line-mode))
   :config
   (global-tab-line-mode -1))
@@ -399,7 +399,7 @@ Enable `recentf-mode' if it isn't already."
   (world-clock-time-format "%R %z  %A %d %B")
   (world-clock-timer-second 60)
   :bind
-  (:map my-toggle-map
+  (:map my-ctl-z-t-map
         ("c" . display-time-mode)
         ("g" . world-clock))
   :config
@@ -436,7 +436,7 @@ Enable `recentf-mode' if it isn't already."
   (before-save . whitespace-cleanup)
   ((conf-mode prog-mode text-mode) . whitespace-mode)
   :bind
-  (:map my-toggle-map
+  (:map my-ctl-z-t-map
         ("w" . whitespace-mode)))
 
 (use-package xt-mouse
@@ -461,13 +461,13 @@ Enable `recentf-mode' if it isn't already."
   (keycast-mode-line-insert-after 'my-mode-line-centre-place-holder)
   (keycast-mode-line-remove-tail-elements nil)
   :bind
-  (:map my-toggle-map
+  (:map my-ctl-z-t-map
         ("k" .  keycast-mode-line-mode)))
 
 (use-package magit
   :ensure t
   :bind
-  (:map my-magit-map
+  (:map my-ctl-z-g-map
         ("g" . magit-status)
         ("j" . magit-dispatch)
         ("J" . magit-file-dispatch)
