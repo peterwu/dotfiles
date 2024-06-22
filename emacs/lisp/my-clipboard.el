@@ -1,3 +1,5 @@
+;;; my-clipboard.el -*- lexical-binding: t; -*-
+
 ;; system clipboard operations: cut/copy/paste
 (defun my-cut-to-clipboard (beg end)
   "Cut to the clipboard from BEG to END."
