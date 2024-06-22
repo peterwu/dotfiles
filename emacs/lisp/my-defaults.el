@@ -27,6 +27,7 @@
 (setopt scroll-preserve-screen-position t)
 (setopt scroll-step 1)
 (setopt select-enable-clipboard nil)
+(setopt switch-to-buffer-obey-display-actions t)
 (setopt tab-always-indent 'complete)
 (setopt tab-width 4)
 (setopt use-dialog-box nil)
