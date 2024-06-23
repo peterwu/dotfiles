@@ -37,7 +37,7 @@
       (dedicated . t)
       (window-height . 11))
 
-     ((derived-mode .  prog-mode)
+     ((derived-mode . prog-mode)
       (display-buffer-reuse-window
        display-buffer-reuse-mode-window
        display-buffer-pop-up-window)
@@ -101,7 +101,7 @@ window is assumed."
 (defmacro my-select-window-n-keybind (n)
   "Create my-select-window-N functions and respective key binds, where N
 indicates the number assigned to window."
-  (let ((my-select-window-n (intern (format "my-select-window-%s" n))))
+  (let ((my-select-window-n (intern (format "my-select-window-%i" n))))
     `(progn
        (defun ,my-select-window-n ()
          ,(format "Select the window with number %i." n)
@@ -119,8 +119,8 @@ indicates the number assigned to window."
            :repeat-map my-window-switch-repeat-map
            ("w" . my-select-window))
 
-(dolist (n (number-sequence 1 9))
+(dotimes (n 9)
   (eval
-   `(my-select-window-n-keybind ,n)))
+   `(my-select-window-n-keybind ,(1+ n))))
 
 (provide 'my-window)

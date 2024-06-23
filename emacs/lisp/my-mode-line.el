@@ -137,18 +137,15 @@ Show the evil mode tag if selected; otherwise, its window number.")
 
 (defvar-local my-mode-line-misc-info
     '(:eval
-      (let ((result ""))
-        (seq-map
-         (lambda (elt)
-           (when-let ((stringp elt)
-                      (str (string-trim elt))
-                      (string-blank-p str))
-             (setq str (string-replace "%" "%%" str))
-             (setq result (concat result str))))
-         (list
-          (if (boundp 'battery-mode-line-string) battery-mode-line-string)
-          (if (boundp 'display-time-string) display-time-string)))
-        result))
+      (mapconcat
+       (lambda (elt)
+         (when-let ((stringp elt)
+                    (string-blank-p elt)
+                    (str (string-trim elt)))
+           (string-replace "%" "%%" str)))
+       (list
+        (if (boundp 'battery-mode-line-string) battery-mode-line-string)
+        (if (boundp 'display-time-string) display-time-string))))
   "Return misc info in a better organized manner.")
 (put 'my-mode-line-misc-info 'risky-local-variable t)
 
@@ -178,18 +175,12 @@ Show the evil mode tag if selected; otherwise, its window number.")
 (put 'my-mode-line-major-mode 'risky-local-variable t)
 
 (defvar-local my-mode-line-percent-position
-    '(:eval (let ((p (format-mode-line "%p")))
-              (cond
-               ((or (string-equal p "All")
-                    (string-equal p "Top")
-                    (string-equal p "Bottom"))
-                (propertize (substring-no-properties p 0 3)
-                            'help-echo p
-                            'mouse-face 'mode-line-highlight))
-               (t
-                (propertize (concat p "%%")
-                            'help-echo "Position"
-                            'mouse-face 'mode-line-highlight)))))
+    '(:eval (let* ((p (format-mode-line "%p"))
+                   (q (substring-no-properties p 0 3))
+                   (r (string-replace "%" "%%" q)))
+              (propertize r
+                          'help-echo p
+                          'mouse-face 'mode-line-highlight)))
   "Return a slightly modified position where Bottom is renamed to Bot.")
 (put 'my-mode-line-percent-position 'risky-local-variable t)
 

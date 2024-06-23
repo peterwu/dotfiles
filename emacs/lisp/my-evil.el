@@ -4,57 +4,27 @@
 (use-package evil
   :ensure t
   :preface
-  (defun my-propertize-evil-state-tags ()
+  (defun my-evil--propertize-state-tags ()
     (let ((defaults '(:foreground "#FFFFFF" :weight bold)))
-      (setq-default
-       evil-normal-state-tag
-       (propertize " N "
-                   'face `(,@defaults :background "dark blue")))
-
-      (setq-default
-       evil-insert-state-tag
-       (propertize " I "
-                   'face `(,@defaults :background "dark green")))
-
-      (setq-default
-       evil-visual-char-tag
-       (propertize " V "
-                   'face `(,@defaults :background "dark cyan")))
-
-      (setq-default
-       evil-visual-line-tag
-       (propertize " L "
-                   'face `(,@defaults :background "dark cyan")))
-
-      (setq-default
-       evil-visual-screen-line-tag
-       (propertize " S "
-                   'face `(,@defaults :background "dark cyan")))
-
-      (setq-default
-       evil-visual-block-tag
-       (propertize " B "
-                   'face `(,@defaults :background "dark cyan")))
-
-      (setq-default
-       evil-operator-state-tag
-       (propertize " O "
-                   'face `(,@defaults :background "magenta")))
-
-      (setq-default
-       evil-replace-state-tag
-       (propertize " R "
-                   'face `(,@defaults :background "dark red")))
-
-      (setq-default
-       evil-motion-state-tag
-       (propertize " M "
-                   'face `(,@defaults :background "black")))
-
-      (setq-default
-       evil-emacs-state-tag
-       (propertize " E "
-                   'face `(,@defaults :background "dark violet")))))
+      (mapc (lambda (elt)
+              (let ((tag-name (pop elt))
+                    (tag-value (pop elt))
+                    (tag-color (pop elt)))
+                (set-default tag-name
+                             (propertize
+                              tag-value
+                              'face `(,@defaults :background ,tag-color)))))
+            (list
+             '(evil-normal-state-tag       " N " "dark blue")
+             '(evil-insert-state-tag       " I " "dark green")
+             '(evil-visual-char-tag        " V " "dark cyan")
+             '(evil-visual-line-tag        " V " "dark cyan")
+             '(evil-visual-block-tag       " V " "dark cyan")
+             '(evil-visual-screen-line-tag " S " "dark cyan")
+             '(evil-operator-state-tag     " O " "magenta")
+             '(evil-replace-state-tag      " R " "dark red")
+             '(evil-motion-state-tag       " M " "black")
+             '(evil-emacs-state-tag        " E " "dark violet")))))
   :init
   (setopt evil-default-state 'emacs)
   (setopt evil-emacs-state-modes nil)
@@ -107,7 +77,7 @@
                        (evil-insert-newline-above)
                        (evil-next-visual-line)))))
   :init
-  (my-propertize-evil-state-tags)
+  (my-evil--propertize-state-tags)
   :hook
   ((evil-after-load) .
    (lambda ()
