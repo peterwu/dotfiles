@@ -195,6 +195,7 @@ Show the evil mode tag if selected; otherwise, its window number.")
             mode-line-client
             mode-line-modified
             mode-line-remote
+            my-mode-line-window-dedicated
             " "
             my-mode-line-buffer-identification
             " "
