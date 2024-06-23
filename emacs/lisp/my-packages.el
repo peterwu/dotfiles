@@ -499,7 +499,7 @@ Enable `recentf-mode' if it isn't already."
 (use-package whitespace
   :custom
   (whitespace-line-column fill-column)
-  (whitespace-style '(face lines-char trailing))
+  (whitespace-style '(face lines-tail trailing))
   :hook
   (before-save . whitespace-cleanup)
   ((conf-mode prog-mode text-mode) . whitespace-mode)

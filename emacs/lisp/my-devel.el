@@ -27,24 +27,25 @@
 ;; c/c++
 (use-package clang-format
   :if (file-executable-p "/usr/bin/clang-format")
-  :preface (defvar my-clang-format-style "file")
-  :preface (defvar my-clang-format-fallback-style
-             (concat "{"
-                     "BasedOnStyle: LLVM,"
-                     "Language: Cpp,"
+  :preface
+  (defvar my-clang-format-style "file")
+  (defvar my-clang-format-fallback-style
+    (concat "{"
+            "BasedOnStyle: LLVM,"
+            "Language: Cpp,"
 
-                     "AccessModifierOffset: -4,"
-                     "IndentWidth: 4,"
-                     "UseTab: Never,"
+            "AccessModifierOffset: -4,"
+            "IndentWidth: 4,"
+            "UseTab: Never,"
 
-                     "AllowShortFunctionsOnASingleLine: Empty,"
-                     "AllowShortLambdasOnASingleLine: Empty,"
-                     "AlwaysBreakTemplateDeclarations: Yes,"
-                     "BreakBeforeBraces: Stroustrup,"
-                     "BreakConstructorInitializers: BeforeComma,"
-                     "IndentPPDirectives: AfterHash,"
-                     "PointerAlignment: Left"
-                     "}"))
+            "AllowShortFunctionsOnASingleLine: Empty,"
+            "AllowShortLambdasOnASingleLine: Empty,"
+            "AlwaysBreakTemplateDeclarations: Yes,"
+            "BreakBeforeBraces: Stroustrup,"
+            "BreakConstructorInitializers: BeforeComma,"
+            "IndentPPDirectives: AfterHash,"
+            "PointerAlignment: Left"
+            "}"))
   :hook
   ((c-mode c++-mode) .
    (lambda ()
