@@ -39,8 +39,6 @@
   (battery-load-low 20)
   (battery-load-critical 10)
   (battery-mode-line-format "[%b%p%%]")
-  (battery-mode-line-limit 95)
-  (battery-update-interval 180)
   :bind
   (:map my-ctl-z-t-map
         ("b" . display-battery-mode))

@@ -37,33 +37,25 @@
             (list (format (format "%%%ds" available-width-right) ""))
             right)))
 
-(defvar-local my-mode-line--window-status-tag
+(defvar-local my-mode-line-window-status-tag
     '(:eval
-      (let ((number-tag (format " %i " (my-window-numbering-get-number)))
-            (lock-tag " X ")
-            (selected (mode-line-window-selected-p))
-            (dedicated (window-dedicated-p)))
-        (cond
-         ((and selected dedicated)
-          (propertize
-           lock-tag
-           'face
-           '(:inherit modus-themes-active-red
-                      :foreground "#FFFFFF"
-                      :weight bold)))
-         ((and selected (not dedicated)) evil-mode-line-tag)
-         ((and (not selected) dedicated)
-          (propertize number-tag 'face '(:inherit modus-themes-subtle-red)))
-         ((and (not selected) (not dedicated))
-          (propertize number-tag 'face '(:inherit modus-themes-subtle-blue))))))
+      (let ((tag (format " %i " (my-window-numbering-get-number))))
+        (if (mode-line-window-selected-p)
+            evil-mode-line-tag
+          (propertize tag 'face '(:inherit modus-themes-subtle-blue)))))
   "Return the status for window.
-Active red suggests the window is both selected and dedicated;
-Active blue suggests the window is selected but not dedicated;
-Subtle red suggests the window is not selected but dedicated;
-Subtle blue suggests the window is neither selected nor dedicated.")
-(put 'my-mode-line--window-status-tag 'risky-local-variable t)
+Show the evil mode tag if selected; otherwise, its window number.")
+(put 'my-mode-line-window-status-tag 'risky-local-variable t)
 
-(defvar-local my-mode-line--buffer-identification
+(defvar-local my-mode-line-window-dedicated
+    '(:eval
+      (cond
+       ((eq (window-dedicated-p) t) "D")
+       ((window-dedicated-p) "d")
+       (t "-"))))
+(put 'my-mode-line-window-dedicated 'risky-local-variable t)
+
+(defvar-local my-mode-line-buffer-identification
     '(:eval (if (buffer-file-name)
                 (propertize (my-mode-line-ellipsize-file-name
                              (file-name-nondirectory (buffer-file-name))
@@ -77,9 +69,9 @@ Subtle blue suggests the window is neither selected nor dedicated.")
                           'mouse-face 'mode-line-highlight)))
   "Return an enhanced buffer-identification with ellipsized file name when the
   file name is too long.")
-(put 'my-mode-line--buffer-identification 'risky-local-variable t)
+(put 'my-mode-line-buffer-identification 'risky-local-variable t)
 
-(defvar-local my-mode-line--vc-mode
+(defvar-local my-mode-line-vc-mode
     ;; Format: (defun vc-default-mode-line-string (backend file) in vc-hooks.el
     ;;   \"BACKEND-REV\"        if the file is up-to-date
     ;;   \"BACKEND:REV\"        if the file is edited (or locked by the caller)
@@ -137,20 +129,37 @@ Subtle blue suggests the window is neither selected nor dedicated.")
                         'mouse-face 'mode-line-highlight))
            ((t git-mode-line-status))))))
   "Return git status.")
-(put 'my-mode-line--vc-mode 'risky-local-variable t)
+(put 'my-mode-line-vc-mode 'risky-local-variable t)
 
 (defvar-local my-mode-line-centre-place-holder ""
   "Serve as a place holder for centrally aligned mode-line elements.")
 (put 'my-mode-line-centre-place-holder 'risky-local-variable t)
 
-(defvar-local my-mode-line--buffer-size
+(defvar-local my-mode-line-misc-info
+    '(:eval
+      (let ((result ""))
+        (seq-map
+         (lambda (elt)
+           (when-let ((stringp elt)
+                      (str (string-trim elt))
+                      (string-blank-p str))
+             (setq str (string-replace "%" "%%" str))
+             (setq result (concat result str))))
+         (list
+          (if (boundp 'battery-mode-line-string) battery-mode-line-string)
+          (if (boundp 'display-time-string) display-time-string)))
+        result))
+  "Return misc info in a better organized manner.")
+(put 'my-mode-line-misc-info 'risky-local-variable t)
+
+(defvar-local my-mode-line-buffer-size
     '(:propertize "%I"
                   help-echo "Size"
                   mouse-face mode-line-highlight)
   "Return the size of the buffer.")
-(put 'my-mode-line--buffer-size 'risky-local-variable t)
+(put 'my-mode-line-buffer-size 'risky-local-variable t)
 
-(defvar-local my-mode-line--major-mode
+(defvar-local my-mode-line-major-mode
     (let ((recursive-edit-help-echo "Recursive edit, type C-M-c to get out"))
       (list (propertize "%["
                         'help-echo recursive-edit-help-echo)
@@ -166,9 +175,9 @@ Subtle blue suggests the window is neither selected nor dedicated.")
                                     'mouse-2 #'mode-line-widen))
             (propertize "%]" 'help-echo recursive-edit-help-echo)))
   "Return the major mode information.")
-(put 'my-mode-line--major-mode 'risky-local-variable t)
+(put 'my-mode-line-major-mode 'risky-local-variable t)
 
-(defvar-local my-mode-line--percent-position
+(defvar-local my-mode-line-percent-position
     '(:eval (let ((p (format-mode-line "%p")))
               (cond
                ((or (string-equal p "All")
@@ -182,23 +191,23 @@ Subtle blue suggests the window is neither selected nor dedicated.")
                             'help-echo "Position"
                             'mouse-face 'mode-line-highlight)))))
   "Return a slightly modified position where Bottom is renamed to Bot.")
-(put 'my-mode-line--percent-position 'risky-local-variable t)
+(put 'my-mode-line-percent-position 'risky-local-variable t)
 
 (setopt mode-line-format
         '(:eval
           (my-mode-line--render
            ;; left
            (list
-            my-mode-line--window-status-tag
+            my-mode-line-window-status-tag
             " "
             mode-line-mule-info
             mode-line-client
             mode-line-modified
             mode-line-remote
             " "
-            my-mode-line--buffer-identification
+            my-mode-line-buffer-identification
             " "
-            my-mode-line--vc-mode)
+            my-mode-line-vc-mode)
 
            ;; centre
            (list
@@ -207,12 +216,13 @@ Subtle blue suggests the window is neither selected nor dedicated.")
            ;; right
            (when (mode-line-window-selected-p)
              (list
-              mode-line-misc-info
-              my-mode-line--buffer-size
+              my-mode-line-misc-info
               " "
-              my-mode-line--major-mode
+              my-mode-line-buffer-size
               " "
-              my-mode-line--percent-position
+              my-mode-line-major-mode
+              " "
+              my-mode-line-percent-position
               " ")))))
 
 (provide 'my-mode-line)

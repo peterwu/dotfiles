@@ -109,8 +109,7 @@
   :init
   (my-propertize-evil-state-tags)
   :hook
-  (evil-after-load
-   .
+  ((evil-after-load) .
    (lambda ()
      (evil-set-leader '(normal motion) (kbd "SPC"))
      (evil-set-leader '(normal motion) (kbd ",") t)

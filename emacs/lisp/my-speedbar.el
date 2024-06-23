@@ -2,15 +2,6 @@
 
 (require 'speedbar)
 
-(defvar-local my-speedbar--mode-line-directory-identification
-    '(:eval (propertize
-             (concat ":" (my-mode-line-ellipsize-file-name
-                          (abbreviate-file-name default-directory)
-                          32))
-             'face '(:inherit mode-line-buffer-id)))
-  "Return an ellipsized file name when applicable.")
-(put 'my-speedbar--mode-line-directory-identification 'risky-local-variable t)
-
 (defconst my-speedbar-buffer-name "*MY-SPEEDBAR*"
   "The buffer name of my-speedbar")
 
@@ -20,14 +11,20 @@
 (defconst my-speedbar-window-width-in-percentage 30
   "Set the default window width in percentage.")
 
+(defvar-local my-speedbar-window-status-tag
+    '(:eval
+      (if (mode-line-window-selected-p)
+          (propertize " X "
+                      'face '(:background "dark red" :foreground "#FFFFFF" :weight bold))
+        (propertize (format " %i " (my-window-numbering-get-number))
+                    'face '(:inherit modus-themes-subtle-red))))
+  "Return an ellipsized file name when applicable.")
+(put 'my-speedbar-window-status-tag 'risky-local-variable t)
+
 (defun my-speedbar-set-mode-line-format-advice ()
   "Override the default mode-line-format."
   (setq-local mode-line-format
-              '(:eval
-                (list
-                 my-mode-line--window-status-tag
-                 " "
-                 my-speedbar--mode-line-directory-identification)))
+              '(:eval my-speedbar-window-status-tag))
   (force-mode-line-update))
 
 (advice-add #'speedbar-set-mode-line-format
@@ -124,11 +121,15 @@ Otherwise return nil."
   (and speedbar-buffer
        (buffer-live-p speedbar-buffer)))
 
-(bind-keys :map global-map
-           ([f9] . my-speedbar-toggle)
-           :map speedbar-mode-map
+(bind-keys :map speedbar-mode-map
            ("^" . speedbar-up-directory)
            ("." . speedbar-toggle-show-all-files)
-           ("q" . my-speedbar-hide))
+           ("q" . my-speedbar-hide)
+           :map global-map
+           ([f9] . my-speedbar-toggle)
+           :map my-ctl-z-t-map
+           ("x" . my-speedbar-toggle)
+           :repeat-map my-speedbar-repeat-map
+           ("x" . my-speedbar-toggle))
 
 (provide 'my-speedbar)
