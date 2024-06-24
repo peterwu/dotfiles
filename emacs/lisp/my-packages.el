@@ -499,6 +499,12 @@ Enable `recentf-mode' if it isn't already."
   (uniquify-buffer-name-style 'forward)
   (uniquify-strip-common-suffix t))
 
+(use-package which-key
+  :custom
+  (which-key-idle-delay 1.9)
+  :config
+  (which-key-mode +1))
+
 (use-package whitespace
   :custom
   (whitespace-line-column fill-column)
