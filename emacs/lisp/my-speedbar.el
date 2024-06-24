@@ -13,11 +13,13 @@
 
 (defvar-local my-speedbar-window-status-tag
     '(:eval
-      (if (mode-line-window-selected-p)
-          (propertize " X "
-                      'face '(:background "dark red" :foreground "#FFFFFF" :weight bold))
-        (propertize (format " %i " (my-window-numbering-get-number))
-                    'face '(:inherit modus-themes-subtle-red))))
+      (modus-themes-with-colors
+        (if (mode-line-window-selected-p)
+            (propertize " X "
+                        'face
+                        `(:background ,rust :foreground ,white :weight bold))
+          (propertize (format " %i " (my-window-numbering-get-number))
+                      'face '(:inherit modus-themes-subtle-red)))))
   "Return an ellipsized file name when applicable.")
 (put 'my-speedbar-window-status-tag 'risky-local-variable t)
 

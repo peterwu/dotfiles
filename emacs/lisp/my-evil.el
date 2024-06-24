@@ -4,34 +4,29 @@
 (use-package evil
   :ensure t
   :preface
-  ;; use (modus-themes-with-color) for v30
-  (defun my-evil--get-color (color)
-    (if (= emacs-major-version 30)
-        (modus-themes-get-color-value color)
-      (modus-themes-color color)))
-
   (defun my-evil--propertize-state-tags ()
-    (let ((defaults `(:foreground ,(my-evil--get-color 'white) :weight bold)))
-      (mapc (lambda (elt)
-              (let ((tag-name (pop elt))
-                    (tag-value (pop elt))
-                    (tag-color (my-evil--get-color (pop elt))))
-                (set-default tag-name
-                             (propertize
-                              tag-value
-                              'face `(,@defaults :background ,tag-color)))))
-            (list
-             ;;   name                      value   color
-             '(evil-normal-state-tag        " N "   blue)
-             '(evil-insert-state-tag        " I "   green)
-             '(evil-visual-char-tag         " V "   cyan)
-             '(evil-visual-line-tag         " V "   cyan)
-             '(evil-visual-block-tag        " V "   cyan)
-             '(evil-visual-screen-line-tag  " S "   cyan)
-             '(evil-operator-state-tag      " O "   magenta-faint)
-             '(evil-replace-state-tag       " R "   red)
-             '(evil-motion-state-tag        " M "   black)
-             '(evil-emacs-state-tag         " E "   magenta)))))
+    (modus-themes-with-colors
+      (let ((defaults `(:foreground ,white :weight bold)))
+        (mapc (lambda (elt)
+                (let ((tag-name (pop elt))
+                      (tag-value (pop elt))
+                      (tag-color (pop elt)))
+                  (set-default tag-name
+                               (propertize
+                                tag-value
+                                'face `(,@defaults :background ,tag-color)))))
+              (list
+               ;;   name                      value   color
+               `(evil-normal-state-tag        " N "   ,blue)
+               `(evil-insert-state-tag        " I "   ,green)
+               `(evil-visual-char-tag         " V "   ,cyan)
+               `(evil-visual-line-tag         " V "   ,cyan)
+               `(evil-visual-block-tag        " V "   ,cyan)
+               `(evil-visual-screen-line-tag  " S "   ,cyan)
+               `(evil-operator-state-tag      " O "   ,yellow)
+               `(evil-replace-state-tag       " R "   ,red)
+               `(evil-motion-state-tag        " M "   ,black)
+               `(evil-emacs-state-tag         " E "   ,magenta))))))
   :init
   (setopt evil-default-state 'emacs)
   (setopt evil-emacs-state-modes nil)

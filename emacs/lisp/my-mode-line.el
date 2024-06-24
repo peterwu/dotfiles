@@ -49,10 +49,16 @@ Show the evil mode tag if selected; otherwise, its window number.")
 
 (defvar-local my-mode-line-window-dedicated
     '(:eval
-      (cond
-       ((eq (window-dedicated-p) t) "D")
-       ((window-dedicated-p) "d")
-       (t "-"))))
+      (let ((dedicated-status (mode-line-window-control)))
+        dedicated-status
+        (cond
+         ((string-blank-p dedicated-status)
+          (propertize
+           "-"
+           'help-echo "Window not dedicated to its buffer\nmouse-1: Toggle"
+           'local-map mode-line-window-dedicated-keymap
+           'mouse-face 'mode-line-highlight))
+         (t dedicated-status)))))
 (put 'my-mode-line-window-dedicated 'risky-local-variable t)
 
 (defvar-local my-mode-line-buffer-identification
@@ -146,7 +152,7 @@ Show the evil mode tag if selected; otherwise, its window number.")
        (list
         (if (boundp 'battery-mode-line-string) battery-mode-line-string)
         (if (boundp 'display-time-string) display-time-string))))
-  "Return misc info in a better organized manner.")
+  "Return misc info in a predictable order.")
 (put 'my-mode-line-misc-info 'risky-local-variable t)
 
 (defvar-local my-mode-line-buffer-size

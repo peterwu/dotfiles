@@ -327,8 +327,9 @@ Enable `recentf-mode' if it isn't already."
     (interactive
      (list
       (progn (unless recentf-mode (recentf-mode 1))
-             (completing-read (format-prompt "Open recent file in other window" nil)
-                              recentf-list nil t))))
+             (completing-read
+              (format-prompt "Open recent file in other window" nil)
+              recentf-list nil t))))
     (when file
       (funcall #'find-file-other-window file)))
 
@@ -338,8 +339,9 @@ Enable `recentf-mode' if it isn't already."
     (interactive
      (list
       (progn (unless recentf-mode (recentf-mode 1))
-             (completing-read (format-prompt "Open recent file in other tab" nil)
-                              recentf-list nil t))))
+             (completing-read
+              (format-prompt "Open recent file in other tab" nil)
+              recentf-list nil t))))
     (when file
       (funcall #'find-file-other-tab file)))
 
@@ -349,8 +351,9 @@ Enable `recentf-mode' if it isn't already."
     (interactive
      (list
       (progn (unless recentf-mode (recentf-mode 1))
-             (completing-read (format-prompt "Open recent file in other frame" nil)
-                              recentf-list nil t))))
+             (completing-read
+              (format-prompt "Open recent file in other frame" nil)
+              recentf-list nil t))))
     (when file
       (funcall #'find-file-other-frame file)))
   :custom
