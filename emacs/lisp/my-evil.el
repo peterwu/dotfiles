@@ -11,7 +11,7 @@
       (modus-themes-color color)))
 
   (defun my-evil--propertize-state-tags ()
-    (let ((defaults `(:foreground ,(my-evil--get-color 'bg-main) :weight bold)))
+    (let ((defaults `(:foreground ,(my-evil--get-color 'white) :weight bold)))
       (mapc (lambda (elt)
               (let ((tag-name (pop elt))
                     (tag-value (pop elt))
@@ -30,7 +30,7 @@
              '(evil-visual-screen-line-tag  " S "   cyan)
              '(evil-operator-state-tag      " O "   magenta-faint)
              '(evil-replace-state-tag       " R "   red)
-             '(evil-motion-state-tag        " M "   fg-main)
+             '(evil-motion-state-tag        " M "   black)
              '(evil-emacs-state-tag         " E "   magenta)))))
   :init
   (setopt evil-default-state 'emacs)
@@ -86,61 +86,61 @@
   :init
   (my-evil--propertize-state-tags)
   :hook
-  ((evil-after-load) .
-   (lambda ()
-     (evil-set-leader '(normal motion) (kbd "SPC"))
-     (evil-set-leader '(normal motion) (kbd ",") t)
+  (evil-after-load
+   . (lambda ()
+       (evil-set-leader '(normal motion) (kbd "SPC"))
+       (evil-set-leader '(normal motion) (kbd ",") t)
 
-     (evil-define-command my-evil-paste-after-from-clipboard (count)
-       :suppress-operator t
-       (interactive "*P")
-       (with-temp-buffer
-         (my-paste-from-clipboard)
-         (evil-set-register ?\" (buffer-string)))
-       (evil-paste-after count))
+       (evil-define-command my-evil-paste-after-from-clipboard (count)
+         :suppress-operator t
+         (interactive "*P")
+         (with-temp-buffer
+           (my-paste-from-clipboard)
+           (evil-set-register ?\" (buffer-string)))
+         (evil-paste-after count))
 
-     (evil-define-command my-evil-paste-before-from-clipboard (count)
-       :suppress-operator t
-       (interactive "*P")
-       (with-temp-buffer
-         (my-paste-from-clipboard)
-         (evil-set-register ?\" (buffer-string)))
-       (evil-paste-before count))
+       (evil-define-command my-evil-paste-before-from-clipboard (count)
+         :suppress-operator t
+         (interactive "*P")
+         (with-temp-buffer
+           (my-paste-from-clipboard)
+           (evil-set-register ?\" (buffer-string)))
+         (evil-paste-before count))
 
-     (evil-define-operator my-evil-align-simple (beg end)
-       :move-point nil
-       :repeat t
-       (interactive "<r>")
-       (evil-with-active-region beg end
-         (call-interactively #'my-align-simple)))
+       (evil-define-operator my-evil-align-simple (beg end)
+         :move-point nil
+         :repeat t
+         (interactive "<r>")
+         (evil-with-active-region beg end
+           (call-interactively #'my-align-simple)))
 
-     (evil-define-operator my-evil-align-complex (beg end)
-       :move-point nil
-       :repeat t
-       (interactive "<r>")
-       (evil-with-active-region beg end
-         (call-interactively #'my-align-complex)))
+       (evil-define-operator my-evil-align-complex (beg end)
+         :move-point nil
+         :repeat t
+         (interactive "<r>")
+         (evil-with-active-region beg end
+           (call-interactively #'my-align-complex)))
 
-     (evil-define-operator my-evil-commentary (beg end)
-       :move-point nil
-       :repeat t
-       (interactive "<r>")
-       (comment-or-uncomment-region beg end))
+       (evil-define-operator my-evil-commentary (beg end)
+         :move-point nil
+         :repeat t
+         (interactive "<r>")
+         (comment-or-uncomment-region beg end))
 
-     (evil-define-operator my-evil-yank-to-clipboard (beg end)
-       :move-point nil
-       :repeat nil
-       (interactive "<r>")
-       (evil-yank beg end)
-       (my-copy-to-clipboard beg end))
-
-     (evil-define-command my-evil-yank-eol-to-clipboard ()
-       :suppress-operator t
-       (interactive)
-       (let ((beg (point))
-             (end (pos-eol)))
+       (evil-define-operator my-evil-yank-to-clipboard (beg end)
+         :move-point nil
+         :repeat nil
+         (interactive "<r>")
          (evil-yank beg end)
-         (my-copy-to-clipboard beg end)))))
+         (my-copy-to-clipboard beg end))
+
+       (evil-define-command my-evil-yank-eol-to-clipboard ()
+         :suppress-operator t
+         (interactive)
+         (let ((beg (point))
+               (end (pos-eol)))
+           (evil-yank beg end)
+           (my-copy-to-clipboard beg end)))))
   :config
   (evil-mode +1))
 
