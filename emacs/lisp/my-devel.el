@@ -6,7 +6,7 @@
 ;; globals
 (use-package eglot
   :hook
-  ((c-mode c++-mode python-mode) . eglot-ensure))
+  ((c-ts-mode c++-ts-mode python-ts-mode) . eglot-ensure))
 
 (use-package flymake
   :custom
@@ -18,7 +18,7 @@
   (flymake-suppress-zero-counters t)
   (flymake-wrap-around nil)
   :bind
-  (:map my-flymake-map
+  (:map my-ctl-z-!-map
         ("s" . flymake-start)
         ("d" . flymake-show-diagnostics-buffer)
         ("n" . flymake-goto-next-error)
@@ -102,5 +102,31 @@
   (python-check-command "pylint")
   :hook
   (python-mode . my-pyvenv-auto-activate))
+
+(require 'treesit)
+(setq-default treesit-language-source-alist
+              '((bash "https://github.com/tree-sitter/tree-sitter-bash")
+                (c "https://github.com/tree-sitter/tree-sitter-c")
+                (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
+                (elisp "https://github.com/Wilfred/tree-sitter-elisp")
+                (go "https://github.com/tree-sitter/tree-sitter-go")
+                (gomod "https://github.com/camdencheek/tree-sitter-go-mod")
+                (json "https://github.com/tree-sitter/tree-sitter-json")
+                (make "https://github.com/alemuller/tree-sitter-make")
+                (markdown "https://github.com/ikatyang/tree-sitter-markdown")
+                (python "https://github.com/tree-sitter/tree-sitter-python")
+                (toml "https://github.com/tree-sitter/tree-sitter-toml")
+                (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+
+(setopt major-mode-remap-alist
+        '((c-mode . c-ts-mode)
+          (cpp-mode . cpp-ts-mode)
+          (json-mode . json-ts-mode)
+          (python-mode . python-ts-mode)
+          (sh-mode . bash-ts-mode)
+          (yaml-mode . yaml-ts-mode)))
+
+(when (treesit-ready-p 'go)
+  (add-to-list 'auto-mode-alist '("\\.go\\'" . go-ts-mode)))
 
 (provide 'my-devel)
