@@ -42,7 +42,7 @@
       (let ((tag (format " %i " (my-window-numbering-get-number))))
         (if (mode-line-window-selected-p)
             evil-mode-line-tag
-          (propertize tag 'face '(:inherit modus-themes-subtle-blue)))))
+          (propertize tag 'face '(:inverse-video t)))))
   "Return the status for window.
 Show the evil mode tag if selected; otherwise, its window number.")
 (put 'my-mode-line-window-status-tag 'risky-local-variable t)

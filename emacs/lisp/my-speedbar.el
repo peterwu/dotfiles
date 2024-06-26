@@ -19,7 +19,7 @@
                         'face
                         `(:background ,rust :foreground ,white :weight bold))
           (propertize (format " %i " (my-window-numbering-get-number))
-                      'face '(:inherit modus-themes-subtle-red)))))
+                      'face '(:inverse-video t)))))
   "Return an ellipsized file name when applicable.")
 (put 'my-speedbar-window-status-tag 'risky-local-variable t)
 
