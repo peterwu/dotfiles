@@ -7,12 +7,8 @@
   (modus-themes-prompts '(bold intense))
 
   (modus-themes-common-palette-overrides
-   '((bg-mode-line-active bg-inactive)
-     (fg-mode-line-active fg-main)
-     (bg-mode-line-inactive bg-inactive)
-     (fg-mode-line-inactive fg-dim)
-     (border-mode-line-active bg-main)
-     (border-mode-line-inactive bg-inactive)))
+   '((border-mode-line-active unspecified)
+     (border-mode-line-inactive unspecified)))
   :config
   (load-theme 'modus-operandi)
   (add-to-list 'modus-operandi-palette '(black "#000000"))
