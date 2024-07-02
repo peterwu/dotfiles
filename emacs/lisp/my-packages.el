@@ -93,28 +93,29 @@
   (eshell-highlight-prompt nil)
   (eshell-prompt-function
    (lambda ()
-     (concat
-      "┌ "
-      (propertize
-       (format-time-string "%H:%M" (current-time))
-       'face `(:foreground "dark magenta"))
-      " "
-      (propertize
-       (user-login-name)
-       'face `(:foreground "dark blue"))
-      (propertize
-       (concat  "@" (system-name) ":")
-       'face `(:foreground "sienna"))
-      (propertize
-       (abbreviate-file-name (eshell/pwd))
-       'face `(:foreground "dark blue" :weight bold))
-      "\n"
-      "└ "
-      (let ((prompt (if (= (user-uid) 0) "#" "$")))
-        (if (= eshell-last-command-status 0)
-            (propertize prompt 'face `(:foreground "dark green"))
-          (propertize prompt 'face `(:foreground "dark red"))))
-      " ")))
+     (modus-themes-with-colors
+       (concat
+        "┌ "
+        (propertize
+         (format-time-string "%H:%M" (current-time))
+         'face `(:foreground ,magenta))
+        " "
+        (propertize
+         (user-login-name)
+         'face `(:foreground ,blue))
+        (propertize
+         (concat  "@" (system-name) ":")
+         'face `(:foreground ,black))
+        (propertize
+         (abbreviate-file-name (eshell/pwd))
+         'face `(:foreground ,blue :weight bold))
+        "\n"
+        "└ "
+        (let ((prompt (if (= (user-uid) 0) "#" "$")))
+          (if (= eshell-last-command-status 0)
+              (propertize prompt 'face `(:foreground ,green))
+            (propertize prompt 'face `(:foreground ,red))))
+        " "))))
   :hook
   (eshell-mode . (lambda ()
                    (setq-local global-hl-line-mode nil))))
@@ -434,10 +435,14 @@ Enable `recentf-mode' if it isn't already."
 
 (use-package term
   :custom
-  (explicit-shell-file-name "/bin/bash --login")
+  (explicit-shell-file-name "/bin/bash")
+  (explicit-bash-args '("--login"))
   :bind
   ([f12] . (lambda () (interactive)
-             (term explicit-shell-file-name)))
+             (term (concat
+                    explicit-shell-file-name
+                    " "
+                    (mapconcat #'identity explicit-bash-args " ")))))
   :hook
   (term-mode . (lambda()
                  (setq-local global-hl-line-mode nil)
