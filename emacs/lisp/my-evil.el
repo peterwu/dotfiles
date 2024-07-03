@@ -68,6 +68,9 @@
         ("gl" . my-evil-align-simple)
         ("gL" . my-evil-align-complex))
   (:map evil-normal-state-map
+        ("] b" . next-buffer)
+        ("[ b" . previous-buffer)
+
         ("] SPC" . (lambda (number-of-lines)
                      (interactive "p")
                      (dotimes (_ number-of-lines)
