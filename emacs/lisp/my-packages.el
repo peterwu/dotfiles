@@ -180,7 +180,8 @@
   (ibuffer-use-header-line t)
   (ibuffer-use-other-window nil)
   :bind
-  ([remap list-buffers] . ibuffer))
+  (:map my-ctl-z-map
+        ("C-b" . ibuffer)))
 
 (use-package icomplete
   :custom
