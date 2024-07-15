@@ -8,7 +8,8 @@ if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]; then
     PATH="$HOME/.local/bin:$HOME/bin:$PATH"
 fi
 
-export MANPAGER="vim -c 'set laststatus=0' -M +MANPAGER --not-a-term -"
+export EDITOR='vim'
+export MANPAGER='vim +MANPAGER "+set laststatus=0" "+noremap q <Cmd>qall!<CR>" --not-a-term -'
 
 # Don't put duplicate lines or lines starting with space in the history.
 # See `man bash` for more options.
