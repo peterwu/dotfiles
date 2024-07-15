@@ -65,8 +65,8 @@
         ("C-x C-p" . evil-complete-previous-line))
   (:map evil-motion-state-map
         ("gc" . my-evil-commentary)
-        ("gl" . my-evil-align-simple)
-        ("gL" . my-evil-align-complex))
+        ("gl" . my-evil-align-left)
+        ("gL" . my-evil-align-right))
   (:map evil-normal-state-map
         ("] b" . next-buffer)
         ("[ b" . previous-buffer)
@@ -105,19 +105,19 @@
            (evil-set-register ?\" (buffer-string)))
          (evil-paste-before count))
 
-       (evil-define-operator my-evil-align-simple (beg end)
+       (evil-define-operator my-evil-align-left (beg end)
          :move-point nil
          :repeat t
          (interactive "<r>")
          (evil-with-active-region beg end
-           (call-interactively #'my-align-simple)))
+           (call-interactively #'my-align-left)))
 
-       (evil-define-operator my-evil-align-complex (beg end)
+       (evil-define-operator my-evil-align-right (beg end)
          :move-point nil
          :repeat t
          (interactive "<r>")
          (evil-with-active-region beg end
-           (call-interactively #'my-align-complex)))
+           (call-interactively #'my-align-right)))
 
        (evil-define-operator my-evil-commentary (beg end)
          :move-point nil
