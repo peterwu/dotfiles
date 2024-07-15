@@ -859,6 +859,14 @@ PaqAdd('tommcdo/vim-exchange', {as: 'exchange'})
 PaqAdd('tpope/vim-repeat',     {as: 'repeat'})
 PaqAdd('tpope/vim-surround',   {as: 'surround'})
 
+# fzf
+if !$HOMEBREW_PREFIX->empty()
+    set runtimepath+=$HOMEBREW_PREFIX/opt/fzf
+endif
+nnoremap <silent> <Leader>ff <Cmd>FZF .<CR>
+nnoremap <silent> <Leader>f~ <Cmd>FZF ~<CR>
+nnoremap <silent> <Leader>f/ <Cmd>FZF /<CR>
+
 # lion
 PaqAdd('tommcdo/vim-lion', {as: 'lion'})
 g:lion_squeeze_spaces = 1

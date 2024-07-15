@@ -5,17 +5,52 @@
 # Get the aliases and functions
 [[ -f ~/.bashrc ]] && source ~/.bashrc
 
-# startx if possible
-[[ -z "${DISPLAY}" && "${XDG_VTNR}" -eq 1 ]] && exec /usr/local/bin/welcome
-
 # User specific environment and startup programs
 export CDPATH=".:$HOME"
+
+# homebrew
+export PATH="/opt/homebrew/bin:$PATH"
+
+os_arch=($(uname -ms))
+os=${os_arch[0]}
+arch=${os_arch[1]}
+
+if [[ $os == 'Darwin' ]]
+then
+    if [[ $arch == 'arm64' ]]
+    then
+        export PATH="/opt/homebrew/bin:$PATH"
+    fi
+
+    if type brew &>/dev/null
+    then
+        export HOMEBREW_PREFIX="$(brew --prefix)"
+        export HOMEBREW_CELLAR="$(brew --cellar)"
+        export HOMEBREW_REPOSITORY="$(brew --repository)"
+
+        # bash completion
+        if [[ -r "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh" ]]
+        then
+            source "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh"
+        else
+            for COMPLETION in "${HOMEBREW_PREFIX}/etc/bash_completion.d/"*
+            do
+                [[ -r "${COMPLETION}" ]] && source "${COMPLETION}"
+            done
+        fi
+    fi
+fi
+
+# fzf
+eval "$(fzf --bash)"
 
 # less
 export LESSHISTFILE=-
 
 # python
 export PYTHONSTARTUP=$HOME/.config/python/pythonrc
+export VIRTUAL_ENV_DISABLE_PROMPT=1
 
 # readline
 export INPUTRC=$HOME/.config/readline/inputrc
+
