@@ -1,59 +1,68 @@
-" let the fun begin
+vim9script
+# let the fun begin
 
-" commons {{{
+# commons {{{
 
-const s:home = getenv('HOME')
-for [vim_var, env_var, default_dir] in [
-            \ ['s:vim_cache_home',  'XDG_CACHE_HOME',  '.cache'],
-            \ ['s:vim_config_home', 'XDG_CONFIG_HOME', '.config'],
-            \ ['s:vim_data_home',   'XDG_DATA_HOME',   '.local/share'],
-            \ ['s:vim_state_home',  'XDG_STATE_HOME',  '.local/state']
-            \ ]
-    let s:env_var = getenv(env_var)
-    let s:env_var_home = s:env_var ? s:env_var : s:home .. '/' .. default_dir
-    let s:vim_var_home = s:env_var_home .. '/vim'
+for [xdg_env_var, default_dir] in [
+        ['XDG_CACHE_HOME',  $'{$HOME}/.cache'],
+        ['XDG_CONFIG_HOME', $'{$HOME}/.config'],
+        ['XDG_DATA_HOME',   $'{$HOME}/.local/share'],
+        ['XDG_STATE_HOME',  $'{$HOME}/.local/state']
+        ]
 
-    call mkdir(s:vim_var_home, 'p', 0o700)
+    const xdg_base_dir = getenv(xdg_env_var) ?? default_dir
+    const vim_base_dir = $'{xdg_base_dir}/vim'
 
-    execute 'const ' .. vim_var .. '="' .. s:vim_var_home .. '"'
+    const vim_env_var = xdg_env_var->substitute('XDG', 'VIM', 'g')
+    setenv(vim_env_var, vim_base_dir)
+
+    mkdir(vim_base_dir, 'p', 0o700)
 endfor
 
-function! s:highlight(group, fg='NONE', bg='NONE', style='NONE') abort
-    execute 'highlight '         .. a:group
-                \ .. ' ctermfg=' .. a:fg
-                \ .. ' ctermbg=' .. a:bg
-                \ .. ' cterm='   .. a:style
-                \ .. ' guifg='   .. a:fg
-                \ .. ' guibg='   .. a:bg
-                \ .. ' gui='     .. a:style
-endfunction
+def Highlight(group: string, fg='NONE', bg='NONE', style='NONE'): void
+    var style_dict: dict<bool>
 
-" }}}
+    style->split(',')->mapnew((_, v) => {
+        style_dict[v] = true
+    })
 
-" options {{{
+    hlset([{
+        name:    group,
+        ctermfg: fg,
+        ctermbg: bg,
+        cterm:   style_dict,
+        guifg:   fg,
+        guibg:   bg,
+        gui:     style_dict
+    }])
+enddef
 
-" --------
-" defaults
-" --------
-unlet! skip_defaults_vim
+# }}}
+
+# options {{{
+
+# --------
+# defaults
+# --------
+unlet! g:skip_defaults_vim
 source $VIMRUNTIME/defaults.vim
 
-" ---------
-" work dirs
-" ---------
-call mkdir(s:vim_state_home .. '/swap', 'p', 0o700)
-call mkdir(s:vim_state_home .. '/undo', 'p', 0o700)
-call mkdir(s:vim_state_home .. '/view', 'p', 0o700)
+# ---------
+# work dirs
+# ---------
+mkdir($'{$VIM_STATE_HOME}/swap', 'p', 0o700)
+mkdir($'{$VIM_STATE_HOME}/undo', 'p', 0o700)
+mkdir($'{$VIM_STATE_HOME}/view', 'p', 0o700)
 
-" -------
-" options
-" -------
+# -------
+# options
+# -------
 set autoindent
 set autoread
 set complete-=i
 set completeopt=menu,menuone,noinsert,noselect
 set cursorline
-let &directory=s:vim_state_home .. '/swap'
+set directory=$VIM_STATE_HOME/swap
 set encoding=utf-8
 set expandtab
 set fileformats=unix,dos,mac
@@ -72,6 +81,7 @@ set nolist
 set noshowmode
 set notitle
 set number
+set packpath^=$VIM_DATA_HOME
 set path=.,,**
 set pumheight=7
 set relativenumber
@@ -97,28 +107,28 @@ set termguicolors
 set textwidth=80
 set timeoutlen=777
 set ttimeoutlen=77
-let &undodir=s:vim_state_home .. '/undo'
+set undodir=$VIM_STATE_HOME/undo
 set undofile
-let &viewdir=s:vim_state_home .. '/view'
+set viewdir=$VIM_STATE_HOME/view
 set viewoptions=cursor,folds
 set viminfo=%,<800,'10,/50,:100,h,f0
-let &viminfofile=s:vim_state_home .. '/viminfo'
+set viminfofile=$VIM_STATE_HOME/viminfo
 set virtualedit=block
 set wildoptions=pum,tagfile
 
-" }}}
+# }}}
 
-" keymaps {{{
+# keymaps {{{
 
-" leaders
-let g:mapleader = ' '
+# leaders
+g:mapleader = ' '
 
-" vimrc
+# vimrc
 nnoremap <silent> <Leader>cd <Cmd>cd     %:p:h<Bar>pwd<CR>
 nnoremap <silent> <Leader>ev <Cmd>edit   $MYVIMRC<CR>
 nnoremap <silent> <Leader>sv <Cmd>source $MYVIMRC<CR>
 
-" disable arrow keys
+# disable arrow keys
 noremap <Up>    <Nop>
 noremap <Down>  <Nop>
 noremap <Left>  <Nop>
@@ -129,13 +139,13 @@ inoremap <Down>  <Nop>
 inoremap <Left>  <Nop>
 inoremap <Right> <Nop>
 
-" swap j/k <-> gj/gk
-nnoremap <expr> j (v:count ? 'j' : 'gj')
-nnoremap <expr> k (v:count ? 'k' : 'gk')
-xnoremap <expr> j (v:count ? 'j' : 'gj')
-xnoremap <expr> k (v:count ? 'k' : 'gk')
+# swap j/k <-> gj/gk
+nnoremap <expr> j (v:count > 0 ? 'j' : 'gj')
+nnoremap <expr> k (v:count > 0 ? 'k' : 'gk')
+xnoremap <expr> j (v:count > 0 ? 'j' : 'gj')
+xnoremap <expr> k (v:count > 0 ? 'k' : 'gk')
 
-" unimpaired
+# unimpaired
 nnoremap <silent> [<Space> O<Esc>j
 nnoremap <silent> ]<Space> o<Esc>k
 
@@ -159,79 +169,86 @@ nnoremap <silent> ]q <Cmd>cnext<CR>
 nnoremap <silent> [Q <Cmd>cfirst<CR>
 nnoremap <silent> ]Q <Cmd>clast<CR>
 
-" open/close location list window
+# open/close location list window
 nnoremap <silent> <Leader>lo <Cmd>lopen<CR>
 nnoremap <silent> <Leader>lc <Cmd>lclose<CR>
-nnoremap <silent> <Leader>ll <Cmd>call <SID>toggle_quickfix_window('ll')<CR>
+nnoremap <silent> <Leader>ll <ScriptCmd>ToggleQuickfixWindow('ll')<CR>
 
-" open/close quickfix window
+# open/close quickfix window
 nnoremap <silent> <Leader>qo <Cmd>copen<CR>
 nnoremap <silent> <Leader>qc <Cmd>cclose<CR>
-nnoremap <silent> <Leader>qq <Cmd>call <SID>toggle_quickfix_window('qf')<CR>
+nnoremap <silent> <Leader>qq <ScriptCmd>ToggleQuickfixWindow('qf')<CR>
 
-function! s:toggle_quickfix_window(type) abort
-    let l:value = ''
-    let l:prefix = ''
+def ToggleQuickfixWindow(type: string): void
+    var value = ''
+    var prefix = ''
 
-    if a:type == 'qf'
-        let l:value = 'v:val.quickfix'
-        let l:prefix = 'c'
-    elseif a:type == 'll'
-        let l:value = 'v:val.loclist'
-        let l:prefix = 'l'
+    if type == 'qf'
+        value = 'v:val.quickfix'
+        prefix = 'c'
+    elseif type == 'll'
+        value = 'v:val.loclist'
+        prefix = 'l'
     endif
 
-    if getwininfo()->filter(l:value)->empty()
-        execute 'silent! ' .. l:prefix .. 'open'
+    if getwininfo()->filter(value)->empty()
+        execute $'silent! {prefix}open'
     else
-        execute 'silent! ' .. l:prefix .. 'close'
+        execute $'silent! {prefix}close'
     endif
-endfunction
+enddef
 
-" use quickfix to show args
-nnoremap <silent> <Leader>fa <Cmd>silent! call setqflist([], ' ',
-            \ {
-            \   'items' : argv()->copy()
-            \             ->map({ -> { 'filename' : v:val->expand(':p') }}),
-            \   'quickfixtextfunc': '<SID>format_quickfix_items'
-            \ })<Bar>copen<CR>
+# use quickfix to show args
+def QfShowArguments(): void
+    setqflist([], ' ', {
+        items: argv()->mapnew((_, v) => ({ filename: v->fnamemodify(':p') })),
+        quickfixtextfunc: '<SID>FormatQuickfixItems'
+    })
+enddef
+nnoremap <silent> <Leader>fa <ScriptCmd>QfShowArguments()<Bar>copen<CR>
 
-" use quickfix to show buffers
-nnoremap <silent> <Leader>fb <Cmd>silent! call setqflist([], ' ',
-            \ {
-            \   'items' : range(1, bufnr('$'))
-            \             ->filter('buflisted(v:val)')
-            \             ->map({ -> { 'bufnr' : v:val }}),
-            \   'quickfixtextfunc': '<SID>format_quickfix_items'
-            \ })<Bar>copen<CR>
+# use quickfix to show buffers
+def QfShowBuffers(): void
+    setqflist([], ' ', {
+        items: range(1, bufnr('$'))
+            ->filter('buflisted(v:val)')
+            ->map((_, v) => ({ bufnr: v })),
+        quickfixtextfunc: '<SID>FormatQuickfixItems'
+    })
+enddef
+nnoremap <silent> <Leader>fb <ScriptCmd>QfShowBuffers()<Bar>copen<CR>
 
-" use quickfix to show oldfiles
-nnoremap <silent> <Leader>fo <Cmd>silent! call setqflist([], ' ',
-            \ {
-            \   'items' : v:oldfiles->copy()
-            \             ->map({ -> { 'filename' : v:val->expand(':p') }}),
-            \   'quickfixtextfunc' : '<SID>format_quickfix_items'
-            \ })<Bar>copen<CR>
+# use quickfix to show oldfiles
+def QfShowOldFiles(): void
+    setqflist([], ' ', {
+        items: v:oldfiles
+            ->mapnew((_, v) => ({ filename: v->fnamemodify(':p') })),
+        quickfixtextfunc: '<SID>FormatQuickfixItems'
+    })
+enddef
+nnoremap <silent> <Leader>fo <ScriptCmd>QfShowOldFiles()<Bar>copen<CR>
 
-function! s:format_quickfix_items(info) abort
-    let l:items = getqflist({ 'id' : a:info.id, 'items' : 1 }).items
-    let l:list = []
-    for idx in range(a:info.start_idx - 1, a:info.end_idx - 1)
-        let l:bufname = bufname(items[idx].bufnr)
-        if l:bufname->empty()
-            call add(l:list, "[No Name]")
+def FormatQuickfixItems(info: dict<number>): list<string>
+    var items = getqflist({ id: info.id, items: 1 }).items
+    var list = []
+
+    items->foreach((_, v) => {
+        var bufname = bufname(v.bufnr)
+        if bufname->empty()
+            list->add("[No Name]")
         else
-            call add(l:list, fnamemodify(l:bufname, ':~'))
+            list->add(fnamemodify(bufname, ':~'))
         endif
-    endfor
-    return l:list
-endfunction
+    })
 
-" use tab to select from popup menu
+    return list
+enddef
+
+# use tab to select from popup menu
 inoremap <expr> <Tab>   (pumvisible() ? '<C-N>' : '<Tab>')
 inoremap <expr> <S-Tab> (pumvisible() ? '<C-P>' : '<C-H>')
 
-" stolen from neovim defaults
+# stolen from neovim defaults
 nnoremap Y     yg_
 nnoremap <C-L> <Cmd>nohlsearch<Bar>diffupdate<Bar>normal! <C-L><CR>
 inoremap <C-U> <C-G>u<C-U>
@@ -240,103 +257,131 @@ xnoremap *     y/\V<C-R>"<CR>
 xnoremap #     y?\V<C-R>"<CR>
 nnoremap &     <Cmd>&&<CR>
 
-" copy to clipboard
+# copy to clipboard
 if has('clipboard')
     nnoremap <silent> <Leader>y  "+y
     xnoremap <silent> <Leader>y  "+y
     nnoremap <silent> <Leader>Y  "+yg_
     nnoremap <silent> <Leader>yy "+y_
-elseif executable('wl-copy')
-    vnoremap <silent> <Leader>y  <Cmd>set opfunc=CopyToClipboard<CR>g@
-    nnoremap <silent> <Leader>y  <Cmd>set opfunc=CopyToClipboard<CR>g@
-    nnoremap <silent> <Leader>Y  <Cmd>set opfunc=CopyToClipboard<CR>g@g_
-    nnoremap <silent> <Leader>yy <Cmd>set opfunc=CopyToClipboard<CR>g@_
-
-    function! CopyToClipboard(type, ...) abort
-        let reg = '"'
-        let sel_save = &selection
-        let &selection = "inclusive"
-        let cb_save  = &clipboard
-        let reg_save = getreg(reg)
-        let reg_type = getregtype(reg)
-        let type = a:type
-        if a:type == "char"
-            silent execute 'normal! v`[o`]"'.reg.'y'
-            let type = 'v'
-        elseif a:type == "line"
-            silent execute 'normal! `[V`]"'.reg.'y'
-            let type = 'V'
-        elseif a:type ==# "v" || a:type ==# "V" || a:type ==# "\<C-V>" || a:type == "block"
-            let &selection = sel_save
-            let ve = &virtualedit
-            if !(a:0 && a:1)
-                set virtualedit=
-            endif
-            silent execute 'normal! gv"'.reg.'y'
-            let &virtualedit = ve
-        elseif a:type =~ '^\d\+$'
-            let type = 'v'
-            silent execute 'normal! ^v'.a:type.'$h"'.reg.'y'
-            if mode() ==# 'v'
-                normal! v
-            endif
-        else
-            let &selection = sel_save
-            let &clipboard = cb_save
-        endif
-
-        call system('wl-copy', getreg(reg))
-
-        call setreg(reg,reg_save,reg_type)
-        let &selection = sel_save
-        let &clipboard = cb_save
-    endfunction
+else
+    nnoremap <expr> <silent> <Leader>y  YankToClipboard()
+    xnoremap <expr> <silent> <Leader>y  YankToClipboard()
+    nnoremap <expr> <silent> <Leader>Y  YankToClipboard('g_')
+    nnoremap <expr> <silent> <Leader>yy YankToClipboard('_')
 endif
 
-" paste from clipboard
+def YankToClipboard(arg = ''): string
+    &operatorfunc = (type: string, ...args: list<string>) => {
+        var selection = &selection
+        var clipboard = &clipboard
+        var register = getreginfo(v:register)
+        var visual_marks = [getpos("'<"), getpos("'>")]
+
+        set selection=inclusive
+
+        if type == 'char'
+            silent execute $'normal! v`[o`]"{v:register}y'
+        elseif type == 'line'
+            silent execute $'normal! `[V`]"{v:register}y'
+        elseif type == 'block' || type == 'v' || type == 'V' || type == "\<C-V>"
+            silent execute $'normal! gv"{v:register}y'
+        elseif type =~ '^\d\+$'
+            silent execute $'normal! ^v{type}$h"{v:register}y'
+            if mode() == 'v'
+                normal! v
+            endif
+        endif
+
+        var orig_text  = getreg(v:register)
+        var b64_text   = orig_text->B64Encode()
+        var osc52_text = $"\x1b]52;c;{b64_text}\x07"
+
+        echoraw(osc52_text)
+
+        &selection = selection
+        &clipboard = clipboard
+        setreg(v:register, register)
+        setpos("'<", visual_marks[0])
+        setpos("'>", visual_marks[1])
+    }
+
+    return 'g@' .. arg
+enddef
+
+def B64Encode(str: string): string
+    const b64_table = [
+        "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
+        "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
+        "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
+        "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
+        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "+", "/"
+    ]
+
+    var bytes = str->len()->range()->map((_, v) => (str[v]->char2nr()))
+    var b64 = []
+
+    for i in range(0, len(bytes) - 1, 3)
+        var n = bytes[i] * 0x10000
+            + bytes->get(i + 1, 0) * 0x100
+            + bytes->get(i + 2, 0)
+        b64->add(b64_table[n / 0x40000])
+        b64->add(b64_table[n / 0x1000 % 0x40])
+        b64->add(b64_table[n / 0x40 % 0x40])
+        b64->add(b64_table[n % 0x40])
+    endfor
+
+    if len(bytes) % 3 == 1
+        b64[-1] = '='
+        b64[-2] = '='
+    endif
+
+    if len(bytes) % 3 == 2
+        b64[-1] = '='
+    endif
+
+    return b64->join('')
+enddef
+
+# paste from clipboard
 if has('clipboard')
     nnoremap <silent> <Leader>p "+p
     nnoremap <silent> <Leader>P "+P
     xnoremap <silent> <Leader>p "+p
     xnoremap <silent> <Leader>P "+P
 elseif executable('wl-paste')
-    nnoremap <silent> <Leader>p <Cmd>let @"=system('wl-paste')<CR>""p
-    nnoremap <silent> <Leader>P <Cmd>let @"=system('wl-paste')<CR>""P
-    vnoremap <silent> <Leader>p <Cmd>let @"=system('wl-paste')<CR>""p
-    vnoremap <silent> <Leader>P <Cmd>let @"=system('wl-paste')<CR>""P
+    nnoremap <silent> <Leader>p <ScriptCmd>@" = system('wl-paste')<CR>""p
+    nnoremap <silent> <Leader>P <ScriptCmd>@" = system('wl-paste')<CR>""P
+    xnoremap <silent> <Leader>p <ScriptCmd>@" = system('wl-paste')<CR>""p
+    xnoremap <silent> <Leader>P <ScriptCmd>@" = system('wl-paste')<CR>""P
 endif
 
-" terminal
-tnoremap <Esc> <C-\><C-N>
+# terminal
 nnoremap <C-`> <Cmd>belowright terminal bash<CR>
 
-" }}}
+# }}}
 
-" commands {{{
+# commands {{{
 
-" instant grep + quickfix
-command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr s:grep(<f-args>)
-command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr s:grep(<f-args>)
+# instant grep + quickfix
+command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<f-args>)
+command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr Grep(<f-args>)
 
-function! s:grep(...)
-    let l:args = expandcmd(join(a:000, ' '))
-    let l:cmd = substitute(&grepprg, '\$\*', l:args, '')
-    return system(l:cmd)
-endfunction
+def Grep(...params: list<string>): string
+    var args = params->join(' ')->expandcmd()
+    var cmd = &grepprg->substitute('\$\*', args, '')
+    return system(cmd)
+enddef
 
-" force saving files that otherwise require sudoedit
-command! -nargs=0 SudoWrite call s:sudo_write()
-nnoremap <Leader>w! <Cmd>SudoWrite<CR>
-
-function! s:sudo_write()
+# force saving files that otherwise require sudoedit
+command! -nargs=0 SudoWrite {
     silent! write !sudo tee % > /dev/null
     edit!
-    echo expand('%:p') .. ' saved!'
-endfunction
+    echo $'{expand('%:p')} saved!'
+}
 
-" }}}
+# }}}
 
-" autos {{{
+# autos {{{
 
 augroup auto_clang_format | autocmd!
     if executable('clang-format')
@@ -349,11 +394,11 @@ augroup auto_save_folds | autocmd!
     autocmd BufWinEnter ?* silent! loadview
 augroup END
 
-augroup highlight_yank | autocmd!
-    autocmd TextYankPost * call HighlightYank()
+augroup highlight_on_yank | autocmd!
+    autocmd TextYankPost * HighlightOnYank()
 augroup END
 
-def HighlightYank(hlgroup = 'IncSearch', duration = 300, in_visual = true)
+def HighlightOnYank(hlgroup = 'IncSearch', duration = 300, in_visual = true)
     if v:event.operator ==? 'y'
         if !in_visual && visualmode() != null_string
             visualmode(1)
@@ -385,30 +430,34 @@ augroup setup_quickfix | autocmd!
     autocmd QuickFixCmdPost cgetexpr cwindow
     autocmd QuickFixCmdPost lgetexpr lwindow
 
-    autocmd Filetype qf
-                \ setlocal norelativenumber statusline=%!DrawQfStatusLine()
+    autocmd Filetype qf {
+        setlocal norelativenumber
+        setlocal statusline=%!DrawQfStatusLine()
+    }
 augroup END
 
-function! DrawQfStatusLine() abort
-    return join ([
-                \    '%#StatusVimMode#',
-                \    ' ',
-                \    s:get_vim_mode(),
-                \    ' ',
-                \    '%#StatusFileName#',
-                \    ' ',
-                \    '%<%F',
-                \    '%=',
-                \    ' ',
-                \    '%#StatusPercent#',
-                \    '%l/%L',
-                \    ' '
-                \ ], '')
-endfunction
+def g:DrawQfStatusLine(): string
+    return join([
+        '%#StatusVimMode#',
+        ' ',
+        GetVimMode(),
+        ' ',
+        '%#StatusFileName#',
+        ' ',
+        '%<%F',
+        '%=',
+        ' ',
+        '%#StatusPercent#',
+        '%l/%L',
+        ' '
+    ], '')
+enddef
 
 augroup show_color_column_per_line | autocmd!
-    autocmd FileType * execute 'match ColorColumn'
-                \ '/\%' .. (&textwidth ? &textwidth + 1 : 0) .. 'v./'
+    autocmd FileType * {
+        const textwidth = &textwidth > 0 ? &textwidth + 1 : 0
+        execute $'match ColorColumn /\%{textwidth}v./'
+    }
 augroup END
 
 augroup show_listchars_when_insert | autocmd!
@@ -417,17 +466,19 @@ augroup show_listchars_when_insert | autocmd!
 augroup END
 
 augroup override_colors | autocmd!
-    autocmd ColorScheme *
-                \ call s:highlight('ColorColumn', 'NONE', 'LightMagenta')     |
-                \ call s:highlight('TabLine', 'Black', 'LightGray')           |
-                \ call s:highlight('TabLineFill', 'Black', 'White')           |
-                \ call s:highlight('TabLineSel', 'White', 'DarkBlue', 'bold') |
-                \ call s:highlight_status_line()
+    autocmd ColorScheme * {
+        Highlight('ColorColumn', 'NONE', 'LightMagenta')
+        Highlight('CursorLine', '', '', 'NONE')
+        Highlight('TabLine', 'Black', 'LightGray')
+        Highlight('TabLineFill', 'Black', 'White')
+        Highlight('TabLineSel', 'White', 'DarkBlue', 'bold')
+
+        HighlightStatusLine()
+    }
 augroup END
 
 augroup update_status_line | autocmd!
-    autocmd BufEnter,BufWritePost,WinEnter,VimEnter *
-                \ call s:highlight_status_line()
+    autocmd BufEnter,BufWritePost,WinEnter,VimEnter * HighlightStatusLine()
     autocmd ModeChanged,VimResized * redrawstatus!
 augroup END
 
@@ -435,421 +486,426 @@ augroup use_as_man_pager | autocmd!
     autocmd FileType man setlocal textwidth=0 | match none
 augroup END
 
-" }}}
+# }}}
 
-" status line {{{
+# status line {{{
 
-function! s:highlight_status_line() abort
-    call s:highlight_git_branch_status()
+def HighlightStatusLine(): void
+    HighlightGitBranchStatus()
 
-    call s:highlight('StatusBlank',      'Black',    'LightGray', 'NONE')
-    call s:highlight('StatusFileName',   'Black',    'LightGray', 'bold')
-    call s:highlight('StatusFileState',  'Brown',    'LightGray', 'bold')
-    call s:highlight('StatusFileSize',   'Black',    'LightGray', 'NONE')
-    call s:highlight('StatusFileFormat', 'Black',    'Gray',      'NONE')
-    call s:highlight('StatusFileEncode', 'Black',    'Gray',      'NONE')
-    call s:highlight('StatusPercent',    'Black',    'LightGray', 'NONE')
-    call s:highlight('StatusWinNR',      'DarkBlue', 'Gray',      'bold')
-endfunction
+    Highlight('StatusBlank',      'Black',    'LightGray', 'NONE')
+    Highlight('StatusFileName',   'Black',    'LightGray', 'bold')
+    Highlight('StatusFileState',  'Brown',    'LightGray', 'bold')
+    Highlight('StatusFileSize',   'Black',    'LightGray', 'NONE')
+    Highlight('StatusFileFormat', 'Black',    'Gray',      'NONE')
+    Highlight('StatusFileEncode', 'Black',    'Gray',      'NONE')
+    Highlight('StatusPercent',    'Black',    'LightGray', 'NONE')
+    Highlight('StatusWinNR',      'DarkBlue', 'Gray',      'bold')
+enddef
 
-function! s:get_vim_mode() abort
-    " :help mode()
-    const l:mode_color_map = {
-                \ 'N' : 'DarkBlue'    ,
-                \ 'O' : 'DarkYellow'  ,
-                \ 'V' : 'DarkCyan'    ,
-                \ 'S' : 'DarkMagenta' ,
-                \ 'I' : 'DarkGreen'   ,
-                \ 'R' : 'DarkRed'     ,
-                \ 'C' : 'Brown'       ,
-                \ 'T' : 'Black'
-                \ }
+def GetVimMode(): string
+    # :help mode()
+    const mode_color_map = {
+        N: 'DarkBlue',
+        V: 'DarkCyan',
+        O: 'DarkMagenta',
+        S: 'DarkYellow',
+        I: 'DarkGreen',
+        R: 'DarkRed',
+        C: 'Brown',
+        T: 'Black'
+    }
 
-    let l:mode = mode()->toupper()
+    var mode = mode()->toupper()
 
-    if l:mode ==# 'N' && state() =~# '[o]'
-        let l:mode = 'O'
-    elseif l:mode =~# "[vV\<C-V>]"
-        let l:mode = 'V'
-    elseif l:mode =~# "[sS\<C-S>]"
-        let l:mode = 'S'
+    if mode == 'N' && state() =~ '[o]'
+        mode = 'O'
+    elseif mode =~ "[vV\<C-V>]"
+        mode = 'V'
+    elseif mode =~ "[sS\<C-S>]"
+        mode = 'S'
     endif
 
-    let l:color = l:mode_color_map[l:mode]
-    call s:highlight('StatusVimMode', l:color, 'White', 'bold,inverse')
-    return l:mode
-endfunction
+    var color = mode_color_map[mode]
+    Highlight('StatusVimMode', color, 'White', 'bold,inverse')
+    return mode
+enddef
 
-function! s:highlight_git_branch_status() abort
+def HighlightGitBranchStatus(): void
     if executable('git') < 1 | return | endif
 
-    let l:git_icon = ''
-    let l:git_dir = expand('%:p:h:S')
-    let l:git_cmd = 'git -C ' .. git_dir .. ' status --branch --porcelain=2'
-    silent! let l:git_cmd_result = system(l:git_cmd)->split('\n')
+    var git_icon = '*'
+    var git_dir = expand('%:p:h:S')
+    var git_cmd = $'git -C {git_dir} status --branch --porcelain=2'
+    silent! var git_cmd_result = system(git_cmd)->split('\n')
 
-    " Line                                     Notes
-    " ------------------------------------------------------------
-    " # branch.oid <commit> | (initial)        Current commit.
-    " # branch.head <branch> | (detached)      Current branch.
-    " # branch.upstream <upstream_branch>      If upstream is set.
-    " # branch.ab +<ahead> -<behind>           If upstream is set and
-    "                                          the commit is present.
-    " ------------------------------------------------------------
+    # Line                                  Notes
+    # ------------------------------------------------------------
+    # branch.oid <commit> | (initial)       Current commit.
+    # branch.head <branch> | (detached)     Current branch.
+    # branch.upstream <upstream_branch>     If upstream is set.
+    # branch.ab +<ahead> -<behind>          If upstream is set and
+    #                                       the commit is present.
+    # ------------------------------------------------------------
 
-    if v:shell_error
-        call s:highlight('StatusGitBranchStatus', 'Black', 'LightGray')
-        let b:git_branch_status = ''
+    var git_branch = ''
+    var git_status = []
+    var git_color = ''
+
+    if v:shell_error > 0
+        Highlight('StatusGitBranchStatus', 'Black', 'LightGray')
+        b:git_branch_status = ''
     else
-        let l:git_branch = l:git_cmd_result->copy()
-                    \ ->filter('v:val =~ "^# branch.head"')[0]->split()[2]
-        let l:git_status = l:git_cmd_result->copy()
-                    \ ->filter('v:val !~ "^# "')
+        git_branch = git_cmd_result->copy()
+            ->filter('v:val =~ "^# branch.head"')[0]->split()[2]
+        git_status = git_cmd_result->copy()
+            ->filter('v:val !~ "^# "')
 
-        if l:git_status->empty()
-            " clean branch
-            let l:git_color = 'DarkGreen'
+        if git_status->empty()
+            # clean branch
+            git_color = 'DarkGreen'
         else
-            " dirty branch
-            let l:git_color = 'DarkRed'
+            # dirty branch
+            git_color = 'DarkRed'
         endif
 
-        call s:highlight('StatusGitBranchStatus', l:git_color, 'LightGray')
-        let b:git_branch_status = l:git_icon .. ' ' .. l:git_branch
+        Highlight('StatusGitBranchStatus', git_color, 'LightGray')
+        b:git_branch_status = git_icon .. ' ' .. git_branch
     endif
-endfunction
+enddef
 
-function! s:get_file_size() abort
-    let l:file = expand('%:p')
-    let l:bytes = 0
+def GetFileSize(): string
+    var file = expand('%:p')
+    var bytes = 0
 
-    if l:file->len()
-        let l:bytes = l:file->getfsize()
+    if file->len() > 0
+        bytes = file->getfsize()
     else
-        " it's a buffer
-        let l:bytes = wordcount().bytes
+        # it's a buffer
+        bytes = wordcount().bytes
     endif
 
-    if l:bytes == 0 || l:bytes == -1 || l:bytes == -2
+    if bytes == 0 || bytes == -1 || bytes == -2
         return ''
     endif
 
-    const l:_1K = 1024
-    const l:_1M = 1024 * l:_1K
-    const l:_1G = 1024 * l:_1M
-    const l:_1T = 1024 * l:_1G
-    const l:_1P = 1024 * l:_1T
-    const l:_1E = 1024 * l:_1P
+    const _1K = 1024
+    const _1M = 1024 * _1K
+    const _1G = 1024 * _1M
+    const _1T = 1024 * _1G
+    const _1P = 1024 * _1T
+    const _1E = 1024 * _1P
 
-    if l:bytes < l:_1K
-        return printf('%dB',   l:bytes)
-    elseif l:bytes < l:_1M
-        return printf('%.1fK', l:bytes/l:_1K)
-    elseif l:bytes < l:_1G
-        return printf('%.1fM', l:bytes/l:_1M)
-    elseif l:bytes < l:_1T
-        return printf('%.1fG', l:bytes/l:_1G)
-    elseif l:bytes < l:_1P
-        return printf('%.1fT', l:bytes/l:_1T)
-    elseif l:bytes < l:_1E
-        return printf('%.1fP', l:bytes/l:_1P)
-    else " math.maxinteger = 2^63 -1
-        return printf('%.1fE', l:bytes/l:_1E)
+    if bytes < _1K
+        return printf('%dB',   bytes)
+    elseif bytes < _1M
+        return printf('%.1fK', bytes / _1K)
+    elseif bytes < _1G
+        return printf('%.1fM', bytes / _1M)
+    elseif bytes < _1T
+        return printf('%.1fG', bytes / _1G)
+    elseif bytes < _1P
+        return printf('%.1fT', bytes / _1T)
+    elseif bytes < _1E
+        return printf('%.1fP', bytes / _1P)
+    else # math.maxinteger = 2^63 -1
+        return printf('%.1fE', bytes / _1E)
     endif
-endfunction
+enddef
 
-function! DrawStatusLine() abort
-    if g:statusline_winid != win_getid()
-        return join ([
-                    \    '%#StatusWinNR#',
-                    \    ' ',
-                    \    '%{winnr()}',
-                    \    ' ',
-                    \    '%#StatusFileName#',
-                    \    ' ',
-                    \    '%<%F',
-                    \    '%=',
-                    \    ' ',
-                    \    '%#StatusPercent#',
-                    \    '%P',
-                    \    ' '
-                    \ ], '')
-    else
-        return join ([
-                    \    '%#StatusVimMode#',
-                    \    ' ',
-                    \    s:get_vim_mode(),
-                    \    ' ',
-                    \    '%#StatusBlank#',
-                    \    ' ',
-                    \    '%#StatusFileName#',
-                    \    '%<%F',
-                    \    '%#StatusBlank#',
-                    \    ' ',
-                    \    '%#StatusFileState#',
-                    \    '%m%r%h%w%q',
-                    \    '%#StatusBlank#',
-                    \    ' ',
-                    \    '%#StatusGitBranchStatus#',
-                    \    '%{b:->get("git_branch_status", "")}',
-                    \    '%#StatusBlank#',
-                    \    '%=',
-                    \    ' ',
-                    \    '%#StatusFileSize#',
-                    \    s:get_file_size(),
-                    \    '%#StatusBlank#',
-                    \    ' ',
-                    \    '%#StatusFileFormat#',
-                    \    ' ',
-                    \    '%{&fileformat}',
-                    \    ' | ',
-                    \    '%#StatusFileEncode#',
-                    \    '%{&fileencoding ?? &encoding}',
-                    \    ' ',
-                    \    '%#StatusBlank#',
-                    \    ' ',
-                    \    '%#StatusPercent#',
-                    \    '%P',
-                    \    ' '
-                    \ ], '')
-    endif
-endfunction
-
-call s:highlight_status_line()
+HighlightStatusLine()
 set statusline=%!DrawStatusLine()
+def g:DrawStatusLine(): string
+    if g:statusline_winid != win_getid()
+        return join([
+            '%#StatusWinNR#',
+            ' ',
+            winnr(),
+            ' ',
+            '%#StatusFileName#',
+            ' ',
+            '%<%F',
+            '%=',
+            ' ',
+            '%#StatusPercent#',
+            '%P',
+            ' '
+        ], '')
+    else
+        return join([
+            '%#StatusVimMode#',
+            ' ',
+            GetVimMode(),
+            ' ',
+            '%#StatusBlank#',
+            ' ',
+            '%#StatusFileName#',
+            '%<%F',
+            '%#StatusBlank#',
+            ' ',
+            '%#StatusFileState#',
+            '%m%r%h%w%q',
+            '%#StatusBlank#',
+            ' ',
+            '%#StatusGitBranchStatus#',
+            '%{b:->get("git_branch_status", "")}',
+            '%#StatusBlank#',
+            '%=',
+            ' ',
+            '%#StatusFileSize#',
+            GetFileSize(),
+            '%#StatusBlank#',
+            ' ',
+            '%#StatusFileFormat#',
+            ' ',
+            '%{&fileformat}',
+            ' | ',
+            '%#StatusFileEncode#',
+            '%{&fileencoding ?? &encoding}',
+            ' ',
+            '%#StatusBlank#',
+            ' ',
+            '%#StatusPercent#',
+            '%P',
+            ' '
+        ], '')
+    endif
+enddef
 
-" }}}
+# }}}
 
-" tab line {{{
+# tab line {{{
 
 set tabline=%!DrawTabLine()
-function! DrawTabLine() abort
-    let l:tabline = ''
-    let l:selected_tab_nr = tabpagenr()
-    let l:last_tab_nr = tabpagenr('$')
+def g:DrawTabLine(): string
+    var tabline = ''
+    var selected_tab_nr = tabpagenr()
+    var last_tab_nr = tabpagenr('$')
 
-    for i in range(1, l:last_tab_nr)
-        " select the highlighting
+    for i in range(1, last_tab_nr)
+        # select the highlighting
         if i == selected_tab_nr
-            let l:tabline ..= '%#TabLineSel#'
+            tabline ..= '%#TabLineSel#'
         else
-            let l:tabline ..= '%#TabLine#'
+            tabline ..= '%#TabLine#'
         endif
 
-        " set the tab page number (for mouse clicks)
-        let l:tabline ..= '%' .. i .. 'T'
+        # set the tab page number (for mouse clicks)
+        tabline ..= '%' .. i .. 'T'
 
-        " the label consists of tab # and bufname of active window
-        let l:buflist = tabpagebuflist(i)
-        let l:winnr = tabpagewinnr(i)
-        let l:buf = l:buflist[l:winnr - 1]
-        let l:bufname = bufname(l:buf)->fnamemodify(':~')->pathshorten()
+        # the label consists of tab # and bufname of active window
+        var buflist = tabpagebuflist(i)
+        var winnr = tabpagewinnr(i)
+        var buf = buflist[winnr - 1]
+        var bufname = bufname(buf)->fnamemodify(':~')->pathshorten()
 
-        let l:tabline ..= ' ' .. i .. ':' .. l:bufname .. ' '
+        tabline ..= ' ' .. i .. ':' .. bufname .. ' '
 
-        " if buffer is modified
-        let l:buf_modified = getbufvar(l:buf, '&modified')
-        if l:buf_modified | let l:tabline ..= '[+] ' | endif
+        # if buffer is modified
+        var buf_modified = getbufvar(buf, '&modified')
+        if buf_modified | tabline ..= '[+] ' | endif
 
-        if i != l:last_tab_nr
-            let l:tabline ..= '%#TabLineFill#' .. ' '
+        if i != last_tab_nr
+            tabline ..= '%#TabLineFill#' .. ' '
         endif
     endfor
 
-    " after the last tab fill with TabLineFill and reset tab page nr
-    let l:tabline ..= '%#TabLineFill#%T'
+    # after the last tab fill with TabLineFill and reset tab page nr
+    tabline ..= '%#TabLineFill#%T'
 
-    return l:tabline
-endfunction
+    return tabline
+enddef
 
-" }}}
+# }}}
 
-" plugins {{{
+# plugins {{{
 
-let s:package = 'plugged'
-let &packpath = &packpath->substitute(&runtimepath->split(',')[0], s:vim_data_home, 'g')
-let s:package_start_dir = s:vim_data_home .. '/pack/' .. s:package .. '/start'
-let s:package_opt_dir   = s:vim_data_home .. '/pack/' .. s:package .. '/opt'
+final pack = {}
+pack.name      = 'plugged'
+pack.start_dir = $'{$VIM_DATA_HOME}/pack/{pack.name}/start'
+pack.opt_dir   = $'{$VIM_DATA_HOME}/pack/{pack.name}/opt'
 
-" paq:
-" {
-"    'paq_name' : { 'dir' : dir, 'url' : url }
-" }
-let s:paqs = {}
+# paq:
+# {
+#    'paq_name' : { 'dir' : dir, 'url' : url }
+# }
+final paqs = {}
 
-" Paq management functions
-function! s:paq_init() abort
-    call mkdir(s:package_start_dir, 'p')
-    call mkdir(s:package_opt_dir,   'p')
-endfunction
+# Paq management functions
+def PaqInit(): void
+    mkdir(pack.start_dir, 'p')
+    mkdir(pack.opt_dir,   'p')
+enddef
 
-function! s:paq_add(name, args = {}) abort
-    let l:url = 'https://github.com/' .. a:name
-    let l:as = a:args->get('as', a:name->split('/')[1])
+def PaqAdd(name: string, args = {}): void
+    var url = 'https://github.com/' .. name
+    var as = args->get('as', name->split('/')[1])
 
-    if a:args->get('opt', v:false)
-        let l:dir = s:package_opt_dir   .. '/' .. l:as
+    var dir: string
+    if args->get('opt', false)
+        dir = pack.opt_dir   .. '/' .. as
     else
-        let l:dir = s:package_start_dir .. '/' .. l:as
+        dir = pack.start_dir .. '/' .. as
     endif
 
-    let s:paqs[l:as] = { 'dir' : l:dir->expand(':p:h'), 'url' : l:url }
-endfunction
+    paqs[as] = {
+        dir: dir,
+        url: url
+    }
+enddef
 
-function! s:paq_update() abort
-    for paq in s:paqs->items()
-        let l:as  = paq[0]
-        let l:dir = paq[1].dir
-        let l:url = paq[1].url
-        let l:sed_rm_ansi_esc_chars = 'sed
-                    \ -e "s/[^[:print:]]\[[0-9;]*[a-zA-Z]//g"
-                    \ -e "s/[[:cntrl:]]//g"'
+def PaqUpdate(): void
+    const max = paqs->mapnew((k, _) => len(k))->max()
 
-        " check if it has been git cloned already
-        if finddir('.git', l:dir)->empty()
-            let l:git_clone_cmd =
-                        \ 'git clone --depth=1 ' .. l:url .. ' ' .. l:dir
-                        \ .. '|' .. l:sed_rm_ansi_esc_chars
-            silent! let l:git_cmd_result =
-                        \ system(l:git_clone_cmd)->split('\n')
+    paqs->foreach((k, v) => {
+        const as  = k
+        const dir = v.dir
+        const url = v.url
+        const sed_rm_ansi_esc_chars = 'sed'
+            .. ' -e "s/[^[:print:]]\[[0-9;]*[a-zA-Z]//g"'
+            .. ' -e "s/[[:cntrl:]]//g"'
+
+        # check if it has been git cloned already
+        var git_cmd = ''
+        var git_cmd_result = []
+        if finddir('.git', dir)->empty()
+            git_cmd =  $'git clone --depth=1 {url} {dir}|{sed_rm_ansi_esc_chars}'
         else
-            let l:git_pull_cmd =
-                        \ 'git -C ' .. l:dir .. ' pull --depth=1 ' .. '2>&1'
-                        \ .. '|' .. l:sed_rm_ansi_esc_chars
-            silent! let l:git_cmd_result =
-                        \ system(l:git_pull_cmd)->split('\n')
+            git_cmd = $'git -C {dir} pull --depth=1 2>&1|{sed_rm_ansi_esc_chars}'
+        endif
+        git_cmd_result = system(git_cmd)->split('\n')
+
+        const doc_dir = $'{dir}/doc'
+        if doc_dir->isdirectory()
+            execute $'helptags {doc_dir}'
         endif
 
-        let l:doc_dir = l:dir .. '/doc'
-        if l:doc_dir->isdirectory()
-            execute "helptags " ..  l:doc_dir
-        endif
+        const fmt = $'%{max + 1}s: %s'
+        echo printf(fmt, as, git_cmd_result[0])
+    })
+enddef
 
-        echo printf("%17s: %s", l:as, l:git_cmd_result[0])
-    endfor
-endfunction
-
-function! s:paq_clean() abort
-    let l:dirs = []
-    for dir in [ s:package_start_dir, s:package_opt_dir ]
-        let l:dirs += glob(dir .. '/*', v:true, v:true)
+def PaqClean(): void
+    var dirs = []
+    for dir in [ pack.start_dir, pack.opt_dir ]
+        dirs += glob($'{dir}/*', true, true)
     endfor
 
-    let l:idx = 0
-    while l:idx < l:dirs->len()
-        for dir in s:paqs->values()->map({ _, val -> val.dir })
-            if l:dirs[l:idx] == dir
-                let l:dirs[l:idx] = ''
+    dirs->foreach((k, v) => {
+        for dir in paqs->values()->map((_, val) => val.dir )
+            if v == dir
+                dirs[k] = ''
                 break
             endif
         endfor
+    })
 
-        let l:idx += 1
-    endwhile
-
-    if l:dirs->filter('v:val != ""')->empty()
-        redraw! | echo 'Package [' .. s:package .. '] is clean.'
+    if dirs->filter('v:val != ""')->empty()
+        redraw! | echo $'Pack [{pack.name}] is clean.'
     else
-        let l:prompt =
-                    \ "WARNING:"
-                    \ .. "\nThe following folder(s) will be deleted.\n"
-                    \ .. "\n" .. l:dirs->join("\n") .. "\n"
-                    \ .. "\n" .. "Are you sure? [y/N] "
-        if 'y' == input(l:prompt)->tolower()
-            for dir in l:dirs
-                call delete(dir, 'rf')
+        var prompt = "WARNING:"
+            .. "\nThe following folder(s) will be deleted.\n"
+            .. "\n" .. dirs->join("\n") .. "\n"
+            .. "\n" .. "Are you sure? [y/N] "
+        if 'y' == input(prompt)->tolower()
+            for dir in dirs
+                delete(dir, 'rf')
             endfor
         endif
     endif
-endfunction
+enddef
 
-" -------
-" plugins
-" -------
-" system plugins
+# -------
+# plugins
+# -------
+# system plugins
 
-" comment
+# comment
 packadd! comment
 
-" matchit
+# matchit
 packadd! matchit
 
-" netrw
-let g:netrw_banner       = 0
-let g:netrw_browse_split = 4
-let g:netrw_dirhistmax   = 0
-let g:netrw_keepdir      = 0
-let g:netrw_list_hide    = '\(^\|\s\s\)\zs\.\S\+'
-let g:netrw_liststyle    = 3
-let g:netrw_winsize      = 29
+# netrw
+g:netrw_banner       = 0
+g:netrw_browse_split = 4
+g:netrw_dirhistmax   = 0
+g:netrw_keepdir      = 0
+g:netrw_list_hide    = '\(^\|\s\s\)\zs\.\S\+'
+g:netrw_liststyle    = 3
+g:netrw_winsize      = 29
 
 nnoremap <silent> <F9> <Cmd>Lexplore<CR>
 
 augroup vinegarize_netrw | autocmd!
-    autocmd filetype netrw call s:vinegarize_netrw()
+    autocmd filetype netrw {
+        nnoremap <buffer> <silent> ^ <Plug>NetrwBrowseUpDir()
+        nnoremap <buffer> <silent> - k
+        nnoremap <buffer> <silent> ~ <Cmd>execute $"Ntree {expand('~/')}"<CR>
+    }
 augroup END
 
-function! s:vinegarize_netrw() abort
-    nnoremap <buffer> <silent> <nowait> ^ <Plug>NetrwBrowseUpDir()
-    nnoremap <buffer> <silent> <nowait> - k
-    nnoremap <buffer> <silent> <nowait> ~
-                \ <Cmd>execute ':Ntree ' .. expand('~/')<CR>
-endfunction
-
-" termdebug
+# termdebug
 packadd! termdebug
-let g:termdebug_config = {
-            \ 'sign'   : '>>',
-            \ 'wide'   : 1,
-            \ 'winbar' : 0
-            \ }
+g:termdebug_config = {
+    sign:   '>>',
+    wide:   1,
+    winbar: 0
+}
 nnoremap <silent> <F5> <Cmd>Termdebug<CR>
 
-" personal plugins
-call s:paq_add('tommcdo/vim-exchange',
-            \ {'as' : 'exchange'})
-call s:paq_add('tpope/vim-repeat',
-            \ {'as' : 'repeat'})
-call s:paq_add('tpope/vim-surround',
-            \ {'as' : 'surround'})
+# 3rd party plugins
+PaqAdd('tommcdo/vim-exchange', {as: 'exchange'})
+PaqAdd('tpope/vim-repeat',     {as: 'repeat'})
+PaqAdd('tpope/vim-surround',   {as: 'surround'})
 
-" lion
-call s:paq_add('tommcdo/vim-lion', {'as' : 'lion'})
-let g:lion_squeeze_spaces = 1
+# fzf
+if !$HOMEBREW_PREFIX->empty()
+    set runtimepath+=$HOMEBREW_PREFIX/opt/fzf
+endif
+nnoremap <silent> <Leader>ff <Cmd>FZF .<CR>
+nnoremap <silent> <Leader>f~ <Cmd>FZF ~<CR>
+nnoremap <silent> <Leader>f/ <Cmd>FZF /<CR>
 
-" lsp
-call s:paq_add('yegappan/lsp', {'as' : 'lsp'})
-let lsp_opts = #{autoHighlightDiags: v:true}
-let lsp_servers = []
+# lion
+PaqAdd('tommcdo/vim-lion', {as: 'lion'})
+g:lion_squeeze_spaces = 1
+
+# lsp
+PaqAdd('yegappan/lsp', {as: 'lsp'})
+var lsp_opts = {autoHighlightDiags: true}
+var lsp_servers: list<dict<any>>
 
 if executable('clangd')
-    call add(lsp_servers, #{
-                \ name: 'clangd',
-                \ filetype: ['c', 'cpp'],
-                \ path: 'clangd',
-                \ args: ['--background-index']
-                \ })
+    lsp_servers->add({
+        name: 'clangd',
+        filetype: ['c', 'cpp'],
+        path: 'clangd',
+        args: ['--background-index']
+    })
 endif
 
 if executable('pylsp')
-    call add(lsp_servers, #{
-                \ name: 'pylsp',
-                \ filetype: 'python',
-                \ path: 'pylsp',
-                \ args: []
-                \ })
+    lsp_servers->add({
+        name: 'pylsp',
+        filetype: 'python',
+        path: 'pylsp',
+        args: []
+    })
 endif
 
 augroup lsp_setup | autocmd!
-    autocmd User LspSetup call LspOptionsSet(lsp_opts)
-    autocmd User LspSetup call LspAddServer(lsp_servers)
+    autocmd User LspSetup {
+        g:LspOptionsSet(lsp_opts)
+        g:LspAddServer(lsp_servers)
+    }
 augroup END
 
 augroup lsp_attached | autocmd!
-    autocmd User LspAttached call s:set_lsp_keymaps()
+    autocmd User LspAttached SetLspKeymaps()
 augroup END
 
-function! s:set_lsp_keymaps() abort
+def SetLspKeymaps(): void
     nnoremap <buffer> gd <Cmd>LspGotoDefinition<CR>
     nnoremap <buffer> gp <Cmd>LspPeekDefinition<CR>
     nnoremap <buffer> gr <Cmd>LspPeekReferences<CR>
@@ -857,33 +913,37 @@ function! s:set_lsp_keymaps() abort
     nnoremap <buffer> gt <Cmd>LspGotoTypeDef<CR>
     nnoremap <buffer> gR <Cmd>LspRename<CR>
     nnoremap <buffer> go <Cmd>LspDocumentSymbol<CR>
-    nnoremap <buffer> [g <Cmd>LspDiag prev<CR>
-    nnoremap <buffer> ]g <Cmd>LspDiag next<CR>
+    nnoremap <buffer> [d <Cmd>LspDiag prev<CR>
+    nnoremap <buffer> ]d <Cmd>LspDiag next<CR>
     nnoremap <buffer> K  <Cmd>LspHover<CR>
-endfunction
+enddef
 
-" rainbow
-call s:paq_add('luochen1990/rainbow')
-let g:rainbow_active = 1
-let g:rainbow_conf = {
-            \  'guifgs'    : ['DarkBlue',
-            \                 'DarkYellow',
-            \                 'DarkGreen',
-            \                 'DarkRed',
-            \                 'DarkCyan',
-            \                 'DarkMagenta'],
-            \  'ctermfgs'  : ['DarkBlue',
-            \                 'DarkYellow',
-            \                 'DarkGreen',
-            \                 'DarkRed',
-            \                 'DarkCyan',
-            \                 'DarkMagenta'],
-            \  'operators' : '_,_'
-            \ }
+# rainbow
+PaqAdd('luochen1990/rainbow')
+g:rainbow_active = 1
+g:rainbow_conf = {
+    guifgs: [
+        'DarkBlue',
+        'DarkYellow',
+        'DarkGreen',
+        'DarkRed',
+        'DarkCyan',
+        'DarkMagenta'
+    ],
+    ctermfgs: [
+        'DarkBlue',
+        'DarkYellow',
+        'DarkGreen',
+        'DarkRed',
+        'DarkCyan',
+        'DarkMagenta'
+    ],
+    operators: '_,_'
+}
 
-" sneak
-call s:paq_add('justinmk/vim-sneak', {'as' : 'sneak'})
-let g:sneak#label = 1
+# sneak
+PaqAdd('justinmk/vim-sneak', {as: 'sneak'})
+g:sneak#label = 1
 
 nnoremap s <Plug>Sneak_s
 nnoremap S <Plug>Sneak_S
@@ -893,41 +953,38 @@ nnoremap F <Plug>Sneak_F
 nnoremap t <Plug>Sneak_t
 nnoremap T <Plug>Sneak_T
 
-" update/clean plugins
-nnoremap <silent> <Leader>Qu
-            \ <Cmd>call <SID>paq_init()
-            \ <Bar>call <SID>paq_update()<CR>
-nnoremap <silent> <Leader>Qc
-            \ <Cmd>call <SID>paq_init()
-            \ <Bar>call <SID>paq_clean()<CR>
+# update/clean plugins
+nnoremap <silent> <Leader>Qu <ScriptCmd>PaqInit()<Bar>PaqUpdate()<CR>
+nnoremap <silent> <Leader>Qc <ScriptCmd>PaqInit()<Bar>PaqClean()<CR>
 
-" }}}
+# }}}
 
-" color scheme {{{
+# color scheme {{{
+
+# default terminal colors if not provided by chosen colorscheme
+if (has('termguicolors') && &termguicolors) || has('gui_running')
+    # use terminal's color scheme
+    g:terminal_ansi_colors = [
+        '#000000',
+        '#a60000',
+        '#006800',
+        '#6f5500',
+        '#0031a9',
+        '#721045',
+        '#00538b',
+        '#e1e1e1',
+
+        '#585858',
+        '#972500',
+        '#316500',
+        '#884900',
+        '#354fcf',
+        '#531ab6',
+        '#005a5f',
+        '#ffffff'
+    ]
+endif
 
 colorscheme wildcharm
 
-if (has('termguicolors') && &termguicolors) || has('gui_running')
-    " use terminal's color scheme
-    let g:terminal_ansi_colors = [
-                \   '#000000',
-                \   '#a60000',
-                \   '#006800',
-                \   '#6f5500',
-                \   '#0031a9',
-                \   '#721045',
-                \   '#00538b',
-                \   '#e1e1e1',
-                \
-                \   '#585858',
-                \   '#972500',
-                \   '#316500',
-                \   '#884900',
-                \   '#354fcf',
-                \   '#531ab6',
-                \   '#005a5f',
-                \   '#ffffff'
-                \ ]
-endif
-
-" }}}
+# }}}
