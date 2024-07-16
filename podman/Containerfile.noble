@@ -1,0 +1,49 @@
+FROM ubuntu:24.04
+WORKDIR /root
+
+RUN apt update && apt upgrade -y
+RUN apt install -y build-essential curl fzf git
+
+# dotfiles
+RUN mkdir -p ./projects/mine
+RUN git clone https://github.com/peterwu/dotfiles.git ./projects/mine/dotfiles
+
+# bash
+RUN cp ./projects/mine/dotfiles/bash/bashrc ./.bashrc
+RUN cp ./projects/mine/dotfiles/bash/bash_profile ./.bash_profile
+
+# git
+RUN mkdir -p ./.config/git
+RUN cp ./projects/mine/dotfiles/git/config ./.config/git
+
+# python
+RUN mkdir -p ./.config/python
+RUN cp ./projects/mine/dotfiles/python/pythonrc ./.config/python/pythonrc
+
+# vim
+RUN mkdir -p ./.config/vim
+RUN cp ./projects/mine/dotfiles/vim/vimrc ./.config/vim/vimrc
+
+RUN apt install -y libncurses-dev
+RUN mkdir -p /tmp/vim
+RUN git clone --depth 1 https://github.com/vim/vim.git /tmp/vim
+
+WORKDIR /tmp/vim
+RUN ./configure --prefix=/usr
+RUN make -j8 && make install
+
+RUN apt remove -y libncurses-dev
+RUN apt autoremove -y
+RUN rm -rf /tmp/vim
+
+WORKDIR /root
+
+# c/c++
+RUN apt install -y clang clangd
+
+# go
+RUN apt install -y golang gopls
+
+# python
+RUN apt install -y python3 python3-pip python3-pylsp pylint
+

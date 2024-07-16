@@ -1,0 +1,17 @@
+* Build the container
+#+begin_src bash
+  name=noble
+  podman build --tag my:${name} -f Containerfile.${name}
+#+end_src
+* Create a persistent volume
+#+begin_src bash
+  podman volume create data
+#+end_src
+* Run the container of choice
+#+begin_src bash
+  name=noble
+  podman run -dit --name ${name} \
+         --hostname ${name}      \
+         --volume data:/data     \
+         my:${name} /bin/bash --login
+#+end_src

@@ -1,0 +1,22 @@
+FROM fedora:f40
+WORKDIR /root
+
+RUN dnf upgrade --refresh -y
+RUN dnf install -y fzf git vim
+
+# dotfiles
+RUN mkdir -p ./projects/mine
+RUN git clone https://github.com/peterwu/dotfiles.git ./projects/mine/dotfiles
+
+# bash
+RUN cp ./projects/mine/dotfiles/bash/bashrc ./.bashrc
+RUN cp ./projects/mine/dotfiles/bash/bash_profile ./.bash_profile
+
+# vim
+RUN mkdir -p ./.config/vim
+RUN cp ./projects/mine/dotfiles/vim/vimrc ./.config/vim/vimrc
+
+# python
+RUN mkdir -p ./.config/python
+RUN cp ./projects/mine/dotfiles/python/pythonrc ./.config/python/pythonrc
+
