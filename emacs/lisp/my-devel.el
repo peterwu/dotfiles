@@ -6,7 +6,10 @@
 ;; globals
 (use-package eglot
   :hook
-  ((c-ts-mode c++-ts-mode python-ts-mode) . eglot-ensure))
+  ((c-ts-mode
+    c++-ts-mode
+    go-ts-mode
+    python-ts-mode) . eglot-ensure))
 
 (use-package flymake
   :custom
