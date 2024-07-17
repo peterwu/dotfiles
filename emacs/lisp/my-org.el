@@ -8,6 +8,7 @@
   (org-export-with-tags nil)
   (org-fontify-whole-heading-line t)
   (org-hide-emphasis-markers t)
+  (org-imenu-depth 7)
   (org-log-done 'time)
   (org-log-into-drawer t)
   (org-odt-convert-process 'unoconv)
@@ -32,8 +33,8 @@
         ("c" . org-capture))
   :hook
   (org-mode . (lambda ()
-                (variable-pitch-mode -1)
                 (display-line-numbers-mode -1)
-                (org-indent-mode +1))))
+                (org-indent-mode +1)
+                (variable-pitch-mode -1))))
 
 (provide 'my-org)

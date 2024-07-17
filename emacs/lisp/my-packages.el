@@ -230,9 +230,12 @@
   (imenu-eager-completion-buffer t)
   (imenu-level-separator "/")
   (imenu-max-item-length 100)
+  (imenu-sort-function #'imenu--sort-by-name)
   (imenu-space-replacement " ")
   (imenu-use-markers t)
-  (imenu-use-popup-menu nil))
+  (imenu-use-popup-menu nil)
+  :hook
+  ((org-mode prog-mode) . imenu-add-menubar-index))
 
 (use-package isearch
   :custom
