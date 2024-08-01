@@ -43,6 +43,7 @@ fi
 
 # fzf
 eval "$(fzf --bash)"
+export FZF_DEFAULT_OPTS='--layout=reverse --height=13 --border --info=inline-right'
 
 # less
 export LESSHISTFILE=-
