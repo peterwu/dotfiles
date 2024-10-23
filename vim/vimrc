@@ -232,14 +232,14 @@ def FormatQuickfixItems(info: dict<number>): list<string>
     var items = getqflist({ id: info.id, items: 1 }).items
     var list = []
 
-    items->foreach((_, v) => {
+    for v in items
         var bufname = bufname(v.bufnr)
         if bufname->empty()
             list->add("[No Name]")
         else
             list->add(fnamemodify(bufname, ':~'))
         endif
-    })
+    endfor
 
     return list
 enddef
@@ -759,7 +759,7 @@ enddef
 def PaqUpdate(): void
     const max = paqs->mapnew((k, _) => len(k))->max()
 
-    paqs->foreach((k, v) => {
+    for [k, v] in items(paqs)
         const as  = k
         const dir = v.dir
         const url = v.url
@@ -784,7 +784,7 @@ def PaqUpdate(): void
 
         const fmt = $'%{max + 1}s: %s'
         echo printf(fmt, as, git_cmd_result[0])
-    })
+    endfor
 enddef
 
 def PaqClean(): void
@@ -793,14 +793,14 @@ def PaqClean(): void
         dirs += glob($'{dir}/*', true, true)
     endfor
 
-    dirs->foreach((k, v) => {
+    for [k, v] in items(dirs)
         for dir in paqs->values()->map((_, val) => val.dir )
             if v == dir
                 dirs[k] = ''
                 break
             endif
         endfor
-    })
+    endfor
 
     if dirs->filter('v:val != ""')->empty()
         redraw! | echo $'Pack [{pack.name}] is clean.'
