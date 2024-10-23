@@ -395,7 +395,9 @@ augroup auto_save_folds | autocmd!
 augroup END
 
 augroup highlight_on_yank | autocmd!
-    autocmd TextYankPost * HighlightOnYank()
+    if has('patch-9.1.0423')
+        autocmd TextYankPost * HighlightOnYank()
+    endif
 augroup END
 
 def HighlightOnYank(hlgroup = 'IncSearch', duration = 300, in_visual = true)
@@ -821,7 +823,9 @@ enddef
 # system plugins
 
 # comment
-packadd! comment
+if has('patch-9.1.0375')
+    packadd! comment
+endif
 
 # matchit
 packadd! matchit
@@ -855,6 +859,13 @@ g:termdebug_config = {
 nnoremap <silent> <F5> <Cmd>Termdebug<CR>
 
 # 3rd party plugins
+if !has('patch-9.1.0375')
+    PaqAdd('tpope/vim-commentary', {as: 'commentary'})
+endif
+if !has('patch-9.1.0423')
+    PaqAdd('machakann/vim-highlightedyank', {as: 'highlighted-yank'})
+endif
+
 PaqAdd('tommcdo/vim-exchange', {as: 'exchange'})
 PaqAdd('tpope/vim-repeat',     {as: 'repeat'})
 PaqAdd('tpope/vim-surround',   {as: 'surround'})
