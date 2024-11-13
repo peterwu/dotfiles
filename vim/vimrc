@@ -867,6 +867,7 @@ if !has('patch-9.1.0423')
 endif
 
 PaqAdd('tommcdo/vim-exchange', {as: 'exchange'})
+PaqAdd('tpope/vim-fugitive',   {as: 'fugitive'})
 PaqAdd('tpope/vim-repeat',     {as: 'repeat'})
 PaqAdd('tpope/vim-surround',   {as: 'surround'})
 
