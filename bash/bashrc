@@ -24,6 +24,7 @@ HISTFILESIZE=20000
 
 # User specific aliases and functions
 alias emacs="emacs -nw"
+[ "$TERM" = "xterm-kitty" ] && alias ssh="kitten ssh"
 
 alias ls="ls --color=auto --group-directories-first --indicator-style=slash --time-style=long-iso -v"
 alias ll="ls -l --classify --size"
@@ -59,12 +60,6 @@ show_bash_prompt() {
     local last_command_status=$?
     local prompt="\n"
 
-    # begin box drawing
-    prompt+="\001"
-    prompt+=$(tput sgr0)
-    prompt+="\002"
-    prompt+="┌ "
-
     # current time
     prompt+="\001"
     prompt+=$(tput sgr0; tput setaf 5)
@@ -81,7 +76,7 @@ show_bash_prompt() {
     prompt+=$(tput sgr0; tput setaf 0)
     prompt+="\002"
     prompt+="@"
-    prompt+=$(hostname -f)
+    prompt+=$(hostname -s)
     prompt+=":"
     prompt+="\001"
     prompt+=$(tput sgr0; tput bold; tput setaf 4)
@@ -121,12 +116,6 @@ show_bash_prompt() {
 
     # change line
     prompt+="\n"
-
-    # end box drawing
-    prompt+="\001"
-    prompt+=$(tput sgr0)
-    prompt+="\002"
-    prompt+="└ "
 
     # change the prompt to indicate the status of last executed command
     if [[ ${last_command_status} -eq 0 ]]; then
