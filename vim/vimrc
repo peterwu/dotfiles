@@ -103,7 +103,6 @@ set splitright
 set switchbuf=uselast
 set tabstop=8
 set termencoding=utf-8
-set termguicolors
 set textwidth=80
 set timeoutlen=777
 set ttimeoutlen=77
@@ -871,14 +870,6 @@ PaqAdd('tpope/vim-fugitive',   {as: 'fugitive'})
 PaqAdd('tpope/vim-repeat',     {as: 'repeat'})
 PaqAdd('tpope/vim-surround',   {as: 'surround'})
 
-# fzf
-if !$HOMEBREW_PREFIX->empty()
-    set runtimepath+=$HOMEBREW_PREFIX/opt/fzf
-endif
-nnoremap <silent> <Leader>ff <Cmd>FZF .<CR>
-nnoremap <silent> <Leader>f~ <Cmd>FZF ~<CR>
-nnoremap <silent> <Leader>f/ <Cmd>FZF /<CR>
-
 # lion
 PaqAdd('tommcdo/vim-lion', {as: 'lion'})
 g:lion_squeeze_spaces = 1
@@ -972,30 +963,6 @@ nnoremap <silent> <Leader>Qc <ScriptCmd>PaqInit()<Bar>PaqClean()<CR>
 # }}}
 
 # color scheme {{{
-
-# default terminal colors if not provided by chosen colorscheme
-if (has('termguicolors') && &termguicolors) || has('gui_running')
-    # use terminal's color scheme
-    g:terminal_ansi_colors = [
-        '#000000',
-        '#a60000',
-        '#006800',
-        '#6f5500',
-        '#0031a9',
-        '#721045',
-        '#00538b',
-        '#e1e1e1',
-
-        '#585858',
-        '#972500',
-        '#316500',
-        '#884900',
-        '#354fcf',
-        '#531ab6',
-        '#005a5f',
-        '#ffffff'
-    ]
-endif
 
 colorscheme wildcharm
 
