@@ -1,0 +1,36 @@
+# User specific environment and startup programs
+export CDPATH=".:$HOME"
+
+# homebrew
+os_arch=($(uname -ms))
+os=${os_arch[0]}
+arch=${os_arch[1]}
+
+if [[ $os == 'Darwin' ]]
+then
+    if [[ $arch == 'arm64' ]]
+    then
+        export PATH="/opt/homebrew/bin:$PATH"
+    fi
+
+    if type brew &>/dev/null
+    then
+        export HOMEBREW_PREFIX="$(brew --prefix)"
+        export HOMEBREW_CELLAR="$(brew --cellar)"
+        export HOMEBREW_REPOSITORY="$(brew --repository)"
+    fi
+fi
+
+# editor
+export EDITOR='vim'
+
+# manpager
+export MANPAGER='vim +MANPAGER "+set laststatus=0" "+noremap q <Cmd>qall!<CR>" --not-a-term -'
+
+# less
+export LESSHISTFILE=-
+
+# python
+export PYTHONSTARTUP=$HOME/.config/python/pythonrc
+export VIRTUAL_ENV_DISABLE_PROMPT=1
+

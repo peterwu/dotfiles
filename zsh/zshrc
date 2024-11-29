@@ -1,0 +1,80 @@
+# source global definitions
+[[ -f /etc/zshrc ]] &&  source /etc/zshrc
+
+# set history options
+HISTSIZE=20000
+HISTFILESIZE=20000
+
+setopt BANG_HIST
+setopt EXTENDED_HISTORY
+setopt HIST_BEEP
+setopt HIST_EXPIRE_DUPS_FIRST
+setopt HIST_FIND_NO_DUPS
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_SPACE
+setopt HIST_REDUCE_BLANKS
+setopt HIST_SAVE_NO_DUPS
+setopt HIST_VERIFY
+setopt INC_APPEND_HISTORY
+setopt SHARE_HISTORY
+
+# define user specific aliases and functions
+alias ls="ls -F --color=always"
+alias ll="ls -l"
+if [[ "$OSTYPE" == linux-gnu ]]; then
+    alias la="ll -a --group-directories-first --time-style=long-iso -v"
+else
+    alias la="ll -a -D '%F %R'"
+fi
+
+alias rm="rm -i"
+alias cp="cp -i"
+alias mv="mv -i"
+
+alias bc="bc --mathlib"
+
+alias diff="diff --color=always"
+
+alias grep="grep --color=always"
+alias egrep="egrep --color=always"
+alias fgrep="fgrep --color=always"
+
+alias less="LESSHISTFILE=- less -FXR --mouse --wheel-lines=3"
+alias rsync="rsync --progress"
+
+# enable autoloads
+autoload -Uz add-zsh-hook compinit vcs_info
+
+# enable auto-completion
+zstyle ':completion:*' menu select
+compinit
+
+# key binds
+bindkey -M viins '^r' history-incremental-search-backward
+bindkey -M vicmd '^r' history-incremental-search-backward
+
+# customize shell prompt
+setopt no_prompt_bang prompt_percent prompt_subst
+
+zstyle ':vcs_info:*'     enable            git
+zstyle ':vcs_info:*'     check-for-changes true
+zstyle ':vcs_info:*'     stagedstr         '%F{yellow}'
+zstyle ':vcs_info:*'     unstagedstr       '%F{red}'
+zstyle ':vcs_info:git:*' formats           '%F{green}%u%c* %b%f'
+zstyle ':vcs_info:git:*' actionformats     '%u%c%b (%F{blue}%a%f)'
+
+add-zsh-hook precmd vcs_info
+
+# Add a newline before each prompt
+precmd() {
+    precmd() {
+        echo
+    }
+}
+
+PROMPT='%F{blue}%n%f@%m:%F{blue}%B%~%b%f ${vcs_info_msg_0_}'
+PROMPT+=$'\n'
+PROMPT+="%(?.%F{green}.%F{red})%#%f "
+
+RPROMPT='%F{magenta}%T%f'
