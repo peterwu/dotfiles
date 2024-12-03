@@ -23,11 +23,7 @@ HISTSIZE=20000
 HISTFILESIZE=20000
 
 # User specific aliases and functions
-if [[ "$OSTYPE" == linux-gnu ]]; then
-    alias ls="ls -F --color=always --group-directories-first --time-style=long-iso -v"
-else
-    alias ls="ls -F --color=always -D '%F %R'"
-fi
+alias ls="ls -F --color=always --group-directories-first --time-style=long-iso -v"
 alias ll="ls -l"
 alias la="ls -la"
 
@@ -58,28 +54,34 @@ show_bash_prompt() {
     local last_command_status=$?
     local prompt="\n"
 
+    # begin box drawing
+    prompt+="\001"
+    prompt+=$(tput sgr0)
+    prompt+="\002"
+    prompt+="┌ "
+
     # current time
     prompt+="\001"
     prompt+=$(tput sgr0; tput setaf 5)
     prompt+="\002"
-    prompt+=$(date +%R)
+    prompt+="\A"
     prompt+=" "
 
     # user@host:pwd
     prompt+="\001"
     prompt+=$(tput sgr0; tput setaf 4)
     prompt+="\002"
-    prompt+=$(id -u -n)
+    prompt+="\u"
     prompt+="\001"
     prompt+=$(tput sgr0; tput setaf 0)
     prompt+="\002"
     prompt+="@"
-    prompt+=$(hostname -s)
+    prompt+="\h"
     prompt+=":"
     prompt+="\001"
     prompt+=$(tput sgr0; tput bold; tput setaf 4)
     prompt+="\002"
-    prompt+=$(dirs -p|head -1)
+    prompt+="\w"
     prompt+=" "
 
     # show git branch and its status if in a git tree
@@ -106,36 +108,30 @@ show_bash_prompt() {
         fi
     fi
 
-    # reset colors
+    # change line
+    prompt+="\n"
+
+    # end box drawing
     prompt+="\001"
     prompt+=$(tput sgr0)
     prompt+="\002"
-    prompt+=" "
-
-    # change line
-    prompt+="\n"
+    prompt+="└ "
 
     # change the prompt to indicate the status of last executed command
     if [[ ${last_command_status} -eq 0 ]]; then
         # success -> GREEN
         prompt+="\001"
-        prompt+=$(tput sgr0; tput sitm; tput setaf 2)
+        prompt+=$(tput sgr0; tput setaf 2)
         prompt+="\002"
     else
         # error -> RED
         prompt+="\001"
-        prompt+=$(tput sgr0; tput sitm; tput setaf 1)
+        prompt+=$(tput sgr0; tput setaf 1)
         prompt+="\002"
     fi
 
     # use appropriate prompt to reflect effective uid
-    if [[ $(id -u) -eq 0 ]]; then
-        # root
-        prompt+="#"
-    else
-        # non-root
-        prompt+="$"
-    fi
+    prompt+="\$"
 
     # reset colors
     prompt+="\001"
@@ -147,4 +143,4 @@ show_bash_prompt() {
 }
 
 # no double quotes here
-PS1='$(show_bash_prompt)'
+PS1=`show_bash_prompt`
