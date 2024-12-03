@@ -25,11 +25,7 @@ setopt SHARE_HISTORY
 # define user specific aliases and functions
 alias ls="ls -F --color=always"
 alias ll="ls -l"
-if [[ "$OSTYPE" == linux-gnu ]]; then
-    alias la="ll -a --group-directories-first --time-style=long-iso -v"
-else
-    alias la="ll -a -D '%F %R'"
-fi
+alias la="ll -a -D '%F %R'"
 
 alias rm="rm -i"
 alias cp="cp -i"
@@ -45,6 +41,8 @@ alias fgrep="fgrep --color=always"
 
 alias less="LESSHISTFILE=- less -FXR --mouse --wheel-lines=3"
 alias rsync="rsync --progress"
+
+[[ "$TERM" = "xterm-kitty" ]] && alias ssh="kitty +kitten ssh"
 
 # enable autoloads
 autoload -Uz add-zsh-hook
@@ -84,8 +82,9 @@ precmd() {
     }
 }
 
-PROMPT='%F{blue}%n%f@%m:%F{blue}%B%~%b%f ${vcs_info_msg_0_}'
+PROMPT=''
+PROMPT+='┌ %F{blue}%n%f@%m:%F{blue}%B%~%b%f ${vcs_info_msg_0_}'
 PROMPT+=$'\n'
-PROMPT+='%(?.%F{green}.%F{red})%#%f '
+PROMPT+='└ %(?.%F{green}.%F{red})%#%f '
 
 RPROMPT='%F{magenta}%T%f'
