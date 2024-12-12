@@ -23,17 +23,20 @@ HISTSIZE=20000
 HISTFILESIZE=20000
 
 # User specific aliases and functions
-alias ls="ls -F --color=always --group-directories-first --time-style=long-iso -v"
-alias ll="ls -l"
-alias la="ls -la"
+alias ls="ls --color=always --group-directories-first --indicator-style=slash --time-style=long-iso -v"
+alias ll="ls -l --classify --size"
+alias la="ls -l --classify --size --all"
 
-alias rm="rm -i"
-alias cp="cp -i"
-alias mv="mv -i"
+alias rm="rm --interactive"
+alias cp="cp --interactive"
+alias mv="mv --interactive"
 
 alias bc="bc --mathlib"
 
 alias diff="diff --color=always"
+
+alias dir="dir --color=always"
+alias vdir="vdir --color=always"
 
 alias grep="grep --color=always"
 alias egrep="egrep --color=always"
@@ -43,48 +46,9 @@ alias less="LESSHISTFILE=- less -FXR --mouse --wheel-lines=3"
 alias rsync="rsync --progress"
 
 # Customize bash prompt
-show_bash_prompt() {
-    # The entire table of ANSI color codes
-    # https://gist.github.com/iamnewton/8754917
-    # \### format must be used in functions
-    # \001 == \[
-    # \002 == \]
-    # \033 == \e
-
-    local last_command_status=$?
-    local prompt="\n"
-
-    # begin box drawing
-    prompt+="\001"
-    prompt+=$(tput sgr0)
-    prompt+="\002"
-    prompt+="┌ "
-
-    # current time
-    prompt+="\001"
-    prompt+=$(tput sgr0; tput setaf 5)
-    prompt+="\002"
-    prompt+="\A"
-    prompt+=" "
-
-    # user@host:pwd
-    prompt+="\001"
-    prompt+=$(tput sgr0; tput setaf 4)
-    prompt+="\002"
-    prompt+="\u"
-    prompt+="\001"
-    prompt+=$(tput sgr0; tput setaf 0)
-    prompt+="\002"
-    prompt+="@"
-    prompt+="\h"
-    prompt+=":"
-    prompt+="\001"
-    prompt+=$(tput sgr0; tput bold; tput setaf 4)
-    prompt+="\002"
-    prompt+="\w"
-    prompt+=" "
-
+parse_git_branch() {
     # show git branch and its status if in a git tree
+    local result=""
     local git_result=$(git status --branch --porcelain=2 2> /dev/null)
 
     if [[ $? -eq 0 ]]; then
@@ -94,53 +58,83 @@ show_bash_prompt() {
         if [[ -n "${git_branch}" ]]; then
             if [[ -n "${git_status}" ]]; then
                 # modified -> RED
-                prompt+="\001"
-                prompt+=$(tput sgr0; tput setaf 1)
-                prompt+="\002"
+                result+="\001$(tput sgr0; tput setaf 1)\002"
             else
                 # clean -> GREEN
-                prompt+="\001"
-                prompt+=$(tput sgr0; tput setaf 2)
-                prompt+="\002"
+                result+="\001$(tput sgr0; tput setaf 2)\002"
             fi
 
-            prompt+="* ${git_branch}"
+            result+="* ${git_branch}"
         fi
     fi
+
+    echo -ne "${result}"
+}
+
+show_last_command_status() {
+    local result=""
+
+    # change the prompt to indicate the status of last executed command
+    if [[ ${last_command_status} -eq 0 ]]; then
+        # success -> GREEN
+        result+="\001$(tput sgr0; tput setaf 2)\002"
+    else
+        # error -> RED
+        result+="\001$(tput sgr0; tput setaf 1)\002"
+    fi
+
+    echo -ne "${result}"
+}
+
+customize_shell_prompt() {
+    # The entire table of ANSI color codes
+    # https://gist.github.com/iamnewton/8754917
+    # \### format must be used in functions
+    # \001 == \[
+    # \002 == \]
+    # \033 == \e
+
+    local prompt="\n"
+
+    # begin box drawing
+    prompt+="\001$(tput sgr0)\002"
+    prompt+="┌ "
+
+    # current time
+    prompt+="\001$(tput sgr0; tput setaf 5)\002"
+    prompt+="\A"
+    prompt+=" "
+
+    # user@host:pwd
+    prompt+="\001$(tput sgr0; tput setaf 4)\002"
+    prompt+="\u"
+    prompt+="\001$(tput sgr0; tput setaf 0)\002"
+    prompt+="@"
+    prompt+="\h"
+    prompt+=":"
+    prompt+="\001$(tput sgr0; tput bold; tput setaf 4)\002"
+    prompt+="\w"
+    prompt+=" "
+
+    # show git branch and its status if in a git tree
+    prompt+='$(parse_git_branch)'
 
     # change line
     prompt+="\n"
 
     # end box drawing
-    prompt+="\001"
-    prompt+=$(tput sgr0)
-    prompt+="\002"
+    prompt+="\001$(tput sgr0)\002"
     prompt+="└ "
 
     # change the prompt to indicate the status of last executed command
-    if [[ ${last_command_status} -eq 0 ]]; then
-        # success -> GREEN
-        prompt+="\001"
-        prompt+=$(tput sgr0; tput setaf 2)
-        prompt+="\002"
-    else
-        # error -> RED
-        prompt+="\001"
-        prompt+=$(tput sgr0; tput setaf 1)
-        prompt+="\002"
-    fi
-
-    # use appropriate prompt to reflect effective uid
-    prompt+="\$"
+    prompt+='$(show_last_command_status)'
+    prompt+="\$ "
 
     # reset colors
-    prompt+="\001"
-    prompt+=$(tput sgr0)
-    prompt+="\002"
-    prompt+=" "
+    prompt+="\001$(tput sgr0)\002"
 
-    printf "${prompt}"
+    PROMPT_COMMAND='last_command_status=$?'
+    PS1="${prompt}"
 }
 
-# no double quotes here
-PS1=`show_bash_prompt`
+customize_shell_prompt
