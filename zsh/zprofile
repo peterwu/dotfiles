@@ -1,6 +1,9 @@
 # User specific environment and startup programs
 export CDPATH=".:$HOME"
 
+# homebrew
+export PATH=/opt/homebrew/bin:$PATH
+
 # editor
 export EDITOR='vim'
 

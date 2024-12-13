@@ -23,9 +23,9 @@ setopt PROMPT_SUBST
 setopt SHARE_HISTORY
 
 # define user specific aliases and functions
-alias ls="ls -F --color=always"
+alias ls="ls -F -D '%F %R' --color=always"
 alias ll="ls -l"
-alias la="ll -a -D '%F %R'"
+alias la="ll -a"
 
 alias rm="rm -i"
 alias cp="cp -i"
@@ -82,9 +82,13 @@ precmd() {
     }
 }
 
-PROMPT=''
-PROMPT+='┌ %F{blue}%n%f@%m:%F{blue}%B%~%b%f ${vcs_info_msg_0_}'
-PROMPT+=$'\n'
-PROMPT+='└ %(?.%F{green}.%F{red})%#%f '
+customize_shell_prompt() {
+    PROMPT=''
+    PROMPT+='┌ %F{blue}%n%f@%m:%F{blue}%B%~%b%f ${vcs_info_msg_0_}'
+    PROMPT+=$'\n'
+    PROMPT+='└ %(?.%F{green}.%F{red})%#%f '
 
-RPROMPT='%F{magenta}%T%f'
+    RPROMPT='%F{magenta}%T%f'
+}
+
+customize_shell_prompt
