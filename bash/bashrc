@@ -46,7 +46,7 @@ alias less="LESSHISTFILE=- less -FXR --mouse --wheel-lines=3"
 alias rsync="rsync --progress"
 
 # Customize bash prompt
-parse_git_branch() {
+_parse_git_branch() {
     # show git branch and its status if in a git tree
     local result=""
     local git_result=$(git status --branch --porcelain=2 2> /dev/null)
@@ -71,7 +71,7 @@ parse_git_branch() {
     echo -ne "${result}"
 }
 
-show_last_command_status() {
+_show_last_command_status() {
     local result=""
 
     # change the prompt to indicate the status of last executed command
@@ -86,7 +86,7 @@ show_last_command_status() {
     echo -ne "${result}"
 }
 
-customize_shell_prompt() {
+_customize_shell_prompt() {
     # The entire table of ANSI color codes
     # https://gist.github.com/iamnewton/8754917
     # \### format must be used in functions
@@ -112,12 +112,12 @@ customize_shell_prompt() {
     prompt+="@"
     prompt+="\h"
     prompt+=":"
-    prompt+="\001$(tput sgr0; tput bold; tput setaf 4)\002"
+    prompt+="\001$(tput sgr0; tput setaf 4)\002"
     prompt+="\w"
     prompt+=" "
 
     # show git branch and its status if in a git tree
-    prompt+='$(parse_git_branch)'
+    prompt+='$(_parse_git_branch)'
 
     # change line
     prompt+="\n"
@@ -127,7 +127,7 @@ customize_shell_prompt() {
     prompt+="└ "
 
     # change the prompt to indicate the status of last executed command
-    prompt+='$(show_last_command_status)'
+    prompt+='$(_show_last_command_status)'
     prompt+="\$ "
 
     # reset colors
@@ -137,4 +137,4 @@ customize_shell_prompt() {
     PS1="${prompt}"
 }
 
-customize_shell_prompt
+_customize_shell_prompt

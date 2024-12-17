@@ -84,7 +84,7 @@ precmd() {
 
 customize_shell_prompt() {
     PROMPT=''
-    PROMPT+='┌ %F{blue}%n%f@%m:%F{blue}%B%~%b%f ${vcs_info_msg_0_}'
+    PROMPT+='┌ %F{blue}%n%f@%m:%F{blue}%~%f ${vcs_info_msg_0_}'
     PROMPT+=$'\n'
     PROMPT+='└ %(?.%F{green}.%F{red})%#%f '
 

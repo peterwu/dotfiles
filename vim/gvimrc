@@ -1,4 +1,4 @@
-set guifont=Iosevka\ Fusion\ 13
+set guifont=SF_Mono:h16
 set guioptions-=T
 set guioptions-=m
 set guioptions-=L
