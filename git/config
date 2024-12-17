@@ -5,6 +5,7 @@
     helper = store
 [core]
     editor = vim
+    excludesFile = ~/.config/git/gitignore
 [init]
     defaultBranch = main
 [pull]
