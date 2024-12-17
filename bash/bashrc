@@ -48,7 +48,7 @@ alias rsync="rsync --progress"
 # Customize bash prompt
 _parse_git_branch() {
     # show git branch and its status if in a git tree
-    local result=""
+    local result=''
     local git_result=$(git status --branch --porcelain=2 2> /dev/null)
 
     if [[ $? -eq 0 ]]; then
@@ -72,7 +72,7 @@ _parse_git_branch() {
 }
 
 _show_last_command_status() {
-    local result=""
+    local result=''
 
     # change the prompt to indicate the status of last executed command
     if [[ ${last_command_status} -eq 0 ]]; then
@@ -94,41 +94,41 @@ _customize_shell_prompt() {
     # \002 == \]
     # \033 == \e
 
-    local prompt="\n"
+    local prompt='\n'
 
     # begin box drawing
     prompt+="\001$(tput sgr0)\002"
-    prompt+="┌ "
+    prompt+='┌ '
 
     # current time
     prompt+="\001$(tput sgr0; tput setaf 5)\002"
-    prompt+="\A"
-    prompt+=" "
+    prompt+='\A'
+    prompt+=' '
 
     # user@host:pwd
     prompt+="\001$(tput sgr0; tput setaf 4)\002"
-    prompt+="\u"
+    prompt+='\u'
     prompt+="\001$(tput sgr0; tput setaf 0)\002"
-    prompt+="@"
-    prompt+="\h"
-    prompt+=":"
+    prompt+='@'
+    prompt+='\h'
+    prompt+=':'
     prompt+="\001$(tput sgr0; tput setaf 4)\002"
-    prompt+="\w"
-    prompt+=" "
+    prompt+='\w'
+    prompt+=' '
 
     # show git branch and its status if in a git tree
     prompt+='$(_parse_git_branch)'
 
     # change line
-    prompt+="\n"
+    prompt+='\n'
 
     # end box drawing
     prompt+="\001$(tput sgr0)\002"
-    prompt+="└ "
+    prompt+='└ '
 
     # change the prompt to indicate the status of last executed command
     prompt+='$(_show_last_command_status)'
-    prompt+="\$ "
+    prompt+='\$ '
 
     # reset colors
     prompt+="\001$(tput sgr0)\002"
