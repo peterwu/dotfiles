@@ -75,14 +75,15 @@ zstyle ':vcs_info:*'     unstagedstr       '%F{red}'
 zstyle ':vcs_info:git:*' formats           '%F{green}%u%c* %b%f'
 zstyle ':vcs_info:git:*' actionformats     '%u%c%b (%F{blue}%a%f)'
 
-# Add a newline before each prompt
+# add a newline before each prompt
 precmd() {
     precmd() {
         echo
     }
 }
 
-customize_shell_prompt() {
+# set the prompt using anonymous function
+() {
     PROMPT=''
     PROMPT+='┌ %F{blue}%n%f@%m:%F{blue}%~%f ${vcs_info_msg_0_}'
     PROMPT+=$'\n'
@@ -91,4 +92,3 @@ customize_shell_prompt() {
     RPROMPT='%F{magenta}%T%f'
 }
 
-customize_shell_prompt
