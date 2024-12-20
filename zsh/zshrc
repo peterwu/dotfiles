@@ -84,11 +84,11 @@ precmd() {
 
 # set the prompt using anonymous function
 () {
-    PROMPT=''
-    PROMPT+='┌ %F{blue}%n%f@%m:%F{blue}%~%f ${vcs_info_msg_0_}'
-    PROMPT+=$'\n'
-    PROMPT+='└ %(?.%F{green}.%F{red})%#%f '
+    local p=''
+    p+='┌ %F{magenta}%T%f %F{blue}%n%f@%m:%F{blue}%~%f ${vcs_info_msg_0_}'
+    p+=$'\n'
+    p+='└ %(?.%F{green}.%F{red})%#%f '
 
-    RPROMPT='%F{magenta}%T%f'
+    PROMPT=$p
 }
 
