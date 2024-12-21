@@ -965,6 +965,7 @@ nnoremap <silent> <Leader>Qc <ScriptCmd>PaqInit()<Bar>PaqClean()<CR>
 
 # color scheme {{{
 
+set background=light
 colorscheme wildcharm
 
 # }}}
