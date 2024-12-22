@@ -5,6 +5,8 @@ set guioptions-=L
 set guioptions-=r
 set guioptions-=e
 
+set renderoptions=type:directx
+
 nnoremap <Leader>egv <Cmd>edit   $MYGVIMRC<CR>
 nnoremap <Leader>sgv <Cmd>source $MYGVIMRC<CR>
 
