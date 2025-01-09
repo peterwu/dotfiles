@@ -1,0 +1,70 @@
+# font
+font-family = SF Mono
+
+font-style             = Regular
+font-style-bold        = Bold
+font-style-italic      = Regular Italic
+font-style-bold-italic = Bold Italic
+
+font-size    = 16
+
+# cursor
+cursor-invert-fg-bg        = true
+cursor-style               = block
+cursor-style-blink         = false
+mouse-hide-while-typing    = true
+
+# macOS-specific settings
+macos-option-as-alt = true
+macos-titlebar-style = tabs
+
+# window controls
+confirm-close-surface    = true
+window-decoration        = true
+window-padding-balance   = true
+window-padding-x         = 7
+window-padding-y         = 3
+window-save-state        = always
+window-title-font-family = SF Pro
+
+# auto update settings
+auto-update = off
+
+# extras
+shell-integration-features = no-cursor,no-sudo,no-title
+copy-on-select             = clipboard
+focus-follows-mouse        = true
+link-url                   = true
+
+# Modus-Operandi Colors
+background           = #ffffff
+foreground           = #000000
+selection-background = #bcbcbc
+selection-foreground = #000000
+cursor-color         = #000000
+
+# black
+palette = 0=#000000
+palette = 8=#595959
+# red
+palette = 1=#a60000
+palette = 9=#972500
+# green
+palette = 2=#005e00
+palette = 10=#315b00
+# yellow
+palette = 3=#813e00
+palette = 11=#70480f
+# blue
+palette = 4=#0031a9
+palette = 12=#2544bb
+# magenta
+palette = 5=#721045
+palette = 13=#5317ac
+# cyan
+palette = 6=#005e8b
+palette = 14=#005a5f
+# white
+palette = 7=#bfbfbf
+palette = 15=#ffffff
+
