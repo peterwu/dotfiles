@@ -9,13 +9,13 @@ font-style-bold-italic = Bold Italic
 font-size    = 16
 
 # cursor
-cursor-invert-fg-bg        = true
-cursor-style               = block
-cursor-style-blink         = false
-mouse-hide-while-typing    = true
+cursor-invert-fg-bg     = true
+cursor-style            = block
+cursor-style-blink      = false
+mouse-hide-while-typing = true
 
 # macOS-specific settings
-macos-option-as-alt = true
+macos-option-as-alt  = left
 macos-titlebar-style = tabs
 
 # window controls
@@ -35,6 +35,45 @@ shell-integration-features = no-cursor,no-sudo,no-title
 copy-on-select             = clipboard
 focus-follows-mouse        = true
 link-url                   = true
+
+# keybinds
+keybind = super+z>a=select_all
+keybind = super+z>c=copy_to_clipboard
+keybind = super+z>v=paste_from_clipboard
+keybind = super+z>r=reload_config
+keybind = super+z>x=close_surface
+keybind = super+z>w=close_window
+keybind = super+z>n=new_window
+keybind = super+z>f=toggle_fullscreen
+keybind = super+z>q=quit
+
+keybind = super+z>t=new_tab
+keybind = super+z>s=new_split:down
+keybind = super+z>shift+s=new_split:up
+keybind = super+z>v=new_split:right
+keybind = super+z>shift+v=new_split:right
+
+keybind = super+z>h=goto_split:left
+keybind = super+z>j=goto_split:bottom
+keybind = super+z>k=goto_split:top
+keybind = super+z>l=goto_split:right
+
+keybind = super+z>1=goto_tab:1
+keybind = super+z>2=goto_tab:2
+keybind = super+z>3=goto_tab:3
+keybind = super+z>4=goto_tab:4
+keybind = super+z>5=goto_tab:5
+keybind = super+z>6=goto_tab:6
+keybind = super+z>7=goto_tab:7
+keybind = super+z>8=goto_tab:8
+keybind = super+z>9=goto_tab:9
+
+keybind = super+z>[=previous_tab
+keybind = super+z>]=next_tab
+
+keybind = super+z>equal=increase_font_size:1
+keybind = super+z>minus=decrease_font_size:1
+keybind = super+z>zero=reset_font_size
 
 # Modus-Operandi Colors
 background           = #ffffff

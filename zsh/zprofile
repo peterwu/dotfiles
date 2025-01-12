@@ -16,4 +16,3 @@ export LESSHISTFILE=-
 # python
 export PYTHONSTARTUP=$HOME/.config/python/pythonrc
 export VIRTUAL_ENV_DISABLE_PROMPT=1
-
