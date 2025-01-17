@@ -22,6 +22,11 @@
            :prefix-map my-ctl-z-!-map
            :prefix "!")
 
+;; my-ctl-z-e-map
+(bind-keys :map my-ctl-z-map
+           :prefix-map my-ctl-z-e-map
+           :prefix "e")
+
 ;; my-ctl-z-g-map
 (bind-keys :map my-ctl-z-map
            :prefix-map my-ctl-z-g-map
