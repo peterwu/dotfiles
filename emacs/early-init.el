@@ -65,9 +65,6 @@
           ("stable" . 1)
           ("melpa"  . 0)))
 
-;; https://lists.gnu.org/archive/html/bug-gnu-emacs/2024-03/msg00114.html
-(add-to-list 'package--builtin-versions '(transient 0 4 3))
-
 ;; custom.el
 (setopt custom-file (make-temp-file "emacs-custom-" nil ".el"))
 
