@@ -3,12 +3,14 @@
 ;; org
 (use-package org
   :custom
+  (org-M-RET-may-split-line '((default . nil)))
   (org-ellipsis " ▾")
   (org-export-headline-levels 5)
   (org-export-with-tags nil)
   (org-fontify-whole-heading-line t)
   (org-hide-emphasis-markers t)
   (org-imenu-depth 7)
+  (org-insert-heading-respect-content t)
   (org-log-done 'time)
   (org-log-into-drawer t)
   (org-odt-convert-process 'unoconv)
