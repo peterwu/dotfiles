@@ -2,9 +2,6 @@
 
 ;; dired
 (use-package dired
-  :preface
-  (when (eq system-type 'darwin)
-    (setq-default insert-directory-program "gls"))
   :custom
   (delete-by-moving-to-trash t)
   (dired-bind-info nil)
