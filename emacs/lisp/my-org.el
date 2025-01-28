@@ -21,6 +21,17 @@
   (org-startup-with-inline-images t)
   (org-support-shift-select t)
 
+  (org-todo-keywords
+   '((sequence
+      "TODO(t)"
+      "NEXT(n)"
+      "|"
+      "DONE(d)")))
+  (org-todo-keyword-faces
+   '(("TODO" . org-todo)
+     ("NEXT" . modus-themes-fg-blue)
+     ("DONE" . org-done)))
+
   (org-agenda-files (list "~/Documents/Org"))
   (org-capture-templates
    '(("t" "Todo" entry (file+headline "~/Documents/Org/todo.org" "Tasks")
