@@ -1,0 +1,60 @@
+#/bin/sh
+
+while getopts m:p: flag
+do
+    case "${flag}" in
+        m) model=${OPTARG};;
+        p) prompt=${OPTARG};;
+    esac
+done
+
+session=$(mktemp)
+response=$(mktemp)
+
+if [ -z "${model}" ]; then
+        echo "\001$(tput bold)\002ERROR:\001$(tput sgr0)\002 missing -m model-name" >&2
+        echo
+        ollama list
+        exit 1
+fi
+
+while true; do
+    printf "\001$(tput bold)\002You: \001$(tput sgr0)\002${prompt}"
+
+    if [ -z "${prompt}" ]; then
+        read prompt
+    fi
+
+    if [ "${prompt}" = "bye" ]; then
+        echo "Bye!"
+        echo
+
+        mkdir -p ~/.ollama/sessions
+        ollama_session="$HOME/.ollama/sessions/$(date +%Y%m%d-%H%M%S).md"
+        cp "${session}" "${ollama_session}"
+
+        echo "This session has been saved to "
+        echo "\001$(tput bold)\002" "$ollama_session" "\001$(tput sgr0)\002"
+
+        rm -rf "${session}"
+        rm -rf "${response}"
+
+        exit 0
+    fi
+
+    echo
+    printf "\001$(tput bold)\002Bot: \001$(tput sgr0)\002"
+    echo
+
+    ollama run "${model}" "${prompt}" < "${session}" \
+        |tee -a "${response}"|glow -
+
+    echo "**You:** " >> "${session}"
+    echo "${prompt}" >> "${session}"
+    echo >> "${session}"
+    echo "**Bot:** " >> "${session}"
+    cat "${response}" >> "${session}"
+
+    prompt=""
+done
+
