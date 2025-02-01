@@ -124,7 +124,6 @@
    (lambda ()
      (modus-themes-with-colors
        (concat
-        "┌ "
         (propertize
          (format-time-string "%H:%M" (current-time))
          'face `(:foreground ,magenta))
@@ -139,7 +138,6 @@
          (abbreviate-file-name (eshell/pwd))
          'face `(:foreground ,blue :weight bold))
         "\n"
-        "└ "
         (let ((prompt (if (= (user-uid) 0) "#" "$")))
           (if (= eshell-last-command-status 0)
               (propertize prompt 'face `(:foreground ,green))
@@ -468,7 +466,6 @@ Enable `recentf-mode' if it isn't already."
 
 (use-package term
   :custom
-  (explicit-shell-file-name "/bin/bash")
   (explicit-bash-args '("--login"))
   :bind
   ([f12] . (lambda () (interactive)
