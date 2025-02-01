@@ -599,17 +599,6 @@ Enable `recentf-mode' if it isn't already."
   (:map my-ctl-z-t-map
         ("k" .  keycast-mode-line-mode)))
 
-(use-package magit
-  :ensure t
-  :custom
-  (vc-follow-symlinks t)
-  :bind
-  (:map my-ctl-z-g-map
-        ("g" . magit-status)
-        ("j" . magit-dispatch)
-        ("J" . magit-file-dispatch)
-        ("r" . vc-refresh-state)))
-
 (use-package markdown-mode
   :ensure t
   :mode ("\\.md\\'" . markdown-mode))
