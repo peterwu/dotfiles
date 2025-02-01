@@ -63,7 +63,9 @@
 
 (use-package gdb-mi
   :custom
+  (gdb-debuginfod-enable-setting nil)
   (gdb-many-windows t)
+  (gdb-non-stop-setting nil)
   (gdb-restore-window-configuration-after-quit t)
   (gdb-show-main t))
 
