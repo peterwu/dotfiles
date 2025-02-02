@@ -86,11 +86,6 @@
   (:map my-ctl-z-t-map
         ("n" . display-line-numbers-mode)))
 
-(use-package ediff
-  :custom
-  (ediff-split-window-function 'split-window-horizontally)
-  (ediff-window-setup-function 'ediff-setup-windows-plain))
-
 (use-package eldoc
   :config
   (global-eldoc-mode +1))
@@ -570,13 +565,15 @@ Enable `recentf-mode' if it isn't already."
 
 (use-package gptel
   :ensure t
+  :custom
+  (gptel-default-mode 'org-mode)
+  (gptel-model 'llama3.2:latest)
   :config
-  (setq gptel-default-mode 'org-mode)
-  (setq gptel-model 'llama3.2:latest)
-  (setq gptel-backend (gptel-make-ollama "Ollama"
-                        :host "localhost:11434"
-                        :stream t
-                        :models '(llama3.2:latest))))
+  (setopt gptel-backend
+          (gptel-make-ollama "Ollama"
+            :host "localhost:11434"
+            :stream t
+            :models '(llama3.2:latest))))
 
 (use-package keycast
   :ensure t

@@ -29,7 +29,7 @@
 
 ;; c/c++
 (use-package clang-format
-  :if (file-executable-p "/usr/bin/clang-format")
+  :if (file-executable-p "clang-format")
   :preface
   (defvar my-clang-format-style "file")
   (defvar my-clang-format-fallback-style

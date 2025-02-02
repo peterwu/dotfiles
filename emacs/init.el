@@ -11,6 +11,7 @@
 (use-package my-clipboard)
 (use-package my-evil)
 (use-package my-numbers)
+(use-package my-vc)
 
 (use-package my-devel)
 (use-package my-dired)
