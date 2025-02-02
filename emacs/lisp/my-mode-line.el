@@ -14,29 +14,6 @@
                 (substring file-name (- (length file-name) (1- right))))
       file-name)))
 
-(defun my-mode-line--render (left centre right)
-  "Return a string of `window-total-width' length.
-    Containing LEFT, CENTRE and RIGHT aligned respectively."
-  (let* ((left-width (string-width (format-mode-line left)))
-         (centre-width (string-width (format-mode-line centre)))
-         (right-width (string-width (format-mode-line right)))
-         (available-width-left
-          (- (/
-              (- (window-total-width) centre-width)
-              2)
-             left-width))
-         (available-width-right
-          (- (window-total-width)
-             left-width
-             available-width-left
-             centre-width
-             right-width)))
-    (append left
-            (list (format (format "%%%ds" available-width-left) ""))
-            centre
-            (list (format (format "%%%ds" available-width-right) ""))
-            right)))
-
 (defvar-local my-mode-line-window-status-tag
     '(:eval
       (let ((tag (format " %i " (my-window-numbering-get-number))))
@@ -137,10 +114,6 @@ Show the evil mode tag if selected; otherwise, its window number.")
   "Return git status.")
 (put 'my-mode-line-vc-mode 'risky-local-variable t)
 
-(defvar-local my-mode-line-centre-place-holder ""
-  "Serve as a place holder for centrally aligned mode-line elements.")
-(put 'my-mode-line-centre-place-holder 'risky-local-variable t)
-
 (defvar-local my-mode-line-misc-info
     '(:eval
       (mapconcat
@@ -191,9 +164,7 @@ Show the evil mode tag if selected; otherwise, its window number.")
 (put 'my-mode-line-percent-position 'risky-local-variable t)
 
 (setopt mode-line-format
-        '(:eval
-          (my-mode-line--render
-           ;; left
+        '((:eval
            (list
             my-mode-line-window-status-tag
             " "
@@ -205,13 +176,11 @@ Show the evil mode tag if selected; otherwise, its window number.")
             " "
             my-mode-line-buffer-identification
             " "
-            my-mode-line-vc-mode)
+            my-mode-line-vc-mode))
 
-           ;; centre
-           (list
-            my-mode-line-centre-place-holder)
+          mode-line-format-right-align
 
-           ;; right
+          (:eval
            (when (mode-line-window-selected-p)
              (list
               my-mode-line-misc-info
