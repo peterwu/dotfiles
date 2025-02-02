@@ -599,8 +599,4 @@ Enable `recentf-mode' if it isn't already."
   (:map my-ctl-z-t-map
         ("k" .  keycast-mode-line-mode)))
 
-(use-package markdown-mode
-  :ensure t
-  :mode ("\\.md\\'" . markdown-mode))
-
 (provide 'my-packages)
