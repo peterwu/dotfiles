@@ -546,7 +546,7 @@ Enable `recentf-mode' if it isn't already."
   (whitespace-style '(face lines-tail trailing))
   :hook
   (before-save . whitespace-cleanup)
-  ((conf-mode prog-mode text-mode) . whitespace-mode)
+  ((conf-mode prog-mode) . whitespace-mode)
   :bind
   (:map my-ctl-z-t-map
         ("w" . whitespace-mode)))
