@@ -592,11 +592,9 @@ Enable `recentf-mode' if it isn't already."
 (use-package keycast
   :ensure t
   :custom
-  (keycast-mode-line-format "%k%c%R")
-  (keycast-mode-line-insert-after 'my-mode-line-centre-place-holder)
-  (keycast-mode-line-remove-tail-elements nil)
+  (keycast-header-line-format "%k%c%R")
   :bind
   (:map my-ctl-z-t-map
-        ("k" .  keycast-mode-line-mode)))
+        ("k" .  keycast-header-line-mode)))
 
 (provide 'my-packages)
