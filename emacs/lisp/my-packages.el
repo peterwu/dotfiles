@@ -562,32 +562,19 @@ Enable `recentf-mode' if it isn't already."
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 3rd party packages ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;
-(use-package ellama
-  :ensure t
-  :init
-  (require 'llm-ollama)
-  :custom
-  (ellama-language "English")
-  (ellama-long-lines-length fill-column)
-  (ellama-provider
-   (make-llm-ollama
-    :chat-model "llama3.2" :embedding-model "llama3.2"))
-  (ellama-user-nick "Myself")
-  :bind
-  (:map my-ctl-z-e-map
-        ("e" . ellama-transient-main-menu)
-
-        ("a" . ellama-ask-about)
-        ("b" . ellama-make-concise)
-        ("c" . ellama-chat)
-        ("d" . ellama-define-word)
-        ("r" . ellama-code-review)
-        ("s" . ellama-summarize)
-        ("t" . ellama-translate)
-        ("w" . ellama-summarize-webpage)))
 
 (use-package goto-chg
   :ensure t)
+
+(use-package gptel
+  :ensure t
+  :config
+  (setq gptel-default-mode 'org-mode)
+  (setq gptel-model 'llama3.2:latest)
+  (setq gptel-backend (gptel-make-ollama "Ollama"
+                        :host "localhost:11434"
+                        :stream t
+                        :models '(llama3.2:latest))))
 
 (use-package keycast
   :ensure t
