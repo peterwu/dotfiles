@@ -304,13 +304,13 @@
 (use-package project
   :custom
   (project-switch-commands
-   '((?f "File" project-find-file)
-     (?g "Grep" project-find-regexp)
-     (?D "Dired" project-dired)
+   '((?D "Dired" project-dired)
      (?b "Buffer" project-switch-to-buffer)
+     (?e "Eshell" project-eshell)
+     (?f "File" project-find-file)
+     (?g "Grep" project-find-regexp)
      (?r "Query replace" project-query-replace-regexp)
-     (?m "Magit" magit-project-status)
-     (?e "Eshell" project-eshell))))
+     (?v "VC" project-vc-dir))))
 
 (use-package pulse
   :preface
