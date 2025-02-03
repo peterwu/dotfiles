@@ -536,7 +536,9 @@ Enable `recentf-mode' if it isn't already."
 
 (use-package which-key
   :custom
-  (which-key-idle-delay 1.9)
+  (which-key-idle-delay 1.7)
+  (which-key-idle-secondary-delay 0.25)
+  (which-key-separator " ")
   :config
   (which-key-mode +1))
 
