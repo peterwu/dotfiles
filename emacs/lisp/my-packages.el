@@ -6,7 +6,7 @@
 
 (use-package align
   :preface
-  (defun my-align-squeeze-spaces (beg end regex type)
+  (defun my-align--squeeze-spaces (beg end regex type)
     (save-excursion
       (let ((line-count (count-lines beg end)))
         (goto-char beg)
@@ -29,26 +29,26 @@
 
           (forward-line)))))
 
-  (defun my-align(beg end word type)
+  (defun my-align--regexp(beg end regexp type)
     (save-restriction
       (narrow-to-region beg end)
 
       (let ((regexp (if (eq type 'left)
-                        (format "\\(\\)%s" word)
-                      (format "%s\\(\\)" word)))
+                        (format "\\(\\)%s" regexp)
+                      (format "%s\\(\\)" regexp)))
             (group 1)
             (spacing 0)
             (repeat nil))
-        (my-align-squeeze-spaces (point-min) (point-max) regexp type)
+        (my-align--squeeze-spaces (point-min) (point-max) regexp type)
         (align-regexp (point-min) (point-max) regexp group spacing repeat))))
 
-  (defun my-align-left (beg end word)
+  (defun my-align-left (beg end entry)
     (interactive "r\nsAlign with: ")
-    (my-align beg end word 'left))
+    (my-align--regexp beg end (regexp-quote entry) 'left))
 
-  (defun my-align-right (beg end word)
+  (defun my-align-right (beg end entry)
     (interactive "r\nsAlign with: ")
-    (my-align beg end word 'right))
+    (my-align--regexp beg end (regexp-quote entry) 'right))
   :custom
   (align-default-spacing 0)
   (align-indent-before-aligning t)
