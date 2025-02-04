@@ -12,6 +12,21 @@
   (ediff-split-window-function 'split-window-horizontally)
   (ediff-window-setup-function 'ediff-setup-windows-plain))
 
+(use-package log-view
+  :defer t
+  :bind
+  (:map log-view-mode-map
+        ("f" . nil)
+
+        ("TAB" . log-view-toggle-entry-display)
+        ("RET" . log-view-find-revision)
+
+        ("F" . vc-pull)
+        ("I" . vc-log-incoming)
+        ("O" . vc-log-outgoing)
+        ("P" . vc-push)
+        ("s" . vc-log-search)))
+
 (use-package vc
   :custom
   (vc-find-revision-no-save t)
@@ -38,20 +53,40 @@
       (3 'change-log-name)
       (4 'change-log-date))))
   :bind
-  ("C-x v +" . vc-register)
-  ("C-x v ." . vc-dir-root)
-  ("C-x v =" . vc-ediff)
-  ("C-x v B" . vc-annotate)
-  ("C-x v F" . vc-pull)
-  ("C-x v G" . vc-pull-and-push)
-  ("C-x v d" . vc-diff)
-  ("C-x v g" . vc-refresh-state)
-  ("C-x v i" . vc-ignore)
-  ("C-x v s" . vc-log-search)
-  ("C-x v t" . vc-create-tag)
+  (:map global-map
+        ("C-x v x" . nil)
+
+        ("C-x v +" . vc-register)
+        ("C-x v ." . vc-dir-root)
+        ("C-x v =" . vc-ediff)
+        ("C-x v B" . vc-annotate)
+        ("C-x v F" . vc-pull)
+        ("C-x v G" . vc-pull-and-push)
+        ("C-x v d" . vc-diff)
+        ("C-x v g" . vc-refresh-state)
+        ("C-x v i" . vc-ignore)
+        ("C-x v k" . vc-delete-file)
+        ("C-x v s" . vc-log-search)
+        ("C-x v t" . vc-create-tag))
   :config
   (advice-add #'vc-git-expanded-log-entry
               :filter-return (lambda (r)
                                (concat "\n" r))))
+
+(use-package vc-dir
+  :defer t
+  :bind
+  (:map vc-dir-mode-map
+        ("+" . vc-register)
+        ("=" . vc-ediff)
+        ("F" . vc-pull)
+        ("G" . vc-pull-and-push)
+        ("O" . vc-log-outgoing)
+        ("d" . vc-diff)
+        ("i" . vc-dir-ignore)
+        ("k" . vc-dir-delete-file)
+        ("o" . vc-dir-find-file-other-window)
+        ("t" . vc-create-tag)
+        ("u" . vc-revert)))
 
 (provide 'my-vc)
