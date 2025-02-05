@@ -560,7 +560,7 @@ Enable `recentf-mode' if it isn't already."
         ("w" . whitespace-mode)))
 
 (use-package xt-mouse
-  :unless (display-graphic-p)
+  :demand t
   :bind
   ("<mouse-4>" . scroll-down-line)
   ("<mouse-5>" . scroll-up-line)
