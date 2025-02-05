@@ -74,6 +74,10 @@
   :config
   (display-battery-mode -1))
 
+(use-package completion-preview
+  :config
+  (global-completion-preview-mode +1))
+
 (use-package delsel
   :config
   (delete-selection-mode +1))
