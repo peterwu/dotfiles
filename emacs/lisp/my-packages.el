@@ -33,7 +33,8 @@
     (save-restriction
       (narrow-to-region beg end)
 
-      (let ((regexp (if (eq type 'left)
+      (let ((indent-tabs-mode nil)
+            (regexp (if (eq type 'left)
                         (format "\\(\\)%s" regexp)
                       (format "%s\\(\\)" regexp)))
             (group 1)
@@ -51,7 +52,7 @@
     (my-align--regexp beg end (regexp-quote entry) 'right))
   :custom
   (align-default-spacing 0)
-  (align-indent-before-aligning t)
+  (align-indent-before-alignigng nil)
   :bind
   (:map my-ctl-z-g-map
         ("l" . my-align-left)
