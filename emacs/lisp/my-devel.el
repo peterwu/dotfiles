@@ -9,7 +9,19 @@
   ((c-ts-mode
     c++-ts-mode
     go-ts-mode
-    python-ts-mode) . eglot-ensure))
+    python-ts-mode) . eglot-ensure)
+  :bind
+  (:map my-ctl-z-l-map
+        ("D" . eglot-find-declaration)
+        ("F" . eglot-format-buffer)
+        ("R" . eglog-rename)
+        ("a" . eglot-code-actions)
+        ("d" . xref-find-definitions)
+        ("f" . eglot-format)
+        ("h" . eldoc)
+        ("i" . eglot-find-implementation)
+        ("r" . xref-find-referenes)
+        ("t" . eglot-find-typeDefinition)))
 
 (use-package flymake
   :custom

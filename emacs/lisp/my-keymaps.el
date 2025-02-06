@@ -27,6 +27,11 @@
            :prefix-map my-ctl-z-g-map
            :prefix "g")
 
+;; my-ctl-z-l-map
+(bind-keys :map my-ctl-z-map
+           :prefix-map my-ctl-z-l-map
+           :prefix "l")
+
 ;; my-ctl-z-o-map
 (bind-keys :map my-ctl-z-map
            :prefix-map my-ctl-z-o-map
