@@ -420,6 +420,12 @@ Enable `recentf-mode' if it isn't already."
   :config
   (save-place-mode +1))
 
+(use-package server
+  :when (display-graphic-p)
+  :config
+  (unless (server-running-p)
+    (server-start)))
+
 (use-package simple
   :custom
   (fill-column 80)
