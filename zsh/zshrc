@@ -23,26 +23,39 @@ setopt PROMPT_SUBST
 setopt SHARE_HISTORY
 
 # define user specific aliases and functions
-alias ls="ls -F -D '%F %R' --color=always"
-alias ll="ls -l"
-alias la="ll -a"
+alias ls="gls --color=always --group-directories-first --indicator-style=slash --time-style=long-iso -v"
+alias ll="ls -l --classify --size"
+alias la="ls -l --classify --size --all"
 
-alias rm="rm -i"
-alias cp="cp -i"
-alias mv="mv -i"
+alias rm="grm --interactive"
+alias cp="gcp --interactive"
+alias mv="gmv --interactive"
 
 alias bc="bc --mathlib"
 
 alias diff="diff --color=always"
 
-alias  grep="grep --color=always"
+alias grep="grep --color=always"
 alias egrep="egrep --color=always"
 alias fgrep="fgrep --color=always"
 
 alias less="LESSHISTFILE=- less -FXR --mouse --wheel-lines=3"
 alias rsync="rsync --progress"
 
-[[ "$TERM" = "xterm-kitty" ]] && alias ssh="kitty +kitten ssh"
+emacs() {
+    local files=$(printf '"%s" ' "$@")
+    local lisp="
+    (progn
+        (xterm-mouse-mode +1)
+        (when '($@)
+            (mapc #'find-file '($files))))
+    "
+
+    /Applications/Emacs.app/Contents/MacOS/bin/emacsclient \
+        -nw --quiet --eval "$lisp" 2> /dev/null
+
+    [ $? != 0 ] && /Applications/Emacs.app/Contents/MacOS/emacs-nw "$@"
+}
 
 # enable autoloads
 autoload -Uz add-zsh-hook
@@ -77,7 +90,7 @@ zstyle ':vcs_info:git:*'              actionformats     '%u%c%b (%F{blue}%a%f)'
 zstyle ':vcs_info:git*+set-message:*' hooks             git-untracked
 
 # https://github.com/zsh-users/zsh/blob/f9e9dce5443f323b340303596406f9d3ce11d23a/Misc/vcs_info-examples#L155-L170
-+vi-git-untracked(){
++vi-git-untracked() {
     if [[ $(git rev-parse --is-inside-work-tree 2> /dev/null) == 'true' ]] && \
         git status --porcelain | grep '??' &> /dev/null ; then
         hook_com[unstaged]+='%F{red}'
