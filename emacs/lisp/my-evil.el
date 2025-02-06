@@ -32,10 +32,7 @@
   (setopt evil-emacs-state-modes nil)
   (setopt evil-insert-state-modes nil)
   (setopt evil-motion-state-modes nil)
-  (setopt evil-normal-state-modes '(conf-mode
-                                    fundamental-mode
-                                    prog-mode
-                                    text-mode))
+  (setopt evil-normal-state-modes nil)
 
   (setopt evil-disable-insert-state-bindings t)
   (setopt evil-echo-state nil)
