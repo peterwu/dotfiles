@@ -57,7 +57,7 @@
         ("C-x v x" . nil)
 
         ("C-x v +" . vc-register)
-        ("C-x v ." . vc-dir-root)
+        ("C-x v ." . vc-dir)
         ("C-x v =" . vc-ediff)
         ("C-x v B" . vc-annotate)
         ("C-x v F" . vc-pull)
