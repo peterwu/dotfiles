@@ -43,8 +43,9 @@ alias less="LESSHISTFILE=- less -FXR --mouse --wheel-lines=3"
 alias rsync="rsync --progress"
 
 emacs() {
-    /Applications/Emacs.app/Contents/MacOS/bin/emacsclient $@ -nw --quiet \
-        --alternate-editor /Applications/Emacs.app/Contents/MacOS/emacs-nw
+    /Applications/Emacs.app/Contents/MacOS/bin/emacsclient $@ -nw --quiet  \
+        --alternate-editor /Applications/Emacs.app/Contents/MacOS/emacs-nw \
+        --eval "(xterm-mouse-mode +1)"
 }
 
 # enable autoloads
