@@ -10,9 +10,6 @@
     defaultBranch = main
 [pull]
     rebase = true
-[gui]
-    fontui   = -family \"Liberation Sans\" -size 12 -weight normal -slant roman -underline 0 -overstrike 0
-    fontdiff = -family \"Liberation Mono\" -size 12 -weight normal -slant roman -underline 0 -overstrike 0
 [diff]
     tool = vimdiff
 [difftool]
@@ -30,3 +27,5 @@
     co = checkout
     find = log --oneline --name-status --regexp-ignore-case --grep
     tree = log --all --decorate --graph --oneline
+[http]
+    postBuffer = 1572864000

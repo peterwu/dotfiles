@@ -42,20 +42,8 @@ alias fgrep="fgrep --color=always"
 alias less="LESSHISTFILE=- less -FXR --mouse --wheel-lines=3"
 alias rsync="rsync --progress"
 
-emacs() {
-    local files=$(printf '"%s" ' "$@")
-    local lisp="
-    (progn
-        (xterm-mouse-mode +1)
-        (when '($@)
-            (mapc #'find-file '($files))))
-    "
-
-    /Applications/Emacs.app/Contents/MacOS/bin/emacsclient \
-        -nw --quiet --eval "$lisp" 2> /dev/null
-
-    [ $? != 0 ] && /Applications/Emacs.app/Contents/MacOS/emacs-nw "$@"
-}
+alias e="/Applications/Emacs.app/Contents/MacOS/bin/emacsclient -nw --quiet \
+    --alternate-editor /Applications/Emacs.app/Contents/MacOS/emacs-nw"
 
 # enable autoloads
 autoload -Uz add-zsh-hook

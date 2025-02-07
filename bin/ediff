@@ -1,26 +1,21 @@
 #!/usr/bin/env bash
 
-for f in "$@"; do
-    files+=\"${f}\"
-    files+=" "
-done
+files=$(printf '"%s" ' "$@")
 
 if [[ $# -eq 2 ]]; then
-    /usr/bin/emacsclient  \
-        --tty             \
-        --suppress-output \
-        --eval "(ediff-files ${files})"
-
-    exit 0
+    fn="ediff-files"
+elif [[ $# -eq 3 ]]; then
+    fn="ediff-files3"
+else
+    exit 1
 fi
 
-if [[ $# -eq 3 ]]; then
-    /usr/bin/emacsclient  \
-        --tty             \
-        --suppress-output \
-        --eval "(ediff-files3 ${files})"
+# test if emacsclient can connect to server
+emacsclient -nw --no-wait 2> /dev/null
 
-    exit 0
+if [[ $? -eq 0 ]]; then
+    emacsclient -nw --eval "(${fn} ${files})" 2> /dev/null
+else
+    emacs -nw --eval "(${fn} ${files})" 2> /dev/null
 fi
 
-exit 1

@@ -5,21 +5,33 @@ REMOTE=$2
 MERGED=$3
 BASE=$4
 
-[[ $# -eq 4 ]] && /usr/bin/emacsclient  \
-                      --tty             \
-                      --suppress-output \
-                      --eval "(ediff-merge-files-with-ancestor
-                               \"${LOCAL}\"
-                               \"${REMOTE}\"
-                               \"${BASE}\"
-                               nil
-                               \"${MERGED}\")"
+if [[ $# -eq 3 ]]; then
+    lisp="
+    (ediff-merge-files
+        \"${LOCAL}\"
+        \"${REMOTE}\"
+        nil
+        \"${MERGED}\")
+    "
+elif [[ $# -eq 4 ]]; then
+    lisp="
+    (ediff-merge-files-with-ancestor
+        \"${LOCAL}\"
+        \"${REMOTE}\"
+        \"${BASE}\"
+        nil
+        \"${MERGED}\")
+    "
+else
+    exit 1
+fi
 
-[[ $# -eq 3 ]] && /usr/bin/emacsclient  \
-                      --tty             \
-                      --suppress-output \
-                      --eval "(ediff-merge-files-with
-                               \"${LOCAL}\"
-                               \"${REMOTE}\"
-                               nil
-                               \"${MERGED}\")"
+# test if emacsclient can connect to server
+emacsclient -nw --no-wait 2> /dev/null
+
+if [[ $? -eq 0 ]]; then
+    emacsclient -nw --suppress-output --eval "${lisp}" 2> /dev/null
+else
+    emacs -nw --eval "${lisp}" 2> /dev/null
+fi
+

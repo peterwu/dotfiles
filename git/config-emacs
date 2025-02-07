@@ -1,0 +1,34 @@
+[user]
+    name  = Peter Wu
+    email = peterwu@hotmail.com
+[credential]
+    helper = store
+[core]
+    editor = /Applications/Emacs.app/Contents/MacOS/bin/emacsclient -nw --quiet \
+        --alternate-editor /Applications/Emacs.app/Contents/MacOS/emacs-nw
+    excludesFile = ~/.config/git/gitignore
+[init]
+    defaultBranch = main
+[pull]
+    rebase = true
+[diff]
+    tool = ediff
+[difftool "ediff"]
+    cmd = ediff $LOCAL $REMOTE
+    prompt = false
+    trustExitCode = true
+[merge]
+    conflictStyle = diff3
+    prompt = false
+    tool = emerge
+[mergetool]
+    keepBackup = false
+[mergetool "emerge"]
+    cmd = emerge $LOCAL $REMOTE $MERGED $BASE
+    trustExitCode = true
+[alias]
+    co = checkout
+    find = log --oneline --name-status --regexp-ignore-case --grep
+    tree = log --all --decorate --graph --oneline
+[http]
+    postBuffer = 1572864000
