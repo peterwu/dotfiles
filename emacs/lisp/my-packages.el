@@ -586,12 +586,4 @@ Enable `recentf-mode' if it isn't already."
             :stream t
             :models '(llama3.2:latest))))
 
-(use-package keycast
-  :ensure t
-  :custom
-  (keycast-header-line-format "%k%c%R")
-  :bind
-  (:map my-ctl-z-t-map
-        ("k" .  keycast-header-line-mode)))
-
 (provide 'my-packages)
