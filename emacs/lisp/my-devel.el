@@ -137,7 +137,7 @@
 
 (setopt major-mode-remap-alist
         '((c-mode . c-ts-mode)
-          (cpp-mode . cpp-ts-mode)
+          (c++-mode . c++-ts-mode)
           (json-mode . json-ts-mode)
           (python-mode . python-ts-mode)
           (sh-mode . bash-ts-mode)
