@@ -306,17 +306,6 @@
   (proced-descend t)
   (proced-filter 'user))
 
-(use-package project
-  :custom
-  (project-switch-commands
-   '((?D "Dired" project-dired)
-     (?b "Buffer" project-switch-to-buffer)
-     (?e "Eshell" project-eshell)
-     (?f "File" project-find-file)
-     (?g "Grep" project-find-regexp)
-     (?r "Query replace" project-query-replace-regexp)
-     (?v "VC" project-vc-dir))))
-
 (use-package pulse
   :preface
   (defconst my-pulse-duration 0.200)

@@ -27,6 +27,36 @@
         ("P" . vc-push)
         ("s" . vc-log-search)))
 
+(use-package magit
+  :ensure t
+  :custom
+  (vc-follow-symlinks t)
+  :bind
+  (:map my-ctl-z-g-map
+        ("g" . magit-status)
+        ("j" . magit-dispatch)
+        ("J" . magit-file-dispatch)
+        ("r" . vc-refresh-state)))
+
+(use-package project
+  :custom
+  (project-switch-commands
+   '((project-find-file "Find file")
+     (project-find-regexp "Find regexp")
+     (project-find-dir "Find directory")
+     (project-vc-dir "VC-Dir")
+     (project-eshell "Eshell")
+
+     (magit-project-status "Magit")
+     (keyboard-quit "Quit"))
+   (project-vc-extra-root-markers '(".project")))
+  :bind
+  (:map global-map
+        ("C-x p DEL" . project-forget-project))
+  (:map project-prefix-map
+        ("m" . magit-project-status)
+        ("q" . keyboard-quit)))
+
 (use-package vc
   :custom
   (vc-find-revision-no-save t)
