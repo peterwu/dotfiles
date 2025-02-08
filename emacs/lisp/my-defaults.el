@@ -36,10 +36,12 @@
 (setopt visible-bell t)
 (setopt use-short-answers t)
 
-;; warning before exiting Emacs
-(setopt confirm-kill-emacs #'yes-or-no-p)
-
 ;; faster redisplay
 (setq-default bidi-inhibit-bpa t)
+
+;; avoid quiting Emacs accidentally
+(bind-keys :map global-map
+           ("C-x C-c" . nil)
+           ("C-x C-c C-c" . save-buffers-kill-terminal))
 
 (provide 'my-defaults)
