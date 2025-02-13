@@ -3,6 +3,7 @@
 ;; evil
 (use-package evil
   :ensure t
+  :pin melpa
   :preface
   (defun my-evil--propertize-state-tags ()
     (modus-themes-with-colors
@@ -167,6 +168,7 @@
 ;; evil-surround
 (use-package evil-surround
   :ensure t
+  :pin melpa
   :config
   (global-evil-surround-mode +1))
 
