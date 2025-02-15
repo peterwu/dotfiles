@@ -61,6 +61,7 @@
         ("p" . my-evil-paste-after-from-clipboard)
         ("P" . my-evil-paste-before-from-clipboard)
         ("Y" . my-evil-yank-eol-to-clipboard))
+
   (:map evil-emacs-state-map
         ("C-z ~" . evil-invert-char)
 
@@ -89,7 +90,9 @@
   (:map evil-motion-state-map
         ("gc" . my-evil-commentary)
         ("gl" . my-evil-align-left)
-        ("gL" . my-evil-align-right))
+        ("gL" . my-evil-align-right)
+
+        ("M-y" . my-evil-yank-to-clipboard))
   (:map evil-normal-state-map
         ("] b" . next-buffer)
         ("[ b" . previous-buffer)
@@ -103,7 +106,11 @@
                      (interactive "p")
                      (dotimes (_ number-of-lines)
                        (evil-insert-newline-above)
-                       (evil-next-visual-line)))))
+                       (evil-next-visual-line))))
+
+        ("M-p" . my-evil-paste-after-from-clipboard)
+        ("M-P" . my-evil-paste-before-from-clipboard)
+        ("M-Y" . my-evil-yank-eol-to-clipboard))
   :init
   (my-evil--propertize-state-tags)
   :hook
@@ -116,7 +123,7 @@
          :suppress-operator t
          (interactive "*P")
          (with-temp-buffer
-           (my-paste-from-clipboard)
+           (clipboard-yank)
            (evil-set-register ?\" (buffer-string)))
          (evil-paste-after count))
 
@@ -124,7 +131,7 @@
          :suppress-operator t
          (interactive "*P")
          (with-temp-buffer
-           (my-paste-from-clipboard)
+           (clipboard-yank)
            (evil-set-register ?\" (buffer-string)))
          (evil-paste-before count))
 
@@ -153,7 +160,7 @@
          :repeat nil
          (interactive "<r>")
          (evil-yank beg end)
-         (my-copy-to-clipboard beg end))
+         (clipboard-kill-ring-save beg end))
 
        (evil-define-command my-evil-yank-eol-to-clipboard ()
          :suppress-operator t
@@ -161,7 +168,7 @@
          (let ((beg (point))
                (end (pos-eol)))
            (evil-yank beg end)
-           (my-copy-to-clipboard beg end)))))
+           (clipboard-kill-ring-save beg end)))))
   :config
   (evil-mode +1))
 
