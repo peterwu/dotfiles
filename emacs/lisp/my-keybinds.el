@@ -1,4 +1,4 @@
-;;; my-keymaps.el -*- lexical-binding: t; -*-
+;;; my-keybinds.el -*- lexical-binding: t; -*-
 
 ;; Use C-z for my personal key maps to avoid conflicts with
 ;; C-c keybinds defined by certain packages
@@ -42,14 +42,25 @@
            :prefix-map my-ctl-z-t-map
            :prefix "t")
 
-;; my-ctl-z-w-map
+;; my-ctl-z-ctl-w-map
 (bind-keys :map my-ctl-z-map
-           :prefix-map my-ctl-z-w-map
-           :prefix "w")
+           :prefix-map my-ctl-z-ctl-w-map
+           :prefix "C-w")
 
 ;; my-ctl-z-meta-g-map
 (bind-keys :map my-ctl-z-map
            :prefix-map my-ctl-z-meta-g-map
            :prefix "M-g")
 
-(provide 'my-keymaps)
+;; avoid quiting Emacs accidentally
+(bind-keys :map global-map
+           ("C-x C-c" . nil)
+           ("C-x C-c C-c" . save-buffers-kill-terminal))
+
+;; clipboard keybinds
+(bind-keys :map my-ctl-z-map
+           ("M-d" . clipboard-kill-region)
+           ("M-y" . clipboard-kill-ring-save)
+           ("M-p" . clipboard-yank))
+
+(provide 'my-keybinds)
