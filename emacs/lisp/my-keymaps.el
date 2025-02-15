@@ -47,4 +47,9 @@
            :prefix-map my-ctl-z-w-map
            :prefix "w")
 
+;; my-ctl-z-meta-g-map
+(bind-keys :map my-ctl-z-map
+           :prefix-map my-ctl-z-meta-g-map
+           :prefix "M-g")
+
 (provide 'my-keymaps)

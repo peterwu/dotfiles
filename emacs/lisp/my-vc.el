@@ -30,9 +30,9 @@
 (use-package magit
   :ensure t
   :custom
-  (vc-follow-symlinks t)
+  (magit-define-global-key-bindings nil)
   :bind
-  (:map my-ctl-z-g-map
+  (:map my-ctl-z-meta-g-map
         ("g" . magit-status)
         ("j" . magit-dispatch)
         ("J" . magit-file-dispatch)
