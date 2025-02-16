@@ -258,10 +258,13 @@
 
 (use-package minibuffer
   :custom
+  (completion-auto-help 'always)
+  (completion-auto-select 'second-tab)
   (completion-cycle-threshold 3)
+  (completion-styles '(basic substring initials flex))
   (completions-detailed t)
   (completions-format 'one-column)
-  (completion-styles '(initials partial-completion flex))
+  (completions-max-height 20)
   (enable-recursive-minibuffers t)
   (minibuffer-eldef-shorten-default t)
   (read-buffer-completion-ignore-case t)
