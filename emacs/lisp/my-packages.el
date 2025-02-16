@@ -83,6 +83,13 @@
   :config
   (delete-selection-mode +1))
 
+(use-package dictionary
+  :custom
+  (dictionary-server "dict.org")
+  :bind
+  (:map my-ctl-z-t-map
+        ("d" . dictionary-tooltip-mode)))
+
 (use-package display-line-numbers
   :custom
   (display-line-numbers-type 'relative)
