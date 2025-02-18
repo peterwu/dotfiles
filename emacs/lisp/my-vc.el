@@ -32,11 +32,8 @@
   :custom
   (magit-define-global-key-bindings nil)
   :bind
-  (:map my-ctl-z-meta-g-map
-        ("g" . magit-status)
-        ("j" . magit-dispatch)
-        ("J" . magit-file-dispatch)
-        ("r" . vc-refresh-state)))
+  (:map ctl-x-map
+        ("g" . magit-status)))
 
 (use-package project
   :custom

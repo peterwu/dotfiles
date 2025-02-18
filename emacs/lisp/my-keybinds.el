@@ -47,11 +47,6 @@
            :prefix-map my-ctl-z-ctl-w-map
            :prefix "C-w")
 
-;; my-ctl-z-meta-g-map
-(bind-keys :map my-ctl-z-map
-           :prefix-map my-ctl-z-meta-g-map
-           :prefix "M-g")
-
 ;; avoid quiting Emacs accidentally
 (bind-keys :map global-map
            ("C-x C-c" . nil)
