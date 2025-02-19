@@ -1,3 +1,5 @@
+vim9script
+
 if has('macunix') | set guifont=SF_Mono:h16 | endif
 if has('win64')   | set guifont=SF_Mono:h12 | endif
 
@@ -15,14 +17,14 @@ nnoremap <Leader>sgv <Cmd>source $MYGVIMRC<CR>
 
 tnoremap <Esc> <C-\><C-N>
 
-nnoremap <C-F1> <Cmd>silent! call <SID>toggle_gui_option('m')<CR>
-nnoremap <C-F2> <Cmd>silent! call <SID>toggle_gui_option('T')<CR>
-nnoremap <C-F3> <Cmd>silent! call <SID>toggle_gui_option('r')<CR>
+nnoremap <silent> <C-F1> <ScriptCmd>ToggleGuiOption('m')<CR>
+nnoremap <silent> <C-F2> <ScriptCmd>ToggleGuiOption('T')<CR>
+nnoremap <silent> <C-F3> <ScriptCmd>ToggleGuiOption('r')<CR>
 
-function! s:toggle_gui_option(option) abort
-    if &guioptions =~# a:option
-        let &guioptions = substitute(&guioptions, a:option, '', 'g')
+def ToggleGuiOption(option: string)
+    if &guioptions =~# option
+        &guioptions = substitute(&guioptions, option, '', 'g')
     else
-        let &guioptions ..= a:option
+        &guioptions ..= option
     endif
-endfunction
+enddef
