@@ -20,8 +20,10 @@
     conflictStyle = diff3
     tool = vimdiff
 [mergetool]
-    prompt = false
     keepBackup = false
+    prompt = false
+[mergetool.vimdiff]
+    layout = "LOCAL,REMOTE/BASE,MERGED"
     trustExitCode = true
 [alias]
     co = checkout

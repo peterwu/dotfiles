@@ -145,6 +145,11 @@ nnoremap <expr> k (v:count > 0 ? 'k' : 'gk')
 xnoremap <expr> j (v:count > 0 ? 'j' : 'gj')
 xnoremap <expr> k (v:count > 0 ? 'k' : 'gk')
 
+# vimdiff as mergetool
+nnoremap <expr> g1 (!&diff ?? '<Cmd>diffget LO<CR>')
+nnoremap <expr> g2 (!&diff ?? '<Cmd>diffget RE<CR>')
+nnoremap <expr> g3 (!&diff ?? '<Cmd>diffget BA<CR>')
+
 # unimpaired
 nnoremap <silent> [<Space> O<Esc>j
 nnoremap <silent> ]<Space> o<Esc>k
