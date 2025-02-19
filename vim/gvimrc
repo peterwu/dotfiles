@@ -1,11 +1,14 @@
-set guifont=SF_Mono:h16
+if has('macunix') | set guifont=SF_Mono:h16 | endif
+if has('win64')   | set guifont=SF_Mono:h12 | endif
+
 set guioptions-=T
 set guioptions-=m
 set guioptions-=L
 set guioptions-=r
 set guioptions-=e
 
-set renderoptions=type:directx
+if has('macunix') | set guioptions+=e              | endif
+if has('win64')   | set renderoptions=type:directx | endif
 
 nnoremap <Leader>egv <Cmd>edit   $MYGVIMRC<CR>
 nnoremap <Leader>sgv <Cmd>source $MYGVIMRC<CR>
