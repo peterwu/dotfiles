@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+TERM=xterm-256color
+
 files=$(printf '"%s" ' "$@")
 
 if [[ $# -eq 2 ]]; then

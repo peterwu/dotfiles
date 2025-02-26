@@ -42,7 +42,8 @@ alias fgrep="fgrep --color=always"
 alias less="LESSHISTFILE=- less -FXR --mouse --wheel-lines=3"
 alias rsync="rsync --progress"
 
-alias e="/Applications/Emacs.app/Contents/MacOS/bin/emacsclient -nw --quiet \
+alias e="TERM=xterm-256color                                           \
+    /Applications/Emacs.app/Contents/MacOS/bin/emacsclient -nw --quiet \
     --alternate-editor /Applications/Emacs.app/Contents/MacOS/emacs-nw"
 
 # enable autoloads

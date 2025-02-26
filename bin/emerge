@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+TERM=xterm-256color
+
 LOCAL=$1
 REMOTE=$2
 MERGED=$3
