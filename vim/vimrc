@@ -60,8 +60,9 @@ mkdir($'{$VIM_STATE_HOME}/view', 'p', 0o700)
 set autoindent
 set autoread
 set complete-=i
-set completeopt=menu,menuone,noinsert,noselect
+set completeopt=menu,menuone,noinsert,noselect,preinsert
 set cursorline
+set diffopt+=linematch:60
 set directory=$VIM_STATE_HOME/swap
 set encoding=utf-8
 set expandtab
