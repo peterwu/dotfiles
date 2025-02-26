@@ -573,16 +573,4 @@ Enable `recentf-mode' if it isn't already."
 (use-package goto-chg
   :ensure t)
 
-(use-package gptel
-  :ensure t
-  :custom
-  (gptel-default-mode 'org-mode)
-  (gptel-model 'llama3.2:latest)
-  :config
-  (setopt gptel-backend
-          (gptel-make-ollama "Ollama"
-            :host "localhost:11434"
-            :stream t
-            :models '(llama3.2:latest))))
-
 (provide 'my-packages)

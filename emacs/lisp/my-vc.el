@@ -27,14 +27,6 @@
         ("P" . vc-push)
         ("s" . vc-log-search)))
 
-(use-package magit
-  :ensure t
-  :custom
-  (magit-define-global-key-bindings nil)
-  :bind
-  (:map ctl-x-map
-        ("g" . magit-status)))
-
 (use-package project
   :custom
   (project-switch-commands
@@ -43,15 +35,12 @@
      (project-find-dir "Find directory")
      (project-vc-dir "VC-Dir")
      (project-eshell "Eshell")
-
-     (magit-project-status "Magit")
      (keyboard-quit "Quit"))
    (project-vc-extra-root-markers '(".project")))
   :bind
   (:map global-map
         ("C-x p DEL" . project-forget-project))
   (:map project-prefix-map
-        ("m" . magit-project-status)
         ("q" . keyboard-quit)))
 
 (use-package vc
