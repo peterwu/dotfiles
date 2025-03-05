@@ -17,6 +17,8 @@
   <!--
       Create a user specific sub-directory
       /Library/Managed Preferences/$(id -u -n)/com.google.Chrome.plist
+
+      $ sudo chflags uchg /path/to/com.google.Chrome.plist
   -->
 
   <?xml version="1.0" encoding="UTF-8"?>
