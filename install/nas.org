@@ -1,0 +1,181 @@
+#+startup: overview
+#+title: NAS Installation Guide
+
+* Preparation
+
+- download the Everything iso from https://alt.fedoraproject.org/
+- burn the iso to usb key
+#+begin_src bash
+  sudo dd bs=4M if=/path/to/Fedora-Everything-netinst-x86_64-XYZ.iso of=/dev/sdx status=progress && sync
+#+end_src
+
+* System Installation
+
+- name the system *nasberry*
+
+- partition the ssd
+
+| size | mount point        | type  |
+|------+--------------------+-------|
+| 512M | /boot/efi          | vfat  |
+| REST | /{@, @home, @data} | btrfs |
+
+- create an administrative account, admin (DO NOT create regular user accounts)
+
+- do not install weak dependencies
+#+begin_src bash
+  echo “install_weak_deps=False” >> /etc/dnf/dnf.conf
+#+end_src
+
+- use static configuration
+#+begin_src bash
+  sudo dnf remove NetworkManager dhcp-client
+#+end_src
+
+#+begin_src conf
+  /etc/systemd/network/20-wired.network
+
+  [Match]
+  Name=enp1s0
+
+  [Network]
+  Address=192.168.0.254/24
+  Gateway=192.168.0.1
+  DNS=192.168.0.1
+#+end_src
+
+#+begin_src bash
+  sudo systemctl enable systemd-networkd
+#+end_src
+
+* Configure Bittorrent
+- install transmission daemon
+#+begin_src bash
+  sudo dnf install transmission-daemon
+#+end_src
+
+- create directories
+#+begin_src bash
+  sudo mkdir -p /data/torrents/{incomplete,download}
+  sudo chown -R transmission /data/torrents/{incomplete,download}
+#+end_src
+
+- configure settings
+#+begin_src javascript
+  {
+      "download-dir": "/data/torrents/download",
+      "incomplete-dir": "/data/torrents/incomplete",
+      "peer-port": 51414,
+      "rpc-host-whitelist": "nasberry",
+      "rpc-whitelist": "127.0.0.1,192.168.0.*",
+  }
+#+end_src
+
+- firewall
+#+begin_src bash
+  sudo firewall-cmd --permanent --add-port 9091/tcp
+  sudo firewall-cmd --permanent --add-port=51414/tcp
+  sudo firewall-cmd --reload
+#+end_src
+
+- start transmission daemon
+#+begin_src bash
+  sudo systemctl enable transmission-daemon
+#+end_src
+
+* Configure Samba
+- install samba
+#+begin_src bash
+  sudo dnf install samba samba-client
+#+end_src
+
+- create users
+#+begin_src bash
+  sudo useradd -r -s /sbin/nologin peter
+  sudo useradd -r -s /sbin/nologin michelle
+  sudo useradd -r -s /sbin/nologin yvonne
+  sudo useradd -r -s /sbin/nologin yvette
+
+  sudo smbpasswd -a peter
+  sudo smbpasswd -a michelle
+  sudo smbpasswd -a yvonne
+  sudo smbpasswd -a yvette
+#+end_src
+
+- create a samba group
+#+begin_src bash
+  sudo groupadd sambausers
+#+end_src
+
+- add users to the group
+#+begin_src bash
+  sudo usermod -aG sambausers peter
+  sudo usermod -aG sambausers michelle
+  sudo usermod -aG sambausers yvonne
+  sudo usermod -aG sambausers yvette
+#+end_src
+
+- create directories
+#+begin_src bash
+  sudo mkdir -p /data/share/{peter,michelle,yvonne,yvette}
+
+  sudo chown -R peter    /data/share/peter
+  sudo chown -R michelle /data/share/michelle
+  sudo chown -R yvonne   /data/share/yvonne
+  sudo chown -R yvette   /data/share/yvette
+#+end_src
+
+- configure SELinux
+#+begin_src bash
+  sudo semanage fcontext -a -t samba_share_t "/data/torrents/download(/.*)?"
+  sudo restorecon -Rv /data/torrents/download
+
+  sudo semanage fcontext -a -t samba_share_t "/data/torrents/incomplete(/.*)?"
+  sudo restorecon -Rv /data/torrents/incomplete
+
+  sudo semanage fcontext -a -t samba_share_t "/data/share(/.*)?"
+  sudo restorecon -Rv /data/share
+#+end_src
+
+- configure firewall
+#+begin_src bash
+  sudo firewall-cmd --permanent --add-service=samba
+  sudo firewall-cmd --reload
+#+end_src
+
+- edit /etc/samba/smb.conf
+#+begin_src conf
+  [global]
+     workgroup = HOME
+     server string = Samba Server %v
+     security = user
+     map to guest = Bad User
+     dns proxy = no
+     log file = /var/log/samba/log.%m
+     max log size = 1000
+
+  [Downloads]
+     comment = Torrent Downloads
+     path = /data/torrents/download
+     browsable = yes
+     writable = no
+     read only = yes
+     public = no
+     valid users = @sambausers
+
+  [Peter]
+     comment = Peter's Private Share
+     path = /data/share/peter
+     browsable = yes
+     writable = yes
+     guest ok = no
+     read only = no
+     public = no
+     valid users = peter
+#+end_src
+
+- test and enable Samba
+#+begin_src bash
+  sudo testparm
+  sudo systemctl enable smb nmb
+#+end_src
