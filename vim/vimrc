@@ -300,7 +300,7 @@ def YankToClipboard(arg = ''): string
 
         var orig_text = getreg(v:register)
         var b64_text = has('patch-9.1.1024')
-            ? orig_text->str2blob()->base64_encode()
+            ? orig_text->split('\n')->str2blob()->base64_encode()
             : orig_text->B64Encode()
         var osc52_text = $"\x1b]52;c;{b64_text}\x07"
 
