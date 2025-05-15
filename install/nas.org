@@ -179,3 +179,47 @@
   sudo testparm
   sudo systemctl enable smb nmb
 #+end_src
+
+* Configure Virtualization
+- install virtualization packages
+#+begin_src bash
+  sudo dnf install qemu-kvm libvirt-daemon-kvm libvirt-client virt-install
+#+end_src
+
+- start and enable the libvirtd service
+#+begin_src bash
+  sudo systemctl start libvirtd
+  sudo systemctl enable libvirtd
+#+end_src
+
+- install a vm
+#+begin_src bash
+  virt-install \
+  --name fedora40-server \
+  --memory 2048 \
+  --vcpus 1 \
+  --disk path=~/.local/share/libvirt/images/fedora40-server.qcow2,size=20 \
+  --cdrom ~/path/to/your/fedora40-server.iso \
+  --os-variant fedora40 \
+  --graphics vnc,listen=0.0.0.0,password=foobar \
+  --noautoconsole
+#+end_src
+
+- prepare to connect to vm
+#+begin_src bash
+  virsh list
+
+  # :0 → port 5900
+  # :1 → port 5901
+  virsh vncdisplay fedora40-server
+
+  # open firewall port
+  sudo firewall-cmd --permanent --add-port=5900/tcp
+  sudo firewall-cmd --reload
+#+end_src
+
+- connect from macOS using Screen Sharing
+#+begin_src conf
+  vnc://<your-server-ip>:5900
+#+end_src
+
