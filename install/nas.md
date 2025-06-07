@@ -36,6 +36,26 @@ sudo nmcli connection down enp1s0
 sudo nmcli connection up   enp1s0
 ```
 
+## Configure SELinux
+```bash
+echo "%wheel    ALL=(ALL)   ROLE=sysadm_r   NOPASSWD:ALL" |  \
+sudo EDITOR="tee --append" visudo -f /etc/sudoers.d/administrators
+
+sudo dnf install setroubleshoot-server        \
+                 policycoreutils-python-utils \
+                 policycoreutils-restorecond  \
+                 setools-console
+
+# allow ssh access for sysadm_u
+sudo setsebool -P ssh_sysadm_login on
+
+# https://tinyurl.com/2ay788my
+# https://access.redhat.com/articles/3263671
+sudo semanage login -m -s user_u -r s0 __default__
+sudo usermod -Z sysadm_u peter
+sudo restorecon -R -F -v /home/peter
+```
+
 ## Configure Virtualization
 1. install **libvirtd** service
 ```bash
@@ -47,7 +67,7 @@ sudo reboot
 ## Install cockpit
 ```bash
 sudo dnf install cockpit{,-{files,machines,podman,storaged}}
-sudo dnf install tuned setroubleshoot-server
+sudo dnf install tuned
 
 # enable VNC access
 sudo firewall-cmd --permanent --add-port 5900/tcp
@@ -143,9 +163,9 @@ sudo smbpasswd -a peter
 ```
 3. create directories
 ```bash
-sudo mkdir -p /data/private/peter
+sudo mkdir -p /data/share
 
-sudo chwon -R peter:peter /data/private/peter
+sudo chown -R peter:peter /data/share
 ```
 4. configure SELinux
 ```bash
@@ -184,4 +204,13 @@ EOF
 sudo testparm
 sudo systemctl enable --now smb nmb
 ```
+## Remove unused packages and residues
+```bash
+sudo dnf remove rhc insights-client
 
+sudo userdel yggdrasil
+sudo userdel yggdrasil-worker
+
+sudo groupdel yggdrasil
+sudo groupdel yggdrasil-worker
+```
