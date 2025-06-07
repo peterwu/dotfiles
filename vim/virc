@@ -54,8 +54,8 @@ set virtualedit=block
 set wildoptions=pum,tagfile
 
 " virc
-nnoremap <silent> <Space>ev <Cmd>edit   $VI_HOME/virc<CR>
-nnoremap <silent> <Space>sv <Cmd>source $VI_HOME/virc<CR>
+nnoremap <silent> <Space>ev <Cmd>edit   $HOME/.virc<CR>
+nnoremap <silent> <Space>sv <Cmd>source $HOME/.virc<CR>
 
 " disable arrow keys
 noremap <Up>    <Nop>
