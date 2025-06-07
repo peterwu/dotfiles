@@ -44,10 +44,26 @@ sudo systemctl enable --now libvirtd
 sudo reboot
 ```
 
+## Configure SELinux
+```bash
+sudo dnf install setroubleshoot-server       \
+                 policycoreutils-restorecond \
+                 setools-console
+
+# https://tinyurl.com/2ay788my
+# https://access.redhat.com/articles/3263671
+sudo semanage login -m -s user_u -r s0 __default__
+sudo usermod -Z staff_u peter
+sudo restorecon -R -F -v /home/peter
+
+echo "peter ALL=(ALL) TYPE=sysadm_t ROLE=sysadm_r NOPASSWD:ALL" \
+| sudo EDITOR='tee -a' visudo -f /etc/sudoers.d/administrators
+```
+
 ## Install cockpit
 ```bash
 sudo dnf install cockpit{,-{files,machines,podman,storaged}}
-sudo dnf install tuned setroubleshoot-server
+sudo dnf install tuned
 
 # enable VNC access
 sudo firewall-cmd --permanent --add-port 5900/tcp
