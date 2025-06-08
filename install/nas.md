@@ -13,8 +13,8 @@ sudo dd bs=4M if=/path/to/rhel-10.0-x86_64-boot.iso of=/dev/sdx status=progress 
 | Size     | Mount Point | Type            |
 |----------|-------------|-----------------|
 | 200M     | /boot/efi   | EFI File System |
-| NVME SSD | /           | ext4            |
-| SATA SSD | /data       | ext4            |
+| NVME SSD | /           | xfs             |
+| SATA SSD | /data       | xfs             |
 
 3. create an administrative account: **peter**
 4. create a service account: **bee**
@@ -37,13 +37,15 @@ sudo nmcli connection up   enp1s0
 ```
 
 ## Configure SELinux
+1. preparation
 ```bash
 echo "%wheel    ALL=(ALL)   ROLE=sysadm_r   NOPASSWD:ALL" |  \
 sudo EDITOR="tee --append" visudo -f /etc/sudoers.d/administrators
 
-sudo dnf install setroubleshoot-server        \
-                 policycoreutils-python-utils \
+sudo dnf install policycoreutils-python-utils \
                  policycoreutils-restorecond  \
+                 selinux-policy-devel         \
+                 setroubleshoot-server        \
                  setools-console
 
 # allow ssh access for sysadm_u
@@ -53,7 +55,58 @@ sudo setsebool -P ssh_sysadm_login on
 # https://access.redhat.com/articles/3263671
 sudo semanage login -m -s user_u -r s0 __default__
 sudo usermod -Z sysadm_u peter
-sudo restorecon -R -F -v /home/peter
+sudo restorecon -RFv /home/peter
+```
+2. create a customer policy
+```bash
+# create a directory to host the files
+mkdir -p ~/semodules/nasberry
+
+# enter the directory
+cd ~/semodules/nasberry
+
+# create type enforcement file
+cat << EOF > nasberry.te
+policy_module(nasberry, 1.0)
+
+# types
+require {
+    type container_runtime_t;
+    type samba_share_t;
+    type semanage_store_t;
+    type sysadm_sudo_t;
+    type sysadm_t;
+}
+
+# classes
+require {
+    class dir search;
+    class process getpgid;
+    class unix_stream_socket { getattr ioctl create setopt };
+}
+
+# allowances
+allow sysadm_sudo_t semanage_store_t:dir search;
+
+allow sysadm_sudo_t sysadm_t:process getpgid;
+allow sysadm_sudo_t sysadm_t:unix_stream_socket { getattr ioctl };
+
+allow sysadm_t container_runtime_t:unix_stream_socket { create setopt };
+EOF
+
+# create a file context file
+cat << EOF > nasberry.fc
+/data/share(/.*)?  gen_context(system_u:object_r:samba_share_t,s0)
+EOF
+
+# build the policy
+sudo make -f /usr/share/selinux/devel/Makefile nasberry.pp
+
+# remove the policy if already loaded
+sudo semodule -r nasberry
+
+# install the policy
+sudo semodule -i nasberry.pp
 ```
 
 ## Configure Virtualization
@@ -164,20 +217,15 @@ sudo smbpasswd -a peter
 3. create directories
 ```bash
 sudo mkdir -p /data/share
-
 sudo chown -R peter:peter /data/share
+sudo restorecon -RFv /data/share
 ```
-4. configure SELinux
-```bash
-sudo semanage fcontext -a -t samba_share_t "/data/share(/.*)?"
-sudo restorecon -Rv /data/share
-```
-5. configure firewall
+4. configure firewall
 ```bash
 sudo firewall-cmd --permanent --add-service samba
 sudo firewall-cmd --reload
 ```
-6. edit /etc/samba/smb.conf
+5. edit /etc/samba/smb.conf
 ```bash
 sudo tee /etc/samba/smb.conf << EOF
 [global]
@@ -199,7 +247,7 @@ sudo tee /etc/samba/smb.conf << EOF
    valid users = peter
 EOF
 ```
-7. test and enable samba
+6. test and enable samba
 ```bash
 sudo testparm
 sudo systemctl enable --now smb nmb
