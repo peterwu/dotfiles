@@ -136,6 +136,46 @@ zram-size = min(ram / 2, 4096)
 EOF
 ```
 
+## Configure Ollama + Open WebUI
+1. create relevant directories
+```bash
+sudo mkdir -p /srv/ollama-oi/{ollama,data}
+```
+2. open ports on firewall
+```bash
+sudo firewall-cmd --permanent --add-port 53000/tcp
+
+sudo firewall-cmd --reload
+```
+3. create quadlet for container
+```bash
+sudo tee /etc/containers/systemd/ollama-oi.container << EOF
+[Unit]
+Description=ollama-oi
+
+[Container]
+Image=ghcr.io/open-webui/open-webui:ollama
+
+Volume=/srv/ollama-oi/data:/app/backend/data:z
+Volume=/srv/ollama-oi/ollama:/root/.ollama:z
+
+Environment=WEBUI_AUTH=False
+
+PublishPort=53000:8080
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+4. generate the systemd service
+```bash
+sudo systemctl daemon-reload
+```
+5. start the ollama-oi service
+```bash
+sudo systemctl start ollama-oi.service
+```
+
 ## Configure qBittorrent
 1. create **downloads** directory
 ```bash
@@ -147,6 +187,7 @@ sudo chown -R bee:bee /srv/qbittorrent/downloads
 sudo mkdir -p /srv/qbittorrent/config/qBittorrent/config
 sudo tee /srv/qbittorrent/config/qBittorrent/config/qBittorrent.conf << EOF
 [BitTorrent]
+Session\AddTorrentStopped=true
 Session\DefaultSavePath=/downloads
 Session\Port=56881
 Session\TempPath=/downloads/temp
@@ -160,7 +201,7 @@ EOF
 
 sudo chown -R bee:bee /srv/qbittorrent/config
 ```
-2. open ports on firewall
+3. open ports on firewall
 ```bash
 sudo firewall-cmd --permanent --add-port 58080/tcp
 sudo firewall-cmd --permanent --add-port 56881/tcp
@@ -168,7 +209,7 @@ sudo firewall-cmd --permanent --add-port 56881/udp
 
 sudo firewall-cmd --reload
 ```
-3. create quadlet for container
+4. create quadlet for container
 ```bash
 sudo tee /etc/containers/systemd/qbittorrent.container << EOF
 [Unit]
@@ -195,15 +236,15 @@ PublishPort=56881:56881/udp
 WantedBy=multi-user.target
 EOF
 ```
-4. generate the systemd service
+5. generate the systemd service
 ```bash
 sudo systemctl daemon-reload
 ```
-5. start the qbittorrent service
+6. start the qbittorrent service
 ```bash
 sudo systemctl start qbittorrent.service
 ```
-6. go to cockpit to find the initial password in the running container's log
+7. go to cockpit to find the initial password in the running container's log
 
 ## Configure Samba
 1. install samba
