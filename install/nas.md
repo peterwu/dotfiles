@@ -72,6 +72,7 @@ policy_module(nasberry, 1.0)
 # types
 require {
     type container_runtime_t;
+    type kvm_device_t;
     type samba_share_t;
     type semanage_store_t;
     type sysadm_sudo_t;
@@ -80,9 +81,10 @@ require {
 
 # classes
 require {
+    class chr_file { open read };
     class dir search;
     class process getpgid;
-    class unix_stream_socket { getattr ioctl create setopt };
+    class unix_stream_socket { bind create getattr ioctl listen setopt };
 }
 
 # allowances
@@ -91,7 +93,8 @@ allow sysadm_sudo_t semanage_store_t:dir search;
 allow sysadm_sudo_t sysadm_t:process getpgid;
 allow sysadm_sudo_t sysadm_t:unix_stream_socket { getattr ioctl };
 
-allow sysadm_t container_runtime_t:unix_stream_socket { create setopt };
+allow sysadm_t container_runtime_t:unix_stream_socket { create bind listen setopt };
+allow sysadm_t kvm_device_t:chr_file {open read };
 EOF
 
 # create a file context file
