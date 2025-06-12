@@ -48,16 +48,21 @@ sudo dnf install policycoreutils-python-utils \
                  setroubleshoot-server        \
                  setools-console
 
-# allow ssh access for sysadm_u
+# allow ssh logins as sysadm_r:sysadm_t
 sudo setsebool -P ssh_sysadm_login on
+
+# allow HTTPD scripts and modules to connect to the network using TCP
+sudo setsebool -P httpd_can_network_connect on
 
 # https://tinyurl.com/2ay788my
 # https://access.redhat.com/articles/3263671
 sudo semanage login -m -s user_u -r s0 __default__
+
+# confine peter to sysadm_u
 sudo usermod -Z sysadm_u peter
 sudo restorecon -RFv /home/peter
 ```
-2. create a customer policy
+2. create a custom policy
 ```bash
 # create a directory to host the files
 mkdir -p ~/semodules/nasberry
@@ -100,6 +105,9 @@ EOF
 # create a file context file
 cat << EOF > nasberry.fc
 /data/share(/.*)?  gen_context(system_u:object_r:samba_share_t,s0)
+
+/srv/nginx-proxy/ssl/cert/nasberry.crt gen_context(system_u:object_r:cert_t,s0)
+/srv/nginx-proxy/ssl/key/nasberry.key  gen_context(system_u:object_r:cert_t,s0)
 EOF
 
 # build the policy
@@ -116,7 +124,7 @@ sudo semodule -i nasberry.pp
 1. install **libvirtd** service
 ```bash
 sudo dnf install libvirt
-sudo systemctl enable --now libvirtd
+sudo systemctl enable libvirtd.socket
 sudo reboot
 ```
 
@@ -124,6 +132,9 @@ sudo reboot
 ```bash
 sudo dnf install cockpit{,-{files,machines,podman,storaged}}
 sudo dnf install tuned
+
+# remove cockpit service
+sudo firewall-cmd --permanent --remove-service cockpit
 
 # enable VNC access
 sudo firewall-cmd --permanent --add-port 5900/tcp
@@ -144,13 +155,7 @@ EOF
 ```bash
 sudo mkdir -p /srv/ollama-oi/{ollama,data}
 ```
-2. open ports on firewall
-```bash
-sudo firewall-cmd --permanent --add-port 53000/tcp
-
-sudo firewall-cmd --reload
-```
-3. create quadlet for container
+2. create quadlet for container
 ```bash
 sudo tee /etc/containers/systemd/ollama-oi.container << EOF
 [Unit]
@@ -170,11 +175,11 @@ PublishPort=53000:8080
 WantedBy=multi-user.target
 EOF
 ```
-4. generate the systemd service
+3. generate the systemd service
 ```bash
 sudo systemctl daemon-reload
 ```
-5. start the ollama-oi service
+4. start the ollama-oi service
 ```bash
 sudo systemctl start ollama-oi.service
 ```
@@ -197,7 +202,7 @@ Session\TempPath=/downloads/temp
 
 [Preferences]
 General\Locale=en
-WebUI\AuthSubnetWhitelist=192.168.0.0/24
+WebUI\AuthSubnetWhitelist=10.88.0.0/16, 192.168.0.0/24
 WebUI\AuthSubnetWhitelistEnabled=true
 WebUI\LocalHostAuth=false
 EOF
@@ -206,7 +211,6 @@ sudo chown -R bee:bee /srv/qbittorrent/config
 ```
 3. open ports on firewall
 ```bash
-sudo firewall-cmd --permanent --add-port 58080/tcp
 sudo firewall-cmd --permanent --add-port 56881/tcp
 sudo firewall-cmd --permanent --add-port 56881/udp
 
@@ -231,7 +235,6 @@ Environment=TORRENTING_PORT=56881
 Environment=QBT_LEGAL_NOTICE=confirm
 Environment=QBT_WEBUI_PORT=58080
 
-PublishPort=58080:58080
 PublishPort=56881:56881
 PublishPort=56881:56881/udp
 
@@ -248,6 +251,147 @@ sudo systemctl daemon-reload
 sudo systemctl start qbittorrent.service
 ```
 7. go to cockpit to find the initial password in the running container's log
+
+## Create a Root Certificate Authority (CA)
+1. create a directory for CA
+```bash
+sudo mkdir -p /srv/root-ca
+cd /srv/root-ca
+```
+2. generate root CA private key
+```bash
+sudo openssl genrsa -aes256 -out rootCA.key 4096
+```
+3. create root CA certificate
+```bash
+sudo openssl req -x509 -new -nodes -key rootCA.key -sha256 -days 3650 -out rootCA.crt
+```
+4. generate private key for nasberry
+```bash
+sudo openssl genrsa -out nasberry.key 2048
+```
+5. createa CSR for nasberry
+```bash
+sudo openssl req -new -key nasberry.key -out nasberry.csr
+```
+6. create an OpenSSL configuration file
+```bash
+sudo tee nasberry.ext << EOF
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = nasberry
+IP.1 = 192.168.0.254
+EOF
+```
+7. sign the CSR with the root key
+```bash
+sudo openssl x509 -req -in nasberry.csr -CA rootCA.crt -CAkey rootCA.key -CAcreateserial -out nasberry.crt -days 365 -sha256 -extfile nasberry.ext
+```
+8. deploy nasberry key and certificate
+```bash
+sudo mkdir -p /srv/nginx-proxy/ssl/{key,cert}
+
+sudo cp nasberry.key /srv/nginx-proxy/ssl/key/nasberry.key
+sudo chmod 600 /srv/nginx-proxy/ssl/key/nasberry.key
+
+sudo cp nasberry.crt /srv/nginx-proxy/ssl/cert/nasberry.crt
+sudo chmod 644 /srv/nginx-proxy/ssl/cert/nasberry.crt
+```
+9. apply the SELinux context
+```bash
+sudo restorecon -RFv /srv/nginx-proxy/ssl/key/nasberry.key
+sudo restorecon -RFv /srv/nginx-proxy/ssl/cert/nasberry.crt
+```
+
+## Configure Nginx Reverse Proxy
+1. install nginx
+```bash
+sudo dnf install nginx
+```
+2. create a config file
+```bash
+sudo tee /etc/nginx/conf.d/nasberry.conf << EOF
+server {
+    listen 80;
+    server_name nasberry;
+
+    # Redirect all HTTP requests to HTTPS
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name nasberry;
+
+    ssl_certificate /srv/nginx-proxy/ssl/cert/nasberry.crt;
+    ssl_certificate_key /srv/nginx-proxy/ssl/key/nasberry.key;
+
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers on;
+
+    # ollama open-webui
+    location / {
+        proxy_pass http://localhost:53000/;
+
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        proxy_http_version 1.1;
+        proxy_buffering off;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+
+    # cockpit
+    location /adm/ {
+        proxy_pass https://localhost:9090/adm/;
+
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        proxy_http_version 1.1;
+        proxy_buffering off;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+
+        gzip off;
+    }
+
+    # qBittorrent
+    location /qbt/ {
+        proxy_pass http://localhost:58080/;
+
+        proxy_set_header Host              $proxy_host;
+        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Host  $http_host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        proxy_http_version 1.1;
+        proxy_buffering off;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+}
+EOF
+```
+3. configure cockpit
+```bash
+# https://cockpit-project.org/external/wiki/Proxying-Cockpit-over-NGINX
+sudo tee /etc/cockpit/cockpit.conf << EOF
+[WebService]
+Origins = https://nasberry wss://nasberry
+ProtocolHeader = X-Forwarded-Proto
+UrlRoot=/adm
+EOF
+```
+4. enable nginx service
+```bash
+sudo systemctl enable nginx.service
+```
 
 ## Configure Samba
 1. install samba
