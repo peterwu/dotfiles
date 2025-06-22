@@ -125,9 +125,9 @@ set wildoptions=pum,tagfile
 g:mapleader = ' '
 
 # vimrc
-nnoremap <silent> <Leader>cd <Cmd>cd     %:p:h<Bar>pwd<CR>
-nnoremap <silent> <Leader>ev <Cmd>edit   $MYVIMRC<CR>
-nnoremap <silent> <Leader>sv <Cmd>source $MYVIMRC<CR>
+nnoremap <silent> <Leader>cd <Cmd>cd      %:p:h<Bar>pwd<CR>
+nnoremap <silent> <Leader>ev <Cmd>tabedit $MYVIMRC<CR>
+nnoremap <silent> <Leader>sv <Cmd>source  $MYVIMRC<CR>
 
 # disable arrow keys
 noremap <Up>    <Nop>
@@ -363,8 +363,9 @@ elseif executable('wl-paste')
     xnoremap <silent> <Leader>P <ScriptCmd>@" = system('wl-paste')<CR>""P
 endif
 
-# terminal
-nnoremap <C-`> <Cmd>belowright terminal bash<CR>
+# toggles
+nnoremap <leader>tt <Cmd>belowright terminal<CR>
+nnoremap <leader>tx <Cmd>Lexplore<CR>
 
 # }}}
 
@@ -847,8 +848,6 @@ g:netrw_list_hide    = '\(^\|\s\s\)\zs\.\S\+'
 g:netrw_liststyle    = 3
 g:netrw_winsize      = 29
 
-nnoremap <silent> <F9> <Cmd>Lexplore<CR>
-
 augroup vinegarize_netrw | autocmd!
     autocmd filetype netrw {
         nnoremap <buffer> <silent> ^ <Plug>NetrwBrowseUpDir()
@@ -967,6 +966,45 @@ nnoremap T <Plug>Sneak_T
 # update/clean plugins
 nnoremap <silent> <Leader>Qu <ScriptCmd>PaqInit()<Bar>PaqUpdate()<CR>
 nnoremap <silent> <Leader>Qc <ScriptCmd>PaqInit()<Bar>PaqClean()<CR>
+
+# vimspector
+PaqAdd('puremourning/vimspector', {as: 'vimspector'})
+
+nnoremap <F4>     <Plug>VimspectorDisassemble
+nnoremap <F5>     <Plug>VimspectorContinue
+nnoremap <S-F5>   <Plug>VimspectorStop
+nnoremap <C-S-F5> <Plug>VimspectorRestart
+nnoremap <F6>     <Plug>VimspectorPause
+nnoremap <F7>     <Plug>VimspectorBalloonEval
+xnoremap <F7>     <Plug>VimspectorBalloonEval
+nnoremap <F8>     <Plug>VimspectorJumpToNextBreakpoint
+nnoremap <S-F8>   <Plug>VimspectorJumpToPreviousBreakpoint
+nnoremap <F9>     <Plug>VimspectorToggleBreakpoint
+nnoremap <C-F9>   <Plug>VimspectorBreakpoints
+nnoremap <S-F9>   <Plug>VimspectorAddFunctionBreakpoint
+nnoremap <F10>    <Plug>VimspectorStepOver
+nnoremap <C-F10>  <Plug>VimspectorRunToCursor
+nnoremap <F11>    <Plug>VimspectorStepInto
+nnoremap <S-F11>  <Plug>VimspectorStepOut
+nnoremap <F12>    <Plug>VimspectorUpFrame
+nnoremap <S-F12>  <Plug>VimspectorDownFrame
+
+augroup customize_vimspector_ui | autocmd!
+    autocmd User VimspectorUICreated {
+        win_gotoid( g:vimspector_session_windows.code )
+
+        nunmenu WinBar
+
+        nnoremenu WinBar.Stop     <Cmd>call vimspector#Stop()<CR>
+        nnoremenu WinBar.Continue <Cmd>call vimspector#Continue()<CR>
+        nnoremenu WinBar.Pause    <Cmd>call vimspector#Pause()<CR>
+        nnoremenu WinBar.StepOver <Cmd>call vimspector#StepOver()<CR>
+        nnoremenu WinBar.StepIn   <Cmd>call vimspector#StepInto()<CR>
+        nnoremenu WinBar.StepOut  <Cmd>call vimspector#StepOut()<CR>
+        nnoremenu WinBar.Restart  <Cmd>call vimspector#Restart()<CR>
+        nnoremenu WinBar.Exit     <Cmd>call vimspector#Reset()<CR>
+    }
+augroup END
 
 # }}}
 
