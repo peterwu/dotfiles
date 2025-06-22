@@ -104,7 +104,9 @@ set splitright
 set switchbuf=uselast
 set tabstop=8
 set termencoding=utf-8
-set termguicolors
+if $TERM_PROGRAM !=# 'Apple_Terminal'
+    set termguicolors
+endif
 set textwidth=80
 set timeoutlen=777
 set ttimeoutlen=77
@@ -857,13 +859,18 @@ augroup vinegarize_netrw | autocmd!
 augroup END
 
 # termdebug
-packadd! termdebug
-g:termdebug_config = {
-    sign:   '>>',
-    wide:   1,
-    winbar: 0
-}
-nnoremap <silent> <F5> <Cmd>Termdebug<CR>
+command! -nargs=0 EnableTermDebug call EnableTermDebug()
+
+def EnableTermDebug(): void
+    packadd termdebug
+
+    g:termdebug_config = {
+        sign:   '>>',
+        wide:   1,
+        winbar: 0
+    }
+    nnoremap <silent> <F5> <Cmd>Termdebug<CR>
+enddef
 
 # 3rd party plugins
 if !has('patch-9.1.0375')
@@ -882,50 +889,51 @@ PaqAdd('tommcdo/vim-lion', {as: 'lion'})
 g:lion_squeeze_spaces = 1
 
 # lsp
-PaqAdd('yegappan/lsp', {as: 'lsp'})
-var lsp_opts = {autoHighlightDiags: true}
-var lsp_servers: list<dict<any>>
+PaqAdd('yegappan/lsp', {as: 'lsp', opt: true})
 
-if executable('clangd')
-    lsp_servers->add({
-        name: 'clangd',
-        filetype: ['c', 'cpp'],
-        path: 'clangd',
-        args: ['--background-index']
-    })
-endif
+command! -nargs=0 EnableLSP call EnableLSP()
 
-if executable('pylsp')
-    lsp_servers->add({
-        name: 'pylsp',
-        filetype: 'python',
-        path: 'pylsp',
-        args: []
-    })
-endif
+def EnableLSP(): void
+    packadd lsp
 
-augroup lsp_setup | autocmd!
-    autocmd User LspSetup {
-        g:LspOptionsSet(lsp_opts)
-        g:LspAddServer(lsp_servers)
-    }
-augroup END
+    var lsp_opts = {autoHighlightDiags: true}
+    var lsp_servers: list<dict<any>>
 
-augroup lsp_attached | autocmd!
-    autocmd User LspAttached SetLspKeymaps()
-augroup END
+    if executable('clangd')
+        lsp_servers->add({
+            name: 'clangd',
+            filetype: ['c', 'cpp'],
+            path: 'clangd',
+            args: ['--background-index']
+        })
+    endif
 
-def SetLspKeymaps(): void
-    nnoremap <buffer> gd <Cmd>LspGotoDefinition<CR>
-    nnoremap <buffer> gp <Cmd>LspPeekDefinition<CR>
-    nnoremap <buffer> gr <Cmd>LspPeekReferences<CR>
-    nnoremap <buffer> gi <Cmd>LspGotoImpl<CR>
-    nnoremap <buffer> gt <Cmd>LspGotoTypeDef<CR>
-    nnoremap <buffer> gR <Cmd>LspRename<CR>
-    nnoremap <buffer> go <Cmd>LspDocumentSymbol<CR>
-    nnoremap <buffer> [d <Cmd>LspDiag prev<CR>
-    nnoremap <buffer> ]d <Cmd>LspDiag next<CR>
-    nnoremap <buffer> K  <Cmd>LspHover<CR>
+    if executable('pylsp')
+        lsp_servers->add({
+            name: 'pylsp',
+            filetype: 'python',
+            path: 'pylsp',
+            args: []
+        })
+    endif
+
+    call g:LspOptionsSet(lsp_opts)
+    call g:LspAddServer(lsp_servers)
+
+    augroup lsp_attached | autocmd!
+        autocmd User LspAttached {
+            nnoremap <buffer> gd <Cmd>LspGotoDefinition<CR>
+            nnoremap <buffer> gp <Cmd>LspPeekDefinition<CR>
+            nnoremap <buffer> gr <Cmd>LspPeekReferences<CR>
+            nnoremap <buffer> gi <Cmd>LspGotoImpl<CR>
+            nnoremap <buffer> gt <Cmd>LspGotoTypeDef<CR>
+            nnoremap <buffer> gR <Cmd>LspRename<CR>
+            nnoremap <buffer> go <Cmd>LspDocumentSymbol<CR>
+            nnoremap <buffer> [d <Cmd>LspDiag prev<CR>
+            nnoremap <buffer> ]d <Cmd>LspDiag next<CR>
+            nnoremap <buffer> K  <Cmd>LspHover<CR>
+        }
+    augroup END
 enddef
 
 # rainbow
@@ -963,48 +971,64 @@ nnoremap F <Plug>Sneak_F
 nnoremap t <Plug>Sneak_t
 nnoremap T <Plug>Sneak_T
 
-# update/clean plugins
-nnoremap <silent> <Leader>Qu <ScriptCmd>PaqInit()<Bar>PaqUpdate()<CR>
-nnoremap <silent> <Leader>Qc <ScriptCmd>PaqInit()<Bar>PaqClean()<CR>
-
 # vimspector
-PaqAdd('puremourning/vimspector', {as: 'vimspector'})
+PaqAdd('puremourning/vimspector', {as: 'vimspector', opt: true})
 
-nnoremap <F4>     <Plug>VimspectorDisassemble
-nnoremap <F5>     <Plug>VimspectorContinue
-nnoremap <S-F5>   <Plug>VimspectorStop
-nnoremap <C-S-F5> <Plug>VimspectorRestart
-nnoremap <F6>     <Plug>VimspectorPause
-nnoremap <F7>     <Plug>VimspectorBalloonEval
-xnoremap <F7>     <Plug>VimspectorBalloonEval
-nnoremap <F8>     <Plug>VimspectorJumpToNextBreakpoint
-nnoremap <S-F8>   <Plug>VimspectorJumpToPreviousBreakpoint
-nnoremap <F9>     <Plug>VimspectorToggleBreakpoint
-nnoremap <C-F9>   <Plug>VimspectorBreakpoints
-nnoremap <S-F9>   <Plug>VimspectorAddFunctionBreakpoint
-nnoremap <F10>    <Plug>VimspectorStepOver
-nnoremap <C-F10>  <Plug>VimspectorRunToCursor
-nnoremap <F11>    <Plug>VimspectorStepInto
-nnoremap <S-F11>  <Plug>VimspectorStepOut
-nnoremap <F12>    <Plug>VimspectorUpFrame
-nnoremap <S-F12>  <Plug>VimspectorDownFrame
+command! -nargs=0 EnableVimspector call EnableVimspector()
 
-augroup customize_vimspector_ui | autocmd!
-    autocmd User VimspectorUICreated {
-        win_gotoid( g:vimspector_session_windows.code )
+def EnableVimspector(): void
+    packadd vimspector
 
-        nunmenu WinBar
+    nnoremap <F4>     <Plug>VimspectorDisassemble
+    nnoremap <F5>     <Plug>VimspectorContinue
+    nnoremap <S-F5>   <Plug>VimspectorStop
+    nnoremap <C-S-F5> <Plug>VimspectorRestart
+    nnoremap <F6>     <Plug>VimspectorPause
+    nnoremap <F7>     <Plug>VimspectorBalloonEval
+    xnoremap <F7>     <Plug>VimspectorBalloonEval
+    nnoremap <F8>     <Plug>VimspectorJumpToNextBreakpoint
+    nnoremap <S-F8>   <Plug>VimspectorJumpToPreviousBreakpoint
+    nnoremap <F9>     <Plug>VimspectorToggleBreakpoint
+    nnoremap <C-F9>   <Plug>VimspectorBreakpoints
+    nnoremap <S-F9>   <Plug>VimspectorAddFunctionBreakpoint
+    nnoremap <F10>    <Plug>VimspectorStepOver
+    nnoremap <C-F10>  <Plug>VimspectorRunToCursor
+    nnoremap <F11>    <Plug>VimspectorStepInto
+    nnoremap <S-F11>  <Plug>VimspectorStepOut
+    nnoremap <F12>    <Plug>VimspectorUpFrame
+    nnoremap <S-F12>  <Plug>VimspectorDownFrame
 
-        nnoremenu WinBar.Stop     <Cmd>call vimspector#Stop()<CR>
-        nnoremenu WinBar.Continue <Cmd>call vimspector#Continue()<CR>
-        nnoremenu WinBar.Pause    <Cmd>call vimspector#Pause()<CR>
-        nnoremenu WinBar.StepOver <Cmd>call vimspector#StepOver()<CR>
-        nnoremenu WinBar.StepIn   <Cmd>call vimspector#StepInto()<CR>
-        nnoremenu WinBar.StepOut  <Cmd>call vimspector#StepOut()<CR>
-        nnoremenu WinBar.Restart  <Cmd>call vimspector#Restart()<CR>
-        nnoremenu WinBar.Exit     <Cmd>call vimspector#Reset()<CR>
-    }
-augroup END
+    augroup customize_vimspector_ui | autocmd!
+        autocmd User VimspectorUICreated {
+            win_gotoid(g:vimspector_session_windows.code)
+
+            nunmenu WinBar
+
+            nnoremenu WinBar.Continue <Cmd>call vimspector#Continue()<CR>
+            nnoremenu WinBar.Next     <Cmd>call vimspector#StepOver()<CR>
+            nnoremenu WinBar.Step     <Cmd>call vimspector#StepInto()<CR>
+            nnoremenu WinBar.Finish   <Cmd>call vimspector#StepOut()<CR>
+            nnoremenu WinBar.Pause    <Cmd>call vimspector#Pause()<CR>
+            nnoremenu WinBar.Stop     <Cmd>call vimspector#Stop()<CR>
+            nnoremenu WinBar.Restart  <Cmd>call vimspector#Restart()<CR>
+            nnoremenu WinBar.Exit     <Cmd>call vimspector#Reset()<CR>
+        }
+    augroup END
+enddef
+
+# clean/update plugins
+nnoremap <silent> <Leader>Qc <Cmd>PaqClean<CR>
+nnoremap <silent> <Leader>Qu <Cmd>PaqUpdate<CR>
+
+command! -nargs=0 PaqClean {
+    PaqInit()
+    PaqClean()
+}
+
+command! -nargs=0 PaqUpdate {
+    PaqInit()
+    PaqUpdate()
+}
 
 # }}}
 
