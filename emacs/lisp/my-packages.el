@@ -444,17 +444,17 @@ Enable `recentf-mode' if it isn't already."
 
 (use-package tab-bar
   :custom
-  (tab-bar-close-button-show nil)
+  (tab-bar-close-button-show t)
   (tab-bar-close-tab-select 'recent)
   (tab-bar-new-tab-choice t)
   (tab-bar-new-tab-to 'right)
   (tab-bar-position nil)
-  (tab-bar-show nil)
+  (tab-bar-show 1)
   (tab-bar-tab-hints nil)
   (tab-bar-tab-name-function 'tab-bar-tab-name-all)
   :config
-  (tab-bar-mode -1)
-  (tab-bar-history-mode -1))
+  (tab-bar-mode +1)
+  (tab-bar-history-mode +1))
 
 (use-package tab-line
   :custom
