@@ -33,11 +33,11 @@
   (setopt evil-emacs-state-modes nil)
   (setopt evil-insert-state-modes nil)
   (setopt evil-motion-state-modes nil)
-  (setopt evil-normal-state-modes '(conf-mode
-                                    fundamental-mode
-                                    prog-mode
-                                    text-mode))
+  (setopt evil-normal-state-modes nil)
 
+  (setopt evil-buffer-regexps
+          '(("^ \\*load\\*" . nil)
+            ("\\`\\*scratch\\*\\'" . normal)))
   (setopt evil-disable-insert-state-bindings t)
   (setopt evil-echo-state nil)
   (setopt evil-mode-line-format '(after . nil))
@@ -114,6 +114,9 @@
   :init
   (my-evil--propertize-state-tags)
   :hook
+  (find-file
+   . (lambda ()
+       (evil-normal-state)))
   (evil-after-load
    . (lambda ()
        (evil-set-leader '(normal motion) (kbd "SPC"))
