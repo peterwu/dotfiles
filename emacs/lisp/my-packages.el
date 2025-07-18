@@ -6,53 +6,24 @@
 
 (use-package align
   :preface
-  (defun my-align--squeeze-spaces (beg end regex type)
-    (save-excursion
-      (let ((line-count (count-lines beg end)))
-        (goto-char beg)
-        (dotimes (_ line-count)
-          (beginning-of-line)
-
-          ;; look for 2 or more spaces
-          (let ((spaces-regex "\\([ ]\\{2,\\}\\)")) ;; match 2 or more spaces
-            (while (re-search-forward regex (point-at-eol) t)
-              (when (save-excursion
-                      (cond
-                       ;; for type 'right, match spaces after the regex
-                       ((eq type 'right)
-                        (looking-at spaces-regex))
-                       ;; for type 'left, match spaces before the regex
-                       ((eq type 'left)
-                        (goto-char (match-beginning 0))
-                        (looking-back spaces-regex (pos-bol)))))
-                (replace-match " "))))
-
-          (forward-line)))))
-
-  (defun my-align--regexp(beg end regexp type)
+  (defun my-align--regexp(beg end char type)
     (save-restriction
       (narrow-to-region beg end)
 
-      (let ((indent-tabs-mode nil)
-            (regexp (if (eq type 'left)
-                        (format "\\(\\)%s" regexp)
-                      (format "%s\\(\\)" regexp)))
-            (group 1)
-            (spacing 0)
-            (repeat nil))
-        (my-align--squeeze-spaces (point-min) (point-max) regexp type)
-        (align-regexp (point-min) (point-max) regexp group spacing repeat))))
+      (let ((regexp (cond
+                     ((eq char ?\s) (format "\\(\\s-*\\) "))
+                     ((eq type 'left) (format "\\(\\)%c" char))
+                     ((eq type 'right) (format "%c\\(\\)" char))))
+            (spacing (if (eq char ?\s) 0 1)))
+        (align-regexp (point-min) (point-max) regexp 1 spacing t))))
 
-  (defun my-align-left (beg end entry)
-    (interactive "r\nsAlign with: ")
-    (my-align--regexp beg end (regexp-quote entry) 'left))
+  (defun my-align-left (beg end char)
+    (interactive "r\ncAlign with:")
+    (my-align--regexp beg end char 'left))
 
-  (defun my-align-right (beg end entry)
-    (interactive "r\nsAlign with: ")
-    (my-align--regexp beg end (regexp-quote entry) 'right))
-  :custom
-  (align-default-spacing 0)
-  (align-indent-before-alignigng nil)
+  (defun my-align-right (beg end char)
+    (interactive "r\ncAlign with:")
+    (my-align--regexp beg end char 'right))
   :bind
   (:map my-ctl-z-g-map
         ("l" . my-align-left)
