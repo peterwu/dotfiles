@@ -16,10 +16,14 @@
 ;; do not resize the frame at this early stage.
 (setopt frame-inhibit-implied-resize t)
 
+;; prefer loading newer compiled files
+(setopt load-prefer-newer t )
+
 ;; no litterring
 (make-directory (expand-file-name "cache" user-emacs-directory) t)
 
 (with-no-warnings ; some of these variables may not have been defined yet
+
   (setopt bookmark-default-file (expand-file-name
                                  "cache/bookmarks"
                                  user-emacs-directory))
@@ -32,8 +36,8 @@
            "cache/network-security.data"
            user-emacs-directory))
 
-  (setopt package-quickstart t)
-  (setopt package-quickstart-file (expand-file-name
+  (setopt package-quickstart t
+          package-quickstart-file (expand-file-name
                                    "cache/package-quickstart.el"
                                    user-emacs-directory))
 
@@ -88,8 +92,35 @@
 (set-face-attribute 'fixed-pitch    nil :family "SF Mono" :height 160 :weight 'normal)
 (set-face-attribute 'variable-pitch nil :family "SF Pro"  :height 160 :weight 'normal)
 
+;; show nothing at startup
+(setopt inhibit-startup-buffer-menu t
+        inhibit-startup-echo-area-message user-login-name
+        inhibit-startup-screen t
+        inhibit-x-resources t)
+(setopt initial-buffer-choice nil
+        initial-major-mode 'org-mode
+        initial-scratch-message nil)
+
+;; zen style experience
+(setopt use-dialog-box nil)
+(setopt use-file-dialog nil)
+(setopt use-short-answers t)
+(setopt visible-bell t)
+
+;; disable bidirectional text scanning for a modest performance boost.
+(setq-default bidi-display-reordering 'left-to-right
+              bidi-paragraph-direction 'left-to-right)
+
+;; faster redisplay
+(setq bidi-inhibit-bpa t)
+
 ;; start maximized (cross-platform)
 (add-hook 'window-setup-hook 'toggle-frame-maximized t)
+
+;; security
+(setq gnutls-verify-error t)
+(setq tls-checktrust t)
+(setq gnutls-min-prime-bits 3072)
 
 (provide 'early-init)
 ;;; early-init.el ends here

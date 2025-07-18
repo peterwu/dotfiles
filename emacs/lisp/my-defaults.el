@@ -16,27 +16,11 @@
 (setq-default backup-inhibited t)
 (setq-default create-lockfiles nil)
 
-;; show nothing at startup
-(setopt inhibit-startup-buffer-menu t)
-(setopt inhibit-startup-echo-area-message (user-login-name))
-(setopt inhibit-startup-screen t)
-(setopt initial-major-mode 'org-mode)
-(setopt initial-scratch-message nil)
-
 ;; help
 (setopt help-window-select t)
 
 ;; tab
 (setopt tab-always-indent 'complete)
 (setopt tab-width 4)
-
-;; zen style experience
-(setopt use-dialog-box nil)
-(setopt use-file-dialog nil)
-(setopt visible-bell t)
-(setopt use-short-answers t)
-
-;; faster redisplay
-(setq-default bidi-inhibit-bpa t)
 
 (provide 'my-defaults)
