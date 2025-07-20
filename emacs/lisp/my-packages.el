@@ -415,30 +415,43 @@ Enable `recentf-mode' if it isn't already."
 
 (use-package tab-bar
   :custom
-  (tab-bar-close-button-show t)
-  (tab-bar-close-tab-select 'recent)
-  (tab-bar-new-tab-choice t)
-  (tab-bar-new-tab-to 'right)
-  (tab-bar-position nil)
-  (tab-bar-show 1)
-  (tab-bar-tab-hints nil)
-  (tab-bar-tab-name-function 'tab-bar-tab-name-all)
+  (tab-bar-show nil)
+  (tab-bar-tab-hints t)
   :config
   (tab-bar-mode +1)
   (tab-bar-history-mode +1))
 
 (use-package tab-line
+  :preface
+  (defun my-tab-line-tab-name-buffer (buffer &optional buffers)
+    (format " %s " (buffer-name buffer)))
+
+  (defvar-local my-tab-line-tab-bar-indicator
+      '(:eval
+        (modus-themes-with-colors
+          (let ((face
+                 (if (mode-line-window-selected-p)
+                     'mode-line-emphasis
+                   'mode-line-inactive)))
+            (propertize
+             (format " %d " (1+ (tab-bar--current-tab-index)))
+             'face `(:inherit ,face :background ,white :inverse-video t)
+             'mouse-face 'mode-line-highlight)))))
+  (put 'my-tab-line-tab-bar-indicator 'risky-local-variable t)
   :custom
+  (tab-line-tab-name-function #'my-tab-line-tab-name-buffer)
+  (tab-line-format
+   '(:eval (list
+            my-tab-line-tab-bar-indicator
+            (tab-line-format))))
   (tab-line-new-button-show nil)
   (tab-line-close-button-show nil)
   (tab-line-exclude-modes '(completion-list-mode
-                            dired-sidebar-mode
+                            dired-mode
                             help-mode))
-  :bind
-  (:map my-ctl-z-t-map
-        ("t" . global-tab-line-mode))
   :config
-  (global-tab-line-mode -1))
+  (setq tab-line-separator "")
+  (global-tab-line-mode +1))
 
 (use-package term
   :custom
