@@ -38,6 +38,20 @@ Show the evil mode tag if selected; otherwise, its window number.")
          (t dedicated-status)))))
 (put 'my-mode-line-window-dedicated 'risky-local-variable t)
 
+(defvar-local my-mode-line-tab-bar-indicator
+    '(:eval
+      (modus-themes-with-colors
+        (let ((face
+               (if (mode-line-window-selected-p)
+                   `(:inherit mode-line-active :background ,white :inverse-video t)
+                 '(:inherit mode-line-inactive :inverse-video t))))
+          (propertize
+           (format " %d " (1+ (tab-bar--current-tab-index)))
+           'face face
+           'help-echo "Current tab index"
+           'mouse-face 'mode-line-highlight)))))
+(put 'my-mode-line-tab-bar-indicator 'risky-local-variable t)
+
 (defvar-local my-mode-line-buffer-identification
     '(:eval (if (buffer-file-name)
                 (propertize (my-mode-line-ellipsize-file-name
@@ -173,6 +187,8 @@ Show the evil mode tag if selected; otherwise, its window number.")
             mode-line-modified
             mode-line-remote
             my-mode-line-window-dedicated
+            " "
+            my-mode-line-tab-bar-indicator
             " "
             my-mode-line-buffer-identification
             " "

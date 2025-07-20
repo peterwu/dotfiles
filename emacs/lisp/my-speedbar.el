@@ -129,7 +129,7 @@ Otherwise return nil."
            ("q" . my-speedbar-hide)
            :map global-map
            ([f9] . my-speedbar-toggle)
-           :map my-ctl-z-t-map
+           :map my-ctl-z-ctl-t-map
            ("x" . my-speedbar-toggle)
            :repeat-map my-speedbar-repeat-map
            ("x" . my-speedbar-toggle))

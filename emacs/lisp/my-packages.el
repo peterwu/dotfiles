@@ -41,7 +41,7 @@
   (battery-load-critical 10)
   (battery-mode-line-format "[%b%p%%]")
   :bind
-  (:map my-ctl-z-t-map
+  (:map my-ctl-z-ctl-t-map
         ("b" . display-battery-mode))
   :config
   (display-battery-mode -1))
@@ -58,7 +58,7 @@
   :custom
   (dictionary-server "dict.org")
   :bind
-  (:map my-ctl-z-t-map
+  (:map my-ctl-z-ctl-t-map
         ("d" . dictionary-tooltip-mode)))
 
 (use-package display-line-numbers
@@ -66,7 +66,7 @@
   (display-line-numbers-type 'relative)
   :hook (text-mode prog-mode)
   :bind
-  (:map my-ctl-z-t-map
+  (:map my-ctl-z-ctl-t-map
         ("n" . display-line-numbers-mode)))
 
 (use-package eldoc
@@ -366,7 +366,7 @@ Enable `recentf-mode' if it isn't already."
         ("C-r" . recentf-open))
   (:map my-ctl-z-4-map
         ("C-r" . my-recentf-open-other-window))
-  (:map my-ctl-z-t-map
+  (:map my-ctl-z-ctl-t-map
         ("C-r" . my-recentf-open-other-tab))
   (:map my-ctl-z-5-map
         ("C-r" . my-recentf-open-other-frame))
@@ -422,33 +422,25 @@ Enable `recentf-mode' if it isn't already."
   (tab-bar-history-mode +1))
 
 (use-package tab-line
+  :demand t
   :preface
   (defun my-tab-line-tab-name-buffer (buffer &optional buffers)
     (format " %s " (buffer-name buffer)))
 
-  (defvar-local my-tab-line-tab-bar-indicator
-      '(:eval
-        (modus-themes-with-colors
-          (let ((face
-                 (if (mode-line-window-selected-p)
-                     'mode-line-emphasis
-                   'mode-line-inactive)))
-            (propertize
-             (format " %d " (1+ (tab-bar--current-tab-index)))
-             'face `(:inherit ,face :background ,white :inverse-video t)
-             'mouse-face 'mode-line-highlight)))))
-  (put 'my-tab-line-tab-bar-indicator 'risky-local-variable t)
+  (defun my-tab-line-close-tab ()
+    (interactive)
+    (when (functionp tab-line-close-tab-function)
+      (funcall tab-line-close-tab-function)))
   :custom
   (tab-line-tab-name-function #'my-tab-line-tab-name-buffer)
-  (tab-line-format
-   '(:eval (list
-            my-tab-line-tab-bar-indicator
-            (tab-line-format))))
   (tab-line-new-button-show nil)
   (tab-line-close-button-show nil)
   (tab-line-exclude-modes '(completion-list-mode
                             dired-mode
                             help-mode))
+  :bind
+  (:map my-ctl-z-t-map
+        ("0" . my-tab-line-close-tab))
   :config
   (setq tab-line-separator "")
   (global-tab-line-mode +1))
@@ -494,7 +486,7 @@ Enable `recentf-mode' if it isn't already."
   (world-clock-time-format "%R %z  %A %d %B")
   (world-clock-timer-second 60)
   :bind
-  (:map my-ctl-z-t-map
+  (:map my-ctl-z-ctl-t-map
         ("c" . display-time-mode)
         ("g" . world-clock))
   :config
@@ -539,7 +531,7 @@ Enable `recentf-mode' if it isn't already."
   (before-save . whitespace-cleanup)
   ((conf-mode prog-mode) . whitespace-mode)
   :bind
-  (:map my-ctl-z-t-map
+  (:map my-ctl-z-ctl-t-map
         ("w" . whitespace-mode)))
 
 (use-package xt-mouse
