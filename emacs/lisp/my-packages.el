@@ -431,6 +431,10 @@ Enable `recentf-mode' if it isn't already."
     (interactive)
     (when (functionp tab-line-close-tab-function)
       (funcall tab-line-close-tab-function)))
+
+  (defun my-tab-line-kill-tab ()
+    (interactive)
+    (kill-buffer))
   :custom
   (tab-line-tab-name-function #'my-tab-line-tab-name-buffer)
   (tab-line-new-button-show nil)
@@ -440,7 +444,8 @@ Enable `recentf-mode' if it isn't already."
                             help-mode))
   :bind
   (:map my-ctl-z-t-map
-        ("0" . my-tab-line-close-tab))
+        ("0" . my-tab-line-close-tab)
+        ("k" . my-tab-line-kill-tab))
   :config
   (setq tab-line-separator "")
   (global-tab-line-mode +1))

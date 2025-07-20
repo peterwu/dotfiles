@@ -23,14 +23,14 @@
   "Return an ellipsized file name when applicable.")
 (put 'my-speedbar-window-status-tag 'risky-local-variable t)
 
-(defun my-speedbar-set-mode-line-format-advice ()
-  "Override the default mode-line-format."
-  (setq-local mode-line-format
-              '(:eval my-speedbar-window-status-tag))
-  (force-mode-line-update))
+;; (defun my-speedbar-set-mode-line-format-advice ()
+;;   "Override the default mode-line-format."
+;;   (setq-local mode-line-format
+;;               '(:eval my-speedbar-window-status-tag))
+;;   (force-mode-line-update))
 
-(advice-add #'speedbar-set-mode-line-format
-            :override #'my-speedbar-set-mode-line-format-advice)
+;; (advice-add #'speedbar-set-mode-line-format
+;;             :override #'my-speedbar-set-mode-line-format-advice)
 
 (defun my-speedbar-toggle-show-all-files-advice ()
   "Toggle the appearance of level 2 hidden files."
