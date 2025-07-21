@@ -1,0 +1,27 @@
+brew install   \
+   pkg-config  \
+   texinfo     \
+   libgccjit   \
+   autoconf    \
+   automake    \
+   make        \
+   gnutls      \
+   gcc         \
+   tree-sitter
+
+git clone git://git.savannah.gnu.org/emacs.git
+cd emacs
+./autogen.sh
+
+./configure                      \
+    --with-ns                    \
+    --disable-ns-self-contained  \
+    --with-tree-sitter
+
+
+gmake -j ${sysctl -n hw.ncpu}
+sudo gmake install
+
+find the Emacs.app in the nextstep folder
+
+
