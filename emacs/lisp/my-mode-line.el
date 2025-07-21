@@ -27,7 +27,6 @@ Show the evil mode tag if selected; otherwise, its window number.")
 (defvar-local my-mode-line-window-dedicated
     '(:eval
       (let ((dedicated-status (mode-line-window-control)))
-        dedicated-status
         (cond
          ((string-blank-p dedicated-status)
           (propertize
@@ -40,16 +39,16 @@ Show the evil mode tag if selected; otherwise, its window number.")
 
 (defvar-local my-mode-line-tab-bar-indicator
     '(:eval
-      (modus-themes-with-colors
-        (let ((face
-               (if (mode-line-window-selected-p)
-                   `(:inherit mode-line-active :background ,white :inverse-video t)
-                 '(:inherit mode-line-inactive :inverse-video t))))
-          (propertize
-           (format " %d " (1+ (tab-bar--current-tab-index)))
-           'face face
-           'help-echo "Current tab index"
-           'mouse-face 'mode-line-highlight)))))
+      (let* ((tabs (tab-bar-tabs))
+             (index (1+ (seq-position tabs
+                                      'current-tab
+                                      (lambda (a b) (eq (car a) b)))))
+             (name (cdadr(assoc 'current-tab tabs))))
+        (propertize
+         (format "#%d" index)
+         'help-echo (format "%d: %s" index name)
+         'mouse-face 'mode-line-highlight)))
+  "Return current tab bar information.")
 (put 'my-mode-line-tab-bar-indicator 'risky-local-variable t)
 
 (defvar-local my-mode-line-buffer-identification
