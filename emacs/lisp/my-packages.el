@@ -442,6 +442,17 @@ Enable `recentf-mode' if it isn't already."
   (tab-line-exclude-modes '(completion-list-mode
                             dired-mode
                             help-mode))
+  :custom-face
+  (tab-line
+   ((t (:box (:line-width -1 :color ,(face-background 'tab-line))))))
+  (tab-line-tab
+   ((t (:box (:line-width 3 :color ,(face-background 'tab-line))))))
+  (tab-line-tab-inactive
+   ((t (:box (:line-width 3 :color ,(face-background 'tab-line))))))
+  (tab-line-tab-highlight
+   ((t (:box (:line-width 3 :color ,(face-background 'tab-line))))))
+  (tab-line-tab-current
+   ((t (:box (:line-width 3 :color ,(face-background 'tab-line))))))
   :bind
   (:map my-ctl-z-t-map
         ("0" . my-tab-line-close-tab)
