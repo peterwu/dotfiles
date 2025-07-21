@@ -12,6 +12,7 @@
 
 (use-package my-devel)
 (use-package my-dired)
+(use-package my-dired-explorer)
 (use-package my-org)
 (use-package my-vc)
 (use-package my-window)

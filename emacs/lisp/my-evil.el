@@ -62,28 +62,6 @@
         ("P" . my-evil-paste-before-from-clipboard)
         ("Y" . my-evil-yank-eol-to-clipboard))
 
-  (:map evil-emacs-state-map
-        ("C-z ~" . evil-invert-char)
-
-        ("C-z c" . evil-change)
-        ("C-z d" . evil-delete)
-        ("C-z f" . evil-find-char)
-        ("C-z o" . evil-open-below)
-        ("C-z p" . evil-paste-after)
-        ("C-z y" . evil-yank)
-        ("C-z u" . evil-downcase)
-        ("C-z v" . evil-visual-char)
-
-        ("C-z C" . evil-change-line)
-        ("C-z D" . evil-delete-line)
-        ("C-z F" . evil-find-char-backward)
-        ("C-z J" . evil-join)
-        ("C-z O" . evil-open-above)
-        ("C-z P" . evil-paste-before)
-        ("C-z R" . evil-redo)
-        ("C-z U" . evil-upcase)
-        ("C-z V" . evil-visual-line)
-        ("C-z Y" . evil-yank-line))
   (:map evil-insert-state-map
         ("C-x C-n" . evil-complete-next-line)
         ("C-x C-p" . evil-complete-previous-line))
