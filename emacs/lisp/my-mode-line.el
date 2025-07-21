@@ -39,11 +39,12 @@ Show the evil mode tag if selected; otherwise, its window number.")
 
 (defvar-local my-mode-line-tab-bar-indicator
     '(:eval
-      (let* ((tabs (tab-bar-tabs))
-             (index (1+ (seq-position tabs
-                                      'current-tab
-                                      (lambda (a b) (eq (car a) b)))))
-             (name (cdadr(assoc 'current-tab tabs))))
+      (when-let* ((tabs (tab-bar-tabs))
+                  (>1 (> (length tabs) 1))
+                  (index (1+ (seq-position tabs
+                                           'current-tab
+                                           (lambda (a b) (eq (car a) b)))))
+                  (name (cdadr(assoc 'current-tab tabs))))
         (propertize
          (format "#%d" index)
          'help-echo (format "%d: %s" index name)
