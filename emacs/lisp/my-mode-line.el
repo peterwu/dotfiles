@@ -39,14 +39,13 @@ Show the evil mode tag if selected; otherwise, its window number.")
 
 (defvar-local my-mode-line-tab-bar-indicator
     '(:eval
-      (when-let* ((tabs (tab-bar-tabs))
-                  (>1 (> (length tabs) 1))
-                  (index (1+ (seq-position tabs
-                                           'current-tab
-                                           (lambda (a b) (eq (car a) b)))))
-                  (name (cdadr(assoc 'current-tab tabs))))
+      (let* ((tabs (tab-bar-tabs))
+             (index (1+ (seq-position tabs
+                                      'current-tab
+                                      (lambda (a b) (eq (car a) b)))))
+             (name (cdadr(assoc 'current-tab tabs))))
         (propertize
-         (format "#%d" index)
+         (if (> (length tabs) 1) (format "%d" index) "-")
          'help-echo (format "%d: %s" index name)
          'mouse-face 'mode-line-highlight)))
   "Return current tab bar information.")
@@ -187,7 +186,6 @@ Show the evil mode tag if selected; otherwise, its window number.")
             mode-line-modified
             mode-line-remote
             my-mode-line-window-dedicated
-            " "
             my-mode-line-tab-bar-indicator
             " "
             my-mode-line-buffer-identification
