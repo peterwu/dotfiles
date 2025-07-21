@@ -10,11 +10,12 @@
     (save-restriction
       (narrow-to-region beg end)
 
-      (let ((regexp (cond
-                     ((eq char ?\s) (format "\\(\\s-*\\) "))
-                     ((eq type 'left) (format "\\(\\)%c" char))
-                     ((eq type 'right) (format "%c\\(\\)" char))))
-            (spacing (if (eq char ?\s) 0 1)))
+      (let* ((s (regexp-quote (format "%c" char)))
+             (regexp (cond
+                      ((string-blank-p s) (format "\\(\\s-*\\) "))
+                      ((eq type 'left) (format "\\(\\)%s" s))
+                      ((eq type 'right) (format "%s\\(\\)" s))))
+             (spacing (if (string-blank-p s) 0 1)))
         (align-regexp (point-min) (point-max) regexp 1 spacing t))))
 
   (defun my-align-left (beg end char)
