@@ -4,7 +4,7 @@
 (use-package dired
   :custom
   (delete-by-moving-to-trash t)
-  (insert-directory-program "/usr/local/bin/gls")
+  (insert-directory-program "gls")
 
   (dired-bind-info nil)
   (dired-bind-man nil)

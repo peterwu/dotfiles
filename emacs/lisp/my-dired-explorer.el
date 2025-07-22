@@ -114,6 +114,7 @@ Otherwise return nil."
 (define-minor-mode my-dired-explorer-mode
   "A minor mode for my-dired-explorer"
   :global nil
+  :interactive nil
   :keymap (make-sparse-keymap)
   (when my-dired-explorer-mode
     (set-keymap-parent my-dired-explorer-mode-map dired-mode-map)
