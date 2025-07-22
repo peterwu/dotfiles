@@ -427,15 +427,6 @@ Enable `recentf-mode' if it isn't already."
   :preface
   (defun my-tab-line-tab-name-buffer (buffer &optional buffers)
     (format " %s " (buffer-name buffer)))
-
-  (defun my-tab-line-close-tab ()
-    (interactive)
-    (when (functionp tab-line-close-tab-function)
-      (funcall tab-line-close-tab-function)))
-
-  (defun my-tab-line-kill-tab ()
-    (interactive)
-    (kill-buffer))
   :custom
   (tab-line-tab-name-function #'my-tab-line-tab-name-buffer)
   (tab-line-new-button-show nil)
@@ -456,8 +447,9 @@ Enable `recentf-mode' if it isn't already."
    ((t (:box (:line-width 3 :color ,(face-background 'tab-line))))))
   :bind
   (:map my-ctl-z-t-map
-        ("0" . my-tab-line-close-tab)
-        ("k" . my-tab-line-kill-tab))
+        ("0" . tab-line-close-tab)
+        ("1" . tab-line-close-other-tabs)
+        ("2" . tab-line-new-tab))
   :config
   (setq tab-line-separator "")
   (global-tab-line-mode +1))
