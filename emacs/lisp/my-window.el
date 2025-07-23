@@ -35,7 +35,9 @@
       (display-buffer-reuse-window
        display-buffer-below-selected)
       (dedicated . t)
-      (window-height . 11))))
+      (window-height . 11))
+     (t
+      (display-buffer-use-some-window))))
   :hook
   ((help-mode custom-mode) . visual-line-mode))
 

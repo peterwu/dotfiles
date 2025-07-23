@@ -421,6 +421,32 @@ Enable `recentf-mode' if it isn't already."
   :config
   (global-so-long-mode +1))
 
+(use-package speedbar
+  :preface
+  (defun my-speedbar-close-window ()
+    (interactive)
+    (speedbar-window--close))
+
+  (defun my-speedbar-toggle-window ()
+    (interactive)
+    (speedbar-window)
+    (when (speedbar-window--live-p)
+      (select-window speedbar--window)))
+  :custom
+  (speedbar-hide-button-brackets-flag t)
+  (speedbar-prefer-window t)
+  (speedbar-show-unknown-files t)
+  (speedbar-use-images nil)
+  (speedbar-window-default-width 31)
+  :bind
+  (:map speedbar-mode-map
+        ("q" . my-speedbar-close-window))
+  (:map speedbar-file-key-map
+        ("^" . speedbar-up-directory)
+        ("." . speedbar-toggle-show-all-files))
+  (:map my-ctl-z-map
+        ("d" . my-speedbar-toggle-window)))
+
 (use-package tab-bar
   :custom
   (tab-bar-show nil)
