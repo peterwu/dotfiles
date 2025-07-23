@@ -66,9 +66,9 @@
         ("C-x C-n" . evil-complete-next-line)
         ("C-x C-p" . evil-complete-previous-line))
   (:map evil-motion-state-map
-        ("gc" . my-evil-commentary)
-        ("gl" . my-evil-align-left)
-        ("gL" . my-evil-align-right)
+        ("g c" . my-evil-commentary)
+        ("g l" . my-evil-align-left)
+        ("g L" . my-evil-align-right)
 
         ("M-y" . my-evil-yank-to-clipboard))
   (:map evil-normal-state-map
@@ -90,6 +90,7 @@
         ("M-P" . my-evil-paste-before-from-clipboard)
         ("M-Y" . my-evil-yank-eol-to-clipboard))
   :init
+  (require 'evil)
   (my-evil--propertize-state-tags)
   :hook
   (find-file
