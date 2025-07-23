@@ -375,6 +375,13 @@ Enable `recentf-mode' if it isn't already."
   (recentf-mode +1))
 
 (use-package repeat
+  :preface
+  (defun my-repeat-mode--shut-up-advice (fn &rest args)
+    (let ((inhibit-message t)
+          (message-log-max))
+      (apply fn args)))
+  :init
+  (advice-add #'repeat-mode :around #'my-repeat-mode--shut-up-advice)
   :config
   (repeat-mode +1))
 
