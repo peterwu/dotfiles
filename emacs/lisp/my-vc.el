@@ -10,7 +10,15 @@
 (use-package ediff
   :custom
   (ediff-split-window-function 'split-window-horizontally)
-  (ediff-window-setup-function 'ediff-setup-windows-plain))
+  (ediff-window-setup-function 'ediff-setup-windows-plain)
+  :hook
+  (ediff-after-setup-windows
+   . (lambda ()
+       (dolist (buffer (list ediff-buffer-A
+                             ediff-buffer-B
+                             ediff-buffer-C))
+         (with-selected-window (get-buffer-window buffer)
+           (tab-line-mode -1))))))
 
 (use-package log-view
   :defer t

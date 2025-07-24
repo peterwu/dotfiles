@@ -16,6 +16,10 @@
                ("<down>"  . windmove-down)))
 
 (use-package window
+  :preface
+  (defun my-ediff-buffer-live-p (buffer &rest args)
+    (when (fboundp 'ediff-buffer-live-p)
+      (ediff-buffer-live-p buffer)))
   :custom
   (even-window-sizes 'height-only)
   (switch-to-buffer-in-dedicated-window 'pop)
@@ -36,6 +40,10 @@
        display-buffer-below-selected)
       (dedicated . t)
       (window-height . 11))
+
+     (my-ediff-buffer-live-p
+      (display-buffer-reuse-window))
+
      (t
       (display-buffer-use-some-window))))
   :hook
