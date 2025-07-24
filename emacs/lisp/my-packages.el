@@ -19,11 +19,11 @@
         (align-regexp (point-min) (point-max) regexp 1 spacing t))))
 
   (defun my-align-left (beg end char)
-    (interactive "r\ncAlign with:")
+    (interactive "r\nc")
     (my-align--regexp beg end char 'left))
 
   (defun my-align-right (beg end char)
-    (interactive "r\ncAlign with:")
+    (interactive "r\nc")
     (my-align--regexp beg end char 'right))
   :bind
   (:map my-ctl-z-g-map

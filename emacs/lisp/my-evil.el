@@ -4,6 +4,7 @@
 (use-package evil
   :ensure t
   :pin melpa
+  :after my-surround
   :preface
   (defun my-evil--propertize-state-tags ()
     (modus-themes-with-colors
@@ -28,6 +29,18 @@
                `(evil-replace-state-tag       " R "   ,red)
                `(evil-motion-state-tag        " M "   ,black)
                `(evil-emacs-state-tag         " E "   ,magenta))))))
+
+  (defun my-evil-surround--call-with-repeat (callback)
+    "Record keystrokes to repeat surround-region operator and it's motion.
+This is necessary because `evil-yank' operator is not repeatable (:repeat nil)"
+    (evil-repeat-start)
+    (evil-repeat-record "y")
+    (evil-repeat-record (this-command-keys))
+
+    (setq this-command callback)
+    (call-interactively callback)
+    (evil-repeat-keystrokes 'post)
+    (evil-repeat-stop))
   :init
   (setopt evil-default-state 'emacs)
   (setopt evil-emacs-state-modes nil)
@@ -89,6 +102,10 @@
         ("M-p" . my-evil-paste-after-from-clipboard)
         ("M-P" . my-evil-paste-before-from-clipboard)
         ("M-Y" . my-evil-yank-eol-to-clipboard))
+  (:map evil-operator-state-map
+        ("s" . my-evil-surround-edit))
+  (:map evil-visual-state-map
+        ("S" . my-surround-region))
   :init
   (require 'evil)
   (my-evil--propertize-state-tags)
@@ -150,15 +167,39 @@
          (let ((beg (point))
                (end (pos-eol)))
            (evil-yank beg end)
-           (clipboard-kill-ring-save beg end)))))
+           (clipboard-kill-ring-save beg end)))
+
+       (evil-define-operator my-evil-surround-region (beg end)
+         (interactive "<r>")
+         (let ((char (read-char)))
+           (my-surround-region beg end char)))
+
+       (evil-define-command my-evil-surround-edit (operation)
+         (interactive
+          (list (assoc-default evil-this-operator
+                               '((evil-change . change)
+                                 (evil-delete . delete)))))
+
+         (setq evil-inhibit-operator t)
+         (cond
+          ((eq operation 'change)
+           (call-interactively 'my-surround-change))
+          ((eq operation 'delete)
+           (call-interactively 'my-surround-delete))
+          (t
+           (my-evil-surround--call-with-repeat 'my-evil-surround-region)))
+
+         ;; Return an empty range so evil-motion-range doesn't try to guess
+         (let ((p (point))) (list p p 'exclusive)))))
   :config
   (evil-mode +1))
 
-;; evil-surround
-(use-package evil-surround
-  :ensure t
-  :pin melpa
-  :config
-  (global-evil-surround-mode +1))
+(use-package my-surround
+  :demand t
+  :bind
+  (:map my-ctl-z-s-map
+        ("c" . my-surround-change)
+        ("d" . my-surround-delete)
+        ("y" . my-surround-region)))
 
 (provide 'my-evil)

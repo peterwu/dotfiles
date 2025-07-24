@@ -37,6 +37,11 @@
            :prefix-map my-ctl-z-o-map
            :prefix "o")
 
+;; my-ctl-z-s-map
+(bind-keys :map my-ctl-z-map
+           :prefix-map my-ctl-z-s-map
+           :prefix "s")
+
 ;; my-ctl-z-t-map
 (bind-keys :map my-ctl-z-map
            :prefix-map my-ctl-z-t-map
