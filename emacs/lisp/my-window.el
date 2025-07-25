@@ -50,6 +50,7 @@
   ((help-mode custom-mode) . visual-line-mode))
 
 (use-package winner
+  :demand t
   :custom
   (winner-dont-bind-my-keys t)
   :bind
