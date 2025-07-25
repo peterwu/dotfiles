@@ -111,4 +111,9 @@ If DIR is +1, search forward; if DIR is -1, search backward."
       (goto-char beg)
       (insert open-delim))))
 
+(bind-keys :map my-ctl-z-s-map
+           ("c" . my-surround-change)
+           ("d" . my-surround-delete)
+           ("y" . my-surround-region))
+
 (provide 'my-surround)

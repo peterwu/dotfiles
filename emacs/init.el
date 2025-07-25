@@ -7,6 +7,7 @@
 
 (use-package my-theme)
 (use-package my-keybinds)
+(use-package my-surround)
 (use-package my-evil)
 (use-package my-mode-line)
 

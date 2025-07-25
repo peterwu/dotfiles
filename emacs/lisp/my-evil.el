@@ -193,12 +193,4 @@ This is necessary because `evil-yank' operator is not repeatable (:repeat nil)"
   :config
   (evil-mode +1))
 
-(use-package my-surround
-  :demand t
-  :bind
-  (:map my-ctl-z-s-map
-        ("c" . my-surround-change)
-        ("d" . my-surround-delete)
-        ("y" . my-surround-region)))
-
 (provide 'my-evil)
