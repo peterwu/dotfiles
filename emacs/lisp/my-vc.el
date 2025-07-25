@@ -9,8 +9,8 @@
 
 (use-package ediff
   :custom
-  (ediff-split-window-function 'split-window-horizontally)
-  (ediff-window-setup-function 'ediff-setup-windows-plain)
+  (ediff-split-window-function #'split-window-horizontally)
+  (ediff-window-setup-function #'ediff-setup-windows-plain)
   :hook
   (ediff-cleanup
    . (lambda ()
@@ -21,9 +21,11 @@
                              ediff-buffer-B
                              ediff-buffer-C))
          (with-selected-window (get-buffer-window buffer)
-           (tab-line-mode -1)))))
-  :config
-  (add-hook 'ediff-after-quit-hook-internal 'winner-undo))
+           (tab-line-mode -1))))))
+
+(use-package ediff-util
+  :hook
+  (ediff-after-quit-hook-internal . winner-undo))
 
 (use-package log-view
   :defer t
