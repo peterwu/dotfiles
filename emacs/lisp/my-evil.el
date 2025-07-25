@@ -106,91 +106,90 @@ This is necessary because `evil-yank' operator is not repeatable (:repeat nil)"
         ("s" . my-evil-surround-edit))
   (:map evil-visual-state-map
         ("S" . my-surround-region))
-  :init
-  (require 'evil)
-  (my-evil--propertize-state-tags)
   :hook
   (find-file
    . (lambda ()
        (evil-normal-state)))
-  (evil-after-load
-   . (lambda ()
-       (evil-set-leader '(normal motion) (kbd "SPC"))
-       (evil-set-leader '(normal motion) (kbd ",") t)
+  :init
+  (require 'evil)
+  (my-evil--propertize-state-tags)
+  :init
+  (evil-set-leader '(normal motion) (kbd "SPC"))
+  (evil-set-leader '(normal motion) (kbd ",") t)
 
-       (evil-define-command my-evil-paste-after-from-clipboard (count)
-         :suppress-operator t
-         (interactive "*P")
-         (with-temp-buffer
-           (clipboard-yank)
-           (evil-set-register ?\" (buffer-string)))
-         (evil-paste-after count))
+  (evil-define-command my-evil-paste-after-from-clipboard (count)
+    :suppress-operator t
+    (interactive "*P")
+    (with-temp-buffer
+      (clipboard-yank)
+      (evil-set-register ?\" (buffer-string)))
+    (evil-paste-after count))
 
-       (evil-define-command my-evil-paste-before-from-clipboard (count)
-         :suppress-operator t
-         (interactive "*P")
-         (with-temp-buffer
-           (clipboard-yank)
-           (evil-set-register ?\" (buffer-string)))
-         (evil-paste-before count))
+  (evil-define-command my-evil-paste-before-from-clipboard (count)
+    :suppress-operator t
+    (interactive "*P")
+    (with-temp-buffer
+      (clipboard-yank)
+      (evil-set-register ?\" (buffer-string)))
+    (evil-paste-before count))
 
-       (evil-define-operator my-evil-align-left (beg end)
-         :move-point nil
-         :repeat t
-         (interactive "<r>")
-         (evil-with-active-region beg end
-           (call-interactively #'my-align-left)))
+  (evil-define-operator my-evil-align-left (beg end)
+    :move-point nil
+    :repeat t
+    (interactive "<r>")
+    (evil-with-active-region beg end
+      (call-interactively #'my-align-left)))
 
-       (evil-define-operator my-evil-align-right (beg end)
-         :move-point nil
-         :repeat t
-         (interactive "<r>")
-         (evil-with-active-region beg end
-           (call-interactively #'my-align-right)))
+  (evil-define-operator my-evil-align-right (beg end)
+    :move-point nil
+    :repeat t
+    (interactive "<r>")
+    (evil-with-active-region beg end
+      (call-interactively #'my-align-right)))
 
-       (evil-define-operator my-evil-commentary (beg end)
-         :move-point nil
-         :repeat t
-         (interactive "<r>")
-         (comment-or-uncomment-region beg end))
+  (evil-define-operator my-evil-commentary (beg end)
+    :move-point nil
+    :repeat t
+    (interactive "<r>")
+    (comment-or-uncomment-region beg end))
 
-       (evil-define-operator my-evil-yank-to-clipboard (beg end)
-         :move-point nil
-         :repeat nil
-         (interactive "<r>")
-         (evil-yank beg end)
-         (clipboard-kill-ring-save beg end))
+  (evil-define-operator my-evil-yank-to-clipboard (beg end)
+    :move-point nil
+    :repeat nil
+    (interactive "<r>")
+    (evil-yank beg end)
+    (clipboard-kill-ring-save beg end))
 
-       (evil-define-command my-evil-yank-eol-to-clipboard ()
-         :suppress-operator t
-         (interactive)
-         (let ((beg (point))
-               (end (pos-eol)))
-           (evil-yank beg end)
-           (clipboard-kill-ring-save beg end)))
+  (evil-define-command my-evil-yank-eol-to-clipboard ()
+    :suppress-operator t
+    (interactive)
+    (let ((beg (point))
+          (end (pos-eol)))
+      (evil-yank beg end)
+      (clipboard-kill-ring-save beg end)))
 
-       (evil-define-operator my-evil-surround-region (beg end)
-         (interactive "<r>")
-         (let ((char (read-char)))
-           (my-surround-region beg end char)))
+  (evil-define-command my-evil-surround-edit (operation)
+    (interactive
+     (list (assoc-default evil-this-operator
+                          '((evil-change . change)
+                            (evil-delete . delete)))))
 
-       (evil-define-command my-evil-surround-edit (operation)
-         (interactive
-          (list (assoc-default evil-this-operator
-                               '((evil-change . change)
-                                 (evil-delete . delete)))))
+    (setq evil-inhibit-operator t)
+    (cond
+     ((eq operation 'change)
+      (call-interactively 'my-surround-change))
+     ((eq operation 'delete)
+      (call-interactively 'my-surround-delete))
+     (t
+      (my-evil-surround--call-with-repeat 'my-evil-surround-region)))
 
-         (setq evil-inhibit-operator t)
-         (cond
-          ((eq operation 'change)
-           (call-interactively 'my-surround-change))
-          ((eq operation 'delete)
-           (call-interactively 'my-surround-delete))
-          (t
-           (my-evil-surround--call-with-repeat 'my-evil-surround-region)))
+    ;; Return an empty range so evil-motion-range doesn't try to guess
+    (let ((p (point))) (list p p 'exclusive)))
 
-         ;; Return an empty range so evil-motion-range doesn't try to guess
-         (let ((p (point))) (list p p 'exclusive)))))
+  (evil-define-operator my-evil-surround-region (beg end)
+    (interactive "<r>")
+    (let ((char (read-char)))
+      (my-surround-region beg end char)))
   :config
   (evil-mode +1))
 
