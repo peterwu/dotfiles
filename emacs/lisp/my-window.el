@@ -17,9 +17,10 @@
 
 (use-package window
   :preface
-  (defun my-ediff-buffer-live-p (buffer &rest args)
-    (when (fboundp 'ediff-buffer-live-p)
-      (ediff-buffer-live-p buffer)))
+  (defun my-speedbar-buffer-live-p (buffer &rest args)
+    (and (boundp 'speedbar-buffer)
+         speedbar-buffer
+         (buffer-live-p speedbar-buffer)))
   :custom
   (even-window-sizes 'height-only)
   (switch-to-buffer-in-dedicated-window 'pop)
@@ -41,11 +42,8 @@
       (dedicated . t)
       (window-height . 11))
 
-     (my-ediff-buffer-live-p
-      (display-buffer-reuse-window))
-
-     (t
-      (display-buffer-use-some-window))))
+     (my-speedbar-buffer-live-p
+      display-buffer-use-some-window)))
   :hook
   ((help-mode custom-mode) . visual-line-mode))
 
