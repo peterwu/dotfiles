@@ -1,27 +1,32 @@
-brew install   \
-   pkg-config  \
-   texinfo     \
-   libgccjit   \
-   autoconf    \
-   automake    \
-   make        \
-   gnutls      \
-   gcc         \
-   tree-sitter
 
-git clone git://git.savannah.gnu.org/emacs.git
-cd emacs
-./autogen.sh
+#+begin_src bash
+    brew install    \
+       pkg-config   \
+       texinfo      \
+       libgccjit    \
+       autoconf     \
+       automake     \
+       gnutls       \
+       rsvg         \
+       tree-sitter
 
-./configure                      \
-    --with-ns                    \
-    --disable-ns-self-contained  \
-    --with-tree-sitter
+    git clone https://github.com/emacs-mirror/emacs.git
 
+    cd emacs
+    ./autogen.sh
 
-gmake -j ${sysctl -n hw.ncpu}
-sudo gmake install
+    CFLAGS="-O2 -march=native -fomit-frame-pointer" \
+    ./configure                                     \
+        --with-ns                                   \
+        --enable-ns-self-contained                  \
+        --with-rsvg                                 \
+        --with-tree-sitter
 
-find the Emacs.app in the nextstep folder
+    make -j $(sysctl -n hw.ncpu)
+    make install
+
+    # find the Emacs.app in the nextstep folder
+    sudo ln -sf $(realpath nextstep/Emacs.app) /Applications/Emacs.app
+#+end_src
 
 
