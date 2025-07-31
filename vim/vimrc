@@ -889,51 +889,51 @@ PaqAdd('tommcdo/vim-lion', {as: 'lion'})
 g:lion_squeeze_spaces = 1
 
 # lsp
-PaqAdd('yegappan/lsp', {as: 'lsp', opt: true})
+# lsp
+PaqAdd('yegappan/lsp', {as: 'lsp'})
+var lsp_opts = {autoHighlightDiags: true}
+var lsp_servers: list<dict<any>>
 
-command! -nargs=0 EnableLSP call EnableLSP()
+if executable('clangd')
+    lsp_servers->add({
+        name: 'clangd',
+        filetype: ['c', 'cpp'],
+        path: 'clangd',
+        args: ['--background-index']
+    })
+endif
 
-def EnableLSP(): void
-    packadd lsp
+if executable('pylsp')
+    lsp_servers->add({
+        name: 'pylsp',
+        filetype: 'python',
+        path: 'pylsp',
+        args: []
+    })
+endif
 
-    var lsp_opts = {autoHighlightDiags: true}
-    var lsp_servers: list<dict<any>>
+augroup lsp_setup | autocmd!
+    autocmd User LspSetup {
+        g:LspOptionsSet(lsp_opts)
+        g:LspAddServer(lsp_servers)
+    }
+augroup END
 
-    if executable('clangd')
-        lsp_servers->add({
-            name: 'clangd',
-            filetype: ['c', 'cpp'],
-            path: 'clangd',
-            args: ['--background-index']
-        })
-    endif
+augroup lsp_attached | autocmd!
+    autocmd User LspAttached SetLspKeymaps()
+augroup END
 
-    if executable('pylsp')
-        lsp_servers->add({
-            name: 'pylsp',
-            filetype: 'python',
-            path: 'pylsp',
-            args: []
-        })
-    endif
-
-    call g:LspOptionsSet(lsp_opts)
-    call g:LspAddServer(lsp_servers)
-
-    augroup lsp_attached | autocmd!
-        autocmd User LspAttached {
-            nnoremap <buffer> gd <Cmd>LspGotoDefinition<CR>
-            nnoremap <buffer> gp <Cmd>LspPeekDefinition<CR>
-            nnoremap <buffer> gr <Cmd>LspPeekReferences<CR>
-            nnoremap <buffer> gi <Cmd>LspGotoImpl<CR>
-            nnoremap <buffer> gt <Cmd>LspGotoTypeDef<CR>
-            nnoremap <buffer> gR <Cmd>LspRename<CR>
-            nnoremap <buffer> go <Cmd>LspDocumentSymbol<CR>
-            nnoremap <buffer> [d <Cmd>LspDiag prev<CR>
-            nnoremap <buffer> ]d <Cmd>LspDiag next<CR>
-            nnoremap <buffer> K  <Cmd>LspHover<CR>
-        }
-    augroup END
+def SetLspKeymaps(): void
+    nnoremap <buffer> gd <Cmd>LspGotoDefinition<CR>
+    nnoremap <buffer> gp <Cmd>LspPeekDefinition<CR>
+    nnoremap <buffer> gr <Cmd>LspPeekReferences<CR>
+    nnoremap <buffer> gi <Cmd>LspGotoImpl<CR>
+    nnoremap <buffer> gt <Cmd>LspGotoTypeDef<CR>
+    nnoremap <buffer> gR <Cmd>LspRename<CR>
+    nnoremap <buffer> go <Cmd>LspDocumentSymbol<CR>
+    nnoremap <buffer> [d <Cmd>LspDiag prev<CR>
+    nnoremap <buffer> ]d <Cmd>LspDiag next<CR>
+    nnoremap <buffer> K  <Cmd>LspHover<CR>
 enddef
 
 # rainbow
