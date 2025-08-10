@@ -1,0 +1,13 @@
+#+begin_src bash
+  sudo dnf install libgccjit libotf libtree-sitter
+  sudo dnf install autoconf texinfo gtk3-devel gnutls-devel \
+       libtree-sitter-devel librsvg2-devel ncurses-devel
+
+  CFLAGS="-O2 -march=native -fomit-frame-pointer"   \
+        ./configure                                 \
+        --with-dbus                                 \
+        --with-gnutls                               \
+        --with-pgtk                                 \
+        --with-rsvg                                 \
+        --with-tree-sitter
+#+end_src
