@@ -4,6 +4,22 @@
 (bind-key "RET" #'pp-macroexpand-last-sexp my-ctl-z-map)
 
 ;; globals
+(use-package dape
+  :ensure t
+  :custom
+  (dape-buffer-window-arrangement 'right)
+  (dape-default-breakpoints-file (expand-file-name
+                                  "cache/dape-breakpoints"
+                                  user-emacs-directory))
+  :hook
+  (after-init . dape-breakpoint-load)
+  (kill-emacs . dape-breakpoint-save)
+
+  (dape-compile . kill-buffer)
+  (dape-display-source . pulse-momentary-highlight-one-line)
+  :config
+  (dape-breakpoint-global-mode +1))
+
 (use-package eglot
   :hook
   ((c-ts-mode
