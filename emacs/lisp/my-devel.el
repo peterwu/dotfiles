@@ -21,12 +21,10 @@
   (dape-breakpoint-global-mode +1))
 
 (use-package eglot
-  :init
-  (setopt eglot-server-programs
-          '(((c-mode c-ts-mode c++-mode c++-ts-mode objc-mode) . ("clangd"))
-            (cmake-ts-mode . ("neocmakelsp" "--stdio"))
-            (go-ts-mode . ("gopls"))
-            (python-ts-mode . ("ruff" "server"))))
+  :config
+  (setf (alist-get '(cmake-mode cmake-ts-mode) eglot-server-programs)
+        (eglot-alternatives
+         '(("neocmakelsp" "--stdio") "cmake-language-server")))
   :hook
   ((c-ts-mode
     c++-ts-mode
