@@ -26,6 +26,8 @@
     c++-ts-mode
     go-ts-mode
     python-ts-mode) . eglot-ensure)
+  :hook
+  (cmake-ts-mode . eglot-ensure)
   :bind
   (:map my-ctl-z-l-map
         ("D" . eglot-find-declaration)
@@ -37,7 +39,10 @@
         ("h" . eldoc)
         ("i" . eglot-find-implementation)
         ("r" . xref-find-referenes)
-        ("t" . eglot-find-typeDefinition)))
+        ("t" . eglot-find-typeDefinition))
+  :config
+  (add-to-list 'eglot-server-programs
+               '((cmake-ts-mode) . ("neocmakelsp" "--stdio"))))
 
 (use-package flymake
   :custom
@@ -136,30 +141,30 @@
   :hook
   (python-mode . my-pyvenv-auto-activate))
 
-(require 'treesit)
-(setq-default treesit-language-source-alist
-              '((bash "https://github.com/tree-sitter/tree-sitter-bash")
-                (c "https://github.com/tree-sitter/tree-sitter-c")
-                (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
-                (elisp "https://github.com/Wilfred/tree-sitter-elisp")
-                (go "https://github.com/tree-sitter/tree-sitter-go")
-                (gomod "https://github.com/camdencheek/tree-sitter-go-mod")
-                (json "https://github.com/tree-sitter/tree-sitter-json")
-                (make "https://github.com/alemuller/tree-sitter-make")
-                (markdown "https://github.com/ikatyang/tree-sitter-markdown")
-                (python "https://github.com/tree-sitter/tree-sitter-python")
-                (toml "https://github.com/tree-sitter/tree-sitter-toml")
-                (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
-
-(setopt major-mode-remap-alist
-        '((c-mode . c-ts-mode)
-          (c++-mode . c++-ts-mode)
-          (json-mode . json-ts-mode)
-          (python-mode . python-ts-mode)
-          (sh-mode . bash-ts-mode)
-          (yaml-mode . yaml-ts-mode)))
-
-(when (treesit-ready-p 'go)
-  (add-to-list 'auto-mode-alist '("\\.go\\'" . go-ts-mode)))
+(use-package treesit
+  :init
+  (setq-default treesit-language-source-alist
+                '((bash "https://github.com/tree-sitter/tree-sitter-bash")
+                  (c "https://github.com/tree-sitter/tree-sitter-c")
+                  (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
+                  (elisp "https://github.com/Wilfred/tree-sitter-elisp")
+                  (go "https://github.com/tree-sitter/tree-sitter-go")
+                  (gomod "https://github.com/camdencheek/tree-sitter-go-mod")
+                  (json "https://github.com/tree-sitter/tree-sitter-json")
+                  (make "https://github.com/alemuller/tree-sitter-make")
+                  (markdown "https://github.com/ikatyang/tree-sitter-markdown")
+                  (python "https://github.com/tree-sitter/tree-sitter-python")
+                  (toml "https://github.com/tree-sitter/tree-sitter-toml")
+                  (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+  :custom
+  (major-mode-remap-alist
+   '((c-mode . c-ts-mode)
+     (c++-mode . c++-ts-mode)
+     (json-mode . json-ts-mode)
+     (python-mode . python-ts-mode)
+     (sh-mode . bash-ts-mode)
+     (yaml-mode . yaml-ts-mode)))
+  :mode ("\\(?:CMakeLists\\.txt\\|\\.cmake\\)\\'" . cmake-ts-mode)
+  :mode ("\\.go\\'" . go-ts-mode))
 
 (provide 'my-devel)

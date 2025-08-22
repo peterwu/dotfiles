@@ -463,7 +463,7 @@ Enable `recentf-mode' if it isn't already."
   :custom
   (tab-line-tab-name-function #'my-tab-line-tab-name-buffer)
   (tab-line-new-button-show nil)
-  (tab-line-close-button-show nil)
+  (tab-line-close-button-show 'selected)
   (tab-line-exclude-modes '(completion-list-mode
                             dired-mode
                             help-mode))
