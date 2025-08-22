@@ -21,13 +21,18 @@
   (dape-breakpoint-global-mode +1))
 
 (use-package eglot
+  :init
+  (setopt eglot-server-programs
+          '(((c-mode c-ts-mode c++-mode c++-ts-mode objc-mode) . ("clangd"))
+            (cmake-ts-mode . ("neocmakelsp" "--stdio"))
+            (go-ts-mode . ("gopls"))
+            (python-ts-mode . ("ruff" "server"))))
   :hook
   ((c-ts-mode
     c++-ts-mode
+    cmake-ts-mode
     go-ts-mode
     python-ts-mode) . eglot-ensure)
-  :hook
-  (cmake-ts-mode . eglot-ensure)
   :bind
   (:map my-ctl-z-l-map
         ("D" . eglot-find-declaration)
@@ -39,10 +44,7 @@
         ("h" . eldoc)
         ("i" . eglot-find-implementation)
         ("r" . xref-find-referenes)
-        ("t" . eglot-find-typeDefinition))
-  :config
-  (add-to-list 'eglot-server-programs
-               '((cmake-ts-mode) . ("neocmakelsp" "--stdio"))))
+        ("t" . eglot-find-typeDefinition)))
 
 (use-package flymake
   :custom
