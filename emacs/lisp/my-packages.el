@@ -48,6 +48,13 @@
   (display-battery-mode -1))
 
 (use-package completion-preview
+  :demand t
+  :bind
+  (:map completion-preview-active-mode-map
+        ("C-i" . completion-preview-insert)
+        ("M-i" . completion-preview-complete)
+        ("M-n" . completion-preview-next-candidate)
+        ("M-p" . completion-preview-prev-candidate))
   :config
   (global-completion-preview-mode +1))
 
