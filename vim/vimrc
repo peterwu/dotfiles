@@ -903,6 +903,14 @@ if executable('clangd')
     })
 endif
 
+if executable('gopls')
+    lsp_servers->add({
+        name: 'gopls',
+        filetype: ['go'],
+        path: 'gopls'
+    })
+endif
+
 if executable('neocmakelsp')
     lsp_servers->add({
         name: 'neocmakelsp',
@@ -912,12 +920,12 @@ if executable('neocmakelsp')
     })
 endif
 
-if executable('pylsp')
+if executable('ruff')
     lsp_servers->add({
-        name: 'pylsp',
-        filetype: 'python',
-        path: 'pylsp',
-        args: []
+        name: 'ruff',
+        filetype: ['python'],
+        path: 'ruff',
+        args: ['server']
     })
 endif
 
