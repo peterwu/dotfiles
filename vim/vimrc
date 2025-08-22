@@ -903,6 +903,15 @@ if executable('clangd')
     })
 endif
 
+if executable('neocmakelsp')
+    lsp_servers->add({
+        name: 'neocmakelsp',
+        filetype: ['cmake'],
+        path: 'neocmakelsp',
+        args: ['--stdio']
+    })
+endif
+
 if executable('pylsp')
     lsp_servers->add({
         name: 'pylsp',
