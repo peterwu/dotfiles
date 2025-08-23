@@ -94,6 +94,10 @@
                nil
                t))))
 
+(use-package compile
+  :hook
+  (compilation-filter . ansi-color-compilation-filter))
+
 (use-package gdb-mi
   :custom
   (gdb-debuginfod-enable-setting nil)
