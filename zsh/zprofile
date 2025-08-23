@@ -1,8 +1,19 @@
 # User specific environment and startup programs
 export CDPATH=".:$HOME"
+export XDG_CONFIG_HOME=$HOME/.config
 
 # homebrew
 export PATH=/opt/homebrew/bin:$PATH
+export PATH=/opt/homebrew/opt/llvm/bin:$PATH
+
+if type brew &>/dev/null; then
+    FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
+
+    autoload -Uz compinit
+    compinit
+fi
+
+export HOMEBREW_ASK=1
 
 # editor
 export EDITOR='vim'
@@ -14,5 +25,8 @@ export MANPAGER='vim +MANPAGER "+set laststatus=0" "+noremap q <Cmd>qall!<CR>" -
 export LESSHISTFILE=-
 
 # python
-export PYTHONSTARTUP=$HOME/.config/python/pythonrc
+export PYTHON_HISTORY=$HOME/.local/share/python/history
 export VIRTUAL_ENV_DISABLE_PROMPT=1
+
+# go
+export GOPATH=$HOME/.local/share/go

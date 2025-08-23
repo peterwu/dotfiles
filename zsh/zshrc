@@ -46,6 +46,8 @@ alias e="TERM=xterm-256color                                           \
     /Applications/Emacs.app/Contents/MacOS/bin/emacsclient -nw --quiet \
     --alternate-editor /Applications/Emacs.app/Contents/MacOS/emacs-nw"
 
+alias emacs="/Applications/Emacs.app/Contents/MacOS/Emacs -nw"
+
 # enable autoloads
 autoload -Uz add-zsh-hook
 
