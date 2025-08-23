@@ -1,20 +1,32 @@
-#
-# ~/.bash_profile
-#
-
 # Get the aliases and functions
 [[ -f ~/.bashrc ]] && source ~/.bashrc
 
 # User specific environment and startup programs
 export CDPATH=".:$HOME"
+export XDG_CONFIG_HOME=$HOME/.config
+
+# homebrew
+if type brew &>/dev/null; then
+    source "$(brew --prefix)/etc/profile.d/bash_completion.sh"
+
+    export HOMEBREW_ASK=1
+fi
+
+# editor
+export EDITOR='vim'
+
+# manpager
+export MANPAGER='vim +MANPAGER "+set laststatus=0" "+noremap q <Cmd>qall!<CR>" --not-a-term -'
 
 # less
 export LESSHISTFILE=-
 
 # python
-export PYTHONSTARTUP=$HOME/.config/python/pythonrc
+export PYTHON_HISTORY=$HOME/.local/share/python/history
 export VIRTUAL_ENV_DISABLE_PROMPT=1
+
+# go
+export GOPATH=$HOME/.local/share/go
 
 # readline
 export INPUTRC=$HOME/.config/readline/inputrc
-

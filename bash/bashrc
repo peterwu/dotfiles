@@ -1,5 +1,3 @@
-# .bashrc
-
 # Source global definitions
 [[ -f /etc/bashrc ]] && source /etc/bashrc
 
@@ -7,9 +5,6 @@
 if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]; then
     PATH="$HOME/.local/bin:$HOME/bin:$PATH"
 fi
-
-export EDITOR='vim'
-export MANPAGER='vim +MANPAGER "+set laststatus=0" "+noremap q <Cmd>qall!<CR>" --not-a-term -'
 
 # Don't put duplicate lines or lines starting with space in the history.
 # See `man bash` for more options.
@@ -22,28 +17,60 @@ shopt -s histappend
 HISTSIZE=20000
 HISTFILESIZE=20000
 
-# User specific aliases and functions
-alias ls="ls --color=always --group-directories-first --indicator-style=slash --time-style=long-iso -v"
-alias ll="ls -l --classify --size"
-alias la="ls -l --classify --size --all"
+# Define aliases
+_define_aliases() {
+    local LS RM CP MV DIR VDIR
 
-alias rm="rm --interactive"
-alias cp="cp --interactive"
-alias mv="mv --interactive"
+    if [[ "$OSTYPE" == "linux-gnu" ]]; then
+        LS="ls"
+        RM="rm"
+        CP="cp"
+        MV="mv"
 
-alias bc="bc --mathlib"
+        DIR="dir"
+        VDIR="vdir"
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        LS="gls"
+        RM="grm"
+        CP="gcp"
+        MV="gmv"
 
-alias diff="diff --color=always"
+        DIR="gdir"
+        VDIR="gvdir"
+    fi
 
-alias dir="dir --color=always"
-alias vdir="vdir --color=always"
+    alias ls="$LS -v              \
+        --color=always            \
+        --group-directories-first \
+        --indicator-style=slash   \
+        --time-style=long-iso"
+    alias ll="ls -l --classify --size"
+    alias la="ls -l --classify --size --all"
 
-alias grep="grep --color=always"
-alias egrep="egrep --color=always"
-alias fgrep="fgrep --color=always"
+    alias rm="$RM --interactive"
+    alias cp="$CP --interactive"
+    alias mv="$MV --interactive"
 
-alias less="LESSHISTFILE=- less -FXR --mouse --wheel-lines=3"
-alias rsync="rsync --progress"
+    alias bc="bc --mathlib"
+
+    alias diff="diff --color=always"
+
+    alias dir="$DIR --color=always"
+    alias vdir="$VDIR --color=always"
+
+    alias grep="grep --color=always"
+    alias egrep="egrep --color=always"
+    alias fgrep="fgrep --color=always"
+
+    alias less="LESSHISTFILE=- less -FXR --mouse --wheel-lines=3"
+    alias rsync="rsync --progress"
+
+    alias e="TERM=xterm-256color                                           \
+        /Applications/Emacs.app/Contents/MacOS/bin/emacsclient -nw --quiet \
+        --alternate-editor /Applications/Emacs.app/Contents/MacOS/emacs-nw"
+
+    alias emacs="/Applications/Emacs.app/Contents/MacOS/Emacs -nw"
+}
 
 # Customize bash prompt
 _parse_git_branch() {
@@ -96,10 +123,6 @@ _customize_shell_prompt() {
 
     local prompt='\n'
 
-    # begin box drawing
-    prompt+="\001$(tput sgr0)\002"
-    prompt+='┌ '
-
     # current time
     prompt+="\001$(tput sgr0; tput setaf 5)\002"
     prompt+='\A'
@@ -122,10 +145,6 @@ _customize_shell_prompt() {
     # change line
     prompt+='\n'
 
-    # end box drawing
-    prompt+="\001$(tput sgr0)\002"
-    prompt+='└ '
-
     # change the prompt to indicate the status of last executed command
     prompt+='$(_show_last_command_status)'
     prompt+='\$ '
@@ -137,4 +156,5 @@ _customize_shell_prompt() {
     PS1="${prompt}"
 }
 
+_define_aliases
 _customize_shell_prompt
