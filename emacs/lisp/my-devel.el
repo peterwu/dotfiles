@@ -105,41 +105,38 @@
 ;; python
 (use-package python
   :preface
-  (defconst my-pyvenv-dirs '(".venv" "venv"))
-  (defvar my-pyvenv-virtual-env nil)
+  (defun my-uv-activate ()
+    "Activate Python environment managed by uv based on current project directory.
+Looks for .venv directory in project root and activates the Python interpreter."
+    (interactive)
+    (let* ((project-root (project-root (project-current t)))
+           (venv-path (expand-file-name ".venv" project-root))
+           (python-path (expand-file-name
+                         (if (eq system-type 'windows-nt)
+                             "Scripts/python.exe"
+                           "bin/python")
+                         venv-path)))
+      (if (file-exists-p python-path)
+          (progn
+            (setopt python-shell-interpreter python-path)
+            (setopt python-shell-virtualenv-root venv-path)
 
-  (defun my-pyvenv-auto-activate ()
-    (when-let
-        ((venv-dir
-          (seq-find #'identity
-                    (mapcar (lambda (dir)
-                              (let
-                                  ((parent-dir
-                                    (locate-dominating-file
-                                     default-directory
-                                     (concat
-                                      (file-name-as-directory
-                                       (concat
-                                        (file-name-as-directory dir)
-                                        "bin"))
-                                      "activate"))))
-                                (when parent-dir
-                                  (concat
-                                   (file-name-as-directory parent-dir)
-                                   dir))))
-                            my-pyvenv-dirs)))
-         (match (not (equal venv-dir my-pyvenv-virtual-env))))
+            (let ((venv-bin-dir (file-name-directory python-path)))
+              (setopt exec-path (cons venv-bin-dir
+                                      (remove venv-bin-dir exec-path))))
 
-      (let ((venv-bin-dir
-             (concat (file-name-as-directory venv-dir) "bin")))
-        (setenv "VIRTUAL_ENV" venv-dir)
-        (setenv "PYTHONHOME" nil)
-        (setq exec-path (append `(,venv-bin-dir) exec-path))
-        (setq my-pyvenv-virtual-env venv-dir))))
+            (setenv "PATH" (concat (file-name-directory python-path)
+                                   path-separator
+                                   (getenv "PATH")))
+            (setenv "VIRTUAL_ENV" venv-path)
+            (setenv "PYTHONHOME" nil)
+
+            (message "Activated UV Python environment at %s" venv-path))
+        (message "No UV Python environment found in %s" project-root))))
   :custom
-  (python-check-command "pylint")
+  (python-check-command "ruff check --select ALL")
   :hook
-  (python-mode . my-pyvenv-auto-activate))
+  ((python-mode python-ts-mode) . my-uv-activate))
 
 (use-package treesit
   :init
