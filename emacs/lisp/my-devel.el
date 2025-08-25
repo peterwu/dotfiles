@@ -49,6 +49,7 @@
   (flymake-fringe-indicator-position 'left-fringe)
   (flymake-no-changes-timeout nil)
   (flymake-proc-compilation-prevents-syntax-check t)
+  (flymake-show-diagnostics-at-end-of-line nil)
   (flymake-start-on-flymake-mode t)
   (flymake-start-on-save-buffer t)
   (flymake-suppress-zero-counters t)
@@ -56,7 +57,8 @@
   :bind
   (:map my-ctl-z-!-map
         ("s" . flymake-start)
-        ("d" . flymake-show-diagnostics-buffer)
+        ("d" . flymake-show-buffer-diagnostics)
+        ("D" . flymake-show-project-diagnostics)
         ("n" . flymake-goto-next-error)
         ("p" . flymake-goto-prev-error)))
 
