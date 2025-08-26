@@ -41,6 +41,17 @@ This is necessary because `evil-yank' operator is not repeatable (:repeat nil)"
     (call-interactively callback)
     (evil-repeat-keystrokes 'post)
     (evil-repeat-stop))
+
+  (defun my-evil-setup-buffer-switch-hook ()
+    "Set up buffer-local hook to check editability after switching."
+    (add-hook 'window-selection-change-functions
+              (lambda (window)
+                ;; switch to `evil-normal-state` if buffer is editable.
+                (and (bound-and-true-p evil-local-mode)
+                     (not buffer-read-only)
+                     (not (evil-normal-state-p))
+                     (evil-normal-state)))
+              nil t))
   :init
   (setopt evil-default-state 'emacs)
   (setopt evil-emacs-state-modes nil)
@@ -107,9 +118,8 @@ This is necessary because `evil-yank' operator is not repeatable (:repeat nil)"
   (:map evil-visual-state-map
         ("S" . my-surround-region))
   :hook
-  (find-file
-   . (lambda ()
-       (evil-normal-state)))
+  (find-file . evil-normal-state)
+  (buffer-list-update . my-evil-setup-buffer-switch-hook)
   :init
   (require 'evil)
   (my-evil--propertize-state-tags)
