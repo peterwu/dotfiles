@@ -31,6 +31,11 @@
     cmake-ts-mode
     go-ts-mode
     python-ts-mode) . eglot-ensure)
+
+  (before-save
+   . (lambda ()
+       (when (eglot-managed-p)
+         (eglot-format-buffer))))
   :bind
   (:map my-ctl-z-l-map
         ("D" . eglot-find-declaration)
@@ -61,40 +66,6 @@
         ("D" . flymake-show-project-diagnostics)
         ("n" . flymake-goto-next-error)
         ("p" . flymake-goto-prev-error)))
-
-;; c/c++
-(use-package clang-format
-  :if (file-executable-p "clang-format")
-  :preface
-  (defvar my-clang-format-style "file")
-  (defvar my-clang-format-fallback-style
-    (concat "{"
-            "BasedOnStyle: LLVM,"
-            "Language: Cpp,"
-
-            "AccessModifierOffset: -4,"
-            "IndentWidth: 4,"
-            "UseTab: Never,"
-
-            "AllowShortFunctionsOnASingleLine: Empty,"
-            "AllowShortLambdasOnASingleLine: Empty,"
-            "AlwaysBreakTemplateDeclarations: Yes,"
-            "BreakBeforeBraces: Stroustrup,"
-            "BreakConstructorInitializers: BeforeComma,"
-            "IndentPPDirectives: AfterHash,"
-            "PointerAlignment: Left"
-            "}"))
-  :hook
-  ((c-mode c++-mode) .
-   (lambda ()
-     (add-hook 'before-save-hook
-               (lambda ()
-                 (if (locate-dominating-file "." ".clang-format")
-                     (clang-format-buffer my-clang-format-style)
-                   (clang-format-buffer my-clang-format-fallback-style))
-                 nil)
-               nil
-               t))))
 
 (use-package compile
   :hook
