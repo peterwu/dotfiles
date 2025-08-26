@@ -60,6 +60,7 @@
 
 (use-package vc
   :custom
+  (vc-allow-rewriting-published-history 'ask)
   (vc-find-revision-no-save t)
   (vc-follow-symlinks t)
 
