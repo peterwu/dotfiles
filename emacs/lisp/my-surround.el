@@ -24,37 +24,42 @@
          (a2 (abs (or p2 most-positive-fixnum))))
     (- (max a1 a2) (min a1 a2))))
 
-(defun my-surround--find-char-nestable (char other dir)
+(defun my-surround--find-char (char other dir)
   "Return the position of the closest, unnested CHAR.
 
 If DIR is +1, search forward; if DIR is -1, search backward."
   (save-excursion
-    (if (looking-at (regexp-quote char))
-        (when (= dir 1)
-          (forward-char 1))
+    (cond
+     ((string= char other)
+      (if (search-forward char nil t dir)
+          (point)
+        (user-error "Did not find pair of %s" char)))
+     (t
+      (if (looking-at (regexp-quote char))
+          (when (= dir 1)
+            (forward-char 1))
 
-      (if (and (looking-at (regexp-quote other)) (= dir 1))
-          (forward-char dir))
+        (if (and (looking-at (regexp-quote other)) (= dir 1))
+            (forward-char dir))
 
-      (let ((level 1))                      ; level of nesting
-        (while (> level 0)
-          (let* ((current (point))
-                 (charpos (search-forward char nil t dir))
-                 (otherpos (progn
-                             (goto-char current)
-                             (search-forward other nil t dir)))
-                 (chardist (my-surround--find-distance current charpos))
-                 (otherdist (my-surround--find-distance current otherpos))
-                 (pos (if (< chardist otherdist) charpos otherpos))
-                 (diff (if (< chardist otherdist) -1 1)))
+        (let ((level 1))                      ; level of nesting
+          (while (> level 0)
+            (let* ((current (point))
+                   (charpos (search-forward char nil t dir))
+                   (otherpos (progn
+                               (goto-char current)
+                               (search-forward other nil t dir)))
+                   (chardist (my-surround--find-distance current charpos))
+                   (otherdist (my-surround--find-distance current otherpos))
+                   (pos (if (< chardist otherdist) charpos otherpos))
+                   (diff (if (< chardist otherdist) -1 1)))
 
-            (if (null charpos)
-                (user-error "Did not find %s" char))
+              (if (null charpos)
+                  (user-error "Did not find %s" char))
 
-            (setq level (+ level diff))
-            (goto-char pos)))))
-
-    (point)))
+              (setq level (+ level diff))
+              (goto-char pos)))))
+      (point)))))
 
 ;;;###autoload
 (defun my-surround-change (old-char new-char)
@@ -68,9 +73,9 @@ If DIR is +1, search forward; if DIR is -1, search backward."
               (new-open-delim (cadr new-delims))
               (new-close-delim (cddr new-delims))
 
-              (beg (my-surround--find-char-nestable
+              (beg (my-surround--find-char
                     old-open-delim old-close-delim -1))
-              (end (my-surround--find-char-nestable
+              (end (my-surround--find-char
                     old-close-delim old-open-delim +1)))
     (save-excursion
       (goto-char end)
@@ -88,8 +93,8 @@ If DIR is +1, search forward; if DIR is -1, search backward."
   (when-let* ((delims (assoc char my-surround--pairs-alist))
               (open-delim (cadr delims))
               (close-delim (cddr delims))
-              (beg (my-surround--find-char-nestable open-delim close-delim -1))
-              (end (my-surround--find-char-nestable close-delim open-delim +1)))
+              (beg (my-surround--find-char open-delim close-delim -1))
+              (end (my-surround--find-char close-delim open-delim +1)))
     (save-excursion
       (goto-char end)
       (delete-char -1)
