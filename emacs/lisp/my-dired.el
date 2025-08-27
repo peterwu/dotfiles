@@ -24,7 +24,7 @@
   :bind
   (:map dired-mode-map
         ("-"   . dired-up-directory)
-        ("C-+" . dired-create-empty-file)
+        ("_" . dired-create-empty-file)
         ("I"   . dired-do-info))
   :hook
   (dired-mode . dired-hide-details-mode)
