@@ -1,0 +1,71 @@
+#!/bin/bash
+
+# Usage: ./tree.sh [directory] [max_depth] [mode]
+# directory: folder to start (default: .)
+# max_depth: maximum depth to display (default: unlimited, 0)
+# mode: "all" (default), "dirs" (directories only), "files" (files only)
+
+start_dir="${1:-.}"
+max_depth="${2:-0}"
+mode="${3:-all}"
+
+file_count=0
+dir_count=0
+
+# ANSI color codes
+BLUE="\033[34m"
+RESET="\033[0m"
+
+print_tree() {
+    local dir="$1"
+    local prefix="$2"
+    local depth="$3"
+
+    if [[ $max_depth -gt 0 && $depth -ge $max_depth ]]; then
+        return
+    fi
+
+    local items=()
+    while IFS= read -r f; do
+        items+=("$f")
+    done < <(ls -A "$dir" | sort)
+
+    local count=${#items[@]}
+    local i=0
+
+    for item in "${items[@]}"; do
+        ((i++))
+        local path="$dir/$item"
+
+        # Filtering by mode
+        if [[ "$mode" == "dirs" && ! -d "$path" ]]; then
+            continue
+        elif [[ "$mode" == "files" && ! -f "$path" ]]; then
+            continue
+        fi
+
+        if [[ $i -eq $count ]]; then
+            branch="└──"
+            new_prefix="${prefix}    "
+        else
+            branch="├──"
+            new_prefix="${prefix}│   "
+        fi
+
+        # Print with color
+        if [[ -d "$path" ]]; then
+            echo -e "${prefix}${branch} ${BLUE}$item${RESET}"
+            ((dir_count++))
+            print_tree "$path" "$new_prefix" $((depth+1))
+        else
+            echo "${prefix}${branch} $item"
+            ((file_count++))
+        fi
+    done
+}
+
+print_tree "$start_dir" "" 0
+
+echo
+echo "$dir_count directories, $file_count files"
+
