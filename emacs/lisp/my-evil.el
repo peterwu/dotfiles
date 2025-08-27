@@ -41,17 +41,6 @@ This is necessary because `evil-yank' operator is not repeatable (:repeat nil)"
     (call-interactively callback)
     (evil-repeat-keystrokes 'post)
     (evil-repeat-stop))
-
-  (defun my-evil-setup-buffer-switch-hook ()
-    "Set up buffer-local hook to check editability after switching."
-    (add-hook 'window-selection-change-functions
-              (lambda (window)
-                ;; switch to `evil-normal-state` if buffer is editable.
-                (and (bound-and-true-p evil-local-mode)
-                     (not buffer-read-only)
-                     (not (evil-normal-state-p))
-                     (evil-normal-state)))
-              nil t))
   :init
   (setopt evil-default-state 'emacs)
   (setopt evil-emacs-state-modes nil)
@@ -118,15 +107,18 @@ This is necessary because `evil-yank' operator is not repeatable (:repeat nil)"
   (:map evil-visual-state-map
         ("S" . my-surround-region))
   :hook
-  (find-file . evil-normal-state)
-  (buffer-list-update . my-evil-setup-buffer-switch-hook)
-  :init
-  (require 'evil)
-  (my-evil--propertize-state-tags)
-  :init
+  ((emacs-startup find-file wdired-mode) . evil-normal-state)
+  (window-selection-change-functions
+   . (lambda (window)
+       ;; switch to `evil-normal-state` if buffer is editable.
+       (when ((bound-and-true-p evil-local-mode)
+              (not buffer-read-only)
+              (not (evil-normal-state-p)))
+         (evil-normal-state))))
+  :config
   (evil-set-leader '(normal motion) (kbd "SPC"))
   (evil-set-leader '(normal motion) (kbd ",") t)
-
+  :config
   (evil-define-command my-evil-paste-after-from-clipboard (count)
     :suppress-operator t
     (interactive "*P")
@@ -201,6 +193,7 @@ This is necessary because `evil-yank' operator is not repeatable (:repeat nil)"
     (let ((char (read-char)))
       (my-surround-region beg end char)))
   :config
+  (my-evil--propertize-state-tags)
   (evil-mode +1))
 
 (provide 'my-evil)
