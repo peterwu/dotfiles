@@ -107,13 +107,14 @@ This is necessary because `evil-yank' operator is not repeatable (:repeat nil)"
   (:map evil-visual-state-map
         ("S" . my-surround-region))
   :hook
-  ((emacs-startup find-file wdired-mode) . evil-normal-state)
-  (window-selection-change-functions
-   . (lambda (window)
-       ;; switch to `evil-normal-state` if buffer is editable.
-       (when ((bound-and-true-p evil-local-mode)
-              (not buffer-read-only)
-              (not (evil-normal-state-p)))
+  ((change-major-mode find-file) . evil-normal-state)
+
+  ((after-change-major-mode
+    window-selection-change-functions)
+   . (lambda (&optional _)
+       (when (and (bound-and-true-p evil-local-mode)
+                  (not buffer-read-only)
+                  (not (evil-normal-state-p)))
          (evil-normal-state))))
   :config
   (evil-set-leader '(normal motion) (kbd "SPC"))
