@@ -21,6 +21,9 @@
   (dape-breakpoint-global-mode +1))
 
 (use-package eglot
+  :custom
+  (eglot-autoshutdown t)
+  (eglot-code-action-indicator "?")
   :config
   (setf (alist-get '(cmake-mode cmake-ts-mode) eglot-server-programs)
         (eglot-alternatives
