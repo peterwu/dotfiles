@@ -19,7 +19,9 @@ HISTFILESIZE=20000
 
 # Define aliases
 _define_aliases() {
-    local LS RM CP MV DIR VDIR
+    local LS RM CP MV
+    local DIR VDIR
+    local E EMACS
 
     if [[ "$OSTYPE" == "linux-gnu" ]]; then
         LS="ls"
@@ -29,6 +31,9 @@ _define_aliases() {
 
         DIR="dir"
         VDIR="vdir"
+
+        E="emacsclient -nw --quiet --alternate-editor 'emacs -nw'"
+        EMACS="emacs -nw"
     elif [[ "$OSTYPE" == "darwin"* ]]; then
         LS="gls"
         RM="grm"
@@ -37,6 +42,10 @@ _define_aliases() {
 
         DIR="gdir"
         VDIR="gvdir"
+
+        E="/Applications/Emacs.app/Contents/MacOS/bin/emacsclient -nw --quiet \
+           --alternate-editor '/Applications/Emacs.app/Contents/MacOS/Emacs -nw'"
+        EMACS="/Applications/Emacs.app/Contents/MacOS/Emacs -nw"
     fi
 
     alias ls="$LS -v              \
@@ -65,11 +74,8 @@ _define_aliases() {
     alias less="LESSHISTFILE=- less -FXR --mouse --wheel-lines=3"
     alias rsync="rsync --progress"
 
-    alias e="TERM=xterm-256color                                           \
-        /Applications/Emacs.app/Contents/MacOS/bin/emacsclient -nw --quiet \
-        --alternate-editor /Applications/Emacs.app/Contents/MacOS/emacs-nw"
-
-    alias emacs="/Applications/Emacs.app/Contents/MacOS/Emacs -nw"
+    alias e="TERM=xterm-256color $E"
+    alias emacs="$EMACS"
 }
 
 # Customize bash prompt

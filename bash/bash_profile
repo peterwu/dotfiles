@@ -8,8 +8,6 @@ export XDG_CONFIG_HOME=$HOME/.config
 # homebrew
 if type brew &>/dev/null; then
     source "$(brew --prefix)/etc/profile.d/bash_completion.sh"
-
-    export HOMEBREW_ASK=1
 fi
 
 # editor
