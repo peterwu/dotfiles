@@ -32,7 +32,9 @@
      ("NEXT" . modus-themes-fg-blue)
      ("DONE" . org-done)))
 
-  (org-agenda-files (list "~/Documents/Org"))
+  (org-directory "~/Documents/Org")
+  (org-agenda-files (list org-directory))
+
   (org-capture-templates
    '(("t" "Todo" entry (file+headline "~/Documents/Org/todo.org" "Tasks")
       "* TODO %?\n  %i\n  %a")

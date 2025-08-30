@@ -6,7 +6,7 @@
 
 (use-package align
   :preface
-  (defun my-align--regexp(beg end char type)
+  (defun my-align-regexp(beg end char type)
     (save-restriction
       (narrow-to-region beg end)
 
@@ -20,11 +20,11 @@
 
   (defun my-align-left (beg end char)
     (interactive "r\nc")
-    (my-align--regexp beg end char 'left))
+    (my-align-regexp beg end char 'left))
 
   (defun my-align-right (beg end char)
     (interactive "r\nc")
-    (my-align--regexp beg end char 'right))
+    (my-align-regexp beg end char 'right))
   :bind
   (:map my-ctl-z-g-map
         ("l" . my-align-left)
@@ -46,6 +46,11 @@
         ("b" . display-battery-mode))
   :config
   (display-battery-mode -1))
+
+(use-package bookmark
+  :custom
+  (bookmark-default-file
+   (expand-file-name "cache/bookmarks.eld" user-emacs-directory)))
 
 (use-package completion-preview
   :demand t
@@ -148,6 +153,11 @@
   :config
   (blink-cursor-mode +1))
 
+(use-package gnutls
+  :custom
+  (gnutls-verify-error t)
+  (gnutls-min-prime-bits 3072))
+
 (use-package hl-line
   :config
   (global-hl-line-mode +1))
@@ -206,6 +216,11 @@
   (icomplete-with-completion-tables t)
   :config
   (fido-vertical-mode +1))
+
+(use-package ido
+  :custom
+  (ido-save-directory-list-file
+   (expand-file-name "cache/ido.last" user-emacs-directory)))
 
 (use-package imenu
   :custom
@@ -268,6 +283,13 @@
   :config
   (mouse-wheel-mode +1))
 
+(use-package nsm
+  :custom
+  (nsm-settings-file
+   (expand-file-name
+    "cache/network-security.eld"
+    user-emacs-directory)))
+
 (use-package paren
   :custom
   (show-paren-style 'parenthesis)
@@ -299,34 +321,34 @@
   :preface
   (defconst my-pulse-duration 0.200)
 
-  (defun my-pulse--cut-advice (orig-fn beg end &rest region)
+  (defun my-pulse-cut-advice (orig-fn beg end &rest region)
     (pulse-momentary-highlight-region beg end)
     (sit-for my-pulse-duration)
     (apply orig-fn beg end region))
 
-  (defun my-pulse--copy-advice (orig-fn beg end &rest region)
+  (defun my-pulse-copy-advice (orig-fn beg end &rest region)
     (pulse-momentary-highlight-region beg end)
     (apply orig-fn beg end region))
 
-  (defun my-pulse--paste-advice (orig-fn &rest args)
+  (defun my-pulse-paste-advice (orig-fn &rest args)
     (let (beg end)
       (setq beg (point))
       (apply orig-fn args)
       (setq end (point))
       (pulse-momentary-highlight-region beg end)))
   :config
-  (dolist (construct '((kill-region             . my-pulse--cut-advice)
-                       (kill-ring-save          . my-pulse--copy-advice)
-                       (yank                    . my-pulse--paste-advice)
+  (dolist (construct '((kill-region             . my-pulse-cut-advice)
+                       (kill-ring-save          . my-pulse-copy-advice)
+                       (yank                    . my-pulse-paste-advice)
 
-                       (my-cut-to-clipboard     . my-pulse--cut-advice)
-                       (my-copy-to-clipboard    . my-pulse--copy-advice)
-                       (my-paste-from-clipboard . my-pulse--paste-advice)
+                       (my-cut-to-clipboard     . my-pulse-cut-advice)
+                       (my-copy-to-clipboard    . my-pulse-copy-advice)
+                       (my-paste-from-clipboard . my-pulse-paste-advice)
 
-                       (evil-delete             . my-pulse--cut-advice)
-                       (evil-yank               . my-pulse--copy-advice)
-                       (evil-paste-after        . my-pulse--paste-advice)
-                       (evil-paste-before       . my-pulse--paste-advice)))
+                       (evil-delete             . my-pulse-cut-advice)
+                       (evil-yank               . my-pulse-copy-advice)
+                       (evil-paste-after        . my-pulse-paste-advice)
+                       (evil-paste-before       . my-pulse-paste-advice)))
     (advice-add (car construct) :around (cdr construct))))
 
 (use-package recentf
@@ -369,6 +391,8 @@ Enable `recentf-mode' if it isn't already."
   :custom
   (recentf-exclude '(".gz" ".xz" ".zip" "/elpa/" "/ssh:" "/sudo:"))
   (recentf-max-saved-items 50)
+  (recentf-save-file
+   (expand-file-name "cache/recentf.eld" user-emacs-directory))
   :bind
   (:map my-ctl-z-map
         ("C-r" . recentf-open))
@@ -383,12 +407,12 @@ Enable `recentf-mode' if it isn't already."
 
 (use-package repeat
   :preface
-  (defun my-repeat-mode--shut-up-advice (fn &rest args)
+  (defun my-repeat-mode-shut-up-advice (fn &rest args)
     (let ((inhibit-message t)
           (message-log-max))
       (apply fn args)))
   :init
-  (advice-add #'repeat-mode :around #'my-repeat-mode--shut-up-advice)
+  (advice-add #'repeat-mode :around #'my-repeat-mode-shut-up-advice)
   :config
   (repeat-mode +1))
 
@@ -396,12 +420,16 @@ Enable `recentf-mode' if it isn't already."
   :custom
   (history-delete-duplicates t)
   (history-length 1000)
+  (savehist-file
+   (expand-file-name "cache/history" user-emacs-directory))
   (savehist-save-minibuffer-history t)
   :config
   (savehist-mode +1))
 
 (use-package saveplace
   :custom
+  (save-place-file
+   (expand-file-name "cache/places.eld" user-emacs-directory))
   (save-place-forget-unreadable-files t)
   :config
   (save-place-mode +1))
@@ -557,6 +585,11 @@ Enable `recentf-mode' if it isn't already."
 (use-package tramp
   :custom
   (tramp-default-method "sshx"))
+
+(use-package tramp-cache
+  :custom
+  (tramp-persistency-file-name
+   (expand-file-name "cache/tramp" user-emacs-directory)))
 
 (use-package uniquify
   :custom

@@ -6,7 +6,7 @@
   :pin melpa
   :after my-surround
   :preface
-  (defun my-evil--propertize-state-tags ()
+  (defun my-evil-propertize-state-tags ()
     (modus-themes-with-colors
       (let ((defaults `(:foreground ,white :weight bold)))
         (mapc (lambda (elt)
@@ -30,7 +30,7 @@
                `(evil-motion-state-tag        " M "   ,black)
                `(evil-emacs-state-tag         " E "   ,magenta))))))
 
-  (defun my-evil-surround--call-with-repeat (callback)
+  (defun my-evil-surround-call-with-repeat (callback)
     "Record keystrokes to repeat surround-region operator and it's motion.
 This is necessary because `evil-yank' operator is not repeatable (:repeat nil)"
     (evil-repeat-start)
@@ -182,7 +182,7 @@ This is necessary because `evil-yank' operator is not repeatable (:repeat nil)"
      ((eq operation 'delete)
       (call-interactively 'my-surround-delete))
      (t
-      (my-evil-surround--call-with-repeat 'my-evil-surround-region)))
+      (my-evil-surround-call-with-repeat 'my-evil-surround-region)))
 
     ;; Return an empty range so evil-motion-range doesn't try to guess
     (let ((p (point))) (list p p 'exclusive)))
@@ -192,7 +192,7 @@ This is necessary because `evil-yank' operator is not repeatable (:repeat nil)"
     (let ((char (read-char)))
       (my-surround-region beg end char)))
   :config
-  (my-evil--propertize-state-tags)
+  (my-evil-propertize-state-tags)
   (evil-mode +1))
 
 (provide 'my-evil)

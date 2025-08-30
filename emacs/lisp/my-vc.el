@@ -44,6 +44,8 @@
 
 (use-package project
   :custom
+  (project-list-file
+   (expand-file-name "cache/projects.eld" user-emacs-directory))
   (project-switch-commands
    '((project-find-file "Find file")
      (project-find-regexp "Find regexp")
