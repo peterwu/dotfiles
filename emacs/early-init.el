@@ -24,16 +24,11 @@
 (setopt custom-file (make-temp-file "emacs-custom-" nil ".el"))
 
 ;; clean GUI
-(when (fboundp 'menu-bar-mode)
-  (menu-bar-mode -1))
-(when (fboundp 'tool-bar-mode)
-  (tool-bar-mode -1))
-(when (fboundp 'scroll-bar-mode)
-  (scroll-bar-mode -1))
-(when (fboundp 'horizontal-scroll-bar-mode)
-  (horizontal-scroll-bar-mode -1))
-(when (fboundp 'context-menu-mode)
-  (context-menu-mode +1))
+(context-menu-mode +1)
+(horizontal-scroll-bar-mode -1)
+(menu-bar-mode -1)
+(scroll-bar-mode -1)
+(tool-bar-mode -1)
 
 ;; make native compilation silent
 (when (native-comp-available-p)

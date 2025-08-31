@@ -150,6 +150,12 @@
   (blink-cursor-delay 0.2)
   (blink-cursor-interval 0.5)
   (cursor-in-non-selected-windows 'hollow)
+  :hook
+  ;; disable the menu-bar for terminal frames
+  (after-make-frame-functions
+   . (lambda (frame)
+       (unless (display-graphic-p frame)
+         (set-frame-parameter frame 'menu-bar-lines 0))))
   :config
   (blink-cursor-mode +1))
 
