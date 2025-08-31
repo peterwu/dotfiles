@@ -1,4 +1,4 @@
-;;; my-lang.el -*- lexical-binding: t; -*-
+;;; my-devel.el -*- lexical-binding: t; -*-
 
 ;; expand macros
 (bind-key "RET" #'pp-macroexpand-last-sexp my-ctl-z-map)
@@ -22,8 +22,7 @@
 
 (use-package eglot
   :custom
-  (eglot-autoshutdown t)
-  (eglot-code-action-indicator "?")
+  (eglot-code-action-indications '(eldoc-hint))
   :config
   (setf (alist-get '(cmake-mode cmake-ts-mode) eglot-server-programs)
         (eglot-alternatives
@@ -43,13 +42,13 @@
   (:map my-ctl-z-l-map
         ("D" . eglot-find-declaration)
         ("F" . eglot-format-buffer)
-        ("R" . eglog-rename)
+        ("R" . eglot-rename)
         ("a" . eglot-code-actions)
         ("d" . xref-find-definitions)
         ("f" . eglot-format)
         ("h" . eldoc)
         ("i" . eglot-find-implementation)
-        ("r" . xref-find-referenes)
+        ("r" . xref-find-references)
         ("t" . eglot-find-typeDefinition)))
 
 (use-package flymake
