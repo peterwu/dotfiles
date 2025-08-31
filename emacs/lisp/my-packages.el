@@ -530,13 +530,15 @@ Enable `recentf-mode' if it isn't already."
 
 (use-package term
   :custom
+  (explicit-shell-file-name shell-file-name)
   (explicit-bash-args '("--login"))
   :bind
-  ([f12] . (lambda () (interactive)
-             (term (concat
-                    explicit-shell-file-name
-                    " "
-                    (mapconcat #'identity explicit-bash-args " ")))))
+  (:map my-ctl-z-map
+        ("C-`" . (lambda () (interactive)
+                   (term (concat
+                          explicit-shell-file-name
+                          " "
+                          (mapconcat #'identity explicit-bash-args " "))))))
   :hook
   (term-mode . (lambda()
                  (setq-local global-hl-line-mode nil)
