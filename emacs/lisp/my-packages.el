@@ -154,13 +154,7 @@
   (after-make-frame-functions
    . (lambda (frame)
        (unless (display-graphic-p frame)
-         ;; disable the menu-bar for terminal frames
-         (set-frame-parameter frame 'menu-bar-lines 0)
-
-         ;; enable clipboard
-         (with-selected-frame frame
-           (setopt xterm-extra-capabilities '(getSelection setSelection))
-           (terminal-init-xterm)) )))
+         (set-frame-parameter frame 'menu-bar-lines 0))))
   :config
   (blink-cursor-mode +1))
 
@@ -348,18 +342,14 @@
       (setq end (point))
       (pulse-momentary-highlight-region beg end)))
   :config
-  (dolist (construct '((kill-region             . my-pulse-cut-advice)
-                       (kill-ring-save          . my-pulse-copy-advice)
-                       (yank                    . my-pulse-paste-advice)
+  (dolist (construct '((kill-region       . my-pulse-cut-advice)
+                       (kill-ring-save    . my-pulse-copy-advice)
+                       (yank              . my-pulse-paste-advice)
 
-                       (my-cut-to-clipboard     . my-pulse-cut-advice)
-                       (my-copy-to-clipboard    . my-pulse-copy-advice)
-                       (my-paste-from-clipboard . my-pulse-paste-advice)
-
-                       (evil-delete             . my-pulse-cut-advice)
-                       (evil-yank               . my-pulse-copy-advice)
-                       (evil-paste-after        . my-pulse-paste-advice)
-                       (evil-paste-before       . my-pulse-paste-advice)))
+                       (evil-delete       . my-pulse-cut-advice)
+                       (evil-yank         . my-pulse-copy-advice)
+                       (evil-paste-after  . my-pulse-paste-advice)
+                       (evil-paste-before . my-pulse-paste-advice)))
     (advice-add (car construct) :around (cdr construct))))
 
 (use-package recentf
@@ -548,13 +538,6 @@ Enable `recentf-mode' if it isn't already."
   (term-mode . (lambda()
                  (setq-local global-hl-line-mode nil)
                  (term-set-escape-char ?\C-x))))
-
-(use-package term/xterm
-  :unless (display-graphic-p)
-  :custom
-  (xterm-extra-capabilities '(getSelection setSelection))
-  :config
-  (terminal-init-xterm))
 
 (use-package time
   :commands world-clock

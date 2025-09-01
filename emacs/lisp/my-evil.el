@@ -166,8 +166,7 @@ This is necessary because `evil-yank' operator is not repeatable (:repeat nil)"
     (interactive)
     (let ((beg (point))
           (end (pos-eol)))
-      (evil-yank beg end)
-      (clipboard-kill-ring-save beg end)))
+      (my-evil-yank-to-clipboard beg end)))
 
   (evil-define-command my-evil-surround-edit (operation)
     (interactive
@@ -191,6 +190,29 @@ This is necessary because `evil-yank' operator is not repeatable (:repeat nil)"
     (interactive "<r>")
     (let ((char (read-char)))
       (my-surround-region beg end char)))
+  :config
+  (advice-add 'my-evil-yank-to-clipboard :around
+              (lambda (orig-fn beg end &rest args)
+                (pulse-momentary-highlight-region beg end)
+                (if (display-graphic-p)
+                    (apply orig-fn beg end args)
+                  (when-let* ((cmd (or  (executable-find "pbcopy")
+                                        (executable-find "wl-copy"))))
+                    (call-process-region beg end cmd nil 0 nil)))))
+
+  (advice-add 'clipboard-yank :around
+              (lambda (orig-fn &rest args)
+                (let (beg end)
+                  (setq beg (point))
+                  (if (display-graphic-p)
+                      (apply orig-fn args)
+                    (when-let* ((cmd (or (executable-find "pbpaste")
+                                         (executable-find "wl-paste"))))
+                      (insert (with-output-to-string
+                                (with-current-buffer standard-output
+                                  (call-process cmd nil t nil)))))
+                    (setq end (point))
+                    (pulse-momentary-highlight-region beg end)))))
   :config
   (my-evil-propertize-state-tags)
   (evil-mode +1))
