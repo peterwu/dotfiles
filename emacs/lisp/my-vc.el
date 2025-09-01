@@ -12,20 +12,23 @@
   (ediff-split-window-function #'split-window-horizontally)
   (ediff-window-setup-function #'ediff-setup-windows-plain)
   :hook
-  (ediff-cleanup
-   . (lambda ()
-       (ediff-janitor nil nil)))
   (ediff-after-setup-windows
    . (lambda ()
-       (dolist (buffer (list ediff-buffer-A
-                             ediff-buffer-B
-                             ediff-buffer-C))
-         (with-selected-window (get-buffer-window buffer)
-           (tab-line-mode -1))))))
+       (dolist (buf (list ediff-buffer-A ediff-buffer-B ediff-buffer-C))
+         (with-selected-window (get-buffer-window buf)
+           (tab-line-mode -1)))))
 
-(use-package ediff-util
-  :hook
-  (ediff-after-quit-hook-internal . winner-undo))
+  (ediff-cleanup
+   . (lambda ()
+       (dolist (buf (list ediff-buffer-A ediff-buffer-B ediff-buffer-C))
+         (when (and buf
+                    (buffer-live-p buf)
+                    (string-match-p
+                     "[^/]+\\.~[[:xdigit:]]+~\\'"
+                     (buffer-name buf)))
+           (kill-buffer buf)))))
+
+  (ediff-quit . winner-undo))
 
 (use-package log-view
   :defer t
