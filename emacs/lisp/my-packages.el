@@ -151,11 +151,16 @@
   (blink-cursor-interval 0.5)
   (cursor-in-non-selected-windows 'hollow)
   :hook
-  ;; disable the menu-bar for terminal frames
   (after-make-frame-functions
    . (lambda (frame)
        (unless (display-graphic-p frame)
-         (set-frame-parameter frame 'menu-bar-lines 0))))
+         ;; disable the menu-bar for terminal frames
+         (set-frame-parameter frame 'menu-bar-lines 0)
+
+         ;; enable clipboard
+         (with-selected-frame frame
+           (setopt xterm-extra-capabilities '(getSelection setSelection))
+           (terminal-init-xterm)) )))
   :config
   (blink-cursor-mode +1))
 
