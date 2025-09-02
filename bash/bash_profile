@@ -28,3 +28,7 @@ export GOPATH=$HOME/.local/share/go
 
 # readline
 export INPUTRC=$HOME/.config/readline/inputrc
+
+# pass
+export PASSWORD_STORE_DIR=$HOME/.local/share/pass
+export PASSWORD_STORE_GENERATED_LENGTH=20
