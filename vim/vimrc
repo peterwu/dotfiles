@@ -920,12 +920,11 @@ if executable('neocmakelsp')
     })
 endif
 
-if executable('ruff')
+if executable('pylsp')
     lsp_servers->add({
-        name: 'ruff',
+        name: 'pylsp',
         filetype: ['python'],
-        path: 'ruff',
-        args: ['server']
+        path: 'pylsp'
     })
 endif
 

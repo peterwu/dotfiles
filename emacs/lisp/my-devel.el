@@ -113,7 +113,7 @@ Looks for .venv directory in project root and activates the Python interpreter."
             (message "Activated UV Python environment at %s" venv-path))
         (message "No UV Python environment found in %s" project-root))))
   :custom
-  (python-check-command "ruff check --select ALL")
+  (python-check-command "pylint")
   :hook
   ((python-mode python-ts-mode) . my-uv-activate))
 
