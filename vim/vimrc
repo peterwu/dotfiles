@@ -889,7 +889,6 @@ PaqAdd('tommcdo/vim-lion', {as: 'lion'})
 g:lion_squeeze_spaces = 1
 
 # lsp
-# lsp
 PaqAdd('yegappan/lsp', {as: 'lsp'})
 var lsp_opts = {autoHighlightDiags: true}
 var lsp_servers: list<dict<any>>
@@ -924,7 +923,16 @@ if executable('pylsp')
     lsp_servers->add({
         name: 'pylsp',
         filetype: ['python'],
-        path: 'pylsp'
+        path: 'pylsp',
+        initializationOptions: {
+            'pylsp': {
+                'plugins': {
+                    'jedi': {
+                        'environment': system("pvx python find")->trim()
+                    }
+                }
+            }
+        }
     })
 endif
 

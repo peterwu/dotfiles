@@ -84,8 +84,8 @@
 ;; python
 (use-package python
   :preface
-  (defun my-uv-activate ()
-    "Activate Python environment managed by uv based on current project directory.
+  (defun my-pyvenv-activate ()
+    "Activate Python virtual environment based on current project directory.
 Looks for .venv directory in project root and activates the Python interpreter."
     (interactive)
     (let* ((project-root (project-root (project-current t)))
@@ -110,12 +110,12 @@ Looks for .venv directory in project root and activates the Python interpreter."
             (setenv "VIRTUAL_ENV" venv-path)
             (setenv "PYTHONHOME" nil)
 
-            (message "Activated UV Python environment at %s" venv-path))
-        (message "No UV Python environment found in %s" project-root))))
+            (message "Activated Python virtual environment at %s" venv-path))
+        (message "No Python virtual environment found in %s" project-root))))
   :custom
   (python-check-command "pylint")
   :hook
-  ((python-mode python-ts-mode) . my-uv-activate))
+  ((python-mode python-ts-mode) . my-pyvenv-activate))
 
 (use-package treesit
   :init

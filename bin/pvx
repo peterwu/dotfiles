@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# Find nearest project root with .venv
+ROOT="$PWD"
+while [[ "$ROOT" != "/" && ! -d "$ROOT/.venv" ]]; do
+    ROOT=$(dirname "$ROOT")
+done
+
+if [[ -d "$ROOT/.venv" ]]; then
+    PY="$ROOT/.venv/bin/python"
+    BIN="$ROOT/.venv/bin"
+    [[ -x "$PY" ]] || { echo "Error: python not found in '$PY'" >&2; exit 1; }
+else
+    PY=$(command -v python3 || command -v python || true)
+    BIN=$(dirname "$PY")
+    if [[ -z "$PY" ]]; then
+        echo "Error: no Python found on system" >&2
+        exit 1
+    fi
+fi
+
+case "${1:-}" in
+    --help)
+        echo "pvx: run Python in nearest .venv"
+        echo
+        echo "Usage:"
+        echo "  pvx run <script.py> [args]   Run a Python script (alias for pvx <script.py>)"
+        echo "  pvx <script.py> [args]       Run a Python script"
+        echo "  pvx <module> [args]          Run 'python -m <module>'"
+        echo "  pvx <command> [args]         Run .venv/bin/<command> if it exists"
+        echo "  pvx                          Start interactive Python REPL"
+        exit 0
+        ;;
+    --version) echo "pvx 1.0"; exit 0 ;;
+    python)
+        shift
+        case "${1:-}" in
+            ""|find)
+                echo "$PY"
+                exit 0
+                ;;
+            version)
+                exec "$PY" --version
+                ;;
+            *)
+                exec "$PY" "$@"
+                ;;
+        esac
+        ;;
+    run)
+        shift
+        [[ $# -eq 0 ]] && { echo "Error: pvx run requires a script" >&2; exit 1; }
+        exec "$PY" "$@"
+        ;;
+    *)
+        if [[ $# -eq 0 ]]; then
+            exec "$PY"
+        elif [[ -f "$1" ]]; then
+            exec "$PY" "$@"
+        elif [[ -x "$BIN/$1" ]]; then
+            exec "$BIN/$@"
+        else
+            exec "$PY" -m "$@"
+        fi
+        ;;
+esac
+
