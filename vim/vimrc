@@ -358,12 +358,32 @@ if has('clipboard')
     nnoremap <silent> <Leader>P "+P
     xnoremap <silent> <Leader>p "+p
     xnoremap <silent> <Leader>P "+P
-elseif executable('wl-paste')
-    nnoremap <silent> <Leader>p <ScriptCmd>@" = system('wl-paste')<CR>""p
-    nnoremap <silent> <Leader>P <ScriptCmd>@" = system('wl-paste')<CR>""P
-    xnoremap <silent> <Leader>p <ScriptCmd>@" = system('wl-paste')<CR>""p
-    xnoremap <silent> <Leader>P <ScriptCmd>@" = system('wl-paste')<CR>""P
+else
+    nnoremap <silent> <Leader>p <ScriptCmd>PasteFromClipboard("p")<CR>
+    nnoremap <silent> <Leader>P <ScriptCmd>PasteFromClipboard("P")<CR>
+    xnoremap <silent> <Leader>p <ScriptCmd>PasteFromClipboard("p")<CR>
+    xnoremap <silent> <Leader>P <ScriptCmd>PasteFromClipboard("P")<CR>
 endif
+
+var pending_paste_command = ""
+
+def PasteFromClipboard(command: string)
+    echoraw("\x1b]52;c;?\x07")
+    pending_paste_command = command
+enddef
+
+augroup capture_osc52_paste | autocmd!
+    autocmd TermResponseAll osc {
+        var match = matchlist(v:termosc, '^\%x1b]52;c;\(.*\)\%x07$')
+        if !empty(match)
+            var b64text = match[1]
+            var decoded_text = b64text->base64_decode()->blob2str()->join()
+            setreg(v:register, decoded_text)
+            execute 'normal! "' .. v:register .. pending_paste_command
+            pending_paste_command = ""
+        endif
+    }
+augroup END
 
 # toggles
 nnoremap <leader>tt <Cmd>belowright terminal<CR>
