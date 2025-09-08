@@ -778,7 +778,9 @@ def PaqUpdate(): void
         if finddir('.git', dir)->empty()
             git_cmd =  $'git clone --depth=1 {url} {dir}|{sed_rm_ansi_esc_chars}'
         else
-            git_cmd = $'git -C {dir} pull --depth=1 2>&1|{sed_rm_ansi_esc_chars}'
+            git_cmd = $'(git -C {dir} fetch --depth=1 '
+                .. $'&& git -C {dir} reset --hard FETCH_HEAD) '
+                .. $'2>&1|{sed_rm_ansi_esc_chars}'
         endif
         git_cmd_result = system(git_cmd)->split('\n')
 
