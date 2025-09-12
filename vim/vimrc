@@ -929,6 +929,15 @@ if executable('pylsp')
     })
 endif
 
+if executable('terraform-ls')
+    lsp_servers->add({
+        name: 'terraform-ls',
+        filetype: ['terraform'],
+        path: 'terraform-ls',
+        args: ['serve']
+    })
+endif
+
 augroup lsp_setup | autocmd!
     autocmd User LspSetup {
         g:LspOptionsSet(lsp_opts)
