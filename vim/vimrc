@@ -3,9 +3,12 @@ vim9script
 
 # requirements {{{
 
-const required_patch_level = "9.1.1703"
+const base_patch_level = '9.1.1056'
+const full_patch_level = '9.1.1703'
+
+var required_patch_level = has('clipboard') ? base_patch_level : full_patch_level
 if !has('patch-' .. required_patch_level)
-    const msg = 'Error: Vim patch level ' .. required_patch_level .. ' or higher is required.'
+    const msg = 'Error: patch level ' .. required_patch_level .. ' is required.'
     const cmd = 'printf "\033[31m' .. msg .. '\033[0m\n"'
     execute 'silent !' .. cmd
     quitall!
@@ -142,6 +145,9 @@ g:mapleader = ' '
 nnoremap <silent> <Leader>cd <Cmd>cd      %:p:h<Bar>pwd<CR>
 nnoremap <silent> <Leader>ev <Cmd>tabedit $MYVIMRC<CR>
 nnoremap <silent> <Leader>sv <Cmd>source  $MYVIMRC<CR>
+
+# disable Ctrl-Z
+nnoremap <C-Z> <nop>
 
 # disable arrow keys
 noremap <Up>    <Nop>
@@ -362,8 +368,8 @@ augroup capture_osc52_paste | autocmd!
 augroup END
 
 # toggles
-nnoremap <leader>tt <Cmd>belowright terminal<CR>
-nnoremap <leader>tx <Cmd>Lexplore<CR>
+nnoremap <C-Z>` <Cmd>belowright terminal<CR>
+nnoremap <C-Z>d <Cmd>Lexplore<CR>
 
 # }}}
 
