@@ -23,10 +23,6 @@
 (use-package eglot
   :custom
   (eglot-code-action-indications '(eldoc-hint))
-  :config
-  (setf (alist-get '(cmake-mode cmake-ts-mode) eglot-server-programs)
-        (eglot-alternatives
-         '(("neocmakelsp" "--stdio") "cmake-language-server")))
   :hook
   ((c-ts-mode
     c++-ts-mode
