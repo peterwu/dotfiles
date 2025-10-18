@@ -119,9 +119,7 @@ set splitright
 set switchbuf=uselast
 set tabstop=8
 set termencoding=utf-8
-if $TERM_PROGRAM !=# 'Apple_Terminal'
-    set termguicolors
-endif
+set termguicolors
 set textwidth=80
 set timeoutlen=777
 set ttimeoutlen=77
