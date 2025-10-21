@@ -15,11 +15,7 @@
 * MacOS
 #+begin_src xml
   <!--
-
-  Create a user specific sub-directory
-  /Library/Managed Preferences/$(id -u -n)/com.google.Chrome.plist
-
-  NB: this will not survive a new user login session
+  /Library/Managed Preferences/com.google.Chrome.plist
   -->
 
   <?xml version="1.0" encoding="UTF-8"?>
