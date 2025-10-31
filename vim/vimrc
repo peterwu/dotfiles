@@ -368,9 +368,12 @@ def PasteFromClipboard(command: string)
     augroup! capture_osc52_paste
 enddef
 
-# toggles
-nnoremap <C-Z>` <Cmd>belowright terminal<CR>
-nnoremap <C-Z>d <Cmd>Lexplore<CR>
+# terminal
+nnoremap <Leader>`  <Cmd>belowright terminal<CR>
+
+# explorers
+nnoremap <Leader><Tab>   <Cmd>Lexplore<CR>
+nnoremap <Leader><S-Tab> <Cmd>Lexplore!<CR>
 
 # }}}
 
