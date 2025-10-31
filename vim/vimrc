@@ -986,26 +986,20 @@ PaqAdd('puremourning/vimspector', {as: 'vimspector', opt: true})
 command! -nargs=0 EnableVimspector call EnableVimspector()
 
 def EnableVimspector(): void
+    g:vimspector_enable_mappings = 'HUMAN'
     packadd vimspector
 
-    nnoremap <F4>     <Plug>VimspectorDisassemble
-    nnoremap <F5>     <Plug>VimspectorContinue
-    nnoremap <S-F5>   <Plug>VimspectorStop
-    nnoremap <C-S-F5> <Plug>VimspectorRestart
-    nnoremap <F6>     <Plug>VimspectorPause
-    nnoremap <F7>     <Plug>VimspectorBalloonEval
-    xnoremap <F7>     <Plug>VimspectorBalloonEval
-    nnoremap <F8>     <Plug>VimspectorJumpToNextBreakpoint
-    nnoremap <S-F8>   <Plug>VimspectorJumpToPreviousBreakpoint
-    nnoremap <F9>     <Plug>VimspectorToggleBreakpoint
-    nnoremap <C-F9>   <Plug>VimspectorBreakpoints
-    nnoremap <S-F9>   <Plug>VimspectorAddFunctionBreakpoint
-    nnoremap <F10>    <Plug>VimspectorStepOver
-    nnoremap <C-F10>  <Plug>VimspectorRunToCursor
-    nnoremap <F11>    <Plug>VimspectorStepInto
-    nnoremap <S-F11>  <Plug>VimspectorStepOut
-    nnoremap <F12>    <Plug>VimspectorUpFrame
-    nnoremap <S-F12>  <Plug>VimspectorDownFrame
+    nnoremap <Leader>dd <ScriptCmd>vimspector#Launch()<CR>
+    nnoremap <Leader>dc <ScriptCmd>vimspector#Continue()<CR>
+
+    nnoremap <Leader>dB <ScriptCmd>vimspector#ListBreakpoints()<CR>
+
+    nnoremap <Leader>dk <ScriptCmd>vimspector#Restart()<CR>
+    nnoremap <Leader>dh <ScriptCmd>vimspector#StepOut()<CR>
+    nnoremap <Leader>dl <ScriptCmd>vimspector#StepInto()<CR>
+    nnoremap <Leader>dj <ScriptCmd>vimspector#StepOver()<CR>
+
+    nnoremap <Leader>dq <ScriptCmd>vimspector#Reset()<CR>
 
     augroup customize_vimspector_ui | autocmd!
         autocmd User VimspectorUICreated {
@@ -1013,14 +1007,14 @@ def EnableVimspector(): void
 
             nunmenu WinBar
 
-            nnoremenu WinBar.Continue <Cmd>call vimspector#Continue()<CR>
-            nnoremenu WinBar.Next     <Cmd>call vimspector#StepOver()<CR>
-            nnoremenu WinBar.Step     <Cmd>call vimspector#StepInto()<CR>
-            nnoremenu WinBar.Finish   <Cmd>call vimspector#StepOut()<CR>
-            nnoremenu WinBar.Pause    <Cmd>call vimspector#Pause()<CR>
-            nnoremenu WinBar.Stop     <Cmd>call vimspector#Stop()<CR>
-            nnoremenu WinBar.Restart  <Cmd>call vimspector#Restart()<CR>
-            nnoremenu WinBar.Exit     <Cmd>call vimspector#Reset()<CR>
+            nnoremenu WinBar.CONT <Cmd>call vimspector#Continue()<CR>
+            nnoremenu WinBar.NEXT <Cmd>call vimspector#StepOver()<CR>
+            nnoremenu WinBar.STEP <Cmd>call vimspector#StepInto()<CR>
+            nnoremenu WinBar.EXIT <Cmd>call vimspector#StepOut()<CR>
+            nnoremenu WinBar.HALT <Cmd>call vimspector#Pause()<CR>
+            nnoremenu WinBar.STOP <Cmd>call vimspector#Stop()<CR>
+            nnoremenu WinBar.REDO <Cmd>call vimspector#Restart()<CR>
+            nnoremenu WinBar.QUIT <Cmd>call vimspector#Reset()<CR>
         }
     augroup END
 enddef
