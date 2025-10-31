@@ -349,25 +349,24 @@ else
     xnoremap <silent> <Leader>P <ScriptCmd>PasteFromClipboard("P")<CR>
 endif
 
-var pending_paste_command = ""
-
 def PasteFromClipboard(command: string)
-    echoraw("\x1b]52;c;?\x07")
-    pending_paste_command = command
-enddef
+    b:pending_paste_command = command
 
-augroup capture_osc52_paste | autocmd!
-    autocmd TermResponseAll osc {
-        var match = matchlist(v:termosc, '^\%x1b]52;c;\(.*\)\%x07$')
-        if !(empty(match) || empty(pending_paste_command))
-            var b64text = match[1]
-            var decoded_text = b64text->base64_decode()->blob2str()->join()
-            setreg(v:register, decoded_text)
-            execute 'normal! "' .. v:register .. pending_paste_command
-            pending_paste_command = ""
-        endif
-    }
-augroup END
+    augroup capture_osc52_paste | autocmd!
+        autocmd TermResponseAll osc ++once {
+            var b64text = matchstr(v:termosc, '^\%x1b]52;.\+;\zs[A-Za-z0-9+/=]\+')
+            if !empty(b64text)
+                var decoded_text = b64text->base64_decode()->blob2str()
+                setreg(v:register, decoded_text)
+                execute 'normal! "' .. v:register .. b:pending_paste_command
+            endif
+        }
+    augroup END
+
+    echoraw("\x1b]52;c;?\x07")
+
+    augroup! capture_osc52_paste
+enddef
 
 # toggles
 nnoremap <C-Z>` <Cmd>belowright terminal<CR>
