@@ -864,87 +864,6 @@ PaqAdd('tpope/vim-surround',   {as: 'surround'})
 PaqAdd('tommcdo/vim-lion', {as: 'lion'})
 g:lion_squeeze_spaces = 1
 
-# lsp
-PaqAdd('yegappan/lsp', {as: 'lsp'})
-var lsp_opts = {autoHighlightDiags: true}
-var lsp_servers: list<dict<any>>
-
-if executable('clangd')
-    lsp_servers->add({
-        name: 'clangd',
-        filetype: ['c', 'cpp'],
-        path: 'clangd',
-        args: ['--background-index']
-    })
-endif
-
-if executable('gopls')
-    lsp_servers->add({
-        name: 'gopls',
-        filetype: ['go'],
-        path: 'gopls'
-    })
-endif
-
-if executable('neocmakelsp')
-    lsp_servers->add({
-        name: 'neocmakelsp',
-        filetype: ['cmake'],
-        path: 'neocmakelsp',
-        args: ['--stdio']
-    })
-endif
-
-if executable('pylsp')
-    lsp_servers->add({
-        name: 'pylsp',
-        filetype: ['python'],
-        path: 'pylsp',
-        initializationOptions: {
-            'pylsp': {
-                'plugins': {
-                    'jedi': {
-                        'environment': system("pvx python find")->trim()
-                    }
-                }
-            }
-        }
-    })
-endif
-
-if executable('terraform-ls')
-    lsp_servers->add({
-        name: 'terraform-ls',
-        filetype: ['terraform'],
-        path: 'terraform-ls',
-        args: ['serve']
-    })
-endif
-
-augroup lsp_setup | autocmd!
-    autocmd User LspSetup {
-        g:LspOptionsSet(lsp_opts)
-        g:LspAddServer(lsp_servers)
-    }
-augroup END
-
-augroup lsp_attached | autocmd!
-    autocmd User LspAttached SetLspKeymaps()
-augroup END
-
-def SetLspKeymaps(): void
-    nnoremap <buffer> gd <Cmd>LspGotoDefinition<CR>
-    nnoremap <buffer> gp <Cmd>LspPeekDefinition<CR>
-    nnoremap <buffer> gr <Cmd>LspPeekReferences<CR>
-    nnoremap <buffer> gi <Cmd>LspGotoImpl<CR>
-    nnoremap <buffer> gt <Cmd>LspGotoTypeDef<CR>
-    nnoremap <buffer> gR <Cmd>LspRename<CR>
-    nnoremap <buffer> go <Cmd>LspDocumentSymbol<CR>
-    nnoremap <buffer> [d <Cmd>LspDiag prev<CR>
-    nnoremap <buffer> ]d <Cmd>LspDiag next<CR>
-    nnoremap <buffer> K  <Cmd>LspHover<CR>
-enddef
-
 # rainbow
 PaqAdd('luochen1990/rainbow')
 g:rainbow_active = 1
@@ -979,45 +898,6 @@ nnoremap f <Plug>Sneak_f
 nnoremap F <Plug>Sneak_F
 nnoremap t <Plug>Sneak_t
 nnoremap T <Plug>Sneak_T
-
-# vimspector
-PaqAdd('puremourning/vimspector', {as: 'vimspector', opt: true})
-
-command! -nargs=0 EnableVimspector call EnableVimspector()
-
-def EnableVimspector(): void
-    g:vimspector_enable_mappings = 'HUMAN'
-    packadd vimspector
-
-    nnoremap <Leader>dd <ScriptCmd>vimspector#Launch()<CR>
-    nnoremap <Leader>dc <ScriptCmd>vimspector#Continue()<CR>
-
-    nnoremap <Leader>dB <ScriptCmd>vimspector#ListBreakpoints()<CR>
-
-    nnoremap <Leader>dk <ScriptCmd>vimspector#Restart()<CR>
-    nnoremap <Leader>dh <ScriptCmd>vimspector#StepOut()<CR>
-    nnoremap <Leader>dl <ScriptCmd>vimspector#StepInto()<CR>
-    nnoremap <Leader>dj <ScriptCmd>vimspector#StepOver()<CR>
-
-    nnoremap <Leader>dq <ScriptCmd>vimspector#Reset()<CR>
-
-    augroup customize_vimspector_ui | autocmd!
-        autocmd User VimspectorUICreated {
-            win_gotoid(g:vimspector_session_windows.code)
-
-            nunmenu WinBar
-
-            nnoremenu WinBar.CONT <Cmd>call vimspector#Continue()<CR>
-            nnoremenu WinBar.NEXT <Cmd>call vimspector#StepOver()<CR>
-            nnoremenu WinBar.STEP <Cmd>call vimspector#StepInto()<CR>
-            nnoremenu WinBar.EXIT <Cmd>call vimspector#StepOut()<CR>
-            nnoremenu WinBar.HALT <Cmd>call vimspector#Pause()<CR>
-            nnoremenu WinBar.STOP <Cmd>call vimspector#Stop()<CR>
-            nnoremenu WinBar.REDO <Cmd>call vimspector#Restart()<CR>
-            nnoremenu WinBar.QUIT <Cmd>call vimspector#Reset()<CR>
-        }
-    augroup END
-enddef
 
 # clean/update plugins
 nnoremap <silent> <Leader>Qc <Cmd>PaqClean<CR>
