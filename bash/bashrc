@@ -19,34 +19,19 @@ HISTFILESIZE=20000
 
 # Define aliases
 _define_aliases() {
+    local PREFIX
     local LS RM CP MV
-    local DIR VDIR
-    local E EMACS
 
     if [[ "$OSTYPE" == "linux-gnu" ]]; then
-        LS="ls"
-        RM="rm"
-        CP="cp"
-        MV="mv"
-
-        DIR="dir"
-        VDIR="vdir"
-
-        E="emacsclient -nw --quiet --alternate-editor 'emacs -nw'"
-        EMACS="emacs -nw"
+        PREFIX=""
     elif [[ "$OSTYPE" == "darwin"* ]]; then
-        LS="gls"
-        RM="grm"
-        CP="gcp"
-        MV="gmv"
-
-        DIR="gdir"
-        VDIR="gvdir"
-
-        E="/Applications/Emacs.app/Contents/MacOS/bin/emacsclient -nw --quiet \
-           --alternate-editor '/Applications/Emacs.app/Contents/MacOS/Emacs -nw'"
-        EMACS="/Applications/Emacs.app/Contents/MacOS/Emacs -nw"
+        PREFIX="g"
     fi
+
+    LS="${PREFIX}ls"
+    RM="${PREFIX}rm"
+    CP="${PREFIX}cp"
+    MV="${PREFIX}mv"
 
     alias ls="$LS -v              \
         --color=always            \
@@ -64,18 +49,12 @@ _define_aliases() {
 
     alias diff="diff --color=always"
 
-    alias dir="$DIR --color=always"
-    alias vdir="$VDIR --color=always"
-
     alias grep="grep --color=always"
     alias egrep="egrep --color=always"
     alias fgrep="fgrep --color=always"
 
     alias less="LESSHISTFILE=- less -FXR --mouse --wheel-lines=3"
     alias rsync="rsync --progress"
-
-    alias e="TERM=xterm-256color $E"
-    alias emacs="$EMACS"
 }
 
 # Customize bash prompt
