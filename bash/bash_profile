@@ -13,6 +13,18 @@ fi
 # editor
 export EDITOR='vim'
 
+# fzf
+if type fzf &>/dev/null; then
+    eval "$(fzf --bash)"
+
+    export FZF_DEFAULT_OPTS='
+    --height ~9 --reverse --style minimal --no-info
+    --preview "cat {}"
+    --preview-window right:60%:hidden:wrap
+    --bind ctrl-y:toggle-preview
+    '
+fi
+
 # manpager
 export MANPAGER='vim +MANPAGER "+set laststatus=0" "+noremap q <Cmd>qall!<CR>" --not-a-term -'
 

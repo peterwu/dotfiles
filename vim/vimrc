@@ -226,52 +226,6 @@ def ToggleQuickfixWindow(type: string): void
     endif
 enddef
 
-# use quickfix to show args
-def QfShowArguments(): void
-    setqflist([], ' ', {
-        items: argv()->mapnew((_, v) => ({ filename: v->fnamemodify(':p') })),
-        quickfixtextfunc: '<SID>FormatQuickfixItems'
-    })
-enddef
-nnoremap <silent> <Leader>fa <ScriptCmd>QfShowArguments()<Bar>copen<CR>
-
-# use quickfix to show buffers
-def QfShowBuffers(): void
-    setqflist([], ' ', {
-        items: range(1, bufnr('$'))
-            ->filter('buflisted(v:val)')
-            ->map((_, v) => ({ bufnr: v })),
-        quickfixtextfunc: '<SID>FormatQuickfixItems'
-    })
-enddef
-nnoremap <silent> <Leader>fb <ScriptCmd>QfShowBuffers()<Bar>copen<CR>
-
-# use quickfix to show oldfiles
-def QfShowOldFiles(): void
-    setqflist([], ' ', {
-        items: v:oldfiles
-            ->mapnew((_, v) => ({ filename: v->fnamemodify(':p') })),
-        quickfixtextfunc: '<SID>FormatQuickfixItems'
-    })
-enddef
-nnoremap <silent> <Leader>fo <ScriptCmd>QfShowOldFiles()<Bar>copen<CR>
-
-def FormatQuickfixItems(info: dict<number>): list<string>
-    var items = getqflist({ id: info.id, items: 1 }).items
-    var list = []
-
-    for v in items
-        var bufname = bufname(v.bufnr)
-        if bufname->empty()
-            list->add("[No Name]")
-        else
-            list->add(fnamemodify(bufname, ':~'))
-        endif
-    endfor
-
-    return list
-enddef
-
 # use tab to select from popup menu
 inoremap <expr> <Tab>   (pumvisible() ? '<C-N>' : '<Tab>')
 inoremap <expr> <S-Tab> (pumvisible() ? '<C-P>' : '<C-H>')
@@ -859,6 +813,28 @@ enddef
 PaqAdd('tommcdo/vim-exchange', {as: 'exchange'})
 PaqAdd('tpope/vim-repeat',     {as: 'repeat'})
 PaqAdd('tpope/vim-surround',   {as: 'surround'})
+
+# fzf
+if executable('fzf')
+    PaqAdd('junegunn/fzf.vim',     {as: 'fzf'})
+
+    if executable('brew')
+        var brew_prefix = trim(system('brew --prefix'))
+        execute 'set runtimepath+=' .. brew_prefix .. '/opt/fzf'
+    endif
+
+    g:fzf_vim = {
+        command_prefix: 'Fzf',
+        preview_window: ['hidden,right,50%', 'ctrl-y']
+    }
+
+    # key binds
+    nnoremap <silent> <Leader>ff <ScriptCmd>FzfFiles<CR>
+    nnoremap <silent> <Leader>fb <ScriptCmd>FzfBuffers<CR>
+    nnoremap <silent> <Leader>fo <ScriptCmd>FzfHistory<CR>
+    nnoremap <silent> <Leader>f: <ScriptCmd>FzfHistory:<CR>
+    nnoremap <silent> <Leader>f/ <ScriptCmd>FzfHistory/<CR>
+endif
 
 # lion
 PaqAdd('tommcdo/vim-lion', {as: 'lion'})
