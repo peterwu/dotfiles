@@ -107,6 +107,7 @@ set shiftround
 set shiftwidth=4
 set shortmess+=Ic
 set showmatch
+set showtabline=2
 set sidescroll=1
 set sidescrolloff=2
 set smartcase
@@ -323,7 +324,7 @@ def PasteFromClipboard(command: string)
 enddef
 
 # terminal
-nnoremap <Leader>`  <Cmd>belowright terminal<CR>
+nnoremap <Leader>` <Cmd>belowright terminal<CR>
 
 # explorers
 nnoremap <Leader><Tab>   <Cmd>Lexplore<CR>
@@ -778,6 +779,9 @@ packadd! hlyank
 # matchit
 packadd! matchit
 
+# nohlsearch
+packadd! nohlsearch
+
 # netrw
 g:netrw_banner       = 0
 g:netrw_browse_split = 4
@@ -810,6 +814,7 @@ def EnableTermDebug(): void
 enddef
 
 # 3rd party plugins
+PaqAdd('github/copilot.vim',   {as: 'copilot'})
 PaqAdd('tommcdo/vim-exchange', {as: 'exchange'})
 PaqAdd('tpope/vim-repeat',     {as: 'repeat'})
 PaqAdd('tpope/vim-surround',   {as: 'surround'})
@@ -839,6 +844,96 @@ endif
 # lion
 PaqAdd('tommcdo/vim-lion', {as: 'lion'})
 g:lion_squeeze_spaces = 1
+
+# lsp
+PaqAdd('yegappan/lsp', {as: 'lsp'})
+var lsp_opts = {autoHighlightDiags: true}
+var lsp_servers: list<dict<any>>
+
+if executable('clangd')
+    lsp_servers->add({
+        name: 'clangd',
+        filetype: ['c', 'cpp'],
+        path: 'clangd',
+        args: ['--background-index']
+    })
+endif
+
+if executable('gopls')
+    lsp_servers->add({
+        name: 'gopls',
+        filetype: ['go'],
+        path: 'gopls'
+    })
+endif
+
+if executable('neocmakelsp')
+    lsp_servers->add({
+        name: 'neocmakelsp',
+        filetype: ['cmake'],
+        path: 'neocmakelsp',
+        args: ['--stdio']
+    })
+endif
+
+if executable('pylsp')
+    lsp_servers->add({
+        name: 'pylsp',
+        filetype: ['python'],
+        path: 'pylsp',
+        initializationOptions: {
+            'pylsp': {
+                'plugins': {
+                    'jedi': {
+                        'environment': system("pvx python find")->trim()
+                    }
+                }
+            }
+        }
+    })
+endif
+
+if executable('terraform-ls')
+    lsp_servers->add({
+        name: 'terraform-ls',
+        filetype: ['terraform'],
+        path: 'terraform-ls',
+        args: ['serve']
+    })
+endif
+
+if executable('tsserver')
+    lsp_servers->add({
+        name: 'typescriptlang',
+        filetype: ['javascript', 'typescript'],
+        path: 'typescript-language-server',
+        args: ['--stdio']
+    })
+endif
+
+augroup lsp_setup | autocmd!
+    autocmd User LspSetup {
+        g:LspOptionsSet(lsp_opts)
+        g:LspAddServer(lsp_servers)
+    }
+augroup END
+
+augroup lsp_attached | autocmd!
+    autocmd User LspAttached SetLspKeymaps()
+augroup END
+
+def SetLspKeymaps(): void
+    nnoremap <buffer> gd <Cmd>LspGotoDefinition<CR>
+    nnoremap <buffer> gp <Cmd>LspPeekDefinition<CR>
+    nnoremap <buffer> gr <Cmd>LspPeekReferences<CR>
+    nnoremap <buffer> gi <Cmd>LspGotoImpl<CR>
+    nnoremap <buffer> gt <Cmd>LspGotoTypeDef<CR>
+    nnoremap <buffer> gR <Cmd>LspRename<CR>
+    nnoremap <buffer> go <Cmd>LspDocumentSymbol<CR>
+    nnoremap <buffer> [d <Cmd>LspDiag prev<CR>
+    nnoremap <buffer> ]d <Cmd>LspDiag next<CR>
+    nnoremap <buffer> K  <Cmd>LspHover<CR>
+enddef
 
 # rainbow
 PaqAdd('luochen1990/rainbow')
