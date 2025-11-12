@@ -324,7 +324,7 @@ def PasteFromClipboard(command: string)
 enddef
 
 # terminal
-nnoremap <Leader>` <Cmd>belowright terminal<CR>
+nnoremap <Leader>` <Cmd>belowright terminal ++close bash --login<CR>
 
 # explorers
 nnoremap <Leader><Tab>   <Cmd>Lexplore<CR>
