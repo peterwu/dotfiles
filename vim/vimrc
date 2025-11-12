@@ -1,20 +1,8 @@
 vim9script
-# let the fun begin
 
-# requirements {{{
-
-const base_patch_level = '9.1.1223'
-const full_patch_level = '9.1.1703'
-
-var required_patch_level = has('clipboard') ? base_patch_level : full_patch_level
-if !has('patch-' .. required_patch_level)
-    const msg = 'Error: patch level ' .. required_patch_level .. ' is required.'
-    const cmd = 'printf "\033[31m' .. msg .. '\033[0m\n"'
-    execute 'silent !' .. cmd
-    quitall!
-endif
-
-# }}}
+#####################
+# let the fun begin #
+#####################
 
 # commons {{{
 
