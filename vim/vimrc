@@ -210,9 +210,9 @@ def ToggleQuickfixWindow(type: string): void
     endif
 
     if getwininfo()->filter(value)->empty()
-        execute $'silent! {prefix}open'
+        execute 'silent!' $'{prefix}open'
     else
-        execute $'silent! {prefix}close'
+        execute 'silent!' $'{prefix}close'
     endif
 enddef
 
@@ -252,13 +252,13 @@ def YankToClipboard(arg = ''): string
         set selection=inclusive
 
         if type == 'char'
-            silent execute $'normal! v`[o`]"{v:register}y'
+            silent execute 'normal!' $'v`[o`]"{v:register}y'
         elseif type == 'line'
-            silent execute $'normal! `[V`]"{v:register}y'
+            silent execute 'normal!' $'`[V`]"{v:register}y'
         elseif type == 'block' || type == 'v' || type == 'V' || type == "\<C-V>"
-            silent execute $'normal! gv"{v:register}y'
+            silent execute 'normal!' $'gv"{v:register}y'
         elseif type =~ '^\d\+$'
-            silent execute $'normal! ^v{type}$h"{v:register}y'
+            silent execute 'normal!' $'^v{type}$h"{v:register}y'
             if mode() == 'v'
                 normal! v
             endif
@@ -302,7 +302,7 @@ def PasteFromClipboard(command: string)
             if !empty(b64text)
                 var decoded_text = b64text->base64_decode()->blob2str()
                 setreg(v:register, decoded_text)
-                execute 'normal! "' .. v:register .. b:pending_paste_command
+                execute 'normal!' $'"{v:register}{b:pending_paste_command}'
             endif
         }
     augroup END
@@ -393,7 +393,7 @@ enddef
 augroup show_color_column_per_line | autocmd!
     autocmd FileType * {
         const textwidth = &textwidth > 0 ? &textwidth + 1 : 0
-        execute $'match ColorColumn /\%{textwidth}v./'
+        execute 'match' 'ColorColumn' $'/\%{textwidth}v./'
     }
 augroup END
 
@@ -507,7 +507,7 @@ def HighlightGitBranchStatus(): void
         endif
 
         Highlight('StatusGitBranchStatus', git_color, 'LightGray')
-        b:git_branch_status = git_icon .. ' ' .. git_branch
+        b:git_branch_status = $'{git_icon} {git_branch}'
     endif
 enddef
 
@@ -620,37 +620,31 @@ def g:DrawTabLine(): string
     var last_tab_nr = tabpagenr('$')
 
     for i in range(1, last_tab_nr)
-        # select the highlighting
-        if i == selected_tab_nr
-            tabline ..= '%#TabLineSel#'
-        else
-            tabline ..= '%#TabLine#'
-        endif
-
-        # set the tab page number (for mouse clicks)
-        tabline ..= '%' .. i .. 'T'
-
-        # the label consists of tab # and bufname of active window
-        var buflist = tabpagebuflist(i)
-        var winnr = tabpagewinnr(i)
-        var buf = buflist[winnr - 1]
-        var bufname = bufname(buf)->fnamemodify(':~')->pathshorten()
-
-        tabline ..= ' ' .. i .. ':' .. bufname .. ' '
-
-        # if buffer is modified
-        var buf_modified = getbufvar(buf, '&modified')
-        if buf_modified | tabline ..= '[+] ' | endif
-
-        if i != last_tab_nr
-            tabline ..= '%#TabLineFill#' .. ' '
-        endif
+        tabline ..= printf(
+            '%s%%%dT%s%s',
+            # select the highlighting
+            (i == selected_tab_nr ? '%#TabLineSel#' : '%#TabLine#'),
+            # set the tab page number (for mouse clicks): %{i}T
+            i,
+            GetTabLabel(i),
+            (i != last_tab_nr ? '%#TabLineFill# ' : '')
+        )
     endfor
 
     # after the last tab fill with TabLineFill and reset tab page nr
-    tabline ..= '%#TabLineFill#%T'
+    return $'{tabline}%#TabLineFill#%T'
+enddef
 
-    return tabline
+# the label consists of tab # and bufname of active window
+def GetTabLabel(tabnr: number): string
+    var buflist = tabpagebuflist(tabnr)
+    var buf = buflist[tabpagewinnr(tabnr) - 1]
+    var name = buf->bufname() ?? '[No Name]'
+
+    return printf(' %d:%s%s ',
+        tabnr,
+        name->fnamemodify(':~')->pathshorten(),
+        buf->getbufvar('&modified') ? ' [+]' : '')
 enddef
 
 # }}}
@@ -675,15 +669,12 @@ def PaqInit(): void
 enddef
 
 def PaqAdd(name: string, args = {}): void
-    var url = 'https://github.com/' .. name
+    var url = $'https://github.com/{name}'
     var as = args->get('as', name->split('/')[1])
 
-    var dir: string
-    if args->get('opt', false)
-        dir = pack.opt_dir   .. '/' .. as
-    else
-        dir = pack.start_dir .. '/' .. as
-    endif
+    var dir = printf('%s/%s',
+        args->get('opt', false) ? pack.opt_dir : pack.start_dir,
+        as)
 
     paqs[as] = {
         dir: dir,
@@ -698,25 +689,28 @@ def PaqUpdate(): void
         const as  = k
         const dir = v.dir
         const url = v.url
-        const sed_rm_ansi_esc_chars = 'sed'
-            .. ' -e "s/[^[:print:]]\[[0-9;]*[a-zA-Z]//g"'
-            .. ' -e "s/[[:cntrl:]]//g"'
+        const sed_rm_ansi_esc_chars = printf('%s %s %s',
+            'sed',
+            '-e "s/[^[:print:]]\\[[0-9;]*[a-zA-Z]//g"',
+            '-e "s/[[:cntrl:]]//g"'
+        )
 
         # check if it has been git cloned already
-        var git_cmd = ''
-        var git_cmd_result = []
-        if finddir('.git', dir)->empty()
-            git_cmd =  $'git clone --depth=1 {url} {dir}|{sed_rm_ansi_esc_chars}'
-        else
-            git_cmd = $'(git -C {dir} fetch --depth=1 '
-                .. $'&& git -C {dir} reset --hard FETCH_HEAD) '
-                .. $'2>&1|{sed_rm_ansi_esc_chars}'
-        endif
-        git_cmd_result = system(git_cmd)->split('\n')
+        var git_cmd = finddir('.git', dir)->empty()
+            ? printf('%s | %s',
+                $'git clone --depth=1 {url} {dir}',
+                sed_rm_ansi_esc_chars
+            )
+            : printf('%s && %s 2>&1 | %s',
+                $'git -C {dir} fetch --depth=1',
+                $'git -C {dir} reset --hard FETCH_HEAD',
+                sed_rm_ansi_esc_chars
+            )
+        var git_cmd_result = system(git_cmd)->split('\n')
 
         const doc_dir = $'{dir}/doc'
         if doc_dir->isdirectory()
-            execute $'helptags {doc_dir}'
+            execute 'helptags' doc_dir
         endif
 
         const fmt = $'%{max + 1}s: %s'
@@ -742,10 +736,19 @@ def PaqClean(): void
     if dirs->filter('v:val != ""')->empty()
         redraw! | echo $'Pack [{pack.name}] is clean.'
     else
-        var prompt = "WARNING:"
-            .. "\nThe following folder(s) will be deleted.\n"
-            .. "\n" .. dirs->join("\n") .. "\n"
-            .. "\n" .. "Are you sure? [y/N] "
+        var prompt = [
+            "The following folder(s) will be deleted.",
+            "",
+            dirs->join("\n"),
+            "",
+            "Are you sure? [y/N] "
+        ]->join("\n")
+
+        echohl WarningMsg
+        echo "!!! WARNING !!!"
+        echohl None
+        echo "\n"
+
         if 'y' == input(prompt)->tolower()
             for dir in dirs
                 delete(dir, 'rf')
@@ -784,7 +787,7 @@ augroup vinegarize_netrw | autocmd!
     autocmd filetype netrw {
         nnoremap <buffer> <silent> ^ <Plug>NetrwBrowseUpDir()
         nnoremap <buffer> <silent> - k
-        nnoremap <buffer> <silent> ~ <Cmd>execute $"Ntree {expand('~/')}"<CR>
+        nnoremap <buffer> <silent> ~ <Cmd>execute 'Ntree' expand('~/')<CR>
     }
 augroup END
 
@@ -813,8 +816,8 @@ if executable('fzf')
     PaqAdd('junegunn/fzf.vim',     {as: 'fzf'})
 
     if executable('brew')
-        var brew_prefix = trim(system('brew --prefix'))
-        execute 'set runtimepath+=' .. brew_prefix .. '/opt/fzf'
+        var brew_prefix = system('brew --prefix')->trim()
+        execute $'set runtimepath+={brew_prefix}/opt/fzf'
     endif
 
     g:fzf_vim = {
@@ -823,11 +826,35 @@ if executable('fzf')
     }
 
     # key binds
-    nnoremap <silent> <Leader>ff <ScriptCmd>FzfFiles<CR>
-    nnoremap <silent> <Leader>fb <ScriptCmd>FzfBuffers<CR>
-    nnoremap <silent> <Leader>fo <ScriptCmd>FzfHistory<CR>
-    nnoremap <silent> <Leader>f: <ScriptCmd>FzfHistory:<CR>
-    nnoremap <silent> <Leader>f/ <ScriptCmd>FzfHistory/<CR>
+    nnoremap <silent> <Leader>ff <Cmd>FzfFiles<CR>
+    nnoremap <silent> <Leader>fb <Cmd>FzfBuffers<CR>
+    nnoremap <silent> <Leader>fo <Cmd>FzfHistory<CR>
+    nnoremap <silent> <leader>ft <Cmd>FzfTabs<CR>
+    nnoremap <silent> <Leader>f: <Cmd>FzfHistory:<CR>
+    nnoremap <silent> <Leader>f/ <Cmd>FzfHistory/<CR>
+
+    def FzfTabs()
+        var tabs = []
+        var selected_tab_nr = tabpagenr()
+        var last_tab_nr = tabpagenr('$')
+
+        for i in range(1, last_tab_nr)
+            var label = GetTabLabel(i)
+            label = (i == selected_tab_nr ? '*' : ' ') .. label
+            tabs->add(label)
+        endfor
+
+        fzf#run(fzf#wrap({
+            source: tabs,
+            sink: (line) => {
+                var tabnum = matchstr(line, '^\s*\*\?\s*\zs\d\+')
+                execute 'tabnext' tabnum
+            },
+            options: '--prompt "Tab> "'
+        }))
+    enddef
+
+    command! -nargs=0 FzfTabs call FzfTabs()
 endif
 
 # lion
