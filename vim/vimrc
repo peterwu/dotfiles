@@ -620,15 +620,14 @@ def g:DrawTabLine(): string
     var last_tab_nr = tabpagenr('$')
 
     for i in range(1, last_tab_nr)
-        tabline ..= printf(
-            '%s%%%dT%s%s',
+        tabline ..= printf('%s%%%dT%s%s%s',
             # select the highlighting
-            (i == selected_tab_nr ? '%#TabLineSel#' : '%#TabLine#'),
+            i == selected_tab_nr ? '%#TabLineSel#' : '%#TabLine#',
             # set the tab page number (for mouse clicks): %{i}T
             i,
-            GetTabLabel(i),
-            (i != last_tab_nr ? '%#TabLineFill# ' : '')
-        )
+            g:GetTabLabel(i),
+            GetTabBuf(i)->getbufvar('&modified') ? '[+] ' : '',
+            i != last_tab_nr ? '%#TabLineFill# ' : '')
     endfor
 
     # after the last tab fill with TabLineFill and reset tab page nr
@@ -636,15 +635,18 @@ def g:DrawTabLine(): string
 enddef
 
 # the label consists of tab # and bufname of active window
-def GetTabLabel(tabnr: number): string
-    var buflist = tabpagebuflist(tabnr)
-    var buf = buflist[tabpagewinnr(tabnr) - 1]
+def g:GetTabLabel(tabnr: number): string
+    var buf = GetTabBuf(tabnr)
     var name = buf->bufname() ?? '[No Name]'
 
-    return printf(' %d:%s%s ',
+    return printf(' %d:%s ',
         tabnr,
-        name->fnamemodify(':~')->pathshorten(),
-        buf->getbufvar('&modified') ? ' [+]' : '')
+        name->fnamemodify(':~')->pathshorten())
+enddef
+
+def GetTabBuf(tabnr: number): number
+    var buflist = tabpagebuflist(tabnr)
+    return buflist[tabpagewinnr(tabnr) - 1]
 enddef
 
 # }}}
@@ -692,20 +694,17 @@ def PaqUpdate(): void
         const sed_rm_ansi_esc_chars = printf('%s %s %s',
             'sed',
             '-e "s/[^[:print:]]\\[[0-9;]*[a-zA-Z]//g"',
-            '-e "s/[[:cntrl:]]//g"'
-        )
+            '-e "s/[[:cntrl:]]//g"')
 
         # check if it has been git cloned already
         var git_cmd = finddir('.git', dir)->empty()
             ? printf('%s | %s',
                 $'git clone --depth=1 {url} {dir}',
-                sed_rm_ansi_esc_chars
-            )
+                sed_rm_ansi_esc_chars)
             : printf('%s && %s 2>&1 | %s',
                 $'git -C {dir} fetch --depth=1',
                 $'git -C {dir} reset --hard FETCH_HEAD',
-                sed_rm_ansi_esc_chars
-            )
+                sed_rm_ansi_esc_chars)
         var git_cmd_result = system(git_cmd)->split('\n')
 
         const doc_dir = $'{dir}/doc'
@@ -839,7 +838,7 @@ if executable('fzf')
         var last_tab_nr = tabpagenr('$')
 
         for i in range(1, last_tab_nr)
-            var label = GetTabLabel(i)
+            var label = g:GetTabLabel(i)
             label = (i == selected_tab_nr ? '*' : ' ') .. label
             tabs->add(label)
         endfor

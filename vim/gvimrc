@@ -15,16 +15,15 @@ if has('win64')   | set renderoptions=type:directx | endif
 nnoremap <Leader>egv <Cmd>edit   $MYGVIMRC<CR>
 nnoremap <Leader>sgv <Cmd>source $MYGVIMRC<CR>
 
-tnoremap <Esc> <C-\><C-N>
-
 nnoremap <silent> <C-F1> <ScriptCmd>ToggleGuiOption('m')<CR>
 nnoremap <silent> <C-F2> <ScriptCmd>ToggleGuiOption('T')<CR>
 nnoremap <silent> <C-F3> <ScriptCmd>ToggleGuiOption('r')<CR>
 
 def ToggleGuiOption(option: string)
-    if &guioptions =~# option
-        &guioptions = substitute(&guioptions, option, '', 'g')
-    else
-        &guioptions ..= option
-    endif
+    &guioptions = &guioptions =~# option
+        ? substitute(&guioptions, option, '', 'g')
+        : &guioptions .. option
 enddef
+
+set guitablabel=%{g:GetTabLabel(v:lnum)}%m
+set guitabtooltip=%F
