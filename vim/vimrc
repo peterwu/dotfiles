@@ -6,21 +6,16 @@ vim9script
 
 # commons {{{
 
-for [xdg_env_var, default_dir] in [
-        ['XDG_CACHE_HOME',  $'{$HOME}/.cache'],
-        ['XDG_CONFIG_HOME', $'{$HOME}/.config'],
-        ['XDG_DATA_HOME',   $'{$HOME}/.local/share'],
-        ['XDG_STATE_HOME',  $'{$HOME}/.local/state']
-        ]
-
-    const xdg_base_dir = getenv(xdg_env_var) ?? default_dir
-    const vim_base_dir = $'{xdg_base_dir}/vim'
-
-    const vim_env_var = xdg_env_var->substitute('XDG', 'VIM', 'g')
-    setenv(vim_env_var, vim_base_dir)
-
-    mkdir(vim_base_dir, 'p', 0o700)
-endfor
+({
+    XDG_CACHE_HOME:  $'{$HOME}/.cache',
+    XDG_CONFIG_HOME: $'{$HOME}/.config',
+    XDG_DATA_HOME:   $'{$HOME}/.local/share',
+    XDG_STATE_HOME:  $'{$HOME}/.local/state',
+})->foreach((xdg, default) => {
+    const dir = $'{getenv(xdg) ?? default}/vim'
+    setenv(xdg->substitute('XDG', 'VIM', ''), dir)
+    mkdir(dir, 'p', 0o700)
+})
 
 def Highlight(group: string, fg='NONE', bg='NONE', style='NONE'): void
     var style_dict: dict<bool>
@@ -198,22 +193,12 @@ nnoremap <silent> <Leader>qc <Cmd>cclose<CR>
 nnoremap <silent> <Leader>qq <ScriptCmd>ToggleQuickfixWindow('qf')<CR>
 
 def ToggleQuickfixWindow(type: string): void
-    var value = ''
-    var prefix = ''
+    const [value, prefix] = type == 'qf'
+        ? ['v:val.quickfix', 'c']
+        : ['v:val.loclist',  'l']
 
-    if type == 'qf'
-        value = 'v:val.quickfix'
-        prefix = 'c'
-    elseif type == 'll'
-        value = 'v:val.loclist'
-        prefix = 'l'
-    endif
-
-    if getwininfo()->filter(value)->empty()
-        execute 'silent!' $'{prefix}open'
-    else
-        execute 'silent!' $'{prefix}close'
-    endif
+    const cmd = getwininfo()->filter(value)->empty() ? 'open' : 'close'
+    execute 'silent!' $'{prefix}{cmd}'
 enddef
 
 # use tab to select from popup menu
@@ -374,7 +359,7 @@ augroup setup_quickfix | autocmd!
 augroup END
 
 def g:DrawQfStatusLine(): string
-    return join([
+    return [
         '%#StatusVimMode#',
         ' ',
         GetVimMode(),
@@ -387,7 +372,7 @@ def g:DrawQfStatusLine(): string
         '%#StatusPercent#',
         '%l/%L',
         ' '
-    ], '')
+    ]->join('')
 enddef
 
 augroup show_color_column_per_line | autocmd!
@@ -471,10 +456,9 @@ enddef
 def HighlightGitBranchStatus(): void
     if executable('git') < 1 | return | endif
 
-    var git_icon = '*'
     var git_dir = expand('%:p:h:S')
     var git_cmd = $'git -C {git_dir} status --branch --porcelain=2'
-    silent! var git_cmd_result = system(git_cmd)->split('\n')
+    silent! const lines = system(git_cmd)->split('\n')
 
     # Line                                  Notes
     # ------------------------------------------------------------
@@ -485,30 +469,19 @@ def HighlightGitBranchStatus(): void
     #                                       the commit is present.
     # ------------------------------------------------------------
 
-    var git_branch = ''
-    var git_status = []
-    var git_color = ''
-
     if v:shell_error > 0
         Highlight('StatusGitBranchStatus', 'Black', 'LightGray')
         b:git_branch_status = ''
-    else
-        git_branch = git_cmd_result->copy()
-            ->filter('v:val =~ "^# branch.head"')[0]->split()[2]
-        git_status = git_cmd_result->copy()
-            ->filter('v:val !~ "^# "')
-
-        if git_status->empty()
-            # clean branch
-            git_color = 'DarkGreen'
-        else
-            # dirty branch
-            git_color = 'DarkRed'
-        endif
-
-        Highlight('StatusGitBranchStatus', git_color, 'LightGray')
-        b:git_branch_status = $'{git_icon} {git_branch}'
+        return
     endif
+
+    const branch = lines->copy()
+        ->filter('v:val =~ "^# branch.head"')[0]->split()[2]
+    const dirty = !lines->copy()->filter('v:val !~ "^# "')->empty()
+    const color = dirty ? 'DarkRed' : 'DarkGreen'
+
+    Highlight('StatusGitBranchStatus', color, 'LightGray')
+    b:git_branch_status = $'* {branch}'
 enddef
 
 def GetFileSize(): string
@@ -553,60 +526,36 @@ enddef
 HighlightStatusLine()
 set statusline=%!DrawStatusLine()
 def g:DrawStatusLine(): string
-    if g:statusline_winid != win_getid()
-        return join([
-            '%#StatusWinNR#',
-            ' ',
-            '%{winnr()}',
-            ' ',
-            '%#StatusFileName#',
-            ' ',
-            '%<%F',
-            '%=',
-            ' ',
-            '%#StatusPercent#',
-            '%P',
-            ' '
-        ], '')
-    else
-        return join([
-            '%#StatusVimMode#',
-            ' ',
-            GetVimMode(),
-            ' ',
-            '%#StatusBlank#',
-            ' ',
-            '%#StatusFileName#',
-            '%<%F',
-            '%#StatusBlank#',
-            ' ',
-            '%#StatusFileState#',
-            '%m%r%h%w%q',
-            '%#StatusBlank#',
-            ' ',
-            '%#StatusGitBranchStatus#',
-            '%{b:->get("git_branch_status", "")}',
-            '%#StatusBlank#',
-            '%=',
-            ' ',
-            '%#StatusFileSize#',
-            GetFileSize(),
-            '%#StatusBlank#',
-            ' ',
-            '%#StatusFileFormat#',
-            ' ',
-            '%{&fileformat}',
-            ' | ',
-            '%#StatusFileEncode#',
-            '%{&fileencoding ?? &encoding}',
-            ' ',
-            '%#StatusBlank#',
-            ' ',
-            '%#StatusPercent#',
-            '%P',
-            ' '
-        ], '')
-    endif
+    return g:statusline_winid == win_getid()
+        ? DrawStatusLineActive()
+        : DrawStatusLineInactive()
+enddef
+
+def DrawStatusLineInactive(): string
+    return [
+        '%#StatusWinNR# ', '%{winnr()}', ' ',
+        '%#StatusFileName# ', '%<%F', '%= ',
+        '%#StatusPercent#', '%P', ' '
+    ]->join('')
+enddef
+
+def DrawStatusLineActive(): string
+    return [
+        '%#StatusVimMode# ', GetVimMode(), ' ',
+        '%#StatusBlank# ',
+        '%#StatusFileName#', '%<%F',
+        '%#StatusBlank# ',
+        '%#StatusFileState#', '%m%r%h%w%q',
+        '%#StatusBlank# ',
+        '%#StatusGitBranchStatus#', '%{b:->get("git_branch_status", "")}',
+        '%#StatusBlank#', '%= ',
+        '%#StatusFileSize#', GetFileSize(),
+        '%#StatusBlank# ',
+        '%#StatusFileFormat# ', '%{&fileformat}', ' | ',
+        '%#StatusFileEncode#', '%{&fileencoding ?? &encoding}', ' ',
+        '%#StatusBlank# ',
+        '%#StatusPercent#', '%P', ' '
+    ]->join('')
 enddef
 
 # }}}
@@ -615,29 +564,27 @@ enddef
 
 set tabline=%!DrawTabLine()
 def g:DrawTabLine(): string
-    var tabline = ''
-    var selected_tab_nr = tabpagenr()
-    var last_tab_nr = tabpagenr('$')
+    const selected_tab_nr = tabpagenr()
+    const last_tab_nr = tabpagenr('$')
 
-    for i in range(1, last_tab_nr)
-        tabline ..= printf('%s%%%dT%s%s%s',
+    var tabs = range(1, last_tab_nr)->mapnew((_, i) =>
+        printf('%s%%%dT%s%s%s',
             # select the highlighting
             i == selected_tab_nr ? '%#TabLineSel#' : '%#TabLine#',
             # set the tab page number (for mouse clicks): %{i}T
             i,
             g:GetTabLabel(i),
             GetTabBuf(i)->getbufvar('&modified') ? '[+] ' : '',
-            i != last_tab_nr ? '%#TabLineFill# ' : '')
-    endfor
+            i != last_tab_nr ? '%#TabLineFill# ' : ''))
 
     # after the last tab fill with TabLineFill and reset tab page nr
-    return $'{tabline}%#TabLineFill#%T'
+    return tabs->join('') .. '%#TabLineFill#%T'
 enddef
 
 # the label consists of tab # and bufname of active window
 def g:GetTabLabel(tabnr: number): string
-    var buf = GetTabBuf(tabnr)
-    var name = buf->bufname() ?? '[No Name]'
+    const buf = GetTabBuf(tabnr)
+    const name = buf->bufname() ?? '[No Name]'
 
     return printf(' %d:%s ',
         tabnr,
@@ -645,7 +592,7 @@ def g:GetTabLabel(tabnr: number): string
 enddef
 
 def GetTabBuf(tabnr: number): number
-    var buflist = tabpagebuflist(tabnr)
+    const buflist = tabpagebuflist(tabnr)
     return buflist[tabpagewinnr(tabnr) - 1]
 enddef
 
@@ -718,41 +665,31 @@ def PaqUpdate(): void
 enddef
 
 def PaqClean(): void
-    var dirs = []
-    for dir in [ pack.start_dir, pack.opt_dir ]
-        dirs += glob($'{dir}/*', true, true)
-    endfor
+    const dirs = [pack.start_dir, pack.opt_dir]
+        ->mapnew((_, d) => glob($'{d}/*', true, true))
+        ->flattennew()
 
-    for [k, v] in items(dirs)
-        for dir in paqs->values()->map((_, val) => val.dir )
-            if v == dir
-                dirs[k] = ''
-                break
-            endif
-        endfor
-    endfor
+    const managed = paqs->values()->mapnew((_, v) => v.dir)
+    const orphaned = dirs->copy()->filter((_, d) => managed->index(d) == -1)
 
-    if dirs->filter('v:val != ""')->empty()
+    if orphaned->empty()
         redraw! | echo $'Pack [{pack.name}] is clean.'
-    else
-        var prompt = [
-            "The following folder(s) will be deleted.",
-            "",
-            dirs->join("\n"),
-            "",
-            "Are you sure? [y/N] "
-        ]->join("\n")
+        return
+    endif
 
-        echohl WarningMsg
-        echo "!!! WARNING !!!"
-        echohl None
-        echo "\n"
+    const prompt = [
+        "The following folder(s) will be deleted.",
+        "",
+        orphaned->join("\n"),
+        "",
+        "Are you sure? [y/N] "
+    ]->join("\n")
 
-        if 'y' == input(prompt)->tolower()
-            for dir in dirs
-                delete(dir, 'rf')
-            endfor
-        endif
+    echohl WarningMsg | echo "!!! WARNING !!!" | echohl None
+    echo "\n"
+
+    if 'y' == input(prompt)->tolower()
+        orphaned->foreach((_, d) => delete(d, 'rf'))
     endif
 enddef
 
@@ -812,7 +749,7 @@ PaqAdd('tpope/vim-surround',   {as: 'surround'})
 
 # fzf
 if executable('fzf')
-    PaqAdd('junegunn/fzf.vim',     {as: 'fzf'})
+    PaqAdd('junegunn/fzf.vim', {as: 'fzf'})
 
     if executable('brew')
         var brew_prefix = system('brew --prefix')->trim()
@@ -833,20 +770,18 @@ if executable('fzf')
     nnoremap <silent> <Leader>f/ <Cmd>FzfHistory/<CR>
 
     def FzfTabs()
-        var tabs = []
-        var selected_tab_nr = tabpagenr()
-        var last_tab_nr = tabpagenr('$')
+        const selected_tab_nr = tabpagenr()
+        const last_tab_nr = tabpagenr('$')
 
-        for i in range(1, last_tab_nr)
-            var label = g:GetTabLabel(i)
-            label = (i == selected_tab_nr ? '*' : ' ') .. label
-            tabs->add(label)
-        endfor
+        const tabs = range(1, last_tab_nr)->mapnew((_, i) => {
+            const label = g:GetTabLabel(i)
+            return (i == selected_tab_nr ? '*' : ' ') .. label
+        })
 
         fzf#run(fzf#wrap({
             source: tabs,
             sink: (line) => {
-                var tabnum = matchstr(line, '^\s*\*\?\s*\zs\d\+')
+                const tabnum = matchstr(line, '^\s*\*\?\s*\zs\d\+')
                 execute 'tabnext' tabnum
             },
             options: '--prompt "Tab> "'

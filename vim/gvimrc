@@ -1,29 +1,36 @@
 vim9script
 
-if has('macunix') | set guifont=SF_Mono:h16 | endif
-if has('win64')   | set guifont=SF_Mono:h12 | endif
-
+# Remove GUI elements by default
 set guioptions-=T
 set guioptions-=m
 set guioptions-=L
 set guioptions-=r
 set guioptions-=e
 
-if has('macunix') | set guioptions+=e              | endif
-if has('win64')   | set renderoptions=type:directx | endif
+# Platform-specific settings
+if has('macunix')
+    set guifont=SF_Mono:h16
+    set guioptions+=e
+elseif has('win64')
+    set guifont=SF_Mono:h12
+    set renderoptions=type:directx
+endif
 
-nnoremap <Leader>egv <Cmd>edit   $MYGVIMRC<CR>
-nnoremap <Leader>sgv <Cmd>source $MYGVIMRC<CR>
+# Keymaps
+nnoremap <Leader>egv <Cmd>tabedit $MYGVIMRC<CR>
+nnoremap <Leader>sgv <Cmd>source  $MYGVIMRC<CR>
 
+# Toggle GUI elements
 nnoremap <silent> <C-F1> <ScriptCmd>ToggleGuiOption('m')<CR>
 nnoremap <silent> <C-F2> <ScriptCmd>ToggleGuiOption('T')<CR>
 nnoremap <silent> <C-F3> <ScriptCmd>ToggleGuiOption('r')<CR>
 
 def ToggleGuiOption(option: string)
     &guioptions = &guioptions =~# option
-        ? substitute(&guioptions, option, '', 'g')
-        : &guioptions .. option
+        ? &guioptions->substitute(option, '', 'g')
+        : $'{&guioptions}{option}'
 enddef
 
+# Tab line appearance
 set guitablabel=%{g:GetTabLabel(v:lnum)}%m
 set guitabtooltip=%F
