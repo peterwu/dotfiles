@@ -11,6 +11,11 @@ set guioptions-=e
 if has('macunix')
     set guifont=SF_Mono:h16
     set guioptions+=e
+
+    nnoremap <D-0> <Cmd>set guifont=SF_Mono:h16<CR>
+    for i in range(1, 9)
+        execute $'nnoremap <D-{i}> <Cmd>tabnext {i}<CR>'
+    endfor
 elseif has('win64')
     set guifont=SF_Mono:h12
     set renderoptions=type:directx
