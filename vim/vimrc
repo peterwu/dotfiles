@@ -48,6 +48,7 @@ source $VIMRUNTIME/defaults.vim
 # ---------
 # work dirs
 # ---------
+mkdir($'{$VIM_STATE_HOME}/pack', 'p', 0o700)
 mkdir($'{$VIM_STATE_HOME}/swap', 'p', 0o700)
 mkdir($'{$VIM_STATE_HOME}/undo', 'p', 0o700)
 mkdir($'{$VIM_STATE_HOME}/view', 'p', 0o700)
@@ -65,7 +66,6 @@ set directory=$VIM_STATE_HOME/swap
 set encoding=utf-8
 set expandtab
 set fileformats=unix,dos,mac
-set foldmethod=marker
 set formatoptions=tcqj
 set hidden
 set history=1000
@@ -185,21 +185,12 @@ nnoremap <silent> ]Q <Cmd>clast<CR>
 # open/close location list window
 nnoremap <silent> <Leader>lo <Cmd>lopen<CR>
 nnoremap <silent> <Leader>lc <Cmd>lclose<CR>
-nnoremap <silent> <Leader>ll <ScriptCmd>ToggleQuickfixWindow('ll')<CR>
+nnoremap <silent> <Leader>ll <ScriptCmd>qf#ToggleWindow('ll')<CR>
 
 # open/close quickfix window
 nnoremap <silent> <Leader>qo <Cmd>copen<CR>
 nnoremap <silent> <Leader>qc <Cmd>cclose<CR>
-nnoremap <silent> <Leader>qq <ScriptCmd>ToggleQuickfixWindow('qf')<CR>
-
-def ToggleQuickfixWindow(type: string): void
-    const [value, prefix] = type == 'qf'
-        ? ['v:val.quickfix', 'c']
-        : ['v:val.loclist',  'l']
-
-    const cmd = getwininfo()->filter(value)->empty() ? 'open' : 'close'
-    execute 'silent!' $'{prefix}{cmd}'
-enddef
+nnoremap <silent> <Leader>qq <ScriptCmd>qf#ToggleWindow('qf')<CR>
 
 # use tab to select from popup menu
 inoremap <expr> <Tab>   (pumvisible() ? '<C-N>' : '<Tab>')
@@ -221,49 +212,11 @@ if has('clipboard')
     nnoremap <silent> <Leader>Y  "+yg_
     nnoremap <silent> <Leader>yy "+y_
 else
-    nnoremap <expr> <silent> <Leader>y  YankToClipboard()
-    xnoremap <expr> <silent> <Leader>y  YankToClipboard()
-    nnoremap <expr> <silent> <Leader>Y  YankToClipboard('g_')
-    nnoremap <expr> <silent> <Leader>yy YankToClipboard('_')
+    nnoremap <expr> <silent> <Leader>y  osc52#Yank()
+    xnoremap <expr> <silent> <Leader>y  osc52#Yank()
+    nnoremap <expr> <silent> <Leader>Y  osc52#Yank('g_')
+    nnoremap <expr> <silent> <Leader>yy osc52#Yank('_')
 endif
-
-def YankToClipboard(arg = ''): string
-    &operatorfunc = (type: string, ...args: list<string>) => {
-        var selection = &selection
-        var clipboard = &clipboard
-        var register = getreginfo(v:register)
-        var visual_marks = [getpos("'<"), getpos("'>")]
-
-        set selection=inclusive
-
-        if type == 'char'
-            silent execute 'normal!' $'v`[o`]"{v:register}y'
-        elseif type == 'line'
-            silent execute 'normal!' $'`[V`]"{v:register}y'
-        elseif type == 'block' || type == 'v' || type == 'V' || type == "\<C-V>"
-            silent execute 'normal!' $'gv"{v:register}y'
-        elseif type =~ '^\d\+$'
-            silent execute 'normal!' $'^v{type}$h"{v:register}y'
-            if mode() == 'v'
-                normal! v
-            endif
-        endif
-
-        var orig_text = getreg(v:register)
-        var b64_text = orig_text->split('\n')->str2blob()->base64_encode()
-        var osc52_text = $"\x1b]52;c;{b64_text}\x07"
-
-        echoraw(osc52_text)
-
-        &selection = selection
-        &clipboard = clipboard
-        setreg(v:register, register)
-        setpos("'<", visual_marks[0])
-        setpos("'>", visual_marks[1])
-    }
-
-    return 'g@' .. arg
-enddef
 
 # paste from clipboard
 if has('clipboard')
@@ -272,30 +225,11 @@ if has('clipboard')
     xnoremap <silent> <Leader>p "+p
     xnoremap <silent> <Leader>P "+P
 else
-    nnoremap <silent> <Leader>p <ScriptCmd>PasteFromClipboard("p")<CR>
-    nnoremap <silent> <Leader>P <ScriptCmd>PasteFromClipboard("P")<CR>
-    xnoremap <silent> <Leader>p <ScriptCmd>PasteFromClipboard("p")<CR>
-    xnoremap <silent> <Leader>P <ScriptCmd>PasteFromClipboard("P")<CR>
+    nnoremap <silent> <Leader>p <ScriptCmd>osc52#Paste("p")<CR>
+    nnoremap <silent> <Leader>P <ScriptCmd>osc52#Paste("P")<CR>
+    xnoremap <silent> <Leader>p <ScriptCmd>osc52#Paste("p")<CR>
+    xnoremap <silent> <Leader>P <ScriptCmd>osc52#Paste("P")<CR>
 endif
-
-def PasteFromClipboard(command: string)
-    b:pending_paste_command = command
-
-    augroup capture_osc52_paste | autocmd!
-        autocmd TermResponseAll osc ++once {
-            var b64text = matchstr(v:termosc, '^\%x1b]52;.\+;\zs[A-Za-z0-9+/=]\+')
-            if !empty(b64text)
-                var decoded_text = b64text->base64_decode()->blob2str()
-                setreg(v:register, decoded_text)
-                execute 'normal!' $'"{v:register}{b:pending_paste_command}'
-            endif
-        }
-    augroup END
-
-    echoraw("\x1b]52;c;?\x07")
-
-    augroup! capture_osc52_paste
-enddef
 
 # terminal
 nnoremap <Leader>` <Cmd>botright terminal ++close bash --login<CR>
@@ -309,14 +243,8 @@ nnoremap <Leader><S-Tab> <Cmd>Lexplore!<CR>
 # commands {{{
 
 # instant grep + quickfix
-command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<f-args>)
-command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr Grep(<f-args>)
-
-def Grep(...params: list<string>): string
-    var args = params->join(' ')->expandcmd()
-    var cmd = &grepprg->substitute('\$\*', args, '')
-    return system(cmd)
-enddef
+command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr qf#Grep(<f-args>)
+command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr qf#Grep(<f-args>)
 
 # force saving files that otherwise require sudoedit
 command! -nargs=0 SudoWrite {
@@ -448,7 +376,7 @@ def GetVimMode(): string
         mode = 'S'
     endif
 
-    var color = mode_color_map[mode]
+    const color = mode_color_map[mode]
     Highlight('StatusVimMode', color, 'White', 'bold,inverse')
     return mode
 enddef
@@ -456,8 +384,8 @@ enddef
 def HighlightGitBranchStatus(): void
     if executable('git') < 1 | return | endif
 
-    var git_dir = expand('%:p:h:S')
-    var git_cmd = $'git -C {git_dir} status --branch --porcelain=2'
+    const git_dir = expand('%:p:h:S')
+    const git_cmd = $'git -C {git_dir} status --branch --porcelain=2'
     silent! const lines = system(git_cmd)->split('\n')
 
     # Line                                  Notes
@@ -485,7 +413,7 @@ def HighlightGitBranchStatus(): void
 enddef
 
 def GetFileSize(): string
-    var file = expand('%:p')
+    const file = expand('%:p')
     var bytes = 0
 
     if file->len() > 0
@@ -567,7 +495,7 @@ def g:DrawTabLine(): string
     const selected_tab_nr = tabpagenr()
     const last_tab_nr = tabpagenr('$')
 
-    var tabs = range(1, last_tab_nr)->mapnew((_, i) =>
+    const tabs = range(1, last_tab_nr)->mapnew((_, i) =>
         printf('%s%%%dT%s%s%s',
             # select the highlighting
             i == selected_tab_nr ? '%#TabLineSel#' : '%#TabLine#',
@@ -600,98 +528,8 @@ enddef
 
 # plugins {{{
 
-final pack = {}
-pack.name      = 'plugged'
-pack.start_dir = $'{$VIM_DATA_HOME}/pack/{pack.name}/start'
-pack.opt_dir   = $'{$VIM_DATA_HOME}/pack/{pack.name}/opt'
-
-# paq:
-# {
-#    'paq_name' : { 'dir' : dir, 'url' : url }
-# }
-final paqs = {}
-
-# Paq management functions
-def PaqInit(): void
-    mkdir(pack.start_dir, 'p')
-    mkdir(pack.opt_dir,   'p')
-enddef
-
-def PaqAdd(name: string, args = {}): void
-    var url = $'https://github.com/{name}'
-    var as = args->get('as', name->split('/')[1])
-
-    var dir = printf('%s/%s',
-        args->get('opt', false) ? pack.opt_dir : pack.start_dir,
-        as)
-
-    paqs[as] = {
-        dir: dir,
-        url: url
-    }
-enddef
-
-def PaqUpdate(): void
-    const max = paqs->mapnew((k, _) => len(k))->max()
-
-    for [k, v] in items(paqs)
-        const as  = k
-        const dir = v.dir
-        const url = v.url
-        const sed_rm_ansi_esc_chars = printf('%s %s %s',
-            'sed',
-            '-e "s/[^[:print:]]\\[[0-9;]*[a-zA-Z]//g"',
-            '-e "s/[[:cntrl:]]//g"')
-
-        # check if it has been git cloned already
-        var git_cmd = finddir('.git', dir)->empty()
-            ? printf('%s | %s',
-                $'git clone --depth=1 {url} {dir}',
-                sed_rm_ansi_esc_chars)
-            : printf('%s && %s 2>&1 | %s',
-                $'git -C {dir} fetch --depth=1',
-                $'git -C {dir} reset --hard FETCH_HEAD',
-                sed_rm_ansi_esc_chars)
-        var git_cmd_result = system(git_cmd)->split('\n')
-
-        const doc_dir = $'{dir}/doc'
-        if doc_dir->isdirectory()
-            execute 'helptags' doc_dir
-        endif
-
-        const fmt = $'%{max + 1}s: %s'
-        echo printf(fmt, as, git_cmd_result[0])
-    endfor
-enddef
-
-def PaqClean(): void
-    const dirs = [pack.start_dir, pack.opt_dir]
-        ->mapnew((_, d) => glob($'{d}/*', true, true))
-        ->flattennew()
-
-    const managed = paqs->values()->mapnew((_, v) => v.dir)
-    const orphaned = dirs->copy()->filter((_, d) => managed->index(d) == -1)
-
-    if orphaned->empty()
-        redraw! | echo $'Pack [{pack.name}] is clean.'
-        return
-    endif
-
-    const prompt = [
-        "The following folder(s) will be deleted.",
-        "",
-        orphaned->join("\n"),
-        "",
-        "Are you sure? [y/N] "
-    ]->join("\n")
-
-    echohl WarningMsg | echo "!!! WARNING !!!" | echohl None
-    echo "\n"
-
-    if 'y' == input(prompt)->tolower()
-        orphaned->foreach((_, d) => delete(d, 'rf'))
-    endif
-enddef
+# Paq management
+g:paqs = []
 
 # -------
 # plugins
@@ -742,18 +580,18 @@ def EnableTermDebug(): void
 enddef
 
 # 3rd party plugins
-PaqAdd('github/copilot.vim',   {as: 'copilot'})
-PaqAdd('tommcdo/vim-exchange', {as: 'exchange'})
-PaqAdd('tpope/vim-repeat',     {as: 'repeat'})
-PaqAdd('tpope/vim-surround',   {as: 'surround'})
+g:paqs->add(['github/copilot.vim',   {as: 'copilot'}])
+g:paqs->add(['tommcdo/vim-exchange', {as: 'exchange'}])
+g:paqs->add(['tpope/vim-repeat',     {as: 'repeat'}])
+g:paqs->add(['tpope/vim-surround',   {as: 'surround'}])
 
 # fzf
 if executable('fzf')
-    PaqAdd('junegunn/fzf.vim', {as: 'fzf'})
+    g:paqs->add(['junegunn/fzf.vim', {as: 'fzf'}])
 
     if executable('brew')
-        var brew_prefix = system('brew --prefix')->trim()
-        execute $'set runtimepath+={brew_prefix}/opt/fzf'
+        const fzf_prefix = system('brew --prefix fzf')->trim()
+        execute $'set runtimepath+={fzf_prefix}'
     endif
 
     g:fzf_vim = {
@@ -769,40 +607,21 @@ if executable('fzf')
     nnoremap <silent> <Leader>f: <Cmd>FzfHistory:<CR>
     nnoremap <silent> <Leader>f/ <Cmd>FzfHistory/<CR>
 
-    def FzfTabs()
-        const selected_tab_nr = tabpagenr()
-        const last_tab_nr = tabpagenr('$')
-
-        const tabs = range(1, last_tab_nr)->mapnew((_, i) => {
-            const label = g:GetTabLabel(i)
-            return (i == selected_tab_nr ? '*' : ' ') .. label
-        })
-
-        fzf#run(fzf#wrap({
-            source: tabs,
-            sink: (line) => {
-                const tabnum = matchstr(line, '^\s*\*\?\s*\zs\d\+')
-                execute 'tabnext' tabnum
-            },
-            options: '--prompt "Tab> "'
-        }))
-    enddef
-
-    command! -nargs=0 FzfTabs call FzfTabs()
+    command! -nargs=0 FzfTabs call fzf#Tabs()
 endif
 
 # lion
-PaqAdd('tommcdo/vim-lion', {as: 'lion'})
+g:paqs->add(['tommcdo/vim-lion', {as: 'lion'}])
 g:lion_squeeze_spaces = 1
 
 # lsp
-PaqAdd('yegappan/lsp', {as: 'lsp'})
-var lsp_opts = {
+g:paqs->add(['yegappan/lsp', {as: 'lsp'}])
+const lsp_opts = {
     outlineWinSize: 31,
     popupBorder: true,
 }
 
-var lsp_servers = [
+final lsp_servers = [
     executable('clangd') ? {
         name: 'clangd',
         filetype: ['c', 'cpp'],
@@ -862,7 +681,7 @@ augroup END
 
 augroup lsp_attached | autocmd!
     autocmd User LspAttached {
-        SetLspKeymaps()
+        lsp#SetKeymaps()
 
         autocmd CursorHold <buffer> silent! LspDiagCurrent
 
@@ -871,43 +690,8 @@ augroup lsp_attached | autocmd!
     }
 augroup END
 
-def SetLspKeymaps(): void
-    nnoremap <buffer> <Leader>gd <Cmd>LspGotoDefinition<CR>
-    nnoremap <buffer> <Leader>gh <Cmd>LspGotoDeclaration<CR>
-    nnoremap <buffer> <Leader>gi <Cmd>LspGotoImplementation<CR>
-    nnoremap <buffer> <Leader>go <Cmd>LspDocumentSymbol<CR>
-    nnoremap <buffer> <Leader>gr <Cmd>LspShowReferences<CR>
-    nnoremap <buffer> <Leader>gt <Cmd>LspTypeDefinition<CR>
-
-    nnoremap <buffer> <Leader>gD <Cmd>LspPeekDefinition<CR>
-    nnoremap <buffer> <Leader>gH <Cmd>LspPeekDeclaration<CR>
-    nnoremap <buffer> <Leader>gI <Cmd>LspPeekImplementation<CR>
-    nnoremap <buffer> <Leader>gO <Cmd>LspSymbolSearch<CR>
-    nnoremap <buffer> <Leader>gR <Cmd>LspPeekReferences<CR>
-    nnoremap <buffer> <Leader>gT <Cmd>LspPeekTypeDefinition<CR>
-
-    nnoremap <buffer> <Leader>gk <Cmd>LspIncomingCalls<CR>
-    nnoremap <buffer> <Leader>gj <Cmd>LspOutgoingCalls<CR>
-
-    nnoremap <buffer> <Leader>ga <Cmd>LspCodeAction<CR>
-    nnoremap <buffer> <Leader>gf <Cmd>LspFormat<CR>
-    nnoremap <buffer> <Leader>gx <Cmd>LspCodeLens<CR>
-    nnoremap <buffer> <Leader>gy <Cmd>LspOutline<CR>
-    nnoremap <buffer> <Leader>g~ <Cmd>LspInlayHints toggle<CR>
-    nnoremap <buffer> <Leader>g! <Cmd>LspDiagShow<CR>
-
-    inoremap <buffer> <C-k> <Cmd>LspShowSignature<CR>
-    nnoremap <buffer> K     <Cmd>LspHover<CR>
-    nnoremap <buffer> <F2>  <Cmd>LspRename<CR>
-
-    nnoremap <buffer> [d <Cmd>LspDiagPrev<CR>
-    nnoremap <buffer> ]d <Cmd>LspDiagNext<CR>
-    nnoremap <buffer> [D <Cmd>LspDiagFirst<CR>
-    nnoremap <buffer> ]D <Cmd>LspDiagLast<CR>
-enddef
-
 # rainbow
-PaqAdd('luochen1990/rainbow')
+g:paqs->add(['luochen1990/rainbow', {}])
 g:rainbow_active = 1
 g:rainbow_conf = {
     guifgs: [
@@ -930,7 +714,7 @@ g:rainbow_conf = {
 }
 
 # sneak
-PaqAdd('justinmk/vim-sneak', {as: 'sneak'})
+g:paqs->add(['justinmk/vim-sneak', {as: 'sneak'}])
 g:sneak#label = 1
 
 nnoremap s <Plug>Sneak_s
@@ -946,13 +730,13 @@ nnoremap <silent> <Leader>Qc <Cmd>PaqClean<CR>
 nnoremap <silent> <Leader>Qu <Cmd>PaqUpdate<CR>
 
 command! -nargs=0 PaqClean {
-    PaqInit()
-    PaqClean()
+    paq#Init()
+    paq#Clean()
 }
 
 command! -nargs=0 PaqUpdate {
-    PaqInit()
-    PaqUpdate()
+    paq#Init()
+    paq#Update()
 }
 
 # }}}
@@ -963,3 +747,5 @@ set background=light
 colorscheme wildcharm
 
 # }}}
+
+# vim:fdm=marker:fdl=0:noet:sw=4:sts=4
