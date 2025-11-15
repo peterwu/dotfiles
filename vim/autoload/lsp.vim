@@ -22,6 +22,7 @@ export def SetKeymaps(): void
     nnoremap <buffer> <Leader>gf <Cmd>LspFormat<CR>
     nnoremap <buffer> <Leader>gx <Cmd>LspCodeLens<CR>
     nnoremap <buffer> <Leader>gy <Cmd>LspOutline<CR>
+    nnoremap <buffer> <Leader>gz <Cmd>LspFold<CR>
     nnoremap <buffer> <Leader>g~ <Cmd>LspInlayHints toggle<CR>
     nnoremap <buffer> <Leader>g! <Cmd>LspDiagShow<CR>
 
