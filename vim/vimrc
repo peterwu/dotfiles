@@ -305,14 +305,15 @@ enddef
 
 augroup show_color_column_per_line | autocmd!
     autocmd FileType * {
-        const textwidth = &textwidth > 0 ? &textwidth + 1 : 0
-        execute 'match' 'ColorColumn' $'/\%{textwidth}v./'
+        if &textwidth > 0
+            matchadd('ColorColumn', $'\%{&textwidth + 1}v.')
+        endif
     }
 augroup END
 
 augroup show_listchars_when_insert | autocmd!
-    autocmd InsertEnter * set list
-    autocmd InsertLeave * set nolist
+    autocmd InsertEnter * setlocal list
+    autocmd InsertLeave * setlocal nolist
 augroup END
 
 augroup override_colors | autocmd!
@@ -328,7 +329,7 @@ augroup override_colors | autocmd!
 augroup END
 
 augroup update_status_line | autocmd!
-    autocmd BufEnter,BufWritePost,WinEnter,VimEnter * HighlightStatusLine()
+    autocmd BufEnter,BufWritePost,WinEnter * HighlightStatusLine()
     autocmd ModeChanged,VimResized * redrawstatus!
 augroup END
 
@@ -743,4 +744,4 @@ colorscheme wildcharm
 
 # }}}
 
-# vim:fdm=marker:fdl=0:noet:sw=4:sts=4
+# vim:fdm=marker:fdl=0
