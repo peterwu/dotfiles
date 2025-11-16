@@ -257,12 +257,6 @@ command! -nargs=0 SudoWrite {
 
 # autos {{{
 
-augroup auto_clang_format | autocmd!
-    if executable('clang-format')
-        autocmd FileType c,cpp,objc setlocal equalprg=clang-format
-    endif
-augroup END
-
 augroup auto_save_folds | autocmd!
     autocmd BufWinLeave,BufLeave,BufWritePost ?* ++nested silent! mkview!
     autocmd BufWinEnter ?* silent! loadview
