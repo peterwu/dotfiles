@@ -566,18 +566,13 @@ augroup vinegarize_netrw | autocmd!
 augroup END
 
 # termdebug
-command! -nargs=0 EnableTermDebug call EnableTermDebug()
-
-def EnableTermDebug(): void
+command! -nargs=0 EnableTermDebug {
     packadd termdebug
 
-    g:termdebug_config = {
-        sign:   '>>',
-        wide:   1,
-        winbar: 0
-    }
+    g:termdebug_config = { sign: '>>', wide: 1, winbar: 0 }
+
     nnoremap <silent> <F5> <Cmd>Termdebug<CR>
-enddef
+}
 
 # 3rd party plugins
 g:paqs->add(['github/copilot.vim',   {as: 'copilot'}])
@@ -607,7 +602,7 @@ if executable('fzf')
     nnoremap <silent> <Leader>f: <Cmd>FzfHistory:<CR>
     nnoremap <silent> <Leader>f/ <Cmd>FzfHistory/<CR>
 
-    command! -nargs=0 FzfTabs call fzf#Tabs()
+    command! -nargs=0 FzfTabs fzf#Tabs()
 endif
 
 # lion
