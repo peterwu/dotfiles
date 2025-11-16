@@ -641,6 +641,10 @@ final lsp_servers = [
                 'plugins': {
                     'jedi': {
                         'environment': system("pvx python find")->trim()
+                    },
+                    'pylint': {
+                        'enabled': true,
+                        'executable': 'pylint'
                     }
                 }
             }
