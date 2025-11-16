@@ -312,11 +312,11 @@ augroup END
 
 augroup override_colors | autocmd!
     autocmd ColorScheme * {
-        Highlight('ColorColumn', 'NONE', 'LightMagenta')
-        Highlight('CursorLine', '', '', 'NONE')
-        Highlight('TabLine', 'Black', 'LightGray')
+        Highlight('ColorColumn', 'NONE',  'LightMagenta')
+        Highlight('CursorLine',  '',      '',         'NONE')
+        Highlight('TabLine',     'Black', 'LightGray')
         Highlight('TabLineFill', 'Black', 'White')
-        Highlight('TabLineSel', 'White', 'DarkBlue', 'bold')
+        Highlight('TabLineSel',  'White', 'DarkBlue', 'bold')
 
         HighlightStatusLine()
     }
@@ -328,7 +328,10 @@ augroup update_status_line | autocmd!
 augroup END
 
 augroup use_as_man_pager | autocmd!
-    autocmd FileType man setlocal textwidth=0 | match none
+    autocmd FileType man {
+        setlocal textwidth=0
+        match none
+    }
 augroup END
 
 # }}}
@@ -523,9 +526,6 @@ enddef
 
 # plugins {{{
 
-# Paq management
-g:paqs = []
-
 # -------
 # plugins
 # -------
@@ -569,6 +569,9 @@ command! -nargs=0 EnableTermDebug {
     nnoremap <silent> <F5> <Cmd>Termdebug<CR>
 }
 
+# Paq management
+g:paqs = []
+
 # 3rd party plugins
 g:paqs->add(['github/copilot.vim',   {as: 'copilot'}])
 g:paqs->add(['tommcdo/vim-exchange', {as: 'exchange'}])
@@ -592,10 +595,14 @@ if executable('fzf')
     # key binds
     nnoremap <silent> <Leader>ff <Cmd>FzfFiles<CR>
     nnoremap <silent> <Leader>fb <Cmd>FzfBuffers<CR>
+    nnoremap <silent> <Leader>fm <Cmd>FzfMaps<CR>
     nnoremap <silent> <Leader>fo <Cmd>FzfHistory<CR>
     nnoremap <silent> <leader>ft <Cmd>FzfTabs<CR>
-    nnoremap <silent> <Leader>f: <Cmd>FzfHistory:<CR>
     nnoremap <silent> <Leader>f/ <Cmd>FzfHistory/<CR>
+    nnoremap <silent> <Leader>f% <Cmd>FzfBLines<CR>
+    nnoremap <silent> <Leader>f* <Cmd>FzfLines<CR>
+    nnoremap <silent> <Leader>f: <Cmd>FzfHistory:<CR>
+    nnoremap <silent> <Leader>f` <Cmd>FzfMarks<CR>
 
     command! -nargs=0 FzfTabs fzf#Tabs()
 endif
