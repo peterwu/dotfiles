@@ -595,6 +595,7 @@ if executable('fzf')
     # key binds
     nnoremap <silent> <Leader>ff <Cmd>FzfFiles<CR>
     nnoremap <silent> <Leader>fb <Cmd>FzfBuffers<CR>
+    nnoremap <silent> <Leader>fg <Cmd>FzfGitCommits<CR>
     nnoremap <silent> <Leader>fm <Cmd>FzfMaps<CR>
     nnoremap <silent> <Leader>fo <Cmd>FzfHistory<CR>
     nnoremap <silent> <leader>ft <Cmd>FzfTabs<CR>
@@ -604,6 +605,7 @@ if executable('fzf')
     nnoremap <silent> <Leader>f: <Cmd>FzfHistory:<CR>
     nnoremap <silent> <Leader>f` <Cmd>FzfMarks<CR>
 
+    command! -nargs=0 FzfGitCommits fzf#GitCommits()
     command! -nargs=0 FzfTabs fzf#Tabs()
 endif
 
@@ -748,5 +750,6 @@ set background=light
 colorscheme wildcharm
 
 # }}}
+
 
 # vim:fdm=marker:fdl=0

@@ -18,3 +18,18 @@ export def Tabs()
         options: '--prompt "Tab> "'
     }))
 enddef
+
+export def GitCommits()
+    const logs = git#Log()
+
+    fzf#run(fzf#wrap({
+        source: logs,
+        sink: (line) => {
+            const commit = matchstr(line, '^\s*\*\?\s*\zs\w\+')
+            git#Show(commit)
+        },
+        options: '--prompt "Git Log> " --ansi'
+    }))
+enddef
+
+
