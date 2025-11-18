@@ -328,9 +328,13 @@ augroup update_status_line | autocmd!
 augroup END
 
 augroup use_as_man_pager | autocmd!
-    autocmd FileType man {
+    autocmd FileType man ++once {
+        setlocal laststatus=0
         setlocal textwidth=0
-        match none
+
+        clearmatches()
+
+        nnoremap <buffer> q <Cmd>qall!<CR>
     }
 augroup END
 

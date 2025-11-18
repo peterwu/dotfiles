@@ -26,7 +26,7 @@ if type fzf &>/dev/null; then
 fi
 
 # manpager
-export MANPAGER='vim +MANPAGER "+set laststatus=0" "+noremap q <Cmd>qall!<CR>" --not-a-term -'
+export MANPAGER='vim +MANPAGER --not-a-term -'
 
 # less
 export LESSHISTFILE=-
