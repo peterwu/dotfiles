@@ -41,19 +41,15 @@ enddef
 export def Paste(command: string)
     b:pending_paste_command = command
 
-    augroup capture_osc52_paste | autocmd!
-        autocmd TermResponseAll osc ++once {
-            const b64text = matchstr(v:termosc, '^\%x1b]52;.\+;\zs[A-Za-z0-9+/=]\+')
-            if !empty(b64text)
-                const decoded_text = b64text->base64_decode()->blob2str()
-                setreg(v:register, decoded_text)
-                execute 'normal!' $'"{v:register}{b:pending_paste_command}'
-            endif
-        }
-    augroup END
+    autocmd TermResponseAll osc ++once {
+        const b64text = matchstr(v:termosc, '^\%x1b]52;.\+;\zs[A-Za-z0-9+/=]\+')
+        if !empty(b64text)
+            const decoded_text = b64text->base64_decode()->blob2str()
+            setreg(v:register, decoded_text)
+            execute 'normal!' $'"{v:register}{b:pending_paste_command}'
+        endif
+    }
 
     echoraw("\x1b]52;c;?\x07")
-
-    augroup! capture_osc52_paste
 enddef
 

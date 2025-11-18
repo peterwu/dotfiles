@@ -313,12 +313,10 @@ augroup END
 augroup override_colors | autocmd!
     autocmd ColorScheme * {
         Highlight('ColorColumn', 'NONE',  'LightMagenta')
-        Highlight('CursorLine',  '',      '',         'NONE')
+        Highlight('CursorLine',  '',      '')
         Highlight('TabLine',     'Black', 'LightGray')
         Highlight('TabLineFill', 'Black', 'White')
         Highlight('TabLineSel',  'White', 'DarkBlue', 'bold')
-
-        HighlightStatusLine()
     }
 augroup END
 
