@@ -18,9 +18,9 @@ vim9script
 })
 
 def Highlight(group: string, fg='NONE', bg='NONE', style='NONE'): void
-    var style_dict: dict<bool>
+    final style_dict = {}
 
-    style->split(',')->mapnew((_, v) => {
+    style->split(',')->foreach((_, v) => {
         style_dict[v] = true
     })
 
