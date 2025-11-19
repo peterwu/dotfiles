@@ -8,6 +8,9 @@ font-style-bold-italic = Bold Italic
 
 font-size    = 16
 
+font-thicken = true
+font-thicken-strength = 83
+
 # cursor
 cursor-invert-fg-bg     = true
 cursor-style            = block
@@ -15,8 +18,8 @@ cursor-style-blink      = false
 mouse-hide-while-typing = true
 
 # clipboard
-clipboard-read  = true
-clipboard-write = true
+clipboard-read  = allow
+clipboard-write = allow
 
 # macOS-specific settings
 macos-option-as-alt  = left
@@ -39,6 +42,7 @@ shell-integration-features = no-cursor,no-sudo,no-title
 copy-on-select             = clipboard
 focus-follows-mouse        = true
 link-url                   = true
+title                      = " "
 
 # keybinds
 keybind = super+z>a=select_all
