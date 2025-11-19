@@ -482,7 +482,7 @@ def DrawStatusLineActive(): string
         '%#StatusFileFormat# ', '%{&fileformat}', ' | ',
         '%#StatusFileEncode#', '%{&fileencoding ?? &encoding}', ' ',
         '%#StatusBlank# ',
-        '%#StatusPercent#', '%P', ' '
+        '%#StatusPercent#', '%3P', ' '
     ]->join('')
 enddef
 
