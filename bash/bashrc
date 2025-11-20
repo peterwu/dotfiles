@@ -17,6 +17,17 @@ shopt -s histappend
 HISTSIZE=20000
 HISTFILESIZE=20000
 
+# Define custom ls function
+_ls() {
+    local ls_cmd=$1
+    shift
+    $ls_cmd -v --color=always     \
+        --group-directories-first \
+        --indicator-style=slash   \
+        --time-style=long-iso     \
+        "$@"
+}
+
 # Define aliases
 _define_aliases() {
     local PREFIX
@@ -33,11 +44,7 @@ _define_aliases() {
     CP="${PREFIX}cp"
     MV="${PREFIX}mv"
 
-    alias ls="$LS -v              \
-        --color=always            \
-        --group-directories-first \
-        --indicator-style=slash   \
-        --time-style=long-iso"
+    alias ls="_ls $LS"
     alias ll="ls -l --classify --size"
     alias la="ls -l --classify --size --all"
 
