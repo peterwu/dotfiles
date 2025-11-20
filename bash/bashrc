@@ -126,6 +126,11 @@ _customize_shell_prompt() {
 
     # show git branch and its status if in a git tree
     prompt+='$(_parse_git_branch)'
+    prompt+=' '
+
+    # show python virtual environment
+    prompt+="\001$(tput sgr0; tput setaf 8)\002"
+    prompt+="${VIRTUAL_ENV:+($(basename "${VIRTUAL_ENV}"))}"
 
     # change line
     prompt+='\n'
@@ -137,9 +142,9 @@ _customize_shell_prompt() {
     # reset colors
     prompt+="\001$(tput sgr0)\002"
 
-    PROMPT_COMMAND='last_command_status=$?'
     PS1="${prompt}"
 }
 
 _define_aliases
-_customize_shell_prompt
+
+PROMPT_COMMAND='last_command_status=$?; _customize_shell_prompt'
