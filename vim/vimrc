@@ -579,47 +579,6 @@ g:paqs->add(['tommcdo/vim-exchange', {as: 'exchange'}])
 g:paqs->add(['tpope/vim-repeat',     {as: 'repeat'}])
 g:paqs->add(['tpope/vim-surround',   {as: 'surround'}])
 
-# ai
-g:paqs->add(['madox2/vim-ai',                 {as: 'ai'}])
-g:paqs->add(['madox2/vim-ai-provider-google', {as: 'ai-gemini'}])
-
-const initial_complete_prompt =<< trim END
-  >>> system
-
-  You are a general assistant.
-  Answer shortly, concisely and only what you are asked.
-  Do not provide any explanantion or comments if not requested.
-
-  CRITICAL: When providing code, output ONLY the raw code itself.
-  Never use markdown code blocks, backticks, or any formatting.
-  Never write ```python or ``` or any similar markers.
-  Output pure, unformatted code that can be directly used.
-END
-
-const vim_ai_defaults = {
-    provider: 'google',
-    prompt: '',
-    options: {
-        token_file_path: '~/.config/ai/gemini.token',
-        model: 'gemini-2.5-flash',
-        endpoint_url: 'https://generativelanguage.googleapis.com/v1beta/models',
-        initial_prompt: initial_complete_prompt,
-        ui: {
-            paste_mode: 1,
-        },
-    }
-}
-
-g:vim_ai_complete = vim_ai_defaults->deepcopy()
-g:vim_ai_complete.options.model = 'gemini-2.5-pro'
-
-g:vim_ai_edit = vim_ai_defaults->deepcopy()
-g:vim_ai_edit.options.model = 'gemini-2.5-pro'
-
-g:vim_ai_chat = vim_ai_defaults->deepcopy()
-g:vim_ai_chat.options.model = 'gemini-2.5-flash'
-g:vim_ai_chat_markdown = 1
-
 # ai code assistants
 g:paqs->add(['Exafunction/codeium.vim', {as: 'codeium', opt: true}])
 g:paqs->add(['github/copilot.vim',      {as: 'copilot', opt: true}])
