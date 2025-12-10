@@ -1,6 +1,5 @@
 # font
 font-family = SF Mono
-font-size   = 16
 
 font-style             = Regular
 font-style-bold        = Bold
@@ -20,20 +19,12 @@ mouse-hide-while-typing = true
 clipboard-read  = allow
 clipboard-write = allow
 
-# macOS-specific settings
-macos-option-as-alt  = left
-macos-titlebar-style = tabs
-
-# gtk-specific settings
-gtk-titlebar-style = tabs
-
 # window controls
 confirm-close-surface    = true
-window-decoration        = true
+maximize                 = true
 window-padding-balance   = true
 window-padding-x         = 7
 window-padding-y         = 3
-window-save-state        = always
 window-title-font-family = SF Pro
 
 # auto update settings
@@ -44,7 +35,6 @@ shell-integration-features = no-cursor,no-sudo,no-title
 copy-on-select             = clipboard
 focus-follows-mouse        = true
 link-url                   = true
-title                      = " "
 
 # keybinds
 keybind = super+z>a=select_all
@@ -117,3 +107,6 @@ palette = 14=#005a5f
 palette = 7=#bfbfbf
 palette = 15=#ffffff
 
+# platform specific configuration
+config-file = ?linux-config
+config-file = ?macos-config

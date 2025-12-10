@@ -1,0 +1,5 @@
+# font
+font-size = 13
+
+# linux-specific settings
+gtk-titlebar-style = tabs

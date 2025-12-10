@@ -1,0 +1,6 @@
+# font
+font-size = 16
+
+# macOS-specific settings
+macos-option-as-alt  = left
+macos-titlebar-style = tabs
