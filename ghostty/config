@@ -1,12 +1,11 @@
 # font
 font-family = SF Mono
+font-size   = 16
 
 font-style             = Regular
 font-style-bold        = Bold
 font-style-italic      = Regular Italic
 font-style-bold-italic = Bold Italic
-
-font-size    = 16
 
 font-thicken = true
 font-thicken-strength = 83
@@ -24,6 +23,9 @@ clipboard-write = allow
 # macOS-specific settings
 macos-option-as-alt  = left
 macos-titlebar-style = tabs
+
+# gtk-specific settings
+gtk-titlebar-style = tabs
 
 # window controls
 confirm-close-surface    = true
