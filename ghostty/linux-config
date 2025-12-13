@@ -1,5 +1,8 @@
 # font
 font-size = 13
 
-# linux-specific settings
+# title bar
 gtk-titlebar-style = tabs
+
+# login shell
+command = /bin/bash --login -i
