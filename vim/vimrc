@@ -232,7 +232,7 @@ else
 endif
 
 # terminal
-nnoremap <Leader>` <Cmd>botright terminal ++close bash --login<CR>
+nnoremap <Leader>` <Cmd>execute $'botright terminal ++close {&shell} --login'<CR>
 
 # explorers
 nnoremap <Leader><Tab>   <Cmd>Lexplore<CR>
