@@ -653,20 +653,27 @@ final lsp_servers = [
         args: ['--stdio']
     } : {},
 
+    # python-lsp-server
+    # python-lsp-black
+    # python-lsp-isort
+    # pylint
     executable('pylsp') ? {
         name: 'pylsp',
         filetype: ['python'],
         path: 'pylsp',
         initializationOptions: {
-            'pylsp': {
-                'plugins': {
-                    'jedi': {
-                        'environment': system("pvx python find")->trim()
-                    },
-                    'pylint': {
-                        'enabled': true,
-                        'executable': 'pylint'
-                    }
+            pylsp: {
+                plugins: {
+                    # formatter
+                    autopep8: { enabled: false },
+                    black: { enabled: true },
+                    isort: { enabled: true, profile: 'black' },
+
+                    # linter
+                    mccabe: { enabled: false },
+                    pycodestyle: { enabled: false },
+                    pyflakes: { enabled: false },
+                    pylint: { enabled: true }
                 }
             }
         }
