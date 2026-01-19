@@ -262,6 +262,51 @@ augroup auto_save_folds | autocmd!
     autocmd BufWinEnter ?* silent! loadview
 augroup END
 
+augroup markdown_as_mini_orgmode | autocmd!
+    autocmd FileType markdown {
+        setlocal foldmethod=expr
+        setlocal foldexpr=g:MarkdownFolding()
+        setlocal foldlevel=99
+    }
+    autocmd Syntax markdown DefineStatusSyntax()
+augroup END
+
+def g:MarkdownFolding(): string
+    var ln = getline(v:lnum)
+    return ln =~ '^\s*#' ? '>' .. len(matchstr(ln, '^\s*\zs#\+')) : '='
+enddef
+
+def DefineStatusSyntax(): void
+    const status_dict = {
+        TODO: 'DarkRed',
+        NEXT: 'DarkBlue',
+        WAIT: 'DarkYellow',
+        HALT: 'DarkGray',
+        DONE: 'DarkGreen'
+    }
+
+    for [keyword, color] in status_dict->items()
+        execute $'syntax keyword Status{keyword}Head {keyword} contained'
+
+        for level in range(1, 6)
+            var hashes = repeat('#', level)
+            var pattern = $'/^{hashes}\s\+{keyword}\>/'
+            var md_group = $'markdownH{level}{keyword}'
+            var kw_group = $'Status{keyword}Head'
+
+            execute $'syntax match {md_group} {pattern} contains={kw_group}'
+            execute $'highlight link {md_group} markdownH{level}'
+        endfor
+
+        execute $'syntax match Status{keyword}Solo /^\s*{keyword}\>/'
+
+        execute $'highlight link Status{keyword}Head Status{keyword}'
+        execute $'highlight link Status{keyword}Solo Status{keyword}'
+
+        Highlight($'Status{keyword}', color, 'NONE', 'bold')
+    endfor
+enddef
+
 augroup no_number_for_old_term | autocmd!
     autocmd TerminalWinOpen * setlocal nonumber norelativenumber
 augroup END
