@@ -624,17 +624,6 @@ g:paqs->add(['tommcdo/vim-exchange', {as: 'exchange'}])
 g:paqs->add(['tpope/vim-repeat',     {as: 'repeat'}])
 g:paqs->add(['tpope/vim-surround',   {as: 'surround'}])
 
-# ai code assistants
-g:paqs->add(['Exafunction/codeium.vim', {as: 'codeium', opt: true}])
-g:paqs->add(['github/copilot.vim',      {as: 'copilot', opt: true}])
-
-const model = expand('~/.config/ai/model.cfg')->readfile()
-    ->filter((_, line) => line =~ '^\s*model\s*=')
-    ->map((_, line) => matchstr(line, '^\s*model\s*=\s*\zs\w\+'))
-    ->map((_, v) => v ==? 'none' ? '' : v)
-    ->get(0, '')
-if !model->empty() | execute 'packadd!' model | endif
-
 # fzf
 if executable('fzf')
     g:paqs->add(['junegunn/fzf.vim', {as: 'fzf'}])
@@ -669,6 +658,12 @@ endif
 # lion
 g:paqs->add(['tommcdo/vim-lion', {as: 'lion'}])
 g:lion_squeeze_spaces = 1
+
+# llama.cpp
+g:paqs->add(['ggml-org/llama.vim', {as: 'llama'}])
+g:llama_config = {
+    show_info: 0
+}
 
 # lsp
 g:paqs->add(['yegappan/lsp', {as: 'lsp'}])
