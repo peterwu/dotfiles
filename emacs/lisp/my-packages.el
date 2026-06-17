@@ -7,32 +7,33 @@
 (use-package align
   :preface
   (defun my-align-columns (beg end)
-    (let* ((text (buffer-substring beg end))
-           (lines (split-string text "\n"))
-           (rows  (mapcar (lambda (l)
-                            (if (string-blank-p l) nil
-                              (split-string l "\\s-+" t)))
-                          lines))
-           (ncols (apply #'max (mapcar #'length rows)))
+    (let* ((text   (buffer-substring beg end))
+           (lines  (split-string text "\n"))
+           (rows   (mapcar (lambda (l)
+                             (if (string-blank-p l) nil
+                               (split-string l "\\s-+" t)))
+                           lines))
+           (ncols  (seq-max (mapcar #'length rows)))
            (widths (make-vector ncols 0)))
       (dolist (row rows)
-        (let ((i 0))
-          (dolist (cell row)
-            (when (< i (1- ncols))
-              (aset widths i (max (aref widths i) (length cell))))
-            (setq i (1+ i)))))
+        (seq-do-indexed
+         (lambda (cell i)
+           (when (< i (1- ncols))
+             (aset widths i (max (aref widths i) (length cell)))))
+         row))
       (let ((result
              (mapconcat
               (lambda (row)
                 (if (null row) ""
-                  (let ((i 0) parts)
-                    (dolist (cell row)
-                      (push (if (< i (1- (length row)))
-                                (format (format "%%-%ds" (1+ (aref widths i))) cell)
-                              cell)
-                            parts)
-                      (setq i (1+ i)))
-                    (string-trim-right (mapconcat #'identity (nreverse parts) "")))))
+                  (let ((last (1- (length row))))
+                    (string-trim-right
+                     (apply #'concat
+                            (seq-map-indexed
+                             (lambda (cell i)
+                               (if (< i last)
+                                   (format (format "%%-%ds" (1+ (aref widths i))) cell)
+                                 cell))
+                             row))))))
               rows "\n")))
         (save-excursion
           (goto-char beg)
