@@ -387,41 +387,31 @@
 
 (use-package recentf
   :preface
-  (defun my-recentf-open-other-window (file)
-    "Prompt for FILE in `recentf-list' and visit it in other window.
-Enable `recentf-mode' if it isn't already."
-    (interactive
-     (list
-      (progn (unless recentf-mode (recentf-mode 1))
-             (completing-read
-              (format-prompt "Open recent file in other window" nil)
-              recentf-list nil t))))
-    (when file
-      (funcall #'find-file-other-window file)))
+  (defun my-recentf-open-in (visit prompt)
+    "Prompt for a recent file and visit it with VISIT.
+PROMPT is the minibuffer prompt.  Enable `recentf-mode' if it isn't already."
+    (unless recentf-mode (recentf-mode 1))
+    (when-let* ((file (completing-read (format-prompt prompt nil)
+                                       recentf-list nil t)))
+      (funcall visit file)))
 
-  (defun my-recentf-open-other-tab (file)
-    "Prompt for FILE in `recentf-list' and visit it in other tab.
-Enable `recentf-mode' if it isn't already."
-    (interactive
-     (list
-      (progn (unless recentf-mode (recentf-mode 1))
-             (completing-read
-              (format-prompt "Open recent file in other tab" nil)
-              recentf-list nil t))))
-    (when file
-      (funcall #'find-file-other-tab file)))
+  (defun my-recentf-open-other-window ()
+    "Prompt for a recent file and visit it in another window."
+    (interactive)
+    (my-recentf-open-in #'find-file-other-window
+                        "Open recent file in other window"))
 
-  (defun my-recentf-open-other-frame (file)
-    "Prompt for FILE in `recentf-list' and visit it in other frame.
-Enable `recentf-mode' if it isn't already."
-    (interactive
-     (list
-      (progn (unless recentf-mode (recentf-mode 1))
-             (completing-read
-              (format-prompt "Open recent file in other frame" nil)
-              recentf-list nil t))))
-    (when file
-      (funcall #'find-file-other-frame file)))
+  (defun my-recentf-open-other-tab ()
+    "Prompt for a recent file and visit it in another tab."
+    (interactive)
+    (my-recentf-open-in #'find-file-other-tab
+                        "Open recent file in other tab"))
+
+  (defun my-recentf-open-other-frame ()
+    "Prompt for a recent file and visit it in another frame."
+    (interactive)
+    (my-recentf-open-in #'find-file-other-frame
+                        "Open recent file in other frame"))
   :custom
   (recentf-exclude '(".gz" ".xz" ".zip" "/elpa/" "/ssh:" "/sudo:"))
   (recentf-max-saved-items 50)
@@ -566,7 +556,7 @@ Enable `recentf-mode' if it isn't already."
                    (term (concat
                           explicit-shell-file-name
                           " "
-                          (mapconcat #'identity explicit-bash-args " "))))))
+                          (string-join explicit-bash-args " "))))))
   :hook
   (term-mode . (lambda()
                  (setq-local global-hl-line-mode nil)

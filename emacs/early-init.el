@@ -2,9 +2,9 @@
 
 ;; tune gc for better performance
 ;; check gcs-done and gc-elapsed right after startup
-(setopt my-file-name-handlers file-name-handler-alist
-        file-name-handler-alist nil
-        gc-cons-threshold most-positive-fixnum)
+(setq my-file-name-handlers file-name-handler-alist
+      file-name-handler-alist nil
+      gc-cons-threshold most-positive-fixnum)
 
 ;; do not resize the frame at this early stage.
 (setopt frame-inhibit-implied-resize t)

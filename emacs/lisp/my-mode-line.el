@@ -48,7 +48,7 @@ Show the evil mode tag if selected; otherwise, its window number.")
            (index (1+ (seq-position tabs
                                     'current-tab
                                     (lambda (a b) (eq (car a) b)))))
-           (name (cdadr(assoc 'current-tab tabs))))
+           (name (cdadr (assoc 'current-tab tabs))))
       (propertize
        (if (> (length tabs) 1) (format "%d" index) "-")
        'help-echo (format "%d: %s" index name)

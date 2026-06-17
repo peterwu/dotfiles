@@ -124,20 +124,22 @@ This is necessary because `evil-yank' operator is not repeatable (:repeat nil)"
   (evil-set-leader '(normal motion) (kbd "SPC"))
   (evil-set-leader '(normal motion) (kbd ",") t)
   :config
+  (defun my-evil--clipboard-to-register ()
+    "Yank the system clipboard into the unnamed register."
+    (with-temp-buffer
+      (clipboard-yank)
+      (evil-set-register ?\" (buffer-string))))
+
   (evil-define-command my-evil-paste-after-from-clipboard (count)
     :suppress-operator t
     (interactive "*P")
-    (with-temp-buffer
-      (clipboard-yank)
-      (evil-set-register ?\" (buffer-string)))
+    (my-evil--clipboard-to-register)
     (evil-paste-after count))
 
   (evil-define-command my-evil-paste-before-from-clipboard (count)
     :suppress-operator t
     (interactive "*P")
-    (with-temp-buffer
-      (clipboard-yank)
-      (evil-set-register ?\" (buffer-string)))
+    (my-evil--clipboard-to-register)
     (evil-paste-before count))
 
   (evil-define-operator my-evil-align-left (beg end)
