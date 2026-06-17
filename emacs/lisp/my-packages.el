@@ -6,17 +6,49 @@
 
 (use-package align
   :preface
-  (defun my-align-regexp(beg end char type)
-    (save-restriction
-      (narrow-to-region beg end)
+  (defun my-align-columns (beg end)
+    (let* ((text (buffer-substring beg end))
+           (lines (split-string text "\n"))
+           (rows  (mapcar (lambda (l)
+                            (if (string-blank-p l) nil
+                              (split-string l "\\s-+" t)))
+                          lines))
+           (ncols (apply #'max (mapcar #'length rows)))
+           (widths (make-vector ncols 0)))
+      (dolist (row rows)
+        (let ((i 0))
+          (dolist (cell row)
+            (when (< i (1- ncols))
+              (aset widths i (max (aref widths i) (length cell))))
+            (setq i (1+ i)))))
+      (let ((result
+             (mapconcat
+              (lambda (row)
+                (if (null row) ""
+                  (let ((i 0) parts)
+                    (dolist (cell row)
+                      (push (if (< i (1- (length row)))
+                                (format (format "%%-%ds" (1+ (aref widths i))) cell)
+                              cell)
+                            parts)
+                      (setq i (1+ i)))
+                    (string-trim-right (mapconcat #'identity (nreverse parts) "")))))
+              rows "\n")))
+        (save-excursion
+          (goto-char beg)
+          (delete-region beg end)
+          (insert result)))))
 
-      (let* ((s (regexp-quote (format "%c" char)))
-             (regexp (cond
-                      ((string-blank-p s) (format "\\(\\s-*\\) "))
-                      ((eq type 'left) (format "\\(\\)%s" s))
-                      ((eq type 'right) (format "%s\\(\\)" s))))
-             (spacing (if (string-blank-p s) 0 1)))
-        (align-regexp (point-min) (point-max) regexp 1 spacing t))))
+  (defun my-align-regexp (beg end char type)
+    (if (= char ?\s)
+        (my-align-columns beg end)
+      (save-restriction
+        (narrow-to-region beg end)
+        (let* ((indent-tabs-mode nil)
+               (s (regexp-quote (format "%c" char)))
+               (regexp (format "\\(\\s-*\\)%s" s))
+               (spacing (if (eq type 'right) 0 1)))
+          (align-regexp (point-min) (point-max) regexp 1 spacing t)))))
 
   (defun my-align-left (beg end char)
     (interactive "r\nc")
