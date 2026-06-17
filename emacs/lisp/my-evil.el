@@ -114,6 +114,12 @@ This is necessary because `evil-yank' operator is not repeatable (:repeat nil)"
        (unless (or (minibufferp)
                    buffer-read-only)
          (evil-normal-state))))
+
+  (read-only-mode
+   . (lambda ()
+       (if buffer-read-only
+           (evil-emacs-state)
+         (evil-normal-state))))
   :config
   (evil-set-leader '(normal motion) (kbd "SPC"))
   (evil-set-leader '(normal motion) (kbd ",") t)
