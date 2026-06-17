@@ -3,6 +3,7 @@
 (add-to-list 'load-path (locate-user-emacs-file "lisp"))
 
 (use-package startup
+  :no-require t
   :custom
   (inhibit-startup-buffer-menu t)
   (inhibit-startup-echo-area-message user-login-name)

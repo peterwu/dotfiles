@@ -4,9 +4,9 @@
   "This alist keeps track of the displayed windows on the selected frame
 in the following data structure:
 
-'((#frame-1 '((1 . #window-1) (2 . #window-2) ... ))
-  (#frame-2 '((1 . #window-1) (2 . #window-2) ... ))
-  ... )")
+  ((#frame-1 ((1 . #window-1) (2 . #window-2) ...))
+   (#frame-2 ((1 . #window-1) (2 . #window-2) ...))
+   ...)")
 
 (defun my-window-numbering-get-number (&optional frame window)
   "Return the number of the WINDOW in the FRAME.

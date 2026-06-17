@@ -347,7 +347,7 @@
   (pixel-scroll-precision-mode +1))
 
 (use-package proced
-  :commands proceed
+  :commands proced
   :custom
   (proced-auto-update-flag t)
   (proced-auto-update-interval 1)

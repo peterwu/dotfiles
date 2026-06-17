@@ -55,8 +55,8 @@
      (project-find-dir "Find directory")
      (project-vc-dir "VC-Dir")
      (project-eshell "Eshell")
-     (keyboard-quit "Quit"))
-   (project-vc-extra-root-markers '(".project")))
+     (keyboard-quit "Quit")))
+  (project-vc-extra-root-markers '(".project"))
   :bind
   (:map global-map
         ("C-x p DEL" . project-forget-project))

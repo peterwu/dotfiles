@@ -124,7 +124,7 @@ Show the evil mode tag if selected; otherwise, its window number.")
           (propertize git-mode-line-status
                       'face '(:inherit vc-missing-state :weight bold)
                       'mouse-face 'mode-line-highlight))
-         ((t git-mode-line-status))))))
+         (t git-mode-line-status)))))
   "Return git status.")
 (put 'my-mode-line-vc-mode 'risky-local-variable t)
 
@@ -132,10 +132,9 @@ Show the evil mode tag if selected; otherwise, its window number.")
   '(:eval
     (mapconcat
      (lambda (elt)
-       (when-let ((stringp elt)
-                  (string-blank-p elt)
-                  (str (string-trim elt)))
-         (string-replace "%" "%%" str)))
+       (when (and (stringp elt)
+                  (not (string-blank-p elt)))
+         (string-replace "%" "%%" (string-trim elt))))
      (list
       (if (boundp 'battery-mode-line-string) battery-mode-line-string)
       (if (boundp 'display-time-string) display-time-string))))
