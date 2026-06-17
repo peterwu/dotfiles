@@ -155,8 +155,8 @@ xnoremap <expr> k (v:count > 0 ? 'k' : 'gk')
 
 # vimdiff as mergetool
 nnoremap <expr> g1 (&diff ? ':diffget LOCAL<CR>'  : 'g1')
-nnoremap <expr> g2 (&diff ? ':diffget BASE<CR>'   : 'g2')
-nnoremap <expr> g3 (&diff ? ':diffget REMOTE<CR>' : 'g3')
+nnoremap <expr> g2 (&diff ? ':diffget REMOTE<CR>' : 'g2')
+nnoremap <expr> g3 (&diff ? ':diffget BASE<CR>'   : 'g3')
 
 # unimpaired
 nnoremap <silent> [<Space> O<Esc>j
@@ -658,12 +658,6 @@ endif
 # lion
 g:paqs->add(['tommcdo/vim-lion', {as: 'lion'}])
 g:lion_squeeze_spaces = 1
-
-# llama.cpp
-g:paqs->add(['ggml-org/llama.vim', {as: 'llama'}])
-g:llama_config = {
-    show_info: 0
-}
 
 # lsp
 g:paqs->add(['yegappan/lsp', {as: 'lsp'}])
