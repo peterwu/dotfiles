@@ -1,6 +1,10 @@
 ;;; my-mode-line.el -*- lexical-binding: t; -*-
 
 ;; mode-line
+(defface my-mode-line-emphasis
+  '((t :inherit (bold mode-line-emphasis) :slant normal))
+  "Like `mode-line-emphasis' but bold and upright (no italic).")
+
 (defun my-mode-line-ellipsize-file-name (file-name max-length)
   "Ellipsize FILE-NAME if its length exceeds MAX-LENGTH."
   (let* ((ellipsis (if (char-displayable-p ?…) "…" "..."))
@@ -58,7 +62,7 @@ Show the evil mode tag if selected; otherwise, its window number.")
                            (file-name-nondirectory (buffer-file-name))
                            36)
                           'help-echo (abbreviate-file-name (buffer-file-name))
-                          'face '(:inherit mode-line-emphasis)
+                          'face 'my-mode-line-emphasis
                           'mouse-face 'mode-line-highlight)
             (propertize (buffer-name)
                         'help-echo "Buffer name"
@@ -153,7 +157,7 @@ Show the evil mode tag if selected; otherwise, its window number.")
     (list (propertize "%["
                       'help-echo recursive-edit-help-echo)
           '(:propertize ("" mode-name)
-                        face (:inherit mode-line-emphasis)
+                        face my-mode-line-emphasis
                         help-echo "Major mode"
                         mouse-face mode-line-highlight)
           '("" mode-line-process)
