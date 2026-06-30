@@ -6,23 +6,14 @@ vim9script
 
 # commons {{{
 
-({
-    XDG_CACHE_HOME:  $'{$HOME}/.cache',
-    XDG_CONFIG_HOME: $'{$HOME}/.config',
-    XDG_DATA_HOME:   $'{$HOME}/.local/share',
-    XDG_STATE_HOME:  $'{$HOME}/.local/state',
-})->foreach((xdg, default) => {
-    const dir = $'{getenv(xdg) ?? default}/vim'
-    setenv(xdg->substitute('XDG', 'VIM', ''), dir)
-    mkdir(dir, 'p', 0o700)
-})
+setenv('VIM_HOME', fnamemodify($MYVIMRC, ':h'))
 
 def Highlight(group: string, fg='NONE', bg='NONE', style='NONE'): void
     final style_dict = {}
 
-    style->split(',')->foreach((_, v) => {
+    for v in style->split(',')
         style_dict[v] = true
-    })
+    endfor
 
     hlset([{
         name:    group,
@@ -48,10 +39,10 @@ source $VIMRUNTIME/defaults.vim
 # ---------
 # work dirs
 # ---------
-mkdir($'{$VIM_STATE_HOME}/pack', 'p', 0o700)
-mkdir($'{$VIM_STATE_HOME}/swap', 'p', 0o700)
-mkdir($'{$VIM_STATE_HOME}/undo', 'p', 0o700)
-mkdir($'{$VIM_STATE_HOME}/view', 'p', 0o700)
+mkdir($'{$VIM_HOME}/pack', 'p', 0o700)
+mkdir($'{$VIM_HOME}/swap', 'p', 0o700)
+mkdir($'{$VIM_HOME}/undo', 'p', 0o700)
+mkdir($'{$VIM_HOME}/view', 'p', 0o700)
 
 # -------
 # options
@@ -59,10 +50,8 @@ mkdir($'{$VIM_STATE_HOME}/view', 'p', 0o700)
 set autoindent
 set autoread
 set complete-=i
-set completeopt=menu,menuone,noinsert,noselect,preinsert
 set cursorline
-set diffopt+=linematch:60
-set directory=$VIM_STATE_HOME/swap
+set directory=$VIM_HOME/swap
 set encoding=utf-8
 set expandtab
 set fileformats=unix,dos,mac
@@ -80,7 +69,7 @@ set nolist
 set noshowmode
 set notitle
 set number
-set packpath^=$VIM_DATA_HOME
+set packpath^=$VIM_HOME
 set path=.,,**
 set pumheight=7
 set relativenumber
@@ -103,21 +92,16 @@ set splitright
 set switchbuf=uselast
 set tabstop=8
 set termencoding=utf-8
-
-if $TERM_PROGRAM !=# 'Apple_Terminal' || $TERM_PROGRAM_VERSION !=# '447.1'
-    set termguicolors
-endif
-
 set textwidth=80
 set timeoutlen=777
 set ttimeoutlen=77
-set undodir=$VIM_STATE_HOME/undo
+set undodir=$VIM_HOME/undo
 set undofile
 set updatetime=499
-set viewdir=$VIM_STATE_HOME/view
+set viewdir=$VIM_HOME/view
 set viewoptions=cursor,folds
 set viminfo=%,<800,'10,/50,:100,h,f0
-set viminfofile=$VIM_STATE_HOME/viminfo
+set viminfofile=$VIM_HOME/viminfo
 set virtualedit=block
 set wildoptions=pum,tagfile
 
@@ -579,16 +563,16 @@ enddef
 # system plugins
 
 # comment
-packadd! comment
+#packadd! comment
 
 # highlight-yank
-packadd! hlyank
+#packadd! hlyank
 
 # matchit
 packadd! matchit
 
 # nohlsearch
-packadd! nohlsearch
+#packadd! nohlsearch
 
 # netrw
 g:netrw_banner       = 0
@@ -620,9 +604,11 @@ command! -nargs=0 EnableTermDebug {
 g:paqs = []
 
 # 3rd party plugins
-g:paqs->add(['tommcdo/vim-exchange', {as: 'exchange'}])
-g:paqs->add(['tpope/vim-repeat',     {as: 'repeat'}])
-g:paqs->add(['tpope/vim-surround',   {as: 'surround'}])
+g:paqs->add(['tpope/vim-commentary',          {as: 'commentary'}])
+g:paqs->add(['tommcdo/vim-exchange',          {as: 'exchange'}])
+g:paqs->add(['machakann/vim-highlightedyank', {as: 'highlightedyank'}])
+g:paqs->add(['tpope/vim-repeat',              {as: 'repeat'}])
+g:paqs->add(['tpope/vim-surround',            {as: 'surround'}])
 
 # fzf
 if executable('fzf')
@@ -658,93 +644,6 @@ endif
 # lion
 g:paqs->add(['tommcdo/vim-lion', {as: 'lion'}])
 g:lion_squeeze_spaces = 1
-
-# lsp
-g:paqs->add(['yegappan/lsp', {as: 'lsp'}])
-const lsp_opts = {
-    outlineWinSize: 31,
-    popupBorder: true,
-}
-
-final lsp_servers = [
-    executable('clangd') ? {
-        name: 'clangd',
-        filetype: ['c', 'cpp'],
-        path: 'clangd',
-        args: ['--background-index']
-    } : {},
-
-    executable('gopls') ? {
-        name: 'gopls',
-        filetype: ['go'],
-        path: 'gopls'
-    } : {},
-
-    executable('neocmakelsp') ? {
-        name: 'neocmakelsp',
-        filetype: ['cmake'],
-        path: 'neocmakelsp',
-        args: ['--stdio']
-    } : {},
-
-    # python-lsp-server
-    # python-lsp-black
-    # python-lsp-isort
-    # pylint
-    executable('pylsp') ? {
-        name: 'pylsp',
-        filetype: ['python'],
-        path: 'pylsp',
-        initializationOptions: {
-            pylsp: {
-                plugins: {
-                    # formatter
-                    autopep8: { enabled: false },
-                    black: { enabled: true },
-                    isort: { enabled: true, profile: 'black' },
-
-                    # linter
-                    mccabe: { enabled: false },
-                    pycodestyle: { enabled: false },
-                    pyflakes: { enabled: false },
-                    pylint: { enabled: true }
-                }
-            }
-        }
-    } : {},
-
-    executable('terraform-ls') ? {
-        name: 'terraform-ls',
-        filetype: ['terraform'],
-        path: 'terraform-ls',
-        args: ['serve']
-    } : {},
-
-    executable('typescript-language-server') ? {
-        name: 'typescriptlang',
-        filetype: ['javascript', 'typescript'],
-        path: 'typescript-language-server',
-        args: ['--stdio']
-    } : {}
-]->filter((_, v) => !empty(v))
-
-augroup lsp_setup | autocmd!
-    autocmd User LspSetup {
-        g:LspOptionsSet(lsp_opts)
-        g:LspAddServer(lsp_servers)
-    }
-augroup END
-
-augroup lsp_attached | autocmd!
-    autocmd User LspAttached {
-        lsp#SetKeymaps()
-
-        autocmd CursorHold <buffer> silent! LspDiagCurrent
-
-        setlocal tagfunc=lsp#lsp#TagFunc
-        setlocal formatexpr=lsp#lsp#FormatExpr()
-    }
-augroup END
 
 # rainbow
 g:paqs->add(['luochen1990/rainbow', {}])

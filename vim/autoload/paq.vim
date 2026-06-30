@@ -2,8 +2,8 @@ vim9script
 
 const pack = {
     name:      'plugged',
-    start_dir: $'{$VIM_DATA_HOME}/pack/plugged/start',
-    opt_dir:   $'{$VIM_DATA_HOME}/pack/plugged/opt'
+    start_dir: $'{$VIM_HOME}/pack/plugged/start',
+    opt_dir:   $'{$VIM_HOME}/pack/plugged/opt'
 }
 
 # paq:
@@ -85,6 +85,8 @@ export def Clean(): void
     echo "\n"
 
     if 'y' == input(prompt)->tolower()
-        orphaned->foreach((_, d) => delete(d, 'rf'))
+        for d in orphaned
+            delete(d, 'rf')
+        endfor
     endif
 enddef
