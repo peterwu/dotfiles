@@ -54,13 +54,16 @@
      (project-find-regexp "Find regexp")
      (project-find-dir "Find directory")
      (project-vc-dir "VC-Dir")
-     (project-eshell "Eshell")
+     (ghostel-project "Ghostel")
+     (ghostel-project-list-buffers "Ghostel buffers")
      (keyboard-quit "Quit")))
   (project-vc-extra-root-markers '(".project"))
   :bind
   (:map global-map
         ("C-x p DEL" . project-forget-project))
   (:map project-prefix-map
+        ("m" . ghostel-project)
+        ("M" . ghostel-project-list-buffers)
         ("q" . keyboard-quit)))
 
 (use-package vc

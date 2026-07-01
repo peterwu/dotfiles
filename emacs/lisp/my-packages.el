@@ -141,36 +141,6 @@
   (electric-pair-mode +1)
   (electric-quote-mode +1))
 
-(use-package eshell
-  :custom
-  (eshell-highlight-prompt nil)
-  (eshell-prompt-function
-   (lambda ()
-     (modus-themes-with-colors
-       (concat
-        (propertize
-         (format-time-string "%H:%M" (current-time))
-         'face `(:foreground ,magenta))
-        " "
-        (propertize
-         (user-login-name)
-         'face `(:foreground ,blue))
-        (propertize
-         (concat  "@" (system-name) ":")
-         'face `(:foreground ,black))
-        (propertize
-         (abbreviate-file-name (eshell/pwd))
-         'face `(:foreground ,blue :weight bold))
-        "\n"
-        (let ((prompt (if (= (user-uid) 0) "#" "$")))
-          (if (= eshell-last-command-status 0)
-              (propertize prompt 'face `(:foreground ,green))
-            (propertize prompt 'face `(:foreground ,red))))
-        " "))))
-  :hook
-  (eshell-mode . (lambda ()
-                   (setq-local global-hl-line-mode nil))))
-
 (use-package frame
   :custom
   (frame-title-format
@@ -216,6 +186,21 @@
   :custom
   (flyspell-issue-message-flag nil)
   (flyspell-issue-welcome-flag nil))
+
+(use-package ghostel
+  :ensure t
+  :preface
+  (defun my-ghostel-send-C-k-and-kill ()
+    "Send `C-k' to ghostel.
+Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
+    (interactive)
+    (kill-ring-save (point) (line-end-position))
+    (ghostel-send-key "k" "ctrl"))
+  :bind
+  (:map my-ctl-z-map
+        ("C-`" . ghostel))
+  (:map ghostel-semi-char-mode-map
+        ("C-k"  . my-ghostel-send-C-k-and-kill)))
 
 (use-package ibuffer
   :custom
@@ -513,22 +498,6 @@ PROMPT is the minibuffer prompt.  Enable `recentf-mode' if it isn't already."
   :config
   (tab-bar-mode +1)
   (tab-bar-history-mode +1))
-
-(use-package term
-  :custom
-  (explicit-shell-file-name shell-file-name)
-  (explicit-bash-args '("--login"))
-  :bind
-  (:map my-ctl-z-map
-        ("C-`" . (lambda () (interactive)
-                   (term (concat
-                          explicit-shell-file-name
-                          " "
-                          (string-join explicit-bash-args " "))))))
-  :hook
-  (term-mode . (lambda()
-                 (setq-local global-hl-line-mode nil)
-                 (term-set-escape-char ?\C-x))))
 
 (use-package time
   :commands world-clock
