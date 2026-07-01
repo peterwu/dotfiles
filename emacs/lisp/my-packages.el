@@ -514,38 +514,6 @@ PROMPT is the minibuffer prompt.  Enable `recentf-mode' if it isn't already."
   (tab-bar-mode +1)
   (tab-bar-history-mode +1))
 
-(use-package tab-line
-  :demand t
-  :preface
-  (defun my-tab-line-tab-name-buffer (buffer &optional buffers)
-    (format " %s " (buffer-name buffer)))
-  :custom
-  (tab-line-tab-name-function #'my-tab-line-tab-name-buffer)
-  (tab-line-new-button-show nil)
-  (tab-line-close-button-show 'selected)
-  (tab-line-exclude-modes '(completion-list-mode
-                            dired-mode
-                            help-mode))
-  :custom-face
-  (tab-line
-   ((t (:box (:line-width -1 :color ,(face-background 'tab-line))))))
-  (tab-line-tab
-   ((t (:box (:line-width 3 :color ,(face-background 'tab-line))))))
-  (tab-line-tab-inactive
-   ((t (:box (:line-width 3 :color ,(face-background 'tab-line))))))
-  (tab-line-tab-highlight
-   ((t (:box (:line-width 3 :color ,(face-background 'tab-line))))))
-  (tab-line-tab-current
-   ((t (:box (:line-width 3 :color ,(face-background 'tab-line))))))
-  :bind
-  (:map my-ctl-z-t-map
-        ("0" . tab-line-close-tab)
-        ("1" . tab-line-close-other-tabs)
-        ("2" . tab-line-new-tab))
-  :config
-  (setq tab-line-separator "")
-  (global-tab-line-mode +1))
-
 (use-package term
   :custom
   (explicit-shell-file-name shell-file-name)
