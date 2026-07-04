@@ -1,8 +1,5 @@
 ;;; my-devel.el -*- lexical-binding: t; -*-
 
-;; expand macros
-(bind-key "RET" #'pp-macroexpand-last-sexp my-ctl-z-map)
-
 ;; globals
 (use-package dape
   :ensure t
