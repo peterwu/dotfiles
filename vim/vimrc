@@ -563,22 +563,16 @@ enddef
 # system plugins
 
 # comment
-if has('patch-9.1.0375')
-    packadd! comment
-endif
+packadd! comment
 
 # highlight-yank
-if has('patch-9.1.1196')
-    packadd! hlyank
-endif
+packadd! hlyank
 
 # matchit
 packadd! matchit
 
 # nohlsearch
-if has('patch-9.1.0500')
-    packadd! nohlsearch
-endif
+packadd! nohlsearch
 
 # netrw
 g:netrw_banner       = 0
@@ -610,18 +604,6 @@ command! -nargs=0 EnableTermDebug {
 g:paqs = []
 
 # 3rd party plugins
-
-if !has('patch-9.1.0375') # comment
-    g:paqs->add(['tpope/vim-commentary', {as: 'commentary'}])
-endif
-
-if !has('patch-9.1.0500') # nohlsearch
-    g:paqs->add(['romainl/vim-cool', {as: 'cool'}])
-endif
-
-if !has('patch-9.1.1196') # hlyank
-    g:paqs->add(['machakann/vim-highlightedyank', {as: 'hlyank'}])
-endif
 
 g:paqs->add(['tommcdo/vim-exchange', {as: 'exchange'}])
 g:paqs->add(['tpope/vim-repeat',     {as: 'repeat'}])
