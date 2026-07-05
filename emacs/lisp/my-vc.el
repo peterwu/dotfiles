@@ -121,7 +121,7 @@
         ("=" . vc-ediff)
         ("F" . vc-pull)
         ("G" . vc-pull-and-push)
-        ("O" . vc-log-outgoing)
+        ("O" . vc-root-log-outgoing)
         ("d" . vc-diff)
         ("i" . vc-dir-ignore)
         ("k" . vc-dir-delete-file)
