@@ -584,7 +584,4 @@ PROMPT is the minibuffer prompt.  Enable `recentf-mode' if it isn't already."
 ;; 3rd party packages ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;
 
-(use-package goto-chg
-  :ensure t)
-
 (provide 'my-packages)
