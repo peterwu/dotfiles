@@ -187,21 +187,6 @@
   (flyspell-issue-message-flag nil)
   (flyspell-issue-welcome-flag nil))
 
-(use-package ghostel
-  :ensure t
-  :preface
-  (defun my-ghostel-send-C-k-and-kill ()
-    "Send `C-k' to ghostel.
-Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
-    (interactive)
-    (kill-ring-save (point) (line-end-position))
-    (ghostel-send-key "k" "ctrl"))
-  :bind
-  (:map my-ctl-z-map
-        ("C-`" . ghostel))
-  (:map ghostel-semi-char-mode-map
-        ("C-k"  . my-ghostel-send-C-k-and-kill)))
-
 (use-package ibuffer
   :custom
   (ibuffer-default-shrink-to-minimum-size nil)
@@ -583,5 +568,22 @@ PROMPT is the minibuffer prompt.  Enable `recentf-mode' if it isn't already."
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 3rd party packages ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;
+
+(use-package ghostel
+  :ensure t
+  :preface
+  (defun my-ghostel-send-C-k-and-kill ()
+    "Send `C-k' to ghostel.
+Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
+    (interactive)
+    (kill-ring-save (point) (line-end-position))
+    (ghostel-send-key "k" "ctrl"))
+  :custom
+  (ghostel-shell `(,(getenv "SHELL") "--login"))
+  :bind
+  (:map my-ctl-z-map
+        ("C-`" . ghostel))
+  (:map ghostel-semi-char-mode-map
+        ("C-k"  . my-ghostel-send-C-k-and-kill)))
 
 (provide 'my-packages)
