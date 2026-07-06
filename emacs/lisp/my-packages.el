@@ -581,8 +581,8 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   :custom
   (ghostel-shell `(,(getenv "SHELL") "--login"))
   :bind
-  (:map my-ctl-z-map
-        ("C-`" . ghostel))
+  (:map global-map
+        ("<f12>" . ghostel))
   (:map ghostel-semi-char-mode-map
         ("C-k"  . my-ghostel-send-C-k-and-kill)))
 
