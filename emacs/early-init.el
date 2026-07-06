@@ -47,9 +47,5 @@
 ;; faster redisplay
 (setq bidi-inhibit-bpa t)
 
-(set-face-attribute 'default        nil :family "SF Mono" :height 160 :weight 'normal)
-(set-face-attribute 'fixed-pitch    nil :family "SF Mono" :height 160 :weight 'normal)
-(set-face-attribute 'variable-pitch nil :family "SF Pro"  :height 160 :weight 'normal)
-
 (provide 'early-init)
 ;;; early-init.el ends here
