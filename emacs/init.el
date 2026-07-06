@@ -34,6 +34,12 @@
                               :family family
                               :weight 'normal
                               :height calculated-height)))))
+  :bind
+  (:map global-map
+        ("C-z" . nil)
+
+        ("C-x C-c" . nil)
+        ("C-x C-c C-c" . save-buffers-kill-terminal))
   :hook
   (after-init . (lambda ()
                   (setopt file-name-handler-alist my-file-name-handlers
@@ -64,7 +70,7 @@
 (use-package my-platforms)
 
 (use-package my-theme)
-(use-package my-keybinds)
+(use-package my-keymaps)
 (use-package my-surround)
 (use-package my-evil)
 (use-package my-mode-line)
