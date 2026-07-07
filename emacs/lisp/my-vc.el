@@ -92,41 +92,9 @@
       (2 'change-log-list nil lax)
       (3 'change-log-name)
       (4 'change-log-date))))
-  :bind
-  (:map global-map
-        ("C-x v x" . nil)
-
-        ("C-x v +" . vc-register)
-        ("C-x v ." . vc-dir)
-        ("C-x v =" . vc-ediff)
-        ("C-x v B" . vc-annotate)
-        ("C-x v F" . vc-pull)
-        ("C-x v G" . vc-pull-and-push)
-        ("C-x v d" . vc-diff)
-        ("C-x v g" . vc-refresh-state)
-        ("C-x v i" . vc-ignore)
-        ("C-x v k" . vc-delete-file)
-        ("C-x v s" . vc-log-search)
-        ("C-x v t" . vc-create-tag))
   :config
   (advice-add #'vc-git-expanded-log-entry
               :filter-return (lambda (r)
                                (concat "\n" r))))
-
-(use-package vc-dir
-  :defer t
-  :bind
-  (:map vc-dir-mode-map
-        ("+" . vc-register)
-        ("=" . vc-ediff)
-        ("F" . vc-pull)
-        ("G" . vc-pull-and-push)
-        ("O" . vc-root-log-outgoing)
-        ("d" . vc-diff)
-        ("i" . vc-dir-ignore)
-        ("k" . vc-dir-delete-file)
-        ("o" . vc-dir-find-file-other-window)
-        ("t" . vc-create-tag)
-        ("u" . vc-revert)))
 
 (provide 'my-vc)
