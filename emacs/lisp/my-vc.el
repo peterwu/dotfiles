@@ -1,7 +1,6 @@
 ;;; my-vc.el -*- lexical-binding: t; -*-
 
 (use-package diff-mode
-  :defer t
   :custom
   (diff-default-read-only t)
   (diff-font-lock-prettify t)
@@ -31,7 +30,6 @@
   (ediff-quit . winner-undo))
 
 (use-package log-view
-  :defer t
   :bind
   (:map log-view-mode-map
         ("f" . nil)
@@ -59,12 +57,11 @@
      (keyboard-quit "Quit")))
   (project-vc-extra-root-markers '(".project"))
   :bind
-  (:map global-map
-        ("C-x p DEL" . project-forget-project))
   (:map project-prefix-map
-        ("m" . ghostel-project)
-        ("M" . ghostel-project-list-buffers)
-        ("q" . keyboard-quit)))
+        ("DEL" . project-forget-project)
+        ("t"   . ghostel-project)
+        ("T"   . ghostel-project-list-buffers)
+        ("q"   . keyboard-quit)))
 
 (use-package vc
   :custom
@@ -92,6 +89,9 @@
       (2 'change-log-list nil lax)
       (3 'change-log-name)
       (4 'change-log-date))))
+  :bind
+  (:map vc-prefix-map
+        ("F" . vc-pull))
   :config
   (advice-add #'vc-git-expanded-log-entry
               :filter-return (lambda (r)
