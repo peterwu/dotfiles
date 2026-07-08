@@ -11,7 +11,7 @@
      (border-mode-line-inactive unspecified)))
   :config
   (load-theme 'modus-operandi)
-  (add-to-list 'modus-operandi-palette '(black "#000000"))
-  (add-to-list 'modus-operandi-palette '(white "#ffffff")))
+  (add-to-list 'modus-themes-operandi-palette '(black "#000000"))
+  (add-to-list 'modus-themes-operandi-palette '(white "#ffffff")))
 
 (provide 'my-theme)
