@@ -97,4 +97,9 @@
               :filter-return (lambda (r)
                                (concat "\n" r))))
 
+(use-package vc-dir
+  :bind
+  (:map vc-dir-mode-map
+        ("F" . vc-pull)))
+
 (provide 'my-vc)
