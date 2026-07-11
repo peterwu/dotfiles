@@ -77,6 +77,7 @@
 
 (use-package my-devel)
 (use-package my-dired)
+(use-package my-gnus)
 (use-package my-org)
 (use-package my-vc)
 (use-package my-window)

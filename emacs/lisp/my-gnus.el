@@ -7,12 +7,10 @@
   (user-mail-address "peterwu@hotmail.com")
 
   (gnus-home-directory (expand-file-name "gnus" user-emacs-directory))
-  (gnus-startup-file (expand-file-name ".newsrc" gnus-home-directory))
-  (gnus-directory (expand-file-name "news" gnus-home-directory))
-  (message-directory (expand-file-name "mail" gnus-home-directory))
-
   (auth-sources `(,(expand-file-name ".authinfo" gnus-home-directory)))
+  (gnus-startup-file (expand-file-name ".newsrc" gnus-home-directory))
   (mail-signature-file (expand-file-name ".signature" gnus-home-directory))
+
   (mail-user-agent 'gnus-user-agent)
 
   (message-citation-line-function 'message-insert-formatted-citation-line)
@@ -21,7 +19,6 @@
   (mm-discouraged-alternatives '("text/html" "text/richtext"))
 
   (gnus-always-read-dribble-file nil)
-  (gnus-asynchronous t)
   (gnus-blocked-images nil)
   (gnus-expert-user t)
   (gnus-interactive-exit nil)
@@ -29,19 +26,10 @@
   (gnus-show-threads t)
   (gnus-use-dribble-file nil)
 
-  (gnus-select-method '(nnimap "hotmail"
-                               (nnimap-address "outlook.office365.com")
-                               (nnimap-server-port 993)
-                               (nnimap-stream ssl)
-                               (nnimap-authenticator login)))
+  (gnus-select-method '(nntp "news.gmane.io"))
 
-  (gnus-secondary-select-methods
-   '((nntp "news.gmane.io")
-     (nntp "free.xsusenet.com")))
+  (gnus-secondary-select-methods nil)
 
-  (send-mail-function 'smtpmail-send-it)
-  (smtpmail-smtp-server "smtp.office365.com")
-  (smtpmail-smtp-service 587)
   :hook
   (gnus-group-mode . gnus-topic-mode))
 
