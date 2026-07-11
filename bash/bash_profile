@@ -31,7 +31,7 @@ if type fzf &>/dev/null; then
 fi
 
 # manpager
-export MANPAGER='vim +MANPAGER --not-a-term -'
+export MANPAGER='vim +MANPAGER +"set showtabline=0" --not-a-term -'
 
 # less
 export LESSHISTFILE=-
