@@ -32,7 +32,7 @@
        (when (eglot-managed-p)
          (eglot-format-buffer))))
   :bind
-  (:map my-ctl-z-l-map
+  (:map my-C-z-l-map
         ("D" . eglot-find-declaration)
         ("F" . eglot-format-buffer)
         ("R" . eglot-rename)
@@ -55,7 +55,7 @@
   (flymake-suppress-zero-counters t)
   (flymake-wrap-around nil)
   :bind
-  (:map my-ctl-z-!-map
+  (:map my-C-z-!-map
         ("s" . flymake-start)
         ("d" . flymake-show-buffer-diagnostics)
         ("D" . flymake-show-project-diagnostics)

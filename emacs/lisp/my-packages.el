@@ -59,7 +59,7 @@
     (interactive "r\nc")
     (my-align-regexp beg end char 'right))
   :bind
-  (:map my-ctl-z-g-map
+  (:map my-C-z-g-map
         ("l" . my-align-left)
         ("L" . my-align-right)))
 
@@ -75,7 +75,7 @@
   (battery-load-critical 10)
   (battery-mode-line-format "[%b%p%%]")
   :bind
-  (:map my-ctl-z-ctl-t-map
+  (:map my-C-z-C-t-map
         ("b" . display-battery-mode))
   :config
   (display-battery-mode -1))
@@ -104,7 +104,7 @@
   :custom
   (dictionary-server "dict.org")
   :bind
-  (:map my-ctl-z-ctl-t-map
+  (:map my-C-z-C-t-map
         ("d" . dictionary-tooltip-mode)))
 
 (use-package display-line-numbers
@@ -112,7 +112,7 @@
   (display-line-numbers-type 'relative)
   :hook (text-mode prog-mode)
   :bind
-  (:map my-ctl-z-ctl-t-map
+  (:map my-C-z-C-t-map
         ("n" . display-line-numbers-mode)))
 
 (use-package eldoc
@@ -211,7 +211,7 @@
   (ibuffer-use-header-line t)
   (ibuffer-use-other-window nil)
   :bind
-  (:map my-ctl-z-map
+  (:map my-C-z-map
         ("C-b" . ibuffer)))
 
 (use-package icomplete
@@ -388,13 +388,13 @@ PROMPT is the minibuffer prompt.  Enable `recentf-mode' if it isn't already."
   (recentf-save-file
    (expand-file-name "cache/recentf.eld" user-emacs-directory))
   :bind
-  (:map my-ctl-z-map
+  (:map my-C-z-map
         ("C-r" . recentf-open))
-  (:map my-ctl-z-4-map
+  (:map my-C-z-4-map
         ("C-r" . my-recentf-open-other-window))
-  (:map my-ctl-z-ctl-t-map
+  (:map my-C-z-C-t-map
         ("C-r" . my-recentf-open-other-tab))
-  (:map my-ctl-z-5-map
+  (:map my-C-z-5-map
         ("C-r" . my-recentf-open-other-frame))
   :config
   (recentf-mode +1))
@@ -473,7 +473,7 @@ PROMPT is the minibuffer prompt.  Enable `recentf-mode' if it isn't already."
   (:map speedbar-file-key-map
         ("^" . speedbar-up-directory)
         ("." . speedbar-toggle-show-all-files))
-  (:map my-ctl-z-map
+  (:map my-C-z-map
         ("d" . my-speedbar-toggle-window)))
 
 (use-package tab-bar
@@ -504,7 +504,7 @@ PROMPT is the minibuffer prompt.  Enable `recentf-mode' if it isn't already."
   (world-clock-time-format "%R %z  %A %d %B")
   (world-clock-timer-second 60)
   :bind
-  (:map my-ctl-z-ctl-t-map
+  (:map my-C-z-C-t-map
         ("c" . display-time-mode)
         ("g" . world-clock))
   :config
@@ -554,7 +554,7 @@ PROMPT is the minibuffer prompt.  Enable `recentf-mode' if it isn't already."
   (before-save . whitespace-cleanup)
   ((conf-mode prog-mode) . whitespace-mode)
   :bind
-  (:map my-ctl-z-ctl-t-map
+  (:map my-C-z-C-t-map
         ("w" . whitespace-mode)))
 
 (use-package xt-mouse

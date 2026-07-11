@@ -4,7 +4,7 @@
   :custom
   (windmove-create-window nil)
   :bind
-  (:map my-ctl-z-ctl-w-map
+  (:map my-C-z-C-w-map
         ("<left>"  . windmove-left)
         ("<right>" . windmove-right)
         ("<up>"    . windmove-up)
@@ -52,7 +52,7 @@
   :custom
   (winner-dont-bind-my-keys t)
   :bind
-  (:map my-ctl-z-ctl-w-map
+  (:map my-C-z-C-w-map
         ("u" . winner-undo)
         ("U" . winner-redo))
   (:repeat-map my-window-winner-repeat-map

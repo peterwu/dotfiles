@@ -43,7 +43,7 @@
      ("j" "Journal" entry (file+olp+datetree "~/Documents/Org/journal.org")
       "* %?\nEntered on %U\n  %i\n  %a")))
   :bind
-  (:map my-ctl-z-o-map
+  (:map my-C-z-o-map
         ("a" . org-agenda)
         ("c" . org-capture))
   :hook

@@ -63,7 +63,7 @@ indicates the number assigned to window."
          (interactive)
          (my-select-window ,n))
 
-       (bind-keys :map my-ctl-z-ctl-w-map
+       (bind-keys :map my-C-z-C-w-map
                   (,(number-to-string n) . ,my-select-window-n)
                   :repeat-map my-window-numbering-repeat-map
                   (,(number-to-string n) . ,my-select-window-n)))))
@@ -73,7 +73,7 @@ indicates the number assigned to window."
    `(my-select-window-n-keybind ,(1+ n))))
 
 ;; key binds
-(bind-keys :map my-ctl-z-ctl-w-map
+(bind-keys :map my-C-z-C-w-map
            ("w" . my-select-window)
            :repeat-map my-window-switch-repeat-map
            ("w" . my-select-window))

@@ -43,6 +43,16 @@
         ("P" . vc-push)
         ("s" . vc-log-search)))
 
+(use-package magit
+  :ensure t
+  :custom
+  (magit-define-global-key-bindings nil)
+  :bind
+  (:map my-C-z-M-g-map
+        ("g" . magit-status)
+        ("j" . magit-dispatch)
+        ("J" . magit-file-dispatch)))
+
 (use-package project
   :custom
   (project-list-file
@@ -59,6 +69,7 @@
   :bind
   (:map project-prefix-map
         ("DEL" . project-forget-project)
+        ("M-g" . magit-project-status)
         ("t"   . ghostel-project)
         ("T"   . ghostel-project-list-buffers)
         ("q"   . keyboard-quit)))
