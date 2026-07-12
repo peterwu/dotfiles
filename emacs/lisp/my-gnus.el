@@ -2,11 +2,17 @@
 
 ;; gnus
 (use-package gnus
+  :preface
+  (defvar my-gnus-home-directory
+    (expand-file-name "gnus" user-emacs-directory))
+
+  (unless (file-directory-p my-gnus-home-directory)
+    (make-directory my-gnus-home-directory))
   :custom
   (user-full-name "Peter Wu")
   (user-mail-address "peterwu@hotmail.com")
 
-  (gnus-home-directory (expand-file-name "gnus" user-emacs-directory))
+  (gnus-home-directory my-gnus-home-directory)
   (auth-sources `(,(expand-file-name ".authinfo" gnus-home-directory)))
   (gnus-startup-file (expand-file-name ".newsrc" gnus-home-directory))
   (mail-signature-file (expand-file-name ".signature" gnus-home-directory))
