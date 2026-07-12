@@ -36,10 +36,7 @@
                               :height calculated-height)))))
   :bind
   (:map global-map
-        ("C-z" . nil)
-
-        ("C-x C-c" . nil)
-        ("C-x C-c C-c" . save-buffers-kill-terminal))
+        ("C-z" . nil))
   :hook
   (after-init . (lambda ()
                   (setopt file-name-handler-alist my-file-name-handlers
