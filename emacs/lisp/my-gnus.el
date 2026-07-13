@@ -29,6 +29,11 @@
   (gnus-expert-user t)
   (gnus-interactive-exit nil)
   (gnus-novice-user nil)
+
+  (gnus-read-newsrc-file nil)
+  (gnus-save-killed-list nil)
+  (gnus-save-newsrc-file nil)
+
   (gnus-show-threads t)
   (gnus-use-dribble-file nil)
 
