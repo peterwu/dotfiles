@@ -37,10 +37,10 @@
   (gnus-show-threads t)
   (gnus-use-dribble-file nil)
 
-  (gnus-select-method '(nntp "news.gmane.io"))
-
-  (gnus-secondary-select-methods nil)
-
+  (gnus-select-method '(nnnil ""))
+  (gnus-secondary-select-methods
+   '((nntp "news.eternal-september.org")
+     (nntp "news.gmane.io")))
   :hook
   (gnus-group-mode . gnus-topic-mode))
 
