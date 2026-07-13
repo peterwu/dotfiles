@@ -37,6 +37,8 @@
   (gnus-show-threads t)
   (gnus-use-dribble-file nil)
 
+  (gnus-group-line-format "%M%S%p%P%5y:%B%(%G%)\n")
+
   (gnus-select-method '(nnnil ""))
   (gnus-secondary-select-methods
    '((nntp "news.eternal-september.org")
