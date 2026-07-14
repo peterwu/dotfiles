@@ -62,6 +62,7 @@
      (project-find-regexp "Find regexp")
      (project-find-dir "Find directory")
      (project-vc-dir "VC-Dir")
+     (magit-project-status "Magit")
      (ghostel-project "Ghostel")
      (ghostel-project-list-buffers "Ghostel buffers")
      (keyboard-quit "Quit")))
