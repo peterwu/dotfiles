@@ -8,6 +8,10 @@
 
   (unless (file-directory-p my-gnus-home-directory)
     (make-directory my-gnus-home-directory))
+
+  (defun my-gnus-confirm-exit (&rest _)
+    (or noninteractive
+        (y-or-n-p "Are you sure you want to quit Gnus? ")))
   :custom
   (user-full-name "Peter Wu")
   (user-mail-address "peterwu@hotmail.com")
@@ -15,6 +19,7 @@
   (gnus-home-directory my-gnus-home-directory)
   (auth-sources `(,(expand-file-name ".authinfo" gnus-home-directory)))
   (gnus-startup-file (expand-file-name ".newsrc" gnus-home-directory))
+  (message-signature-file (expand-file-name ".signature" gnus-home-directory))
   (mail-signature-file (expand-file-name ".signature" gnus-home-directory))
 
   (mail-user-agent 'gnus-user-agent)
@@ -27,7 +32,6 @@
   (gnus-always-read-dribble-file nil)
   (gnus-blocked-images nil)
   (gnus-expert-user t)
-  (gnus-interactive-exit nil)
   (gnus-novice-user nil)
 
   (gnus-read-newsrc-file nil)
@@ -44,6 +48,8 @@
    '((nntp "news.eternal-september.org")
      (nntp "news.gmane.io")))
   :hook
-  (gnus-group-mode . gnus-topic-mode))
+  (gnus-group-mode . gnus-topic-mode)
+  :config
+  (advice-add #'gnus-group-exit :before-while #'my-gnus-confirm-exit))
 
 (provide 'my-gnus)
