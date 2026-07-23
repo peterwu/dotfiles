@@ -115,7 +115,7 @@ Looks for .venv directory in project root and activates the Python interpreter."
   (treesit-enabled-modes t))
 
 (use-package markdown-ts-mode
-  :mode ("\\.md\\'" . markdown-ts-mode))
+  :mode (rx ".md" string-end))
 
 (use-package markdown-ts-mode-x
   :custom
