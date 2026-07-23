@@ -110,30 +110,25 @@ Looks for .venv directory in project root and activates the Python interpreter."
   :hook
   ((python-mode python-ts-mode) . my-pyvenv-activate))
 
-(use-package treesit
-  :init
-  (setq-default treesit-language-source-alist
-                '((bash "https://github.com/tree-sitter/tree-sitter-bash")
-                  (c "https://github.com/tree-sitter/tree-sitter-c")
-                  (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
-                  (elisp "https://github.com/Wilfred/tree-sitter-elisp")
-                  (go "https://github.com/tree-sitter/tree-sitter-go")
-                  (gomod "https://github.com/camdencheek/tree-sitter-go-mod")
-                  (json "https://github.com/tree-sitter/tree-sitter-json")
-                  (make "https://github.com/alemuller/tree-sitter-make")
-                  (markdown "https://github.com/ikatyang/tree-sitter-markdown")
-                  (python "https://github.com/tree-sitter/tree-sitter-python")
-                  (toml "https://github.com/tree-sitter/tree-sitter-toml")
-                  (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
-  :custom
-  (major-mode-remap-alist
-   '((c-mode . c-ts-mode)
-     (c++-mode . c++-ts-mode)
-     (json-mode . json-ts-mode)
-     (python-mode . python-ts-mode)
-     (sh-mode . bash-ts-mode)
-     (yaml-mode . yaml-ts-mode)))
-  :mode ("\\(?:CMakeLists\\.txt\\|\\.cmake\\)\\'" . cmake-ts-mode)
+(setopt major-mode-remap-alist
+        '((c-mode . c-ts-mode)
+          (c++-mode . c++-ts-mode)
+          (json-mode . json-ts-mode)
+          (python-mode . python-ts-mode)
+          (sh-mode . bash-ts-mode)
+          (yaml-mode . yaml-ts-mode)))
+
+(use-package cmake-ts-mode
+  :mode ("\\(?:CMakeLists\\.txt\\|\\.cmake\\)\\'" . cmake-ts-mode))
+
+(use-package go-ts-mode
   :mode ("\\.go\\'" . go-ts-mode))
+
+(use-package markdown-ts-mode
+  :mode ("\\.md\\'" . markdown-ts-mode))
+
+(use-package markdown-ts-mode-x
+  :custom
+  (markdown-ts-convert-display-function #'browse-url-of-file))
 
 (provide 'my-devel)
