@@ -110,19 +110,9 @@ Looks for .venv directory in project root and activates the Python interpreter."
   :hook
   ((python-mode python-ts-mode) . my-pyvenv-activate))
 
-(setopt major-mode-remap-alist
-        '((c-mode . c-ts-mode)
-          (c++-mode . c++-ts-mode)
-          (json-mode . json-ts-mode)
-          (python-mode . python-ts-mode)
-          (sh-mode . bash-ts-mode)
-          (yaml-mode . yaml-ts-mode)))
-
-(use-package cmake-ts-mode
-  :mode ("\\(?:CMakeLists\\.txt\\|\\.cmake\\)\\'" . cmake-ts-mode))
-
-(use-package go-ts-mode
-  :mode ("\\.go\\'" . go-ts-mode))
+(use-package treesit
+  :custom
+  (treesit-enabled-modes t))
 
 (use-package markdown-ts-mode
   :mode ("\\.md\\'" . markdown-ts-mode))
