@@ -167,15 +167,24 @@ nnoremap <silent> ]q <Cmd>cnext<CR>
 nnoremap <silent> [Q <Cmd>cfirst<CR>
 nnoremap <silent> ]Q <Cmd>clast<CR>
 
+def ToggleQuickfixWindow(type: string): void
+    const [value, prefix] = type == 'qf'
+        ? ['v:val.quickfix', 'c']
+        : ['v:val.loclist',  'l']
+
+    const cmd = getwininfo()->filter(value)->empty() ? 'open' : 'close'
+    execute 'silent!' $'{prefix}{cmd}'
+enddef
+
 # open/close location list window
 nnoremap <silent> <Leader>lo <Cmd>lopen<CR>
 nnoremap <silent> <Leader>lc <Cmd>lclose<CR>
-nnoremap <silent> <Leader>ll <ScriptCmd>qf#ToggleWindow('ll')<CR>
+nnoremap <silent> <Leader>ll <ScriptCmd>ToggleQuickfixWindow('ll')<CR>
 
 # open/close quickfix window
 nnoremap <silent> <Leader>qo <Cmd>copen<CR>
 nnoremap <silent> <Leader>qc <Cmd>cclose<CR>
-nnoremap <silent> <Leader>qq <ScriptCmd>qf#ToggleWindow('qf')<CR>
+nnoremap <silent> <Leader>qq <ScriptCmd>ToggleQuickfixWindow('qf')<CR>
 
 # use tab to select from popup menu
 inoremap <expr> <Tab>   (pumvisible() ? '<C-N>' : '<Tab>')
@@ -190,31 +199,16 @@ xnoremap *     y/\V<C-R>"<CR>
 xnoremap #     y?\V<C-R>"<CR>
 nnoremap &     <Cmd>&&<CR>
 
-# copy to clipboard
-if has('clipboard')
-    nnoremap <silent> <Leader>y  "+y
-    xnoremap <silent> <Leader>y  "+y
-    nnoremap <silent> <Leader>Y  "+yg_
-    nnoremap <silent> <Leader>yy "+y_
-else
-    nnoremap <expr> <silent> <Leader>y  osc52#Yank()
-    xnoremap <expr> <silent> <Leader>y  osc52#Yank()
-    nnoremap <expr> <silent> <Leader>Y  osc52#Yank('g_')
-    nnoremap <expr> <silent> <Leader>yy osc52#Yank('_')
-endif
+nnoremap <silent> <Leader>y  "+y
+xnoremap <silent> <Leader>y  "+y
+nnoremap <silent> <Leader>Y  "+yg_
+nnoremap <silent> <Leader>yy "+y_
 
 # paste from clipboard
-if has('clipboard')
-    nnoremap <silent> <Leader>p "+p
-    nnoremap <silent> <Leader>P "+P
-    xnoremap <silent> <Leader>p "+p
-    xnoremap <silent> <Leader>P "+P
-else
-    nnoremap <silent> <Leader>p <ScriptCmd>osc52#Paste("p")<CR>
-    nnoremap <silent> <Leader>P <ScriptCmd>osc52#Paste("P")<CR>
-    xnoremap <silent> <Leader>p <ScriptCmd>osc52#Paste("p")<CR>
-    xnoremap <silent> <Leader>P <ScriptCmd>osc52#Paste("P")<CR>
-endif
+nnoremap <silent> <Leader>p "+p
+nnoremap <silent> <Leader>P "+P
+xnoremap <silent> <Leader>p "+p
+xnoremap <silent> <Leader>P "+P
 
 # terminal
 nnoremap <Leader>` <Cmd>execute $'botright terminal ++close {&shell} --login'<CR>
@@ -227,9 +221,15 @@ nnoremap <Leader><S-Tab> <Cmd>Lexplore!<CR>
 
 # commands {{{
 
+def Grep(...params: list<string>): string
+    const args = params->join(' ')->expandcmd()
+    const cmd = &grepprg->substitute('\$\*', args, '')
+    return system(cmd)
+enddef
+
 # instant grep + quickfix
-command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr qf#Grep(<f-args>)
-command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr qf#Grep(<f-args>)
+command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<f-args>)
+command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr Grep(<f-args>)
 
 # force saving files that otherwise require sudoedit
 command! -nargs=0 SudoWrite {
@@ -247,19 +247,11 @@ augroup auto_save_folds | autocmd!
     autocmd BufWinEnter ?* silent! loadview
 augroup END
 
+g:markdown_folding = 1
 augroup markdown_as_mini_orgmode | autocmd!
-    autocmd FileType markdown {
-        setlocal foldmethod=expr
-        setlocal foldexpr=g:MarkdownFolding()
-        setlocal foldlevel=99
-    }
+    autocmd FileType markdown setlocal foldlevel=99
     autocmd Syntax markdown DefineStatusSyntax()
 augroup END
-
-def g:MarkdownFolding(): string
-    var ln = getline(v:lnum)
-    return ln =~ '^\s*#' ? '>' .. len(matchstr(ln, '^\s*\zs#\+')) : '='
-enddef
 
 def DefineStatusSyntax(): void
     const status_dict = {
@@ -575,6 +567,10 @@ packadd! matchit
 # nohlsearch
 packadd! nohlsearch
 
+# osc52 (clipboard access via terminal OSC 52, e.g. over SSH)
+packadd osc52
+set clipmethod+=osc52
+
 # netrw
 g:netrw_banner       = 0
 g:netrw_browse_split = 4
@@ -602,6 +598,95 @@ command! -nargs=0 EnableTermDebug {
 }
 
 # Paq management
+const pack = {
+    name:      'plugged',
+    start_dir: $'{$VIM_HOME}/pack/plugged/start',
+    opt_dir:   $'{$VIM_HOME}/pack/plugged/opt'
+}
+
+# paq:
+# {
+#    'paq_name' : { 'dir' : dir, 'url' : url }
+# }
+final paqs = {}
+
+def Paq_Init(): void
+    mkdir(pack.start_dir, 'p', 0o700)
+    mkdir(pack.opt_dir,   'p', 0o700)
+
+    for [name, args] in g:paqs
+        const url = $'https://github.com/{name}'
+        const as = args->get('as', name->split('/')[1])
+        const dir = printf('%s/%s',
+            args->get('opt', false) ? pack.opt_dir : pack.start_dir,
+            as)
+
+        paqs[as] = {dir: dir, url: url}
+    endfor
+enddef
+
+def Paq_Update(): void
+    const max = paqs->mapnew((k, _) => len(k))->max()
+
+    for [as, paq] in paqs->items()
+        const [dir, url] = paq->values()
+        const sed_rm_ansi_esc_chars = printf('%s %s %s',
+            'sed',
+            '-e "s/[^[:print:]]\\[[0-9;]*[a-zA-Z]//g"',
+            '-e "s/[[:cntrl:]]//g"')
+
+        # check if it has been git cloned already
+        const git_cmd = finddir('.git', dir)->empty()
+            ? printf('%s | %s',
+                $'git clone --depth=1 {url} {dir}',
+                sed_rm_ansi_esc_chars)
+            : printf('%s && %s 2>&1 | %s',
+                $'git -C {dir} fetch --depth=1',
+                $'git -C {dir} reset --hard FETCH_HEAD',
+                sed_rm_ansi_esc_chars)
+        const git_cmd_result = system(git_cmd)->split('\n')
+
+        const doc_dir = $'{dir}/doc'
+        if doc_dir->isdirectory()
+            execute 'helptags' doc_dir
+        endif
+
+        const fmt = $'%{max + 1}s: %s'
+        echo printf(fmt, as, git_cmd_result[0])
+    endfor
+enddef
+
+def Paq_Clean(): void
+    const dirs = [pack.start_dir, pack.opt_dir]
+        ->mapnew((_, d) => glob($'{d}/*', true, true))
+        ->flattennew()
+
+    const managed = paqs->values()->mapnew((_, v) => v.dir)
+    const orphaned = dirs->copy()->filter((_, d) => managed->index(d) == -1)
+
+    if orphaned->empty()
+        redraw! | echo $'Pack [{pack.name}] is clean.'
+        return
+    endif
+
+    const prompt = [
+        "The following folder(s) will be deleted.",
+        "",
+        orphaned->join("\n"),
+        "",
+        "Are you sure? [y/N] "
+    ]->join("\n")
+
+    echohl WarningMsg | echo "!!! WARNING !!!" | echohl None
+    echo "\n"
+
+    if 'y' == input(prompt)->tolower()
+        for d in orphaned
+            delete(d, 'rf')
+        endfor
+    endif
+enddef
+
 g:paqs = []
 
 # 3rd party plugins
@@ -627,7 +712,7 @@ if executable('fzf')
     # key binds
     nnoremap <silent> <Leader>ff <Cmd>FzfFiles<CR>
     nnoremap <silent> <Leader>fb <Cmd>FzfBuffers<CR>
-    nnoremap <silent> <Leader>fg <Cmd>FzfGitCommits<CR>
+    nnoremap <silent> <Leader>fg <Cmd>Commits<CR>
     nnoremap <silent> <Leader>fm <Cmd>FzfMaps<CR>
     nnoremap <silent> <Leader>fo <Cmd>FzfHistory<CR>
     nnoremap <silent> <leader>ft <Cmd>FzfTabs<CR>
@@ -637,8 +722,26 @@ if executable('fzf')
     nnoremap <silent> <Leader>f: <Cmd>FzfHistory:<CR>
     nnoremap <silent> <Leader>f` <Cmd>FzfMarks<CR>
 
-    command! -nargs=0 FzfGitCommits fzf#GitCommits()
-    command! -nargs=0 FzfTabs fzf#Tabs()
+    def Tabs()
+        const selected_tab_nr = tabpagenr()
+        const last_tab_nr = tabpagenr('$')
+
+        const tabs = range(1, last_tab_nr)->mapnew((_, i) => {
+            const label = g:GetTabLabel(i)
+            return (i == selected_tab_nr ? '*' : ' ') .. label
+        })
+
+        fzf#run(fzf#wrap({
+            source: tabs,
+            sink: (line) => {
+                const tabnum = matchstr(line, '^\s*\*\?\s*\zs\d\+')
+                execute 'tabnext' tabnum
+            },
+            options: '--prompt "Tab> "'
+        }))
+    enddef
+
+    command! -nargs=0 FzfTabs Tabs()
 endif
 
 # lion
@@ -685,13 +788,13 @@ nnoremap <silent> <Leader>Qc <Cmd>PaqClean<CR>
 nnoremap <silent> <Leader>Qu <Cmd>PaqUpdate<CR>
 
 command! -nargs=0 PaqClean {
-    paq#Init()
-    paq#Clean()
+    Paq_Init()
+    Paq_Clean()
 }
 
 command! -nargs=0 PaqUpdate {
-    paq#Init()
-    paq#Update()
+    Paq_Init()
+    Paq_Update()
 }
 
 # }}}
