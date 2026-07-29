@@ -13,6 +13,7 @@ export XDG_STATE_HOME=$HOME/.local/state
 # homebrew
 if type brew &>/dev/null; then
     source "$(brew --prefix)/etc/profile.d/bash_completion.sh"
+    export PATH="$(brew --prefix)/bin:$PATH"
 fi
 
 # editor
