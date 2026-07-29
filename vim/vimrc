@@ -780,30 +780,7 @@ var lsp_servers = [
         name: 'pylsp',
         filetype: ['python'],
         path: 'pylsp',
-        args: [],
-        initializationOptions: {
-            pylsp: {
-                plugins: {
-                    jedi: {
-                        environment: (() => {
-                            var dir = expand('%:p:h') != '' ? expand('%:p:h') : getcwd()
-
-                            # Check .venv
-                            var venv = finddir('.venv', dir .. ';')
-                            if !empty(venv)
-                                var bin = fnamemodify(venv, ':p') .. 'bin/python'
-                                if executable(bin)
-                                    return bin
-                                endif
-                            endif
-
-                            # Fallback if no venv is found
-                            return exepath('python3') != '' ? exepath('python3') : exepath('python')
-                        })()
-                    }
-                }
-            }
-        }
+        args: []
     } : {},
 
     executable('terraform-ls') ? {
