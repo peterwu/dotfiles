@@ -748,6 +748,133 @@ endif
 g:paqs->add(['tommcdo/vim-lion', {as: 'lion'}])
 g:lion_squeeze_spaces = 1
 
+# lsp
+g:paqs->add(['yegappan/lsp', {as: 'lsp'}])
+var lsp_opts = {
+    outlineWinSize: 31,
+    popupBorder: true,
+}
+
+var lsp_servers = [
+    executable('clangd') ? {
+        name: 'clangd',
+        filetype: ['c', 'cpp'],
+        path: 'clangd',
+        args: ['--background-index']
+    } : {},
+
+    executable('gopls') ? {
+        name: 'gopls',
+        filetype: ['go'],
+        path: 'gopls'
+    } : {},
+
+    executable('neocmakelsp') ? {
+        name: 'neocmakelsp',
+        filetype: ['cmake'],
+        path: 'neocmakelsp',
+        args: ['--stdio']
+    } : {},
+
+    executable('pylsp') ? {
+        name: 'pylsp',
+        filetype: ['python'],
+        path: 'pylsp',
+        args: [],
+        initializationOptions: {
+            pylsp: {
+                plugins: {
+                    jedi: {
+                        environment: (() => {
+                            var dir = expand('%:p:h') != '' ? expand('%:p:h') : getcwd()
+
+                            # Check .venv
+                            var venv = finddir('.venv', dir .. ';')
+                            if !empty(venv)
+                                var bin = fnamemodify(venv, ':p') .. 'bin/python'
+                                if executable(bin)
+                                    return bin
+                                endif
+                            endif
+
+                            # Fallback if no venv is found
+                            return exepath('python3') != '' ? exepath('python3') : exepath('python')
+                        })()
+                    }
+                }
+            }
+        }
+    } : {},
+
+    executable('terraform-ls') ? {
+        name: 'terraform-ls',
+        filetype: ['terraform'],
+        path: 'terraform-ls',
+        args: ['serve']
+    } : {},
+
+    executable('typescript-language-server') ? {
+        name: 'typescriptlang',
+        filetype: ['javascript', 'typescript'],
+        path: 'typescript-language-server',
+        args: ['--stdio']
+    } : {}
+]->filter((_, v) => !empty(v))
+
+augroup lsp_setup | autocmd!
+    autocmd User LspSetup {
+        g:LspOptionsSet(lsp_opts)
+        g:LspAddServer(lsp_servers)
+    }
+augroup END
+
+augroup lsp_attached | autocmd!
+    autocmd User LspAttached {
+        SetLspKeymaps()
+
+        autocmd CursorHold <buffer> silent! LspDiagCurrent
+
+        setlocal tagfunc=lsp#lsp#TagFunc
+        setlocal formatexpr=lsp#lsp#FormatExpr()
+    }
+augroup END
+
+def SetLspKeymaps(): void
+    nnoremap <buffer> <Leader>gd <Cmd>LspGotoDefinition<CR>
+    nnoremap <buffer> <Leader>gh <Cmd>LspGotoDeclaration<CR>
+    nnoremap <buffer> <Leader>gi <Cmd>LspGotoImpl<CR>
+    nnoremap <buffer> <Leader>go <Cmd>LspDocumentSymbol<CR>
+    nnoremap <buffer> <Leader>gr <Cmd>LspShowReferences<CR>
+    nnoremap <buffer> <Leader>gt <Cmd>LspGotoTypeDef<CR>
+
+    nnoremap <buffer> <Leader>gD <Cmd>LspPeekDefinition<CR>
+    nnoremap <buffer> <Leader>gH <Cmd>LspPeekDeclaration<CR>
+    nnoremap <buffer> <Leader>gI <Cmd>LspPeekImpl<CR>
+    nnoremap <buffer> <Leader>gO <Cmd>LspSymbolSearch<CR>
+    nnoremap <buffer> <Leader>gR <Cmd>LspPeekReferences<CR>
+    nnoremap <buffer> <Leader>gT <Cmd>LspPeekTypeDef<CR>
+
+    nnoremap <buffer> <Leader>gk <Cmd>LspIncomingCalls<CR>
+    nnoremap <buffer> <Leader>gj <Cmd>LspOutgoingCalls<CR>
+
+    nnoremap <buffer> <Leader>ga <Cmd>LspCodeAction<CR>
+    nnoremap <buffer> <Leader>gf <Cmd>LspFormat<CR>
+    nnoremap <buffer> <Leader>gx <Cmd>LspCodeLens<CR>
+    nnoremap <buffer> <Leader>gy <Cmd>LspOutline<CR>
+    nnoremap <buffer> <Leader>gz <Cmd>LspFold<CR>
+    nnoremap <buffer> <Leader>g~ <Cmd>LspInlayHints toggle<CR>
+    nnoremap <buffer> <Leader>g! <Cmd>LspDiagShow<CR>
+
+    inoremap <buffer> <C-k> <Cmd>LspShowSignature<CR>
+    nnoremap <buffer> K     <Cmd>LspHover<CR>
+    nnoremap <buffer> <F2>  <Cmd>LspRename<CR>
+
+    nnoremap <buffer> [d <Cmd>LspDiagPrev<CR>
+    nnoremap <buffer> ]d <Cmd>LspDiagNext<CR>
+    nnoremap <buffer> [D <Cmd>LspDiagFirst<CR>
+    nnoremap <buffer> ]D <Cmd>LspDiagLast<CR>
+enddef
+
 # rainbow
 g:paqs->add(['luochen1990/rainbow', {}])
 g:rainbow_active = 1
