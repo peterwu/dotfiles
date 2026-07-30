@@ -792,6 +792,11 @@ var lsp_servers = [
         filetype: ['python'],
         path: 'ruff',
         args: ['server'],
+        initializationOptions: {
+            settings: {
+                showSyntaxErrors: false
+            }
+        }
     } : {},
 
     executable('terraform-ls') ? {
