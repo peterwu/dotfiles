@@ -713,11 +713,13 @@ if executable('fzf')
     nnoremap <silent> <Leader>ff <Cmd>FzfFiles<CR>
     nnoremap <silent> <Leader>fb <Cmd>FzfBuffers<CR>
     nnoremap <silent> <Leader>fg <Cmd>FzfCommits<CR>
+    nnoremap <silent> <Leader>fj <Cmd>FzfJumps<CR>
     nnoremap <silent> <Leader>fm <Cmd>FzfMaps<CR>
     nnoremap <silent> <Leader>fo <Cmd>FzfHistory<CR>
+    nnoremap <silent> <leader>fp <Cmd>FzfTabs<CR>
     nnoremap <silent> <leader>ft <Cmd>FzfBTags<CR>
     nnoremap <silent> <leader>fT <Cmd>FzfTags<CR>
-    nnoremap <silent> <leader>f^ <Cmd>FzfTabs<CR>
+    nnoremap <silent> <leader>fw <Cmd>FzfWindows<CR>
     nnoremap <silent> <Leader>f/ <Cmd>FzfHistory/<CR>
     nnoremap <silent> <Leader>f% <Cmd>FzfBLines<CR>
     nnoremap <silent> <Leader>f* <Cmd>FzfLines<CR>
