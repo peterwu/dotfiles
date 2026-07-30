@@ -784,7 +784,23 @@ var lsp_servers = [
         name: 'pylsp',
         filetype: ['python'],
         path: 'pylsp',
-        args: []
+        args: [],
+        workspaceConfig: {
+            pylsp: {
+                plugins: {
+                    autopep8:    { enabled: false },
+                    flake8:      { enabled: false },
+                    mccabe:      { enabled: false },
+                    pycodestyle: { enabled: false },
+                    pyflakes:    { enabled: false },
+
+                    # pipx install python-lsp-server
+                    # pipx inject python-lsp-server pylsp-mypy python-lsp-ruff
+                    pylsp_mypy:  { enabled: true  },
+                    ruff:        { enabled: true  },
+                }
+            }
+        }
     } : {},
 
     executable('terraform-ls') ? {
