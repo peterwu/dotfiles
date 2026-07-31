@@ -903,6 +903,44 @@ nnoremap F <Plug>Sneak_F
 nnoremap t <Plug>Sneak_t
 nnoremap T <Plug>Sneak_T
 
+# vimspector
+g:paqs->add(['puremourning/vimspector', {opt: true}])
+
+command! -nargs=0 EnableVimspectorDebug call EnableVimspectorDebug()
+
+def EnableVimspectorDebug(): void
+    packadd vimspector
+    g:vimspector_base_dir = $'{$VIM_HOME}/vimspector'
+
+    nnoremap <silent> <F5>     <Plug>VimspectorContinue
+    nnoremap <silent> <S-F5>   <Plug>VimspectorStop
+    nnoremap <silent> <C-S-F5> <Plug>VimspectorRestart
+
+    nnoremap <silent> <F9>     <Plug>VimspectorToggleBreakpoint
+
+    nnoremap <silent> <F10>    <Plug>VimspectorStepOver
+    nnoremap <silent> <C-F10>  <Plug>VimspectorRunToCursor
+    nnoremap <silent> <F11>    <Plug>VimspectorStepInto
+    nnoremap <silent> <S-F11>  <Plug>VimspectorStepOut
+
+    augroup customize_vimspector_ui | autocmd!
+        autocmd User VimspectorUICreated {
+            win_gotoid(g:vimspector_session_windows.code)
+
+            nunmenu WinBar
+
+            nnoremenu WinBar.CONT <Cmd>call vimspector#Continue()<CR>
+            nnoremenu WinBar.NEXT <Cmd>call vimspector#StepOver()<CR>
+            nnoremenu WinBar.STEP <Cmd>call vimspector#StepInto()<CR>
+            nnoremenu WinBar.SOUT <Cmd>call vimspector#StepOut()<CR>
+            nnoremenu WinBar.HALT <Cmd>call vimspector#Pause()<CR>
+            nnoremenu WinBar.STOP <Cmd>call vimspector#Stop()<CR>
+            nnoremenu WinBar.REDO <Cmd>call vimspector#Restart()<CR>
+            nnoremenu WinBar.QUIT <Cmd>call vimspector#Reset()<CR>
+        }
+    augroup END
+enddef
+
 # clean/update plugins
 nnoremap <silent> <Leader>Qc <Cmd>PaqClean<CR>
 nnoremap <silent> <Leader>Qu <Cmd>PaqUpdate<CR>
