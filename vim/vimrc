@@ -712,7 +712,7 @@ if executable('fzf')
     # key binds
     nnoremap <silent> <Leader>ff <Cmd>FzfFiles<CR>
     nnoremap <silent> <Leader>fb <Cmd>FzfBuffers<CR>
-    nnoremap <silent> <Leader>fg <Cmd>FzfCommits<CR>
+    nnoremap <silent> <Leader>fg <Cmd>FzfGitLog<CR>
     nnoremap <silent> <Leader>fj <Cmd>FzfJumps<CR>
     nnoremap <silent> <Leader>fm <Cmd>FzfMaps<CR>
     nnoremap <silent> <Leader>fo <Cmd>FzfHistory<CR>
@@ -726,6 +726,30 @@ if executable('fzf')
     nnoremap <silent> <Leader>f: <Cmd>FzfHistory:<CR>
     nnoremap <silent> <Leader>f` <Cmd>FzfMarks<CR>
 
+    command! -nargs=0 FzfGitLog GitLog()
+    def GitLog(): void
+        fzf#run(fzf#wrap({
+            source: 'git log --oneline --color=always',
+            sink: (line) => {
+                const clean = substitute(line, '\x1b\[[0-9;]*m', '', 'g')
+                const hash = matchstr(clean, '^\x\+')
+                if empty(hash)
+                    return
+                endif
+
+                execute 'new'
+                setlocal buftype=nofile bufhidden=wipe noswapfile nobuflisted
+
+                const cmd = 'git show ' .. shellescape(hash)
+                setline(1, systemlist(cmd))
+
+                setlocal filetype=git nomodifiable readonly
+            },
+            options: '--ansi --no-sort --reverse --prompt "GitLog> "'
+        }))
+    enddef
+
+    command! -nargs=0 FzfTabs Tabs()
     def Tabs()
         const selected_tab_nr = tabpagenr()
         const last_tab_nr = tabpagenr('$')
@@ -744,8 +768,6 @@ if executable('fzf')
             options: '--prompt "Tab> "'
         }))
     enddef
-
-    command! -nargs=0 FzfTabs Tabs()
 endif
 
 # lion
@@ -907,7 +929,6 @@ nnoremap T <Plug>Sneak_T
 g:paqs->add(['puremourning/vimspector', {opt: true}])
 
 command! -nargs=0 EnableVimspectorDebug call EnableVimspectorDebug()
-
 def EnableVimspectorDebug(): void
     packadd vimspector
     g:vimspector_base_dir = $'{$VIM_HOME}/vimspector'
