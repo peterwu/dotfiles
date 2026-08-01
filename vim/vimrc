@@ -777,8 +777,10 @@ g:lion_squeeze_spaces = 1
 # lsp
 g:paqs->add(['yegappan/lsp', {as: 'lsp'}])
 var lsp_opts = {
-    outlineWinSize: 31,
-    popupBorder: true,
+    autoComplete: true,
+    omniComplete: true,
+    omniCompleteAllowBare: true,
+    outlineWinSize: 31
 }
 
 var lsp_servers = [
