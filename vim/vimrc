@@ -712,7 +712,7 @@ if executable('fzf')
     # key binds
     nnoremap <silent> <Leader>ff <Cmd>FzfFiles<CR>
     nnoremap <silent> <Leader>fb <Cmd>FzfBuffers<CR>
-    nnoremap <silent> <Leader>fg <Cmd>FzfGitLog<CR>
+    nnoremap <silent> <Leader>fg <Cmd>FzfGitCommits<CR>
     nnoremap <silent> <Leader>fj <Cmd>FzfJumps<CR>
     nnoremap <silent> <Leader>fm <Cmd>FzfMaps<CR>
     nnoremap <silent> <Leader>fo <Cmd>FzfHistory<CR>
@@ -726,8 +726,8 @@ if executable('fzf')
     nnoremap <silent> <Leader>f: <Cmd>FzfHistory:<CR>
     nnoremap <silent> <Leader>f` <Cmd>FzfMarks<CR>
 
-    command! -nargs=0 FzfGitLog GitLog()
-    def GitLog(): void
+    command! -nargs=0 FzfGitCommits GitCommits()
+    def GitCommits(): void
         fzf#run(fzf#wrap({
             source: 'git log --oneline --color=always',
             sink: (line) => {
@@ -745,12 +745,12 @@ if executable('fzf')
 
                 setlocal filetype=git nomodifiable readonly
             },
-            options: '--ansi --no-sort --reverse --prompt "GitLog> "'
+            options: '--ansi --no-sort --reverse --prompt "Commits> "'
         }))
     enddef
 
     command! -nargs=0 FzfTabs Tabs()
-    def Tabs()
+    def Tabs(): void
         const selected_tab_nr = tabpagenr()
         const last_tab_nr = tabpagenr('$')
 
