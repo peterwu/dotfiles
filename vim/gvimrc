@@ -16,6 +16,8 @@ if has('macunix')
     for i in range(1, 9)
         execute $'nnoremap <D-{i}> <Cmd>tabnext {i}<CR>'
     endfor
+elseif has('gui_gtk') && has('linux')
+    set guifont=SF\ Mono\ 15
 elseif has('win64')
     set guifont=SF_Mono:h12
     set renderoptions=type:directx
