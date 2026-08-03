@@ -21,7 +21,22 @@ HISTSIZE=20000
 HISTFILESIZE=20000
 
 _emacs() {
-  emacsclient -nw --quiet --alternate-editor="emacs -nw" "$@"
+    local emacsclient="/Applications/Emacs.app/Contents/MacOS/bin/emacsclient"
+    local emacs_nw="/Applications/Emacs.app/Contents/MacOS/emacs-nw"
+
+    if [ ! -x "$emacsclient" ]; then
+        echo "Error: emacsclient not found or not executable at $emacsclient" >&2
+        return 1
+    fi
+
+    if [ ! -x "$emacs_nw" ]; then
+        echo "Error: emacs-nw not found or not executable at $emacs_nw" >&2
+        return 1
+    fi
+
+    "$emacsclient" --quiet \
+        --no-window-system \
+        --alternate-editor="$emacs_nw" "$@"
 }
 
 # Define custom ls function
