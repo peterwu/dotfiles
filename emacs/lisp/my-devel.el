@@ -74,42 +74,6 @@
   (gdb-restore-window-configuration-after-quit t)
   (gdb-show-main t))
 
-;; python
-(use-package python
-  :preface
-  (defun my-pyvenv-activate ()
-    "Activate Python virtual environment based on current project directory.
-Looks for .venv directory in project root and activates the Python interpreter."
-    (interactive)
-    (let* ((project-root (project-root (project-current t)))
-           (venv-path (expand-file-name ".venv" project-root))
-           (python-path (expand-file-name
-                         (if (eq system-type 'windows-nt)
-                             "Scripts/python.exe"
-                           "bin/python")
-                         venv-path)))
-      (if (file-exists-p python-path)
-          (progn
-            (setopt python-shell-interpreter python-path)
-            (setopt python-shell-virtualenv-root venv-path)
-
-            (let ((venv-bin-dir (file-name-directory python-path)))
-              (setopt exec-path (cons venv-bin-dir
-                                      (remove venv-bin-dir exec-path))))
-
-            (setenv "PATH" (concat (file-name-directory python-path)
-                                   path-separator
-                                   (getenv "PATH")))
-            (setenv "VIRTUAL_ENV" venv-path)
-            (setenv "PYTHONHOME" nil)
-
-            (message "Activated Python virtual environment at %s" venv-path))
-        (message "No Python virtual environment found in %s" project-root))))
-  :custom
-  (python-check-command "pylint")
-  :hook
-  ((python-mode python-ts-mode) . my-pyvenv-activate))
-
 (use-package treesit
   :custom
   (treesit-enabled-modes t))
