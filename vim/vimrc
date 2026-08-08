@@ -111,7 +111,8 @@ set wildoptions=pum,tagfile
 # keymaps {{{
 
 # leaders
-g:mapleader = ' '
+g:mapleader      = ' '
+g:maplocalleader = '\'
 
 # vimrc
 nnoremap <silent> <Leader>cd <Cmd>cd      %:p:h<Bar>pwd<CR>
@@ -139,9 +140,9 @@ xnoremap <expr> j (v:count > 0 ? 'j' : 'gj')
 xnoremap <expr> k (v:count > 0 ? 'k' : 'gk')
 
 # vimdiff as mergetool
-nnoremap <expr> g1 (&diff ? ':diffget LOCAL<CR>'  : 'g1')
-nnoremap <expr> g2 (&diff ? ':diffget REMOTE<CR>' : 'g2')
-nnoremap <expr> g3 (&diff ? ':diffget BASE<CR>'   : 'g3')
+nnoremap <expr> <LocalLeader>g1 (&diff ? ':diffget LOCAL<CR>'  : '<Nop>')
+nnoremap <expr> <LocalLeader>g2 (&diff ? ':diffget REMOTE<CR>' : '<Nop>')
+nnoremap <expr> <LocalLeader>g3 (&diff ? ':diffget BASE<CR>'   : '<Nop>')
 
 # unimpaired
 nnoremap <silent> [<Space> O<Esc>j
@@ -712,24 +713,34 @@ if executable('fzf')
     # key binds
     nnoremap <silent> <Leader>ff <Cmd>FzfFiles<CR>
     nnoremap <silent> <Leader>fb <Cmd>FzfBuffers<CR>
-    nnoremap <silent> <Leader>fg <Cmd>FzfGitCommits<CR>
+    nnoremap <silent> <Leader>fg <Cmd>FzfCommits<CR>
     nnoremap <silent> <Leader>fj <Cmd>FzfJumps<CR>
     nnoremap <silent> <Leader>fm <Cmd>FzfMaps<CR>
     nnoremap <silent> <Leader>fo <Cmd>FzfHistory<CR>
-    nnoremap <silent> <leader>fp <Cmd>FzfTabs<CR>
-    nnoremap <silent> <leader>ft <Cmd>FzfBTags<CR>
-    nnoremap <silent> <leader>fT <Cmd>FzfTags<CR>
-    nnoremap <silent> <leader>fw <Cmd>FzfWindows<CR>
+    nnoremap <silent> <Leader>fp <Cmd>FzfTabs<CR>
+    nnoremap <silent> <Leader>fw <Cmd>FzfWindows<CR>
+    nnoremap <silent> <Leader>fl <Cmd>FzfLines<CR>
     nnoremap <silent> <Leader>f/ <Cmd>FzfHistory/<CR>
-    nnoremap <silent> <Leader>f% <Cmd>FzfBLines<CR>
-    nnoremap <silent> <Leader>f* <Cmd>FzfLines<CR>
     nnoremap <silent> <Leader>f: <Cmd>FzfHistory:<CR>
     nnoremap <silent> <Leader>f` <Cmd>FzfMarks<CR>
+    nnoremap <silent> <Leader>f# <Cmd>FzfTags<CR>
 
-    command! -nargs=0 FzfGitCommits GitCommits()
-    def GitCommits(): void
+    nnoremap <silent> <LocalLeader>fg <Cmd>FzfBCommits<CR>
+    nnoremap <silent> <LocalLeader>fl <Cmd>FzfBLines<CR>
+    nnoremap <silent> <LocalLeader>f` <Cmd>FzfBMarks<CR>
+    nnoremap <silent> <LocalLeader>f# <Cmd>FzfBTags<CR>
+
+    command! -nargs=0 FzfBCommits FzfCommits(expand('%:p'))
+    command! -nargs=0 FzfCommits  FzfCommits()
+    def FzfCommits(file: string = ''): void
+        var source = 'git log --oneline --color=always'
+
+        if !file->empty() && file->filereadable()
+            source ..= ' --follow -- ' .. file->shellescape()
+        endif
+
         fzf#run(fzf#wrap({
-            source: 'git log --oneline --color=always',
+            source: source,
             sink: (line) => {
                 const clean = substitute(line, '\x1b\[[0-9;]*m', '', 'g')
                 const hash = matchstr(clean, '^\x\+')
@@ -749,8 +760,8 @@ if executable('fzf')
         }))
     enddef
 
-    command! -nargs=0 FzfTabs Tabs()
-    def Tabs(): void
+    command! -nargs=0 FzfTabs FzfTabs()
+    def FzfTabs(): void
         const selected_tab_nr = tabpagenr()
         const last_tab_nr = tabpagenr('$')
 
@@ -857,30 +868,30 @@ augroup lsp_attached | autocmd!
 augroup END
 
 def SetLspKeymaps(): void
-    nnoremap <buffer> <Leader>gd <Cmd>LspGotoDefinition<CR>
-    nnoremap <buffer> <Leader>gh <Cmd>LspGotoDeclaration<CR>
-    nnoremap <buffer> <Leader>gi <Cmd>LspGotoImpl<CR>
-    nnoremap <buffer> <Leader>go <Cmd>LspDocumentSymbol<CR>
-    nnoremap <buffer> <Leader>gr <Cmd>LspShowReferences<CR>
-    nnoremap <buffer> <Leader>gt <Cmd>LspGotoTypeDef<CR>
+    nnoremap <buffer> <LocalLeader>gd <Cmd>LspGotoDefinition<CR>
+    nnoremap <buffer> <LocalLeader>gh <Cmd>LspGotoDeclaration<CR>
+    nnoremap <buffer> <LocalLeader>gi <Cmd>LspGotoImpl<CR>
+    nnoremap <buffer> <LocalLeader>go <Cmd>LspDocumentSymbol<CR>
+    nnoremap <buffer> <LocalLeader>gr <Cmd>LspShowReferences<CR>
+    nnoremap <buffer> <LocalLeader>gt <Cmd>LspGotoTypeDef<CR>
 
-    nnoremap <buffer> <Leader>gD <Cmd>LspPeekDefinition<CR>
-    nnoremap <buffer> <Leader>gH <Cmd>LspPeekDeclaration<CR>
-    nnoremap <buffer> <Leader>gI <Cmd>LspPeekImpl<CR>
-    nnoremap <buffer> <Leader>gO <Cmd>LspSymbolSearch<CR>
-    nnoremap <buffer> <Leader>gR <Cmd>LspPeekReferences<CR>
-    nnoremap <buffer> <Leader>gT <Cmd>LspPeekTypeDef<CR>
+    nnoremap <buffer> <LocalLeader>gD <Cmd>LspPeekDefinition<CR>
+    nnoremap <buffer> <LocalLeader>gH <Cmd>LspPeekDeclaration<CR>
+    nnoremap <buffer> <LocalLeader>gI <Cmd>LspPeekImpl<CR>
+    nnoremap <buffer> <LocalLeader>gO <Cmd>LspSymbolSearch<CR>
+    nnoremap <buffer> <LocalLeader>gR <Cmd>LspPeekReferences<CR>
+    nnoremap <buffer> <LocalLeader>gT <Cmd>LspPeekTypeDef<CR>
 
-    nnoremap <buffer> <Leader>gk <Cmd>LspIncomingCalls<CR>
-    nnoremap <buffer> <Leader>gj <Cmd>LspOutgoingCalls<CR>
+    nnoremap <buffer> <LocalLeader>gk <Cmd>LspIncomingCalls<CR>
+    nnoremap <buffer> <LocalLeader>gj <Cmd>LspOutgoingCalls<CR>
 
-    nnoremap <buffer> <Leader>ga <Cmd>LspCodeAction<CR>
-    nnoremap <buffer> <Leader>gf <Cmd>LspFormat<CR>
-    nnoremap <buffer> <Leader>gx <Cmd>LspCodeLens<CR>
-    nnoremap <buffer> <Leader>gy <Cmd>LspOutline<CR>
-    nnoremap <buffer> <Leader>gz <Cmd>LspFold<CR>
-    nnoremap <buffer> <Leader>g~ <Cmd>LspInlayHints toggle<CR>
-    nnoremap <buffer> <Leader>g! <Cmd>LspDiagShow<CR>
+    nnoremap <buffer> <LocalLeader>ga <Cmd>LspCodeAction<CR>
+    nnoremap <buffer> <LocalLeader>gf <Cmd>LspFormat<CR>
+    nnoremap <buffer> <LocalLeader>gx <Cmd>LspCodeLens<CR>
+    nnoremap <buffer> <LocalLeader>gy <Cmd>LspOutline<CR>
+    nnoremap <buffer> <LocalLeader>gz <Cmd>LspFold<CR>
+    nnoremap <buffer> <LocalLeader>g~ <Cmd>LspInlayHints toggle<CR>
+    nnoremap <buffer> <LocalLeader>g! <Cmd>LspDiagShow<CR>
 
     inoremap <buffer> <C-k> <Cmd>LspShowSignature<CR>
     nnoremap <buffer> K     <Cmd>LspHover<CR>
