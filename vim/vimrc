@@ -791,6 +791,7 @@ var lsp_opts = {
     autoComplete: true,
     omniComplete: true,
     omniCompleteAllowBare: true,
+    outlineOnRight: true,
     outlineWinSize: 31
 }
 
