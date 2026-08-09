@@ -17,7 +17,7 @@ if has('macunix')
         execute $'nnoremap <D-{i}> <Cmd>tabnext {i}<CR>'
     endfor
 elseif has('gui_gtk') && has('linux')
-    set guifont=SF\ Mono\ 15
+    set guifont=SF\ Mono\ 13
 elseif has('win64')
     set guifont=SF_Mono:h12
     set renderoptions=type:directx

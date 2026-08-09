@@ -725,6 +725,7 @@ if executable('fzf')
     nnoremap <silent> <Leader>f` <Cmd>FzfMarks<CR>
     nnoremap <silent> <Leader>f# <Cmd>FzfTags<CR>
 
+    nnoremap <silent> <LocalLeader>fc <Cmd>FzfChanges<CR>
     nnoremap <silent> <LocalLeader>fg <Cmd>FzfBCommits<CR>
     nnoremap <silent> <LocalLeader>fl <Cmd>FzfBLines<CR>
     nnoremap <silent> <LocalLeader>f` <Cmd>FzfBMarks<CR>
