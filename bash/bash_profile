@@ -32,6 +32,16 @@ if type fzf &>/dev/null; then
     '
 fi
 
+# macvim
+MACVIM_BIN="/Applications/MacVim.app/Contents/bin"
+
+if [ -x "$MACVIM_BIN/vim" ]; then
+    case ":$PATH:" in
+        *":$MACVIM_BIN:"*) ;;
+        *) export PATH="$MACVIM_BIN:$PATH" ;;
+    esac
+fi
+
 # manpager
 export MANPAGER='vim +MANPAGER +"set showtabline=0" --not-a-term -'
 
