@@ -806,8 +806,10 @@ var lsp_servers = [
 
     executable('gopls') ? {
         name: 'gopls',
-        filetype: ['go'],
-        path: 'gopls'
+        filetype: ['go', 'gomod'],
+        path: 'gopls',
+        args: ['serve'],
+        syncInit: true
     } : {},
 
     executable('neocmakelsp') ? {
