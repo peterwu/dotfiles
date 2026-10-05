@@ -838,6 +838,14 @@ var lsp_servers = [
         }
     } : {},
 
+    executable('rust-analyzer') ? {
+        name: 'rust-analyzer',
+        filetype: ['rust'],
+        path: 'rust-analyzer',
+        args: [],
+        syncInit: true
+    } : {},
+
     executable('terraform-ls') ? {
         name: 'terraform-ls',
         filetype: ['terraform'],
