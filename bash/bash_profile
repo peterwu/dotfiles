@@ -12,8 +12,15 @@ export XDG_STATE_HOME=$HOME/.local/state
 
 # homebrew
 if type brew &>/dev/null; then
-    source "$(brew --prefix)/etc/profile.d/bash_completion.sh"
-    export PATH="$(brew --prefix)/bin:$PATH"
+    eval "$(brew shellenv)"
+
+    # bash completion
+    [ -r "$HOMEBREW_PREFIX/etc/profile.d/bash_completion.sh" ] &&
+        source "$HOMEBREW_PREFIX/etc/profile.d/bash_completion.sh"
+
+    # GNU coreutils
+    [ -d "$HOMEBREW_PREFIX/opt/coreutils/libexec/gnubin" ] &&
+        export PATH="$HOMEBREW_PREFIX/opt/coreutils/libexec/gnubin:$PATH"
 fi
 
 # editor
@@ -47,10 +54,6 @@ export MANPAGER='vim +MANPAGER +"set showtabline=0" --not-a-term -'
 
 # less
 export LESSHISTFILE=-
-
-# python
-export PYTHON_HISTORY=$HOME/.local/share/python/history
-export VIRTUAL_ENV_DISABLE_PROMPT=1
 
 # go
 export GOPATH=$HOME/.local/share/go
