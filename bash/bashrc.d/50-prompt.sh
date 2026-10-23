@@ -49,7 +49,7 @@ _customize_shell_prompt() {
 
     # current time
     prompt+="\001$(tput sgr0; tput setaf 5)\002"
-    prompt+='\A'
+    prompt+='\D{%F %R}'
     prompt+=' '
 
     # user@host:pwd
