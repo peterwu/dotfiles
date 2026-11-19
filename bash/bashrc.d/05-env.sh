@@ -18,7 +18,8 @@ export MANPAGER='vim +MANPAGER +"set showtabline=0" --not-a-term -'
 export LESSHISTFILE=-
 
 # go
-export GOPATH=$HOME/.local/share/go
+export GOPATH=$XDG_DATA_HOME/go
+export GOBIN=$HOME/.local/bin
 
 # readline
 export INPUTRC=$HOME/.config/readline/inputrc
