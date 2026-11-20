@@ -855,7 +855,12 @@ var lsp_servers = [
 
     executable('typescript-language-server') ? {
         name: 'typescriptlang',
-        filetype: ['javascript', 'typescript'],
+        filetype: [
+            'javascript',
+            'typescript',
+            'javascriptreact',
+            'typescriptreact'
+        ],
         path: 'typescript-language-server',
         args: ['--stdio']
     } : {}
