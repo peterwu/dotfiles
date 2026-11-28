@@ -569,8 +569,8 @@ packadd! matchit
 packadd! nohlsearch
 
 # osc52 (clipboard access via terminal OSC 52, e.g. over SSH)
-packadd osc52
-set clipmethod+=osc52
+packadd! osc52
+autocmd VimEnter * ++once set clipmethod+=osc52
 
 # netrw
 g:netrw_banner       = 0
